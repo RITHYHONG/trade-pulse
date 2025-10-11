@@ -1,7 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  serverExternalPackages: ["@prisma/client"],
+  images: {
+    domains: ["images.unsplash.com", "example.com"],
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/rss",
+        destination: "/blog/rss.xml",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
