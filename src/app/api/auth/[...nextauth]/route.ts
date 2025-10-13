@@ -1,5 +1,8 @@
-import NextAuth from 'next-auth'
+// This route is disabled - using Firebase Auth instead
+export async function GET() {
+  return Response.json({ message: 'Authentication handled by Firebase' });
+}
 
-const handler = NextAuth({})
-
-export { handler as GET, handler as POST }
+export async function POST() {
+  return Response.json({ message: 'Authentication handled by Firebase' });
+}

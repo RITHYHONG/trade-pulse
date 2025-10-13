@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
-import { Menu, X, TrendingUp } from 'lucide-react';
+import { Menu, X, TrendingUp, User, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '../hooks/use-auth';
 
 const navItems = [
   // { label: 'Demo', href: '#demo', isAnchor: true },
@@ -13,14 +14,16 @@ const navItems = [
   // { label: 'Testimonials', href: '#testimonials', isAnchor: true },
   // { label: 'Pricing', href: '/pricing', isAnchor: false },
   { label: 'Blog', href: '/blog', isAnchor: false },
-  { label: 'About', href: '/about', isAnchor: false },
-  { label: 'Contact', href: '/contact', isAnchor: false },
+  { label: 'Calendar', href: '/calendar', isAnchor: false, isComingSoon: true },
+  { label: 'About', href: '/about', isAnchor: false, isComingSoon: true },
+  { label: 'Contact', href: '/contact', isAnchor: false, isComingSoon: true },
 ];
 
 export function HeaderMain() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [active, setActive] = useState<string>('#demo');
   const pathname = usePathname();
+  const { user, signOut, loading } = useAuth();
 
   useEffect(() => {
     const ids = ['demo', 'features', 'testimonials', 'pricing'];
@@ -75,7 +78,19 @@ export function HeaderMain() {
             {navItems.map((item, index) => {
               const isActive = pathname === item.href || (item.isAnchor && active === item.href);
               
-              if (item.isAnchor) {
+              if (item.isComingSoon) {
+                return (
+                  <motion.div
+                    key={index}
+                    className="relative text-muted-foreground cursor-not-allowed group"
+                  >
+                    {item.label}
+                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                      Coming Soon
+                    </span>
+                  </motion.div>
+                );
+              } else if (item.isAnchor) {
                 return (
                   <motion.a
                     key={index}
@@ -105,16 +120,38 @@ export function HeaderMain() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="ghost" className="hover:bg-card">
-                Login
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="bg-primary hover:bg-primary/90">
-                Start Free Trial
-              </Button>
-            </Link>
+            {user ? (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 text-sm">
+                  <User className="w-4 h-4" />
+                  <span className="text-foreground">
+                    {user.displayName || user.email?.split('@')[0] || 'User'}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  onClick={() => signOut()}
+                  disabled={loading}
+                  className="hover:bg-card"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" className="hover:bg-card">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <Button className="bg-primary hover:bg-primary/90">
+                    Start Free Trial
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -140,7 +177,19 @@ export function HeaderMain() {
                 {navItems.map((item, index) => {
                   const isActive = pathname === item.href || (item.isAnchor && active === item.href);
                   
-                  if (item.isAnchor) {
+                  if (item.isComingSoon) {
+                    return (
+                      <motion.div
+                        key={index}
+                        className="py-2 text-muted-foreground cursor-not-allowed relative group"
+                      >
+                        {item.label}
+                        <span className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                          Coming Soon
+                        </span>
+                      </motion.div>
+                    );
+                  } else if (item.isAnchor) {
                     return (
                       <motion.a
                         key={index}
@@ -170,16 +219,41 @@ export function HeaderMain() {
               </nav>
               
               <div className="flex flex-col gap-3">
-                <Link href="/login">
-                  <Button variant="ghost" className="justify-start hover:bg-card w-full">
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/signup">
-                  <Button className="bg-primary hover:bg-primary/90 w-full">
-                    Start Free Trial
-                  </Button>
-                </Link>
+                {user ? (
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-2 py-2 px-3 bg-muted rounded-md">
+                      <User className="w-4 h-4" />
+                      <span className="text-sm text-foreground">
+                        {user.displayName || user.email?.split('@')[0] || 'User'}
+                      </span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        signOut();
+                        setIsMenuOpen(false);
+                      }}
+                      disabled={loading}
+                      className="justify-start hover:bg-card w-full"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="ghost" className="justify-start hover:bg-card w-full">
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
+                      <Button className="bg-primary hover:bg-primary/90 w-full">
+                        Start Free Trial
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>

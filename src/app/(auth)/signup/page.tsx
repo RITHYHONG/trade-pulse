@@ -1,7 +1,9 @@
-export default function Page() {
+import { SignUpForm } from '../components/SignUpForm';
+
+export default function SignUpPage() {
   return (
-    <div>
-      <h1>Signup</h1>
+    <div className="flex items-center justify-center min-h-screen p-4">
+      <SignUpForm />
     </div>
-  )
+  );
 }

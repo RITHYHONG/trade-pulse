@@ -3,15 +3,34 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
-import { Menu, X, TrendingUp } from 'lucide-react';
+import { Menu, X, TrendingUp, User, LogOut, Settings } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './ui/alert-dialog';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '../../../hooks/use-auth';
 
 const navItems = [
   { label: 'Demo', href: '#demo', isAnchor: true },
   { label: 'Features', href: '#features', isAnchor: true },
   { label: 'Testimonials', href: '#testimonials', isAnchor: true },
-  // { label: 'Pricing', href: '/pricing', isAnchor: false },
+  { label: 'Pricing', href: '/pricing', isAnchor: false },
   { label: 'Blog', href: '/blog', isAnchor: false },
   { label: 'About', href: '/about', isAnchor: false },
   { label: 'Contact', href: '/contact', isAnchor: false },
@@ -21,6 +40,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [active, setActive] = useState<string>('#demo');
   const pathname = usePathname();
+  const { user, signOut, loading } = useAuth();
 
   useEffect(() => {
     const ids = ['demo', 'features', 'testimonials', 'pricing'];
@@ -105,16 +125,70 @@ export function Header() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-4">
-            <Link href="/login">
-              <Button variant="ghost" className="hover:bg-card">
-                Login
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="bg-primary hover:bg-primary/90">
-                Start Free Trial
-              </Button>
-            </Link>
+            {user ? (
+              <div className="flex items-center gap-4">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-2 hover:bg-card">
+                      <User className="w-4 h-4" />
+                      <span className="text-foreground">
+                        {user.displayName || user.email?.split('@')[0] || 'User'}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings" className="flex items-center gap-2 cursor-pointer">
+                        <Settings className="w-4 h-4" />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <DropdownMenuItem
+                          onSelect={(e) => e.preventDefault()}
+                          className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-red-600"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Sign out
+                        </DropdownMenuItem>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            You will be redirected to the login page and will need to sign in again to access your account.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => signOut()}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Sign out
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" className="hover:bg-card">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <Button className="bg-primary hover:bg-primary/90">
+                    Start Free Trial
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -170,16 +244,73 @@ export function Header() {
               </nav>
               
               <div className="flex flex-col gap-3">
-                <Link href="/login">
-                  <Button variant="ghost" className="justify-start hover:bg-card w-full">
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/signup">
-                  <Button className="bg-primary hover:bg-primary/90 w-full">
-                    Start Free Trial
-                  </Button>
-                </Link>
+                {user ? (
+                  <div className="flex flex-col gap-3">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="flex items-center gap-2 justify-start hover:bg-card w-full">
+                          <User className="w-4 h-4" />
+                          <span className="text-foreground">
+                            {user.displayName || user.email?.split('@')[0] || 'User'}
+                          </span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-48">
+                        <DropdownMenuItem asChild>
+                          <Link href="/settings" className="flex items-center gap-2 cursor-pointer" onClick={() => setIsMenuOpen(false)}>
+                            <Settings className="w-4 h-4" />
+                            Settings
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <DropdownMenuItem
+                              onSelect={(e) => e.preventDefault()}
+                              className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-red-600"
+                            >
+                              <LogOut className="w-4 h-4" />
+                              Sign out
+                            </DropdownMenuItem>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                You will be redirected to the login page and will need to sign in again to access your account.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => {
+                                  signOut();
+                                  setIsMenuOpen(false);
+                                }}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                Sign out
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                ) : (
+                  <>
+                    <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="ghost" className="justify-start hover:bg-card w-full">
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
+                      <Button className="bg-primary hover:bg-primary/90 w-full">
+                        Start Free Trial
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>

@@ -27,10 +27,10 @@ export function NewsletterCTA() {
           <Mail className="w-8 h-8 text-green-400" />
         </div>
         <h3 className="text-xl font-semibold text-white mb-2">
-          Welcome to Trader Puls!
+          Welcome to Trader Pulse!
         </h3>
         <p className="text-gray-400">
-          You'll receive our next market insight directly in your inbox.
+          You&apos;ll receive our next market insight directly in your inbox.
         </p>
       </div>
     );
@@ -78,7 +78,7 @@ export function NewsletterCTA() {
 
       <div className="mt-6 pt-4 border-t border-[#2D3246]">
         <div className="flex items-center justify-between text-sm text-gray-400">
-          <span>What you'll get:</span>
+          <span>What you&apos;ll get:</span>
           <div className="flex gap-4">
             <span>• Daily recaps</span>
             <span>• Market alerts</span>

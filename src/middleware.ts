@@ -8,14 +8,14 @@ export function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/dashboard")) {
     if (!token) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(new URL(`/login?redirect=${encodeURIComponent(pathname)}`, request.url));
     }
   }
 
   // Admin routes - require admin role
   if (pathname.startsWith("/admin")) {
     if (!token) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(new URL(`/login?redirect=${encodeURIComponent(pathname)}`, request.url));
     }
     if (userRole !== "admin") {
       return NextResponse.redirect(new URL("/dashboard", request.url));
@@ -25,14 +25,14 @@ export function middleware(request: NextRequest) {
   // App routes - require authentication
   if (pathname.startsWith("/app")) {
     if (!token) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(new URL(`/login?redirect=${encodeURIComponent(pathname)}`, request.url));
     }
   }
 
   // Create post - require authentication
   if (pathname === "/create-post") {
     if (!token) {
-      return NextResponse.redirect(new URL("/login?redirect=/create-post", request.url));
+      return NextResponse.redirect(new URL(`/login?redirect=${encodeURIComponent(pathname)}`, request.url));
     }
   }
 
@@ -53,7 +53,7 @@ export function middleware(request: NextRequest) {
   // Add CSP header for better security
   response.headers.set(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;"
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://identitytoolkit.googleapis.com https://firestore.googleapis.com https://firebase.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com;"
   );
 
   return response;
