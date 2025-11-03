@@ -3,36 +3,28 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get("auth-token");
+  const token = request.cookies.get("auth-token")?.value;
   const userRole = request.cookies.get("user-role")?.value;
 
-  if (pathname.startsWith("/dashboard")) {
+  // Debug log (remove in production)
+  console.log(`[Middleware] Path: ${pathname}, Token: ${token ? 'present' : 'missing'}, Role: ${userRole || 'none'}`);
+
+  // Protected routes - require authentication
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/app") || pathname.startsWith("/create-post") || pathname.startsWith("/settings")) {
     if (!token) {
-      return NextResponse.redirect(new URL(`/login?redirect=${encodeURIComponent(pathname)}`, request.url));
+      // Add a flag to indicate potential session mismatch for client-side handling
+      const response = NextResponse.redirect(new URL(`/login?redirect=${encodeURIComponent(pathname)}&reason=session_expired`, request.url));
+      return response;
     }
   }
 
   // Admin routes - require admin role
   if (pathname.startsWith("/admin")) {
     if (!token) {
-      return NextResponse.redirect(new URL(`/login?redirect=${encodeURIComponent(pathname)}`, request.url));
+      return NextResponse.redirect(new URL(`/login?redirect=${encodeURIComponent(pathname)}&reason=session_expired`, request.url));
     }
     if (userRole !== "admin") {
       return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-  }
-
-  // App routes - require authentication
-  if (pathname.startsWith("/app")) {
-    if (!token) {
-      return NextResponse.redirect(new URL(`/login?redirect=${encodeURIComponent(pathname)}`, request.url));
-    }
-  }
-
-  // Create post - require authentication
-  if (pathname === "/create-post") {
-    if (!token) {
-      return NextResponse.redirect(new URL(`/login?redirect=${encodeURIComponent(pathname)}`, request.url));
     }
   }
 
@@ -53,7 +45,7 @@ export function middleware(request: NextRequest) {
   // Add CSP header for better security
   response.headers.set(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://identitytoolkit.googleapis.com https://firestore.googleapis.com https://firebase.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com;"
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://identitytoolkit.googleapis.com https://firestore.googleapis.com https://firebase.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com;"
   );
 
   return response;

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { AuthUser, signUp, signIn, signOutUser, resetPassword, onAuthStateChange, toAuthUser } from '../lib/auth';
+import { initializeUserProfile } from '../lib/firestore-service';
 
 interface AuthState {
   user: AuthUser | null;
@@ -31,8 +32,21 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     try {
       set({ loading: true, error: null });
       const user = await signUp({ email, password, displayName });
-      // Set auth cookie for middleware
-      document.cookie = `auth-token=${user.uid}; path=/; max-age=86400; samesite=strict`;
+      
+      // Initialize user profile in Firestore
+      await initializeUserProfile(user);
+      
+      // Set auth cookies via API route (secure, HTTP-only)
+      await fetch('/api/auth/set-cookies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+        }),
+      });
+      
       set({ user: toAuthUser(user), loading: false });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Sign up failed';
@@ -45,8 +59,18 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     try {
       set({ loading: true, error: null });
       const user = await signIn({ email, password });
-      // Set auth cookie for middleware
-      document.cookie = `auth-token=${user.uid}; path=/; max-age=86400; samesite=strict`;
+      
+      // Set auth cookies via API route (secure, HTTP-only)
+      await fetch('/api/auth/set-cookies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+        }),
+      });
+      
       set({ user: toAuthUser(user), loading: false });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Sign in failed';
@@ -59,8 +83,13 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     try {
       set({ loading: true, error: null });
       await signOutUser();
-      // Remove auth cookie
-      document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      
+      // Clear auth cookies via API route
+      await fetch('/api/auth/clear-cookies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      
       set({ user: null, loading: false });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Sign out failed';
@@ -83,7 +112,29 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
 
   initializeAuth: () => {
     set({ loading: true });
-    const unsubscribe = onAuthStateChange((user) => {
+    const unsubscribe = onAuthStateChange(async (user) => {
+      if (user) {
+        // Validate and refresh session cookies if needed
+        try {
+          await fetch('/api/auth/validate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+            }),
+          });
+        } catch (error) {
+          console.error('Session validation failed:', error);
+        }
+        
+        // Initialize user profile after a delay to ensure token is ready
+        setTimeout(() => {
+          initializeUserProfile(user).catch(console.error);
+        }, 2000);
+      }
+      
       set({ user: toAuthUser(user), loading: false });
     });
     return unsubscribe;

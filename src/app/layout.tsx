@@ -4,6 +4,8 @@ import { defaultMetadata } from "@config/seo";
 import { siteConfig } from "@config/site";
 import "./globals.css";
 import "@/lib/firebase";
+import { Toaster } from "@/components/ui/sonner";
+import { ClientLayout } from "@/components/client-layout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,12 +29,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 text-slate-100 antialiased`}
       >
-        <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.25),_transparent_55%)]">
-          <header className="sr-only">
-            <p>{siteConfig.description}</p>
-          </header>
-          {children}
-        </div>
+        <ClientLayout>
+          <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.25),_transparent_55%)]">
+            <header className="sr-only">
+              <p>{siteConfig.description}</p>
+            </header>
+            {children}
+          </div>
+          <Toaster position="top-right" />
+        </ClientLayout>
       </body>
     </html>
   );

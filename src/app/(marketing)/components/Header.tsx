@@ -25,6 +25,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../../hooks/use-auth';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const navItems = [
   { label: 'Demo', href: '#demo', isAnchor: true },
@@ -129,8 +130,11 @@ export function Header() {
               <div className="flex items-center gap-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center gap-2 hover:bg-card">
-                      <User className="w-4 h-4" />
+                    <Button  className="flex items-center gap-2 bg-none">
+                      <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarFallback>CN</AvatarFallback>
+                      </Avatar>
                       <span className="text-foreground">
                         {user.displayName || user.email?.split('@')[0] || 'User'}
                       </span>
@@ -177,12 +181,12 @@ export function Header() {
               </div>
             ) : (
               <>
-                <Link href="/login">
+                <Link href={`/login?redirect=${encodeURIComponent(pathname)}`}>
                   <Button variant="ghost" className="hover:bg-card">
                     Login
                   </Button>
                 </Link>
-                <Link href="/signup">
+                <Link href={`/signup?redirect=${encodeURIComponent(pathname)}`}>
                   <Button className="bg-primary hover:bg-primary/90">
                     Start Free Trial
                   </Button>
@@ -299,12 +303,12 @@ export function Header() {
                   </div>
                 ) : (
                   <>
-                    <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                    <Link href={`/login?redirect=${encodeURIComponent(pathname)}`} onClick={() => setIsMenuOpen(false)}>
                       <Button variant="ghost" className="justify-start hover:bg-card w-full">
                         Login
                       </Button>
                     </Link>
-                    <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
+                    <Link href={`/signup?redirect=${encodeURIComponent(pathname)}`} onClick={() => setIsMenuOpen(false)}>
                       <Button className="bg-primary hover:bg-primary/90 w-full">
                         Start Free Trial
                       </Button>

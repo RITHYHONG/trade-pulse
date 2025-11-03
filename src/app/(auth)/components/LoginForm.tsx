@@ -9,17 +9,17 @@ import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Label } from '../../../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card';
-import { Alert, AlertDescription } from '../../../components/ui/alert';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { signInSchema, SignInFormData } from '../../../lib/validations';
 import { useAuth } from '../../../hooks/use-auth';
+import { toast } from 'sonner';
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/';
-  const { signIn, loading, error, clearError } = useAuth();
+  const { signIn, loading } = useAuth();
 
   const {
     register,
@@ -31,11 +31,11 @@ export function LoginForm() {
 
   const onSubmit = async (data: SignInFormData) => {
     try {
-      clearError();
       await signIn(data.email, data.password);
+      toast.success('Successfully signed in!');
       router.push(redirect);
     } catch {
-      // Error is handled by the store
+      toast.error('Failed to sign in. Please check your credentials.');
     }
   };
 
@@ -49,12 +49,6 @@ export function LoginForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -96,7 +90,7 @@ export function LoginForm() {
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full bg-primary" disabled={loading}>
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

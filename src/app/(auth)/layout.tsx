@@ -8,7 +8,7 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen overflow-y-hidden">
       <aside className="relative hidden w-1/2 items-center justify-center overflow-hidden bg-slate-950/90 p-12 text-slate-100 lg:flex">
         <Image
           src="/images/dashboard-preview.png"
@@ -25,9 +25,9 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         </div>
       </aside>
 
-      <main className="flex w-full flex-1 items-center justify-center bg-slate-950 px-6 py-16">
+      <main className="flex w-full flex-1 items-center justify-center bg-slate-950 px-6 overflow-y-hidden">
         <div className="w-full max-w-md space-y-10">
-          <Link href="/" className="text-lg font-semibold text-slate-200 hover:text-white">
+          <Link href="/" className="text-lg font-semibold text-slate-200 hover:text-white mb-7">
             ← Back to home
           </Link>
           {children}

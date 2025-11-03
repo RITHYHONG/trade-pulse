@@ -3,10 +3,29 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
-import { Menu, X, TrendingUp, User, LogOut } from 'lucide-react';
+import { Menu, X, TrendingUp, User, LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../hooks/use-auth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './ui/alert-dialog';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const navItems = [
   // { label: 'Demo', href: '#demo', isAnchor: true },
@@ -122,30 +141,65 @@ export function HeaderMain() {
           <div className="hidden lg:flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 text-sm">
-                  <User className="w-4 h-4" />
-                  <span className="text-foreground">
-                    {user.displayName || user.email?.split('@')[0] || 'User'}
-                  </span>
-                </div>
-                <Button
-                  variant="ghost"
-                  onClick={() => signOut()}
-                  disabled={loading}
-                  className="hover:bg-card"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button  className="flex items-center gap-2 bg-none">
+                      <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarFallback>CN</AvatarFallback>
+                      </Avatar>
+                      <span className="text-foreground">
+                        {user.displayName || user.email?.split('@')[0] || 'User'}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings" className="flex items-center gap-2 cursor-pointer">
+                        <Settings className="w-4 h-4" />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <DropdownMenuItem
+                          onSelect={(e) => e.preventDefault()}
+                          className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-red-600"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Sign out
+                        </DropdownMenuItem>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            You will be redirected to the login page and will need to sign in again to access your account.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => signOut()}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Sign out
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             ) : (
               <>
-                <Link href="/login">
+                <Link href={`/login?redirect=${encodeURIComponent(pathname)}`}>
                   <Button variant="ghost" className="hover:bg-card">
                     Login
                   </Button>
                 </Link>
-                <Link href="/signup">
+                <Link href={`/signup?redirect=${encodeURIComponent(pathname)}`}>
                   <Button className="bg-primary hover:bg-primary/90">
                     Start Free Trial
                   </Button>
@@ -242,12 +296,12 @@ export function HeaderMain() {
                   </div>
                 ) : (
                   <>
-                    <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                    <Link href={`/login?redirect=${encodeURIComponent(pathname)}`} onClick={() => setIsMenuOpen(false)}>
                       <Button variant="ghost" className="justify-start hover:bg-card w-full">
                         Login
                       </Button>
                     </Link>
-                    <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
+                    <Link href={`/signup?redirect=${encodeURIComponent(pathname)}`} onClick={() => setIsMenuOpen(false)}>
                       <Button className="bg-primary hover:bg-primary/90 w-full">
                         Start Free Trial
                       </Button>

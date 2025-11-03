@@ -89,13 +89,13 @@ export function Pricing() {
               className="relative"
             >
               <Card 
-                className={`p-8 h-full relative overflow-hidden transition-all duration-300 hover:-translate-y-1 ${
+                className={`p-8 h-full relative overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col ${
                   plan.popular 
                     ? 'bg-gradient-to-br from-primary/10 to-primary/5 border-primary/30 shadow-lg shadow-primary/10' 
                     : 'bg-card/50 border-border hover:bg-card/80'
                 }`}
               >
-                {plan.popular && (
+                {/* {plan.popular && (
                   <>
                     <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-6 py-1">
                       <Zap className="w-4 h-4 mr-1" />
@@ -103,7 +103,7 @@ export function Pricing() {
                     </Badge>
                     <div className="absolute -top-4 -right-4 w-16 h-16 bg-primary/20 rounded-full blur-xl" />
                   </>
-                )}
+                )} */}
 
                 {/* Header */}
                 <div className="text-center mb-8">
@@ -119,7 +119,7 @@ export function Pricing() {
                 </div>
 
                 {/* Features */}
-                <div className="space-y-4 mb-8">
+                <div className="space-y-4 mb-8 flex-grow">
                   {plan.features.map((feature, featureIndex) => (
                     <div key={featureIndex} className="flex items-start gap-3">
                       <div className="flex-shrink-0 w-5 h-5 rounded-full bg-success/20 flex items-center justify-center mt-0.5">
@@ -140,24 +140,26 @@ export function Pricing() {
                 </div>
 
                 {/* CTA */}
-                <Button 
-                  variant={plan.ctaVariant}
-                  size="lg" 
-                  className={`w-full group ${
-                    plan.popular 
-                      ? 'bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25' 
-                      : ''
-                  }`}
-                >
-                  {plan.cta}
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <div className="mt-auto">
+                  <Button 
+                    variant={plan.ctaVariant}
+                    size="lg" 
+                    className={`w-full group ${
+                      plan.popular 
+                        ? 'bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25' 
+                        : ''
+                    }`}
+                  >
+                    {plan.cta}
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
 
-                {plan.popular && (
-                  <p className="text-center text-sm text-muted-foreground mt-4">
-                    14-day free trial • No credit card required • Cancel anytime
-                  </p>
-                )}
+                  {plan.popular && (
+                    <p className="text-center text-sm text-muted-foreground mt-4">
+                      14-day free trial • No credit card required • Cancel anytime
+                    </p>
+                  )}
+                </div>
               </Card>
             </motion.div>
           ))}

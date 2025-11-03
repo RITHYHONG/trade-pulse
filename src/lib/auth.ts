@@ -92,3 +92,8 @@ export function toAuthUser(user: User | null): AuthUser | null {
     photoURL: user.photoURL,
   };
 }
+
+// Get current Firebase user
+export function getCurrentUser(): User | null {
+  return auth.currentUser;
+}
