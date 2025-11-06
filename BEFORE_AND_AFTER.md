@@ -183,7 +183,7 @@ export function middleware(request: NextRequest) {
 |-----------|--------|-------|
 | **HTTP-only** | ❌ No (XSS vulnerable) | ✅ Yes (XSS protected) |
 | **Secure** | ❌ No (HTTP vulnerable) | ✅ Yes (HTTPS enforced in prod) |
-| **SameSite** | ⚠️ Strict (set) | ✅ Strict (verified) |
+| **SameSite** | ⚠️ Strict (set) | ✅ Strict () |
 | **Path** | ✅ "/" | ✅ "/" |
 | **Max-Age** | ⚠️ 1 day | ✅ 7 days |
 | **Server-Side Set** | ❌ No | ✅ Yes |

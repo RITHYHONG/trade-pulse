@@ -13,11 +13,6 @@ import { User as FirebaseUser, updateProfile, updatePassword, EmailAuthProvider,
 import { ref, deleteObject } from 'firebase/storage';
 import { db, auth, storage } from './firebase';
 
-// Helper function to check if user is authenticated
-function isUserAuthenticated(): boolean {
-  return auth.currentUser !== null;
-}
-
 // User profile interface for Firestore
 export interface UserProfile {
   uid: string;
@@ -47,18 +42,10 @@ export interface UserProfile {
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   try {
     console.log('Attempting to get user profile for uid:', uid);
-    
-    // Check if user is authenticated
-    if (!isUserAuthenticated()) {
-      console.log('User is not authenticated, waiting...');
-      // Wait a bit for authentication to complete
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      if (!isUserAuthenticated()) {
-        throw new Error('User must be authenticated to access profile');
-      }
-    }
-    
+
+    // Directly fetch the user document by UID. Do not rely on auth.currentUser here
+    // because callers (server API routes or clients) may pass a UID when the
+    // Firebase auth client hasn't fully populated auth.currentUser yet.
     const userDocRef: DocumentReference = doc(db, 'users', uid);
     const userDoc: DocumentSnapshot = await getDoc(userDocRef);
     
@@ -70,14 +57,15 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
     return null;
   } catch (error) {
     console.error('Error getting user profile:', error);
-    
-    // Check if it's a permission error
+
+    // Preserve permission-related error semantics so callers can detect auth issues.
     if (error instanceof Error && error.message.includes('permission')) {
       console.error('Firebase permission error - user may not be authenticated properly');
       throw new Error('Authentication required to access profile');
     }
-    
-    throw new Error('Failed to get user profile');
+
+    // Re-throw a generic failure for other errors
+    throw error instanceof Error ? error : new Error('Failed to get user profile');
   }
 }
 
@@ -140,6 +128,11 @@ export async function updateUserProfile(
 
     // Update Firestore profile
     await saveUserProfile(uid, updateData);
+    
+    // Clear profile cache
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(`user_profile_${uid}`);
+    }
   } catch (error) {
     console.error('Error updating user profile:', error);
     throw new Error('Failed to update profile');

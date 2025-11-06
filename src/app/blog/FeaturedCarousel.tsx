@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
+import { getUserProfile } from '@/lib/firestore-service';
 
 interface FeaturedCarouselProps {
   posts: BlogPost[];
@@ -14,15 +15,54 @@ interface FeaturedCarouselProps {
 
 export function FeaturedCarousel({ posts }: FeaturedCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentAuthor, setCurrentAuthor] = useState(posts[0]?.author);
+
+  // Reset currentSlide if it's out of bounds when posts change
+  useEffect(() => {
+    if (currentSlide >= posts.length && posts.length > 0) {
+      setCurrentSlide(0);
+    }
+  }, [posts.length, currentSlide]);
 
   // Auto-advance carousel every 5 seconds
   useEffect(() => {
+    if (posts.length === 0) return;
+    
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % posts.length);
     }, 5000);
 
     return () => clearInterval(timer);
   }, [posts.length]);
+
+  // Update current author when slide changes
+  useEffect(() => {
+    const currentPost = posts[currentSlide];
+    if (currentPost && currentPost.author) {
+      setCurrentAuthor(currentPost.author);
+
+      async function fetchCurrentAuthor() {
+        if (currentPost.authorId) {
+          try {
+            const profile = await getUserProfile(currentPost.authorId);
+            if (profile) {
+              setCurrentAuthor({
+                name: profile.displayName || currentPost.author.name,
+                avatar: profile.photoURL || currentPost.author.avatar,
+                avatarUrl: profile.photoURL || currentPost.author.avatarUrl,
+                bio: currentPost.author.bio,
+                role: currentPost.author.role
+              });
+            }
+          } catch (error) {
+            console.warn('Failed to fetch current author profile:', error);
+          }
+        }
+      }
+
+      fetchCurrentAuthor();
+    }
+  }, [currentSlide, posts]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % posts.length);
@@ -38,65 +78,63 @@ export function FeaturedCarousel({ posts }: FeaturedCarouselProps) {
 
   if (posts.length === 0) return null;
 
+  const currentPost = posts[currentSlide];
+  
+  // Safety check to ensure currentPost exists
+  if (!currentPost) return null;
+
   return (
     <div className="relative w-full h-[500px] rounded-2xl overflow-hidden group">
       {/* Carousel Images */}
       <div className="relative w-full h-full">
-        {posts.map((post, index) => (
-          <div
-            key={post.id}
-            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-              index === currentSlide ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <ImageWithFallback
-              src={post.featuredImage}
-              alt={post.title}
-              className="w-full h-full object-cover"
-            />
-            
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-            
-            {/* Content Overlay */}
-            <div className="absolute bottom-0 left-0 right-0 p-8">
-              {/* Featured Badge */}
-              <div className="mb-4">
-                <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 backdrop-blur-sm">
-                  ⭐ Featured
-                </Badge>
-              </div>
-              
-              {/* Category Badge */}
-              <Badge variant="secondary" className="mb-4 bg-blue-600 text-white border-0">
-                {post.category}
+        <div className="absolute inset-0">
+          <ImageWithFallback
+            src={currentPost.featuredImage || '/images/placeholder-blog.svg'}
+            alt={currentPost.title}
+            className="w-full h-full object-cover"
+          />
+          
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+          
+          {/* Content Overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-8">
+            {/* Featured Badge */}
+            <div className="mb-4">
+              <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 backdrop-blur-sm">
+                ⭐ Featured
               </Badge>
-              
-              {/* Title and Excerpt */}
-              <Link href={`/blog/${post.slug}`}>
-                <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4 leading-tight cursor-pointer hover:text-cyan-300 transition-colors">
-                  {post.title}
-                </h2>
-              </Link>
-              <p className="text-gray-200 text-lg mb-6 max-w-2xl leading-relaxed">
-                {post.excerpt}
-              </p>
-              
-              {/* Author Info */}
-              <div className="flex items-center gap-4">
-                <ImageWithFallback
-                  src={post.author.avatar}
-                  alt={post.author.name}
-                  className="w-10 h-10 rounded-full"
-                />
-                <div className="text-white">
-                  <div className="font-medium">{post.author.name}</div>
-                  <div className="text-sm text-gray-300">{post.readTime}</div>
-                </div>
+            </div>
+            
+            {/* Category Badge */}
+            <Badge variant="secondary" className="mb-4 bg-blue-600 text-white border-0">
+              {currentPost.category}
+            </Badge>
+            
+            {/* Title and Excerpt */}
+            <Link href={`/blog/${currentPost.slug}`}>
+              <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4 leading-tight cursor-pointer hover:text-cyan-300 transition-colors">
+                {currentPost.title}
+              </h2>
+            </Link>
+            <p className="text-gray-200 text-lg mb-6 max-w-2xl leading-relaxed">
+              {currentPost.excerpt}
+            </p>
+            
+            {/* Author Info */}
+            <div className="flex items-center gap-4">
+              <ImageWithFallback
+                src={currentAuthor?.avatar}
+                alt={currentAuthor?.name}
+                className="w-10 h-10 rounded-full"
+              />
+              <div className="text-white">
+                <div className="font-medium">{currentAuthor?.name}</div>
+                <div className="text-sm text-gray-300">{currentPost.readingTime || currentPost.readTime}</div>
               </div>
             </div>
           </div>
-        ))}
+        </div>
       </div>
 
       {/* Navigation Arrows */}

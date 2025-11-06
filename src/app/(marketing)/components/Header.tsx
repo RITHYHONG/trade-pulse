@@ -26,6 +26,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../../hooks/use-auth';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getUserProfile, UserProfile } from '@/lib/firestore-service';
 
 const navItems = [
   { label: 'Demo', href: '#demo', isAnchor: true },
@@ -41,7 +42,9 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [active, setActive] = useState<string>('#demo');
   const pathname = usePathname();
-  const { user, signOut, loading } = useAuth();
+  const { user, signOut } = useAuth();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  
 
   useEffect(() => {
     const ids = ['demo', 'features', 'testimonials', 'pricing'];
@@ -66,6 +69,60 @@ export function Header() {
       observer.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setUserProfile(null);
+      return;
+    }
+
+    const loadUserProfile = async () => {
+      // Check cache first (localStorage)
+      const cacheKey = `user_profile_${user.uid}`;
+      const cachedData = localStorage.getItem(cacheKey);
+      
+      if (cachedData) {
+        try {
+          const cached = JSON.parse(cachedData);
+          const cacheAge = Date.now() - cached.timestamp;
+          
+          // Use cache if less than 5 minutes old
+          if (cacheAge < 5 * 60 * 1000) {
+            setUserProfile(cached.profile);
+            // Still fetch in background to update cache
+            fetchAndCacheProfile();
+            return;
+          }
+        } catch (e) {
+          console.error('Error parsing cached profile:', e);
+        }
+      }
+      
+      // No valid cache, fetch immediately
+      await fetchAndCacheProfile();
+    };
+
+    const fetchAndCacheProfile = async () => {
+      try {
+        const profile = await getUserProfile(user.uid);
+        
+        if (profile) {
+          setUserProfile(profile);
+          
+          // Cache the profile
+          const cacheKey = `user_profile_${user.uid}`;
+          localStorage.setItem(cacheKey, JSON.stringify({
+            profile,
+            timestamp: Date.now()
+          }));
+        }
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+      }
+    };
+
+    loadUserProfile();
+  }, [user]);
 
   return (
     <motion.header 
@@ -130,10 +187,15 @@ export function Header() {
               <div className="flex items-center gap-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button  className="flex items-center gap-2 bg-none">
-                      <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>CN</AvatarFallback>
+                    <Button className="flex items-center gap-2 bg-none">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage 
+                          src={userProfile?.photoURL || user.photoURL || ''} 
+                          alt="Profile picture"
+                        />
+                        <AvatarFallback>
+                          {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
+                        </AvatarFallback>
                       </Avatar>
                       <span className="text-foreground">
                         {user.displayName || user.email?.split('@')[0] || 'User'}

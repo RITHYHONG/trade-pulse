@@ -2,13 +2,20 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BlogPost as BlogPostComponent } from '../BlogPost';
 import { blogPosts } from '@/data/blogData';
+import { getPostBySlug, getPostsByCategory, BlogPost as FirestoreBlogPost } from '@/lib/blog-firestore-service';
+import { BlogPost as UIBlogPost } from '@/types/blog';
 
 interface BlogPostPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  const post = blogPosts.find(p => p.slug === params.slug);
+  const { slug } = await params;
+  // Try Firestore first
+  const fsPost = await getPostBySlug(slug);
+  const post = fsPost
+    ? mapFirestoreToUI(fsPost)
+    : blogPosts.find(p => p.slug === slug);
   
   if (!post) {
     return {
@@ -43,16 +50,35 @@ export async function generateStaticParams() {
   }));
 }
 
-export default function BlogPostPage({ params }: BlogPostPageProps) {
-  const post = blogPosts.find(p => p.slug === params.slug);
-  
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const { slug } = await params;
+  // Prefer Firestore content; fallback to local seed data
+  const fsPost = await getPostBySlug(slug);
+  let post: UIBlogPost | undefined;
+  let relatedPosts: UIBlogPost[] = [];
+
+  if (fsPost) {
+    post = mapFirestoreToUI(fsPost);
+    // Get related by category from Firestore (best-effort)
+    if (fsPost.category) {
+      const relatedFs = await getPostsByCategory(fsPost.category, 6);
+      relatedPosts = relatedFs
+        .filter(p => p.slug !== fsPost.slug)
+        .map(mapFirestoreToUI)
+        .slice(0, 3);
+    }
+  } else {
+    post = blogPosts.find(p => p.slug === slug);
+    if (post) {
+      relatedPosts = blogPosts
+        .filter(p => p.slug !== post!.slug && p.category === post!.category)
+        .slice(0, 3);
+    }
+  }
+
   if (!post) {
     notFound();
   }
-
-  const relatedPosts = blogPosts
-    .filter(p => p.slug !== post.slug && p.category === post.category)
-    .slice(0, 3);
 
   return (
     <div className="min-h-screen bg-[#0F1116] text-white">
@@ -62,4 +88,38 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
       />
     </div>
   );
+}
+
+// Helper: map Firestore post shape to UI BlogPost
+function mapFirestoreToUI(fsp: FirestoreBlogPost): UIBlogPost {
+  const toDateString = (d: unknown): string => {
+    if (!d) return new Date().toISOString();
+    if (d instanceof Date) return d.toISOString();
+    // Firestore Timestamp
+    if (typeof (d as { toDate?: () => Date })?.toDate === 'function') {
+      return ((d as { toDate: () => Date }).toDate()).toISOString();
+    }
+    return new Date(String(d)).toISOString();
+  };
+
+  return {
+    id: fsp.id,
+    slug: fsp.slug,
+    title: fsp.title,
+    excerpt: fsp.metaDescription || (fsp.content?.substring(0, 160) ?? ''),
+    content: fsp.content ?? '',
+    publishedAt: toDateString(fsp.publishedAt),
+    updatedAt: fsp.updatedAt ? toDateString(fsp.updatedAt) : undefined,
+    readingTime: '5 min',
+    tags: fsp.tags || [],
+    featuredImage: fsp.featuredImage || '/images/placeholder-blog.svg',
+    author: {
+      name: fsp.authorName || fsp.authorEmail?.split('@')[0] || 'Anonymous',
+      avatar: fsp.authorAvatar || '/images/default-avatar.svg',
+      bio: undefined,
+    },
+    authorId: fsp.authorId,
+    category: fsp.category,
+    isFeatured: false,
+  };
 }

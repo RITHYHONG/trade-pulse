@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { BarChart3, LayoutGrid } from 'lucide-react';
 import { renderToString } from 'react-dom/server';
@@ -33,8 +33,8 @@ export default function RichTextEditor({
   className = ''
 }: RichTextEditorProps) {
 
-  // Custom toolbar configuration
-  const modules = {
+  // Memoize modules to prevent recreation on every render
+  const modules = useMemo(() => ({
     toolbar: {
       container: [
         [{ 'header': [1, 2, 3, false] }],
@@ -74,9 +74,9 @@ export default function RichTextEditor({
     clipboard: {
       matchVisual: false,
     }
-  };
+  }), []);
 
-  const formats = [
+  const formats = useMemo(() => [
     'header',
     'bold', 'italic', 'underline', 'strike',
     'blockquote', 'code-block',
@@ -89,7 +89,7 @@ export default function RichTextEditor({
     'color', 'background',
     'align',
     'link', 'image', 'video'
-  ];
+  ], []);
 
   // Add custom icons for trading tools
   useEffect(() => {
@@ -117,12 +117,13 @@ export default function RichTextEditor({
     <div className={`rich-text-editor ${className}`}>
       <ReactQuill
         theme="snow"
-        value={value}
+        value={value || ''}
         onChange={onChange}
         modules={modules}
         formats={formats}
         placeholder={placeholder}
         className="quill-editor-dark"
+        preserveWhitespace
       />
     </div>
   );

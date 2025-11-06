@@ -1,4 +1,5 @@
-import { ArrowLeft, Share2, Bookmark, ThumbsUp, Clock, Calendar } from 'lucide-react';
+"use client";
+import { ArrowLeft, Share2, Bookmark, ThumbsUp, Clock, Calendar, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BlogPost as BlogPostType } from '../../types/blog';
@@ -9,6 +10,10 @@ import { NewsletterCTA } from './NewsletterCTA';
 import { BlogCard } from './BlogCard';
 import Link from 'next/link';
 import { CustomBreadcrumb } from '@/components/navigation/Breadcrumb';
+import DOMPurify from 'isomorphic-dompurify';
+import { useEffect, useState } from 'react';
+import { getUserProfile } from '@/lib/firestore-service';
+
 
 interface BlogPostProps {
   post: BlogPostType;
@@ -16,6 +21,32 @@ interface BlogPostProps {
 }
 
 export function BlogPost({ post, relatedPosts }: BlogPostProps) {
+  const [currentAuthor, setCurrentAuthor] = useState(post.author);
+
+  useEffect(() => {
+    async function fetchCurrentAuthor() {
+      if (post.authorId) {
+        try {
+          const profile = await getUserProfile(post.authorId);
+          if (profile) {
+            setCurrentAuthor({
+              name: profile.displayName || post.author.name,
+              avatar: profile.photoURL || post.author.avatar,
+              avatarUrl: profile.photoURL || post.author.avatarUrl,
+              bio: post.author.bio,
+              role: post.author.role
+            });
+          }
+        } catch (error) {
+          console.warn('Failed to fetch current author profile:', error);
+          // Keep the original author info
+        }
+      }
+    }
+
+    fetchCurrentAuthor();
+  }, [post.authorId, post.author]);
+
   const defaultRelatedPosts = relatedPosts || blogPosts
     .filter(p => p.slug !== post.slug && (p.category === post.category || p.tags.some(tag => post.tags.includes(tag))))
     .slice(0, 3);
@@ -29,34 +60,34 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F1116]">
-      {/* Navigation Header */}
-      <div className="sticky top-0 z-50 bg-[#0F1116]/95 backdrop-blur-sm border-b border-[#2D3246]">
-        <div className="container mx-auto px-4 py-4">
-          <CustomBreadcrumb 
-            items={[
-              { label: 'Home', href: '/' },
-              { label: 'Blog', href: '/blog' },
-              { label: post.title, href: `/blog/${post.slug}` }
-            ]} 
-            className="mb-3" 
-          />
-          <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-b from-[#0A0B0F] via-[#0F1116] to-[#0A0B0F]">
+      <div className="sticky top-0 z-50 bg-[#0F1116]/80 backdrop-blur-xl border-b border-white/5">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
             <Link href="/blog">
               <Button
                 variant="ghost"
-                className="text-gray-300 hover:text-white hover:bg-[#1A1D28]"
+                className="group text-gray-400 hover:text-white transition-all duration-300 cursor-pointer"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Articles
+                <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+                <span className="hidden sm:inline">Back to Articles</span>
+                <span className="sm:hidden">Back</span>
               </Button>
             </Link>
             
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-300"
+              >
                 <Share2 className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-300"
+              >
                 <Bookmark className="w-4 h-4" />
               </Button>
             </div>
@@ -64,199 +95,297 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Article Header */}
-          <header className="mb-8">
-            <div className="mb-4">
-              <Badge variant="secondary" className="bg-blue-600 text-white border-0 mb-4">
-                {post.category}
-              </Badge>
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
-              {post.title}
-            </h1>
-            
-            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-              {post.excerpt}
-            </p>
-            
-            {/* Author and Meta Info */}
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-4">
-                <ImageWithFallback
-                  src={post.author.avatar}
-                  alt={post.author.name}
-                  className="w-12 h-12 rounded-full"
-                />
-                <div>
-                  <div className="font-semibold text-white">{post.author.name}</div>
-                  <div className="text-sm text-gray-400">{post.author.bio}</div>
-                </div>
+      {/* Hero Section - Clean & Organized */}
+      <div className="relative">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent pointer-events-none" />
+        
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+          <div className="max-w-4xl mx-auto">
+            {/* Breadcrumb - Simplified */}
+            <CustomBreadcrumb 
+              items={[
+                { label: 'Home', href: '/' },
+                { label: 'Blog', href: '/blog' },
+                { label: post.title, href: `/blog/${post.slug}` }
+              ]} 
+              className="mb-6" 
+            />
+
+            {/* Article Header */}
+            <header className="space-y-6">
+              {/* Category Badge - Standalone */}
+              <div>
+                <Badge 
+                  variant="secondary" 
+                  className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white border-0 px-4 py-1.5 text-sm font-medium shadow-lg shadow-cyan-500/20"
+                >
+                  {post.category}
+                </Badge>
+                {/* <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex items-center gap-1.5">
+                    <Eye className="w-4 h-4" />
+                    <span>2.3k views</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <TrendingUp className="w-4 h-4" />
+                    <span>Trending</span>
+                  </div>
+                </div> */}
               </div>
               
-              <div className="flex items-center gap-6 text-sm text-gray-400">
-                <div className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  {formatDate(post.publishedAt)}
+              {/* Title */}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
+                {post.title}
+              </h1>
+              
+              {/* Excerpt */}
+              <p className="text-lg sm:text-xl text-gray-400 leading-relaxed">
+                {post.excerpt}
+              </p>
+              
+              {/* Author and Meta Info - Cleaner Layout */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-6 pb-8 border-b border-white/5">
+                <div className="flex items-center gap-4">
+                  <div className="relative flex-shrink-0">
+                    <div className="absolute -inset-0.5 from-cyan-500 to-blue-500 rounded-full opacity-75 blur"></div>
+                    <ImageWithFallback
+                      src={currentAuthor.avatar}
+                      alt={currentAuthor.name}
+                      className="relative w-12 h-12 rounded-full ring-2 ring-[#0F1116]"
+                    />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-white">{currentAuthor.name}</div>
+                    <div className="text-sm text-gray-500">{currentAuthor.bio || 'Market Analyst'}</div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  {post.readingTime}
+                
+                <div className="flex items-center gap-6 text-sm text-gray-400">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-gray-500" />
+                    <span>{formatDate(post.publishedAt)}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-gray-500" />
+                    <span>{post.readingTime}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Featured Image */}
-            <div className="aspect-[16/9] rounded-2xl overflow-hidden mb-8">
-              <ImageWithFallback
-                src={post.featuredImage}
-                alt={post.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </header>
+            </header>
 
+            {/* Featured Image - Cleaner Style */}
+            <div className="relative my-10 group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-2xl opacity-10 group-hover:opacity-20 blur transition duration-300"></div>
+              <div className="relative aspect-[16/9] rounded-xl overflow-hidden ring-1 ring-white/10">
+                <ImageWithFallback
+                  src={post.featuredImage}
+                  alt={post.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="max-w-4xl mx-auto">
+          
           {/* First Ad Placement */}
-          <div className="mb-8 flex justify-center">
+          <div className="mb-12 flex justify-center">
             <AdPlaceholder type="rectangle" />
           </div>
 
-          {/* Article Content */}
+          {/* Article Content - Premium Typography */}
           <article className="prose prose-lg prose-invert max-w-none">
-            <div className="text-gray-300 leading-relaxed space-y-6">
-              {post.content.split('\n\n').map((paragraph, index) => {
-                if (paragraph.startsWith('# ')) {
+            {isLikelyHtml(post.content) ? (
+              <div
+                className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-gray-300 prose-a:text-cyan-400 hover:prose-a:text-cyan-300"
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
+              />
+            ) : (
+              <div className="text-gray-300 leading-relaxed space-y-8">
+                {post.content.split('\n\n').map((paragraph, index) => {
+                  if (paragraph.startsWith('# ')) {
+                    return (
+                      <h1 key={index} className="text-4xl font-bold text-white mt-16 mb-8 tracking-tight">
+                        {paragraph.replace('# ', '')}
+                      </h1>
+                    );
+                  }
+                  if (paragraph.startsWith('## ')) {
+                    return (
+                      <h2 key={index} className="relative text-3xl font-bold text-white mt-12 mb-6 pl-6">
+                        <span className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-500 to-blue-500 rounded-full"></span>
+                        {paragraph.replace('## ', '')}
+                      </h2>
+                    );
+                  }
+                  if (paragraph.startsWith('### ')) {
+                    return (
+                      <h3 key={index} className="text-2xl font-semibold text-white mt-10 mb-4">
+                        {paragraph.replace('### ', '')}
+                      </h3>
+                    );
+                  }
+                  if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
+                    return (
+                      <div key={index} className="relative my-8 overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl"></div>
+                        <div className="relative border border-cyan-500/20 rounded-xl p-6 backdrop-blur-sm">
+                          <div className="flex items-start gap-3">
+                            <div className="mt-1 p-2 bg-cyan-500/20 rounded-lg">
+                              <TrendingUp className="w-5 h-5 text-cyan-400" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-cyan-300 mb-2 text-lg">Key Takeaway</h4>
+                              <p className="text-gray-300 leading-relaxed">{paragraph.replace(/\*\*/g, '')}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  if (paragraph.includes('- ')) {
+                    const items = paragraph.split('\n').filter(item => item.trim().startsWith('- '));
+                    return (
+                      <ul key={index} className="space-y-3 ml-6 my-6">
+                        {items.map((item, itemIndex) => (
+                          <li key={itemIndex} className="text-gray-300 leading-relaxed relative pl-4 before:content-[''] before:absolute before:left-0 before:top-[0.6em] before:w-1.5 before:h-1.5 before:bg-cyan-500 before:rounded-full">
+                            {item.replace('- ', '')}
+                          </li>
+                        ))}
+                      </ul>
+                    );
+                  }
                   return (
-                    <h1 key={index} className="text-3xl font-bold text-white mt-12 mb-6">
-                      {paragraph.replace('# ', '')}
-                    </h1>
+                    <p key={index} className="text-gray-300 leading-relaxed text-lg">
+                      {paragraph}
+                    </p>
                   );
-                }
-                if (paragraph.startsWith('## ')) {
-                  return (
-                    <h2 key={index} className="text-2xl font-semibold text-white mt-10 mb-4 border-l-4 border-cyan-500 pl-4">
-                      {paragraph.replace('## ', '')}
-                    </h2>
-                  );
-                }
-                if (paragraph.startsWith('### ')) {
-                  return (
-                    <h3 key={index} className="text-xl font-semibold text-white mt-8 mb-3">
-                      {paragraph.replace('### ', '')}
-                    </h3>
-                  );
-                }
-                if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-                  return (
-                    <div key={index} className="bg-cyan-500/10 border border-cyan-500/20 rounded-lg p-6 my-6">
-                      <h4 className="font-semibold text-cyan-300 mb-2">Key Takeaway</h4>
-                      <p className="text-gray-300">{paragraph.replace(/\*\*/g, '')}</p>
-                    </div>
-                  );
-                }
-                if (paragraph.includes('- ')) {
-                  const items = paragraph.split('\n').filter(item => item.trim().startsWith('- '));
-                  return (
-                    <ul key={index} className="space-y-2 ml-4">
-                      {items.map((item, itemIndex) => (
-                        <li key={itemIndex} className="text-gray-300">
-                          {item.replace('- ', '')}
-                        </li>
-                      ))}
-                    </ul>
-                  );
-                }
-                return (
-                  <p key={index} className="text-gray-300 leading-relaxed">
-                    {paragraph}
-                  </p>
-                );
-              })}
-            </div>
+                })}
+              </div>
+            )}
           </article>
 
           {/* Mid-Article Ad */}
-          <div className="my-12 flex justify-center">
+          <div className="my-16 flex justify-center">
             <AdPlaceholder type="banner" />
           </div>
 
-          {/* Article Footer */}
-          <footer className="mt-12 pt-8 border-t border-[#2D3246]">
-            {/* Tags */}
+          {/* Article Footer - Modern Design */}
+          <footer className="mt-16 space-y-12">
+            {/* Tags Section */}
             {post.tags && post.tags.length > 0 && (
-              <div className="mb-8">
-                <h4 className="text-lg font-semibold text-white mb-4">Tags</h4>
-                <div className="flex flex-wrap gap-2">
+              <div className="pt-8 border-t border-white/5">
+                <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Topics</h4>
+                <div className="flex flex-wrap gap-3">
                   {post.tags.map((tag) => (
                     <Badge 
                       key={tag} 
                       variant="outline" 
-                      className="text-gray-400 border-[#2D3246] hover:border-cyan-500/30"
+                      className="text-gray-400 bg-white/5 border-white/10 hover:border-cyan-500/50 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-300 px-4 py-1.5"
                     >
-                      {tag}
+                      #{tag}
                     </Badge>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Engagement Actions */}
-            <div className="flex items-center justify-between py-6 border-y border-[#2D3246] mb-8">
-              <div className="flex items-center gap-4">
-                <Button variant="outline" className="border-[#2D3246] text-gray-300 hover:text-white hover:border-cyan-500">
-                  <ThumbsUp className="w-4 h-4 mr-2" />
-                  Helpful
-                </Button>
-                <Button variant="outline" className="border-[#2D3246] text-gray-300 hover:text-white hover:border-cyan-500">
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Share Article
+            {/* Engagement Actions - Glassmorphism Style */}
+            <div className="relative overflow-hidden rounded-2xl">
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5"></div>
+              <div className="relative flex flex-col sm:flex-row items-center justify-between gap-4 p-6 border border-white/5 backdrop-blur-sm">
+                <div className="flex items-center gap-3">
+                  <Button 
+                    variant="outline" 
+                    className="border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
+                  >
+                    <ThumbsUp className="w-4 h-4 mr-2" />
+                    <span className="hidden sm:inline">Found this helpful</span>
+                    <span className="sm:hidden">Helpful</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Share
+                  </Button>
+                </div>
+                
+                <Button 
+                  variant="outline" 
+                  className="border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
+                >
+                  <Bookmark className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">Save for Later</span>
+                  <span className="sm:hidden">Save</span>
                 </Button>
               </div>
-              
-              <Button variant="outline" className="border-[#2D3246] text-gray-300 hover:text-white hover:border-cyan-500">
-                <Bookmark className="w-4 h-4 mr-2" />
-                Save for Later
-              </Button>
             </div>
 
-            {/* Author Bio */}
-            <div className="bg-[#1A1D28] border border-[#2D3246] rounded-xl p-6 mb-8">
-              <div className="flex items-start gap-4">
-                <ImageWithFallback
-                  src={post.author.avatar}
-                  alt={post.author.name}
-                  className="w-16 h-16 rounded-full"
-                />
-                <div className="flex-1">
-                  <h4 className="text-xl font-semibold text-white mb-2">
-                    About {post.author.name}
-                  </h4>
-                  <p className="text-gray-400 mb-4 leading-relaxed">
-                    {post.author.bio}
-                  </p>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="border-[#2D3246] text-gray-300 hover:text-white">
-                      Follow
-                    </Button>
-                    <Button variant="outline" size="sm" className="border-[#2D3246] text-gray-300 hover:text-white">
-                      More Articles
-                    </Button>
+            {/* Author Bio - Premium Card */}
+            <div className="relative overflow-hidden rounded-2xl group">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-purple-500/10 opacity-50"></div>
+              <div className="relative border border-white/10 backdrop-blur-sm p-8">
+                <div className="flex flex-col sm:flex-row items-start gap-6">
+                  <div className="relative flex-shrink-0">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full opacity-75 blur group-hover:opacity-100 transition duration-300"></div>
+                    <ImageWithFallback
+                      src={currentAuthor.avatar}
+                      alt={currentAuthor.name}
+                      className="relative w-20 h-20 rounded-full ring-2 ring-[#0F1116]"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-2xl font-bold text-white mb-3">
+                      About {post.author.name}
+                    </h4>
+                    <p className="text-gray-400 mb-6 leading-relaxed">
+                      {post.author.bio || 'Experienced market analyst and trading expert, providing insights and strategies to help traders navigate the financial markets.'}
+                    </p>
+                    <div className="flex gap-3">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-cyan-500/50 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 hover:border-cyan-400 transition-all duration-300"
+                      >
+                        Follow
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="border-white/10 bg-white/5 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300"
+                      >
+                        More Articles
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Newsletter CTA */}
-            <div className="mb-12">
+            <div>
               <NewsletterCTA />
             </div>
 
-            {/* Related Posts */}
+            {/* Related Posts - Grid Layout */}
             {defaultRelatedPosts.length > 0 && (
-              <section>
-                <h3 className="text-2xl font-semibold text-white mb-8">Related Articles</h3>
+              <section className="pt-8">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-3xl font-bold text-white">Continue Reading</h3>
+                  <Link 
+                    href="/blog"
+                    className="text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors duration-300"
+                  >
+                    View all articles →
+                  </Link>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {defaultRelatedPosts.map((relatedPost) => (
                     <BlogCard 
@@ -272,4 +401,9 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
       </div>
     </div>
   );
+}
+
+function isLikelyHtml(content: string): boolean {
+  // quick heuristic: any tag-like structure will trigger HTML rendering
+  return /<\s*\w+[^>]*>/.test(content) || /&[a-zA-Z]+;/.test(content);
 }

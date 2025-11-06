@@ -21,7 +21,7 @@ interface AuthActions {
 
 export const useAuthStore = create<AuthState & AuthActions>((set) => ({
   user: null,
-  loading: true,
+  loading: false, // Changed from true to false for faster initial render
   error: null,
 
   setUser: (user) => set({ user }),
@@ -111,18 +111,42 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
   },
 
   initializeAuth: () => {
+    // Check if we have cached auth state
+    const cachedAuthState = localStorage.getItem('auth_state');
+    if (cachedAuthState) {
+      try {
+        const cached = JSON.parse(cachedAuthState);
+        const cacheAge = Date.now() - cached.timestamp;
+        
+        // Use cache if less than 1 minute old
+        if (cacheAge < 60 * 1000 && cached.user) {
+          set({ user: cached.user, loading: false });
+        }
+      } catch (e) {
+        console.error('Error parsing cached auth state:', e);
+      }
+    }
+
     set({ loading: true });
     const unsubscribe = onAuthStateChange(async (user) => {
-      if (user) {
+      const authUser = toAuthUser(user);
+      
+      // Cache the auth state
+      if (authUser) {
+        localStorage.setItem('auth_state', JSON.stringify({
+          user: authUser,
+          timestamp: Date.now()
+        }));
+        
         // Validate and refresh session cookies if needed
         try {
           await fetch('/api/auth/validate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              uid: user.uid,
-              email: user.email,
-              displayName: user.displayName,
+              uid: user!.uid,
+              email: user!.email,
+              displayName: user!.displayName,
             }),
           });
         } catch (error) {
@@ -131,11 +155,14 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
         
         // Initialize user profile after a delay to ensure token is ready
         setTimeout(() => {
-          initializeUserProfile(user).catch(console.error);
+          initializeUserProfile(user!).catch(console.error);
         }, 2000);
+      } else {
+        // Clear cache when signed out
+        localStorage.removeItem('auth_state');
       }
       
-      set({ user: toAuthUser(user), loading: false });
+      set({ user: authUser, loading: false });
     });
     return unsubscribe;
   },

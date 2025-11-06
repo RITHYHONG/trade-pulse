@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from './ui/button';
-import { Menu, X, TrendingUp, User, LogOut, Settings } from 'lucide-react';
+import { Menu, X, TrendingUp, User, LogOut, Settings, Search } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../hooks/use-auth';
@@ -26,6 +26,8 @@ import {
   AlertDialogTrigger,
 } from './ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getUserProfile, UserProfile } from '@/lib/firestore-service';
+import { SearchModal } from './SearchModal';
 
 const navItems = [
   // { label: 'Demo', href: '#demo', isAnchor: true },
@@ -34,15 +36,17 @@ const navItems = [
   // { label: 'Pricing', href: '/pricing', isAnchor: false },
   { label: 'Blog', href: '/blog', isAnchor: false },
   { label: 'Calendar', href: '/calendar', isAnchor: false, isComingSoon: true },
-  { label: 'About', href: '/about', isAnchor: false, isComingSoon: true },
+  { label: 'About', href: '/about', isAnchor: false },
   { label: 'Contact', href: '/contact', isAnchor: false, isComingSoon: true },
 ];
 
 export function HeaderMain() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [active, setActive] = useState<string>('#demo');
   const pathname = usePathname();
   const { user, signOut, loading } = useAuth();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     const ids = ['demo', 'features', 'testimonials', 'pricing'];
@@ -66,6 +70,73 @@ export function HeaderMain() {
     return () => {
       observer.disconnect();
     };
+  }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setUserProfile(null);
+      return;
+    }
+
+    const loadUserProfile = async () => {
+      // Check cache first (localStorage)
+      const cacheKey = `user_profile_${user.uid}`;
+      const cachedData = localStorage.getItem(cacheKey);
+      
+      if (cachedData) {
+        try {
+          const cached = JSON.parse(cachedData);
+          const cacheAge = Date.now() - cached.timestamp;
+          
+          // Use cache if less than 5 minutes old
+          if (cacheAge < 5 * 60 * 1000) {
+            setUserProfile(cached.profile);
+            // Still fetch in background to update cache
+            fetchAndCacheProfile();
+            return;
+          }
+        } catch (e) {
+          console.error('Error parsing cached profile:', e);
+        }
+      }
+      
+      // No valid cache, fetch immediately
+      await fetchAndCacheProfile();
+    };
+
+    const fetchAndCacheProfile = async () => {
+      try {
+        const profile = await getUserProfile(user.uid);
+        
+        if (profile) {
+          setUserProfile(profile);
+          
+          // Cache the profile
+          const cacheKey = `user_profile_${user.uid}`;
+          localStorage.setItem(cacheKey, JSON.stringify({
+            profile,
+            timestamp: Date.now()
+          }));
+        }
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+      }
+    };
+
+    loadUserProfile();
+  }, [user]);
+
+  // Keyboard shortcut for search (Cmd+K / Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.key === '/')) {
+        event.preventDefault();
+        setIsSearchOpen(true);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   return (
@@ -139,14 +210,32 @@ export function HeaderMain() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsSearchOpen(true)}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <Search className="w-4 h-4" />
+              <span>Search</span>
+              <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </Button>
+            
             {user ? (
               <div className="flex items-center gap-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button  className="flex items-center gap-2 bg-none">
-                      <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>CN</AvatarFallback>
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage 
+                          src={userProfile?.photoURL || user.photoURL || ''} 
+                          alt="Profile picture"
+                        />
+                        <AvatarFallback>
+                          {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
+                        </AvatarFallback>
                       </Avatar>
                       <span className="text-foreground">
                         {user.displayName || user.email?.split('@')[0] || 'User'}
@@ -228,6 +317,18 @@ export function HeaderMain() {
           >
             <div className="container mx-auto px-8 py-6">
               <nav className="flex flex-col gap-4 mb-6">
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setIsSearchOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 justify-start text-muted-foreground hover:text-foreground"
+                >
+                  <Search className="w-4 h-4" />
+                  <span>Search</span>
+                </Button>
+                
                 {navItems.map((item, index) => {
                   const isActive = pathname === item.href || (item.isAnchor && active === item.href);
                   
@@ -313,6 +414,12 @@ export function HeaderMain() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Search Modal */}
+      <SearchModal 
+        isOpen={isSearchOpen} 
+        onClose={() => setIsSearchOpen(false)} 
+      />
     </motion.header>
   );
 }

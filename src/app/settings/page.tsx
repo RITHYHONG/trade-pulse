@@ -526,9 +526,9 @@ export default function SettingsPage() {
                             {userProfile?.displayName || user.displayName || 'User'}
                           </h2>
                           <p className="text-slate-400">{userProfile?.email || user.email}</p>
-                          {userProfile?.bio && (
+                          {/* {userProfile?.bio && (
                             <p className="text-slate-300 text-sm mt-1">{userProfile.bio}</p>
-                          )}
+                          )} */}
                           <div className="flex items-center gap-2 mt-2">
                             <Badge variant="secondary" className="bg-green-500/10 text-green-400">
                               <CheckCircle className="w-3 h-3 mr-1" />

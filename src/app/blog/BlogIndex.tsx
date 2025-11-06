@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { FeaturedCarousel } from './FeaturedCarousel';
 import { CategoryFilter } from './CategoryFilter';
 import { BlogCard } from './BlogCard';
@@ -9,19 +9,79 @@ import { AdPlaceholder } from './AdPlaceholder';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, PenSquare } from 'lucide-react';
 import { BlogPost, BlogItem } from '../../types/blog';
-import { blogPosts } from '../../data/blogData';
+import { getPublishedPosts, getFeaturedPosts, BlogPost as FirestoreBlogPost } from '@/lib/blog-firestore-service';
 import Link from 'next/link';
 import { CustomBreadcrumb } from '@/components/navigation/Breadcrumb';
 import { Footer } from '../(marketing)/components/Footer';
 
 interface BlogIndexProps {
-  posts?: BlogPost[];
+  initialPosts?: BlogPost[];
 }
 
-export function BlogIndex({ posts = blogPosts }: BlogIndexProps) {
+// Helper function to convert Firestore post to UI BlogPost
+function mapFirestorePostToUIPost(firestorePost: FirestoreBlogPost): BlogPost {
+  // Handle Timestamp or Date conversion
+  const getDateString = (dateField: Date | FirestoreBlogPost['publishedAt']): string => {
+    if (!dateField) return new Date().toISOString();
+    if (dateField instanceof Date) return dateField.toISOString();
+    // Handle non-Date object (timestamp, etc.) - convert to string first
+    return new Date(String(dateField)).toISOString();
+  };
+
+  return {
+    id: firestorePost.id,
+    slug: firestorePost.slug,
+    title: firestorePost.title,
+    excerpt: firestorePost.metaDescription || firestorePost.content.substring(0, 160),
+    content: firestorePost.content,
+    publishedAt: getDateString(firestorePost.publishedAt),
+    updatedAt: firestorePost.updatedAt ? getDateString(firestorePost.updatedAt) : undefined,
+    readingTime: '5 min read', // You can calculate this based on content length
+    tags: firestorePost.tags,
+    featuredImage: firestorePost.featuredImage || '/images/placeholder-blog.svg',
+    author: {
+      name: firestorePost.authorName || firestorePost.authorEmail?.split('@')[0] || 'Anonymous',
+      avatarUrl: firestorePost.authorAvatar || '/images/default-avatar.svg',
+      avatar: firestorePost.authorAvatar || '/images/default-avatar.svg'
+    },
+    authorId: firestorePost.authorId,
+    category: firestorePost.category,
+    isFeatured: false // You can add this field to Firestore if needed
+  };
+}
+
+export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
   const [activeCategory, setActiveCategory] = useState('All Posts');
   const [currentPage, setCurrentPage] = useState(1);
+  const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
+  const [featuredPosts, setFeaturedPosts] = useState<BlogPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const postsPerPage = 9;
+
+  // Fetch posts from Firestore on mount
+  useEffect(() => {
+    async function fetchPosts() {
+      setIsLoading(true);
+      try {
+        const [allPosts, featured] = await Promise.all([
+          getPublishedPosts(),
+          getFeaturedPosts(5)
+        ]);
+
+        const mappedPosts = allPosts.map(mapFirestorePostToUIPost);
+        const mappedFeatured = featured.map(mapFirestorePostToUIPost);
+
+        setPosts(mappedPosts);
+        setFeaturedPosts(mappedFeatured);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchPosts();
+  }, []);
 
   // Filter posts based on active category
   const filteredPosts = useMemo(() => {
@@ -30,9 +90,6 @@ export function BlogIndex({ posts = blogPosts }: BlogIndexProps) {
     }
     return posts.filter(post => post.category === activeCategory);
   }, [activeCategory, posts]);
-
-  // Get featured posts for carousel
-  const featuredPosts = blogPosts.filter(post => post.isFeatured);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
@@ -110,70 +167,93 @@ export function BlogIndex({ posts = blogPosts }: BlogIndexProps) {
         <div className="flex gap-8">
           {/* Main Content Grid */}
           <main className="flex-1">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {postsWithAds.map((item) => {
-                if ('type' in item && item.type === 'ad') {
-                  return (
-                    <div key={item.id} className="md:col-span-2 lg:col-span-3">
-                      <AdPlaceholder type="native" className="mb-6" />
-                    </div>
-                  );
-                }
-                const post = item as BlogPost;
-                return (
-                  <BlogCard 
-                    key={post.slug} 
-                    post={post} 
-                  />
-                );
-              })}
-            </div>
-
-            {/* Newsletter CTA */}
-            <div className="mb-12">
-              <NewsletterCTA />
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-4">
-                <Button
-                  variant="outline"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="border-[#2D3246] text-gray-300 hover:text-white disabled:opacity-50"
-                >
-                  <ChevronLeft className="w-4 h-4 mr-2" />
-                  Previous
-                </Button>
-
-                <div className="flex gap-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      onClick={() => handlePageChange(page)}
-                      className={
-                        currentPage === page
-                          ? "bg-cyan-500 text-black hover:bg-cyan-600"
-                          : "border-[#2D3246] text-gray-300 hover:text-white hover:border-cyan-500"
-                      }
-                    >
-                      {page}
+            {isLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="text-center">
+                  <div className="w-12 h-12 border-4 border-[#00F5FF] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-gray-400">Loading posts...</p>
+                </div>
+              </div>
+            ) : posts.length === 0 ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="text-center">
+                  <p className="text-xl text-gray-400 mb-4">No posts published yet</p>
+                  <Link href="/create-post">
+                    <Button className="bg-[#00F5FF] text-black hover:bg-[#00F5FF]/90">
+                      <PenSquare className="mr-2 h-4 w-4" />
+                      Create First Post
                     </Button>
-                  ))}
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
+                  {postsWithAds.map((item) => {
+                    if ('type' in item && item.type === 'ad') {
+                      return (
+                        <div key={item.id} className="md:col-span-2 lg:col-span-3">
+                          <AdPlaceholder type="native" className="mb-6" />
+                        </div>
+                      );
+                    }
+                    const post = item as BlogPost;
+                    return (
+                      <BlogCard 
+                        key={post.slug} 
+                        post={post} 
+                      />
+                    );
+                  })}
                 </div>
 
-                <Button
-                  variant="outline"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="border-[#2D3246] text-gray-300 hover:text-white disabled:opacity-50"
-                >
-                  Next
-                  <ChevronRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
+                {/* Newsletter CTA */}
+                <div className="mb-12">
+                  <NewsletterCTA />
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="border-[#2D3246] text-gray-300 hover:text-white disabled:opacity-50"
+                    >
+                      <ChevronLeft className="w-4 h-4 mr-2" />
+                      Previous
+                    </Button>
+
+                    <div className="flex gap-2">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "outline"}
+                          onClick={() => handlePageChange(page)}
+                          className={
+                            currentPage === page
+                              ? "bg-cyan-500 text-black hover:bg-cyan-600"
+                              : "border-[#2D3246] text-gray-300 hover:text-white hover:border-cyan-500"
+                          }
+                        >
+                          {page}
+                        </Button>
+                      ))}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="border-[#2D3246] text-gray-300 hover:text-white disabled:opacity-50"
+                    >
+                      Next
+                      <ChevronRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </main>
 

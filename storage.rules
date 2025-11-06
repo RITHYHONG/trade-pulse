@@ -10,6 +10,13 @@ service firebase.storage {
       allow delete: if request.auth != null && request.auth.uid == userId;
     }
     
+    // Blog post images - authenticated users can upload
+    match /blog-images/{allPaths=**} {
+      allow read: if true; // Public read access to blog images
+      allow write: if request.auth != null; // Authenticated users can upload blog images
+      allow delete: if request.auth != null;
+    }
+    
     // Deny all other access by default
     match /{allPaths=**} {
       allow read, write: if false;

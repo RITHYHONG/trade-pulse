@@ -22,7 +22,7 @@
 .quill-editor-dark .ql-editor {
   color: #D1D5DB;
   line-height: 1.75;
-  padding: 24px;
+  padding: 1rem;
 }
 
 .quill-editor-dark .ql-editor.ql-blank::before {

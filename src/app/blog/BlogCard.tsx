@@ -1,13 +1,43 @@
+"use client";
+
 import { Badge } from '@/components/ui/badge';
 import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { getUserProfile } from '@/lib/firestore-service';
 
 interface BlogCardProps {
   post: BlogPost;
 }
 
 export function BlogCard({ post }: BlogCardProps) {
+  const [currentAuthor, setCurrentAuthor] = useState(post.author);
+
+  useEffect(() => {
+    async function fetchCurrentAuthor() {
+      if (post.authorId) {
+        try {
+          const profile = await getUserProfile(post.authorId);
+          if (profile) {
+            setCurrentAuthor({
+              name: profile.displayName || post.author.name,
+              avatar: profile.photoURL || post.author.avatar,
+              avatarUrl: profile.photoURL || post.author.avatarUrl,
+              bio: post.author.bio,
+              role: post.author.role
+            });
+          }
+        } catch (error) {
+          console.warn('Failed to fetch current author profile:', error);
+          // Keep the original author info
+        }
+      }
+    }
+
+    fetchCurrentAuthor();
+  }, [post.authorId, post.author]);
+
   return (
     <Link href={`/blog/${post.slug}`}>
       <article 
@@ -58,12 +88,12 @@ export function BlogCard({ post }: BlogCardProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <ImageWithFallback
-                src={post.author.avatar}
-                alt={post.author.name}
+                src={currentAuthor.avatar}
+                alt={currentAuthor.name}
                 className="w-8 h-8 rounded-full"
               />
               <div>
-                <div className="text-sm font-medium text-white">{post.author.name}</div>
+                <div className="text-sm font-medium text-white">{currentAuthor.name}</div>
                 <div className="text-xs text-gray-500">{post.publishDate}</div>
               </div>
             </div>

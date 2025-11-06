@@ -21,6 +21,7 @@ export interface BlogPost {
 	coverImage?: string;
 	featuredImage?: string;
 	author: BlogAuthor;
+	authorId?: string;
 	category?: string;
 	isFeatured?: boolean;
 }
