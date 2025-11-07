@@ -157,7 +157,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   </div>
                   <div>
                     <div className="font-semibold text-white">{currentAuthor.name}</div>
-                    <div className="text-sm text-gray-500">{currentAuthor.bio || 'Market Analyst'}</div>
+                    {/* <div className="text-sm text-gray-500">{currentAuthor.bio || 'Market Analyst'}</div> */}
                   </div>
                 </div>
                 
@@ -342,20 +342,20 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                     />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-2xl font-bold text-white mb-3">
-                      About {post.author.name}
+                    <h4 className="text-2xl font-bold text-zinc-300 mb-3">
+                      About <span className='text-amber-50'>{currentAuthor.name}</span>
                     </h4>
                     <p className="text-gray-400 mb-6 leading-relaxed">
-                      {post.author.bio || 'Experienced market analyst and trading expert, providing insights and strategies to help traders navigate the financial markets.'}
+                      {currentAuthor.bio || 'Experienced market analyst and trading expert, providing insights and strategies to help traders navigate the financial markets.'}
                     </p>
                     <div className="flex gap-3">
-                      <Button 
+                      {/* <Button 
                         variant="outline" 
                         size="sm" 
                         className="border-cyan-500/50 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 hover:border-cyan-400 transition-all duration-300"
                       >
                         Follow
-                      </Button>
+                      </Button> */}
                       <Button 
                         variant="outline" 
                         size="sm" 
@@ -378,7 +378,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
             {defaultRelatedPosts.length > 0 && (
               <section className="pt-8">
                 <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-3xl font-bold text-white">Continue Reading</h3>
+                  <h3 className="text-3xl font-bold text-white">Related Articles</h3>
                   <Link 
                     href="/blog"
                     className="text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors duration-300"

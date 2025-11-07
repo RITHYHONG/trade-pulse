@@ -244,7 +244,7 @@ export function Header() {
             ) : (
               <>
                 <Link href={`/login?redirect=${encodeURIComponent(pathname)}`}>
-                  <Button variant="ghost" className="hover:bg-card">
+                  <Button variant="ghost" className="hover:bg-primary/90">
                     Login
                   </Button>
                 </Link>

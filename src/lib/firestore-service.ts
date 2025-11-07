@@ -201,6 +201,14 @@ export async function initializeUserProfile(
 ): Promise<void> {
   try {
     console.log('Initializing user profile for:', user.uid);
+    console.log('User data from Firebase:', {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+      providerId: user.providerId,
+      providerData: user.providerData
+    });
     
     // Add a small delay to ensure authentication is fully processed
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -209,11 +217,24 @@ export async function initializeUserProfile(
     
     if (!existingProfile) {
       console.log('Creating new user profile');
+      
+      // For Google users, try to get more complete profile data
+      let displayName = user.displayName || '';
+      let photoURL = user.photoURL || '';
+      
+      // If user signed in with Google, get additional profile data
+      const googleProvider = user.providerData.find(provider => provider.providerId === 'google.com');
+      if (googleProvider) {
+        console.log('Google provider data:', googleProvider);
+        displayName = googleProvider.displayName || displayName;
+        photoURL = googleProvider.photoURL || photoURL;
+      }
+      
       const initialProfile: Partial<UserProfile> = {
         uid: user.uid,
-        displayName: user.displayName || '',
+        displayName,
         email: user.email || '',
-        photoURL: user.photoURL || '',
+        photoURL,
         preferences: {
           theme: 'dark',
           language: 'en',
@@ -231,9 +252,30 @@ export async function initializeUserProfile(
       };
 
       await saveUserProfile(user.uid, initialProfile, true);
-      console.log('User profile created successfully');
+      console.log('User profile created successfully with data:', initialProfile);
     } else {
-      console.log('User profile already exists');
+      console.log('User profile already exists:', existingProfile);
+      
+      // Update existing profile with any new Google data
+      const googleProvider = user.providerData.find(provider => provider.providerId === 'google.com');
+      if (googleProvider) {
+        const updateData: Partial<UserProfile> = {};
+        
+        // Update display name if it's empty or different
+        if (!existingProfile.displayName && googleProvider.displayName) {
+          updateData.displayName = googleProvider.displayName;
+        }
+        
+        // Update photo URL if it's empty or different
+        if (!existingProfile.photoURL && googleProvider.photoURL) {
+          updateData.photoURL = googleProvider.photoURL;
+        }
+        
+        if (Object.keys(updateData).length > 0) {
+          console.log('Updating existing profile with Google data:', updateData);
+          await saveUserProfile(user.uid, updateData, false);
+        }
+      }
     }
   } catch (error) {
     console.error('Error initializing user profile:', error);
