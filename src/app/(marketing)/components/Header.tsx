@@ -34,7 +34,7 @@ const navItems = [
   { label: 'Testimonials', href: '#testimonials', isAnchor: true },
   { label: 'Pricing', href: '/pricing', isAnchor: false },
   { label: 'Blog', href: '/blog', isAnchor: false },
-  { label: 'About', href: '/about', isAnchor: false },
+  // { label: 'About', href: '/about', isAnchor: false },
   { label: 'Contact', href: '/contact', isAnchor: false },
 ];
 

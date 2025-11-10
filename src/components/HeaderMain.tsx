@@ -36,7 +36,7 @@ const navItems = [
   // { label: 'Pricing', href: '/pricing', isAnchor: false },
   { label: 'Blog', href: '/blog', isAnchor: false },
   { label: 'Calendar', href: '/calendar', isAnchor: false, isComingSoon: true },
-  { label: 'About', href: '/about', isAnchor: false },
+  { label: 'About', href: '/', isAnchor: false },
   { label: 'Contact', href: '/contact', isAnchor: false, isComingSoon: true },
 ];
 
@@ -228,10 +228,12 @@ export function HeaderMain() {
                   <DropdownMenuTrigger asChild>
                     <Button  className="flex items-center gap-2 bg-none">
                       <Avatar className="w-8 h-8">
-                        <AvatarImage 
-                          src={userProfile?.photoURL || user.photoURL || ''} 
-                          alt="Profile picture"
-                        />
+                        {((userProfile?.photoURL ?? user.photoURL) as string | undefined) && (
+                          <AvatarImage
+                            src={(userProfile?.photoURL ?? user.photoURL) as string | undefined}
+                            alt="Profile picture"
+                          />
+                        )}
                         <AvatarFallback>
                           {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
                         </AvatarFallback>
