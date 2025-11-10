@@ -4,39 +4,17 @@ import { Badge } from '@/components/ui/badge';
 import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { getUserProfile } from '@/lib/firestore-service';
+import { useAuthorProfile } from '@/hooks/use-author-profile';
 
 interface BlogCardProps {
   post: BlogPost;
 }
 
 export function BlogCard({ post }: BlogCardProps) {
-  const [currentAuthor, setCurrentAuthor] = useState(post.author);
-
-  useEffect(() => {
-    async function fetchCurrentAuthor() {
-      if (post.authorId) {
-        try {
-          const profile = await getUserProfile(post.authorId);
-          if (profile) {
-            setCurrentAuthor({
-              name: profile.displayName || post.author.name,
-              avatar: profile.photoURL || post.author.avatar,
-              avatarUrl: profile.photoURL || post.author.avatarUrl,
-              bio: post.author.bio,
-              role: post.author.role
-            });
-          }
-        } catch (error) {
-          console.warn('Failed to fetch current author profile:', error);
-          // Keep the original author info
-        }
-      }
-    }
-
-    fetchCurrentAuthor();
-  }, [post.authorId, post.author]);
+  const { authorProfile } = useAuthorProfile({
+    authorId: post.authorId,
+    fallbackAuthor: post.author
+  });
 
   return (
     <Link href={`/blog/${post.slug}`}>
@@ -71,8 +49,8 @@ export function BlogCard({ post }: BlogCardProps) {
         )}
       </div>
 
-  {/* Content */}
-  <div className="p-6 flex flex-col flex-1">
+      {/* Content */}
+      <div className="p-6 flex flex-col flex-1">
         {/* Title */}
         <h3 className="text-xl font-semibold text-white mb-3 leading-tight group-hover:text-cyan-300 transition-colors line-clamp-2">
           {post.title}
@@ -88,12 +66,12 @@ export function BlogCard({ post }: BlogCardProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <ImageWithFallback
-                src={currentAuthor.avatar}
-                alt={currentAuthor.name}
+                src={authorProfile.avatar}
+                alt={authorProfile.name}
                 className="w-8 h-8 rounded-full"
               />
               <div>
-                <div className="text-sm font-medium text-white">{currentAuthor.name}</div>
+                <div className="text-sm font-medium text-white">{authorProfile.name}</div>
                 <div className="text-xs text-gray-500">{post.publishDate}</div>
               </div>
             </div>

@@ -200,7 +200,7 @@ export function SignUpForm() {
 
           <Button 
             type="submit" 
-            className="w-full h-12 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white font-semibold shadow-lg shadow-teal-500/25 transition-all duration-200 transform hover:scale-[1.02]" 
+            className="w-full h-12 bg-primary hover:bg-primary/90 font-semibold shadow-lg shadow-primary/25 transition-all duration-200 transform hover:scale-[1.02]" 
             disabled={loading}
           >
             {loading ? (

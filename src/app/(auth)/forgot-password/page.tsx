@@ -80,7 +80,7 @@ export default function ForgotPasswordPage() {
               className="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors duration-200"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span>Back to sign in</span>
+              <span className="font-semibold text-teal-400 hover:text-teal-300 transition-colors duration-200">Back to sign in</span>
             </Link>
           </div>
         </CardContent>
@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
   return (
     <Card className="w-full border-slate-700/50 bg-slate-800/50 backdrop-blur-xl shadow-2xl">
       <CardHeader className="space-y-3 text-center">
-        <div className="mx-auto h-12 w-12 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 flex items-center justify-center">
+        <div className="mx-auto h-12 w-12 rounded-xl  flex items-center justify-center">
           <Mail className="h-6 w-6 text-white" />
         </div>
         <CardTitle className="text-3xl font-bold text-white">Reset your password</CardTitle>
@@ -126,7 +126,7 @@ export default function ForgotPasswordPage() {
 
           <Button 
             type="submit" 
-            className="w-full h-12 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold shadow-lg shadow-purple-500/25 transition-all duration-200 transform hover:scale-[1.02]" 
+            className="w-full h-12 bg-primary hover:bg-primary/90 font-semibold shadow-lg shadow-purple-500/25 transition-all duration-200 transform hover:scale-[1.02]" 
             disabled={loading}
           >
             {loading ? (
@@ -146,10 +146,10 @@ export default function ForgotPasswordPage() {
         <div className="text-center">
           <Link 
             href="/login" 
-            className="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors duration-200"
+            className="inline-flex items-center space-x-2 text-teal-400 hover:text-teal-300 transition-colors duration-200"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Back to sign in</span>
+            <span className="font-semibold text-teal-400 hover:text-teal-300 transition-colors duration-200">Back to sign in</span>
           </Link>
         </div>
       </CardContent>

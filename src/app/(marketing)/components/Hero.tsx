@@ -39,7 +39,7 @@ export function Hero() {
             >
               <h1 className="text-5xl lg:text-6xl xl:text-7xl tracking-tight font-bold">
                 Your{' '}
-                <span className="bg-gradient-to-r from-primary via-blue-400 to-primary bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-primary via-teal-400 to-primary bg-clip-text text-transparent">
                   5-Minute
                 </span>
                 <br />

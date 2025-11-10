@@ -103,7 +103,7 @@ export function ProblemSolution() {
             <div className="absolute -top-4 -right-4 w-8 h-8 bg-success/20 rounded-full blur-lg" />
             
             <div className="flex-grow">
-              <h3 className="text-2xl mb-8 text-success/90 font-bold">
+              <h3 className="text-2xl mb-8 text-teal-400 font-bold">
                 Your New Morning Edge
               </h3>
               

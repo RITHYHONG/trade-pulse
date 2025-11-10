@@ -80,7 +80,7 @@ export function SocialProof() {
         >
           <h2 className="text-4xl lg:text-5xl mb-6 font-bold">
             Trusted by{' '}
-            <span className="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary to-teal-400 bg-clip-text text-transparent">
               Professional Traders
             </span>
           </h2>

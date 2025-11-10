@@ -11,8 +11,7 @@ import { BlogCard } from './BlogCard';
 import Link from 'next/link';
 import { CustomBreadcrumb } from '@/components/navigation/Breadcrumb';
 import DOMPurify from 'isomorphic-dompurify';
-import { useEffect, useState } from 'react';
-import { getUserProfile } from '@/lib/firestore-service';
+import { useAuthorProfile } from '@/hooks/use-author-profile';
 
 
 interface BlogPostProps {
@@ -21,31 +20,10 @@ interface BlogPostProps {
 }
 
 export function BlogPost({ post, relatedPosts }: BlogPostProps) {
-  const [currentAuthor, setCurrentAuthor] = useState(post.author);
-
-  useEffect(() => {
-    async function fetchCurrentAuthor() {
-      if (post.authorId) {
-        try {
-          const profile = await getUserProfile(post.authorId);
-          if (profile) {
-            setCurrentAuthor({
-              name: profile.displayName || post.author.name,
-              avatar: profile.photoURL || post.author.avatar,
-              avatarUrl: profile.photoURL || post.author.avatarUrl,
-              bio: post.author.bio,
-              role: post.author.role
-            });
-          }
-        } catch (error) {
-          console.warn('Failed to fetch current author profile:', error);
-          // Keep the original author info
-        }
-      }
-    }
-
-    fetchCurrentAuthor();
-  }, [post.authorId, post.author]);
+  const { authorProfile } = useAuthorProfile({
+    authorId: post.authorId,
+    fallbackAuthor: post.author
+  });
 
   const defaultRelatedPosts = relatedPosts || blogPosts
     .filter(p => p.slug !== post.slug && (p.category === post.category || p.tags.some(tag => post.tags.includes(tag))))
@@ -150,14 +128,14 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   <div className="relative flex-shrink-0">
                     <div className="absolute -inset-0.5 from-cyan-500 to-blue-500 rounded-full opacity-75 blur"></div>
                     <ImageWithFallback
-                      src={currentAuthor.avatar}
-                      alt={currentAuthor.name}
+                      src={authorProfile.avatar}
+                      alt={authorProfile.name}
                       className="relative w-12 h-12 rounded-full ring-2 ring-[#0F1116]"
                     />
                   </div>
                   <div>
-                    <div className="font-semibold text-white">{currentAuthor.name}</div>
-                    {/* <div className="text-sm text-gray-500">{currentAuthor.bio || 'Market Analyst'}</div> */}
+                    <div className="font-semibold text-white">{authorProfile.name}</div>
+                    {/* <div className="text-sm text-gray-500">{authorProfile.bio || 'Market Analyst'}</div> */}
                   </div>
                 </div>
                 
@@ -336,17 +314,17 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   <div className="relative flex-shrink-0">
                     <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full opacity-75 blur group-hover:opacity-100 transition duration-300"></div>
                     <ImageWithFallback
-                      src={currentAuthor.avatar}
-                      alt={currentAuthor.name}
+                      src={authorProfile.avatar}
+                      alt={authorProfile.name}
                       className="relative w-20 h-20 rounded-full ring-2 ring-[#0F1116]"
                     />
                   </div>
                   <div className="flex-1">
                     <h4 className="text-2xl font-bold text-zinc-300 mb-3">
-                      About <span className='text-amber-50'>{currentAuthor.name}</span>
+                      About <span className='text-amber-50'>{authorProfile.name}</span>
                     </h4>
                     <p className="text-gray-400 mb-6 leading-relaxed">
-                      {currentAuthor.bio || 'Experienced market analyst and trading expert, providing insights and strategies to help traders navigate the financial markets.'}
+                      {authorProfile.bio || 'Experienced market analyst and trading expert, providing insights and strategies to help traders navigate the financial markets.'}
                     </p>
                     <div className="flex gap-3">
                       {/* <Button 

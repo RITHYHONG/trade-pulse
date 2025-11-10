@@ -24,7 +24,7 @@ export default function AboutPage() {
             <div className="inline-flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/20 rounded-full px-6 py-2 mb-8">
               <TrendingUp className="w-4 h-4 text-cyan-400" />
               <span className="text-sm text-cyan-400 font-medium">About Trader Pulse</span>
-            </div>
+            </div>v
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
               Empowering Traders with

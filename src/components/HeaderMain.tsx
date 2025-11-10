@@ -27,7 +27,7 @@ import {
 } from './ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserProfile, UserProfile } from '@/lib/firestore-service';
-import { SearchModal } from './SearchModal';
+import SearchModal from './SearchModal';
 
 const navItems = [
   // { label: 'Demo', href: '#demo', isAnchor: true },
@@ -218,7 +218,7 @@ export function HeaderMain() {
               <Search className="w-4 h-4" />
               <span>Search</span>
               <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 hover:text-foreground">
-                <span className="text-xs text-amber-100">/</span>
+                <span className="text-xs text-primary">/</span>
               </kbd>
             </Button>
             

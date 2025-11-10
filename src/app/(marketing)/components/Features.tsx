@@ -59,9 +59,9 @@ export function Features() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-4xl lg:text-5xl mb-6 font-bold">
-            Features That Give You The{' '}
-            <span className="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
-              Edge
+            Features That Give {' '}
+            <span className="bg-gradient-to-r from-primary to-teal-400 bg-clip-text text-transparent">
+              You The Edge
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">

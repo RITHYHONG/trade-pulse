@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
-import { getUserProfile } from '@/lib/firestore-service';
+import { useAuthorProfile } from '@/hooks/use-author-profile';
 
 interface FeaturedCarouselProps {
   posts: BlogPost[];
@@ -15,7 +15,6 @@ interface FeaturedCarouselProps {
 
 export function FeaturedCarousel({ posts }: FeaturedCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [currentAuthor, setCurrentAuthor] = useState(posts[0]?.author);
 
   // Reset currentSlide if it's out of bounds when posts change
   useEffect(() => {
@@ -35,34 +34,16 @@ export function FeaturedCarousel({ posts }: FeaturedCarouselProps) {
     return () => clearInterval(timer);
   }, [posts.length]);
 
-  // Update current author when slide changes
-  useEffect(() => {
-    const currentPost = posts[currentSlide];
-    if (currentPost && currentPost.author) {
-      setCurrentAuthor(currentPost.author);
+  // Get current post based on slide
+  const currentPost = useMemo(() => {
+    return posts.length > 0 && currentSlide < posts.length ? posts[currentSlide] : null;
+  }, [posts, currentSlide]);
 
-      async function fetchCurrentAuthor() {
-        if (currentPost.authorId) {
-          try {
-            const profile = await getUserProfile(currentPost.authorId);
-            if (profile) {
-              setCurrentAuthor({
-                name: profile.displayName || currentPost.author.name,
-                avatar: profile.photoURL || currentPost.author.avatar,
-                avatarUrl: profile.photoURL || currentPost.author.avatarUrl,
-                bio: currentPost.author.bio,
-                role: currentPost.author.role
-              });
-            }
-          } catch (error) {
-            console.warn('Failed to fetch current author profile:', error);
-          }
-        }
-      }
-
-      fetchCurrentAuthor();
-    }
-  }, [currentSlide, posts]);
+  // Use the optimized author profile hook
+  const { authorProfile } = useAuthorProfile({
+    authorId: currentPost?.authorId,
+    fallbackAuthor: currentPost?.author || { name: 'Anonymous', avatar: '/images/default-avatar.svg' }
+  });
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % posts.length);
@@ -76,12 +57,7 @@ export function FeaturedCarousel({ posts }: FeaturedCarouselProps) {
     setCurrentSlide(index);
   };
 
-  if (posts.length === 0) return null;
-
-  const currentPost = posts[currentSlide];
-  
-  // Safety check to ensure currentPost exists
-  if (!currentPost) return null;
+  if (posts.length === 0 || !currentPost) return null;
 
   return (
     <div className="relative w-full h-[500px] rounded-2xl overflow-hidden group">
@@ -124,12 +100,12 @@ export function FeaturedCarousel({ posts }: FeaturedCarouselProps) {
             {/* Author Info */}
             <div className="flex items-center gap-4">
               <ImageWithFallback
-                src={currentAuthor?.avatar}
-                alt={currentAuthor?.name}
+                src={authorProfile?.avatar}
+                alt={authorProfile?.name}
                 className="w-10 h-10 rounded-full"
               />
               <div className="text-white">
-                <div className="font-medium">{currentAuthor?.name}</div>
+                <div className="font-medium">{authorProfile?.name}</div>
                 <div className="text-sm text-gray-300">{currentPost.readingTime || currentPost.readTime}</div>
               </div>
             </div>

@@ -31,7 +31,6 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           <div className="relative z-10 max-w-lg space-y-8">
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-blue-500 to-teal-500"></div>
                 <span className="text-2xl font-bold">Trade Pulse</span>
               </div>
             </div>

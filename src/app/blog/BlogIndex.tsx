@@ -28,7 +28,14 @@ function mapFirestorePostToUIPost(firestorePost: FirestoreBlogPost): BlogPost {
     return new Date(String(dateField)).toISOString();
   };
 
-  return {
+  console.log('Mapping Firestore post:', {
+    id: firestorePost.id,
+    authorId: firestorePost.authorId,
+    authorName: firestorePost.authorName,
+    authorAvatar: firestorePost.authorAvatar
+  });
+
+  const mappedPost = {
     id: firestorePost.id,
     slug: firestorePost.slug,
     title: firestorePost.title,
@@ -48,6 +55,9 @@ function mapFirestorePostToUIPost(firestorePost: FirestoreBlogPost): BlogPost {
     category: firestorePost.category,
     isFeatured: false // You can add this field to Firestore if needed
   };
+
+  console.log('Mapped post:', mappedPost);
+  return mappedPost;
 }
 
 export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
@@ -188,7 +198,7 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-12">
                   {postsWithAds.map((item) => {
                     if ('type' in item && item.type === 'ad') {
                       return (

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Search, Clock, TrendingUp, FileText, Calendar, User } from 'lucide-react';
+import { Search, Clock, TrendingUp, FileText, Calendar, User, X, Loader2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -11,120 +11,91 @@ import {
 } from './ui/dialog';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
+import { Button } from './ui/button';
 import Link from 'next/link';
-
-interface SearchResult {
-  id: string;
-  title: string;
-  description: string;
-  type: 'blog' | 'page' | 'feature' | 'user';
-  href: string;
-  date?: string;
-  category?: string;
-}
-
-// Mock search data - replace with actual search implementation
-const searchData: SearchResult[] = [
-  {
-    id: '1',
-    title: 'How Deep Are Bitcoin Traders Hedging After Recent Price Dip Below $100K?',
-    description: 'Analysis of Bitcoin trading patterns and hedging strategies in the current market.',
-    type: 'blog',
-    href: '/blog/bitcoin-hedging-analysis',
-    date: '6 hours ago',
-    category: 'Analysis'
-  },
-  {
-    id: '2',
-    title: 'Tether Profits Topped $10B in First Nine Months',
-    description: 'Comprehensive report on Tether\'s financial performance and market impact.',
-    type: 'blog',
-    href: '/blog/tether-profits-report',
-    date: '5 days ago',
-    category: 'News'
-  },
-  {
-    id: '3',
-    title: 'Retail Bitcoin Traders Sentiment Analysis',
-    description: 'Understanding retail trader behavior since the October 20 crypto crash.',
-    type: 'blog',
-    href: '/blog/retail-sentiment-analysis',
-    date: '6 days ago',
-    category: 'Research'
-  },
-  {
-    id: '4',
-    title: 'Pre-Market Dashboard',
-    description: 'Access real-time pre-market data and trading insights.',
-    type: 'page',
-    href: '/dashboard',
-    category: 'Tools'
-  },
-  {
-    id: '5',
-    title: 'Market Calendar',
-    description: 'View upcoming market events and economic indicators.',
-    type: 'page',
-    href: '/calendar',
-    category: 'Tools'
-  },
-  {
-    id: '6',
-    title: 'User Settings',
-    description: 'Manage your account preferences and notification settings.',
-    type: 'page',
-    href: '/settings',
-    category: 'Account'
-  }
-];
+import { 
+  searchDatabase, 
+  getRecentSearches, 
+  saveRecentSearch, 
+  clearRecentSearches as clearStoredSearches,
+  getSearchSuggestions,
+  SearchResult
+} from '@/lib/search-service';
 
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function SearchModal({ isOpen, onClose }: SearchModalProps) {
+export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredResults, setFilteredResults] = useState<SearchResult[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [searchSuggestions] = useState<string[]>(getSearchSuggestions());
+  const [isLoading, setIsLoading] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Load recent searches on mount
   useEffect(() => {
-    // Load recent searches from localStorage
-    const saved = localStorage.getItem('recent_searches');
-    if (saved) {
-      try {
-        setRecentSearches(JSON.parse(saved));
-      } catch (e) {
-        console.error('Error loading recent searches:', e);
-      }
+    if (isOpen) {
+      setRecentSearches(getRecentSearches());
     }
-  }, []);
+  }, [isOpen]);
 
+  // Debounced search effect
   useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
     if (searchQuery.trim()) {
-      const results = searchData.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.category?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredResults(results);
+      setIsLoading(true);
+      const timeout = setTimeout(async () => {
+        try {
+          const results = await searchDatabase(searchQuery, {
+            maxResults: 20,
+            includeTypes: ['blog', 'page', 'feature', 'user'],
+            sortBy: 'relevance'
+          });
+          setFilteredResults(results);
+        } catch (error) {
+          console.error('Search error:', error);
+          setFilteredResults([]);
+        } finally {
+          setIsLoading(false);
+        }
+      }, 300); // 300ms debounce
+
+      searchTimeoutRef.current = timeout;
     } else {
       setFilteredResults([]);
+      setIsLoading(false);
     }
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
   }, [searchQuery]);
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
-      // Save to recent searches
-      const updated = [query, ...recentSearches.filter(s => s !== query)].slice(0, 5);
-      setRecentSearches(updated);
-      localStorage.setItem('recent_searches', JSON.stringify(updated));
+      saveRecentSearch(query);
+      setRecentSearches(getRecentSearches());
+      setSearchQuery(query);
     }
   };
 
+  const handleResultClick = () => {
+    saveRecentSearch(searchQuery);
+    setRecentSearches(getRecentSearches());
+    onClose();
+  };
+
   const clearRecentSearches = () => {
+    clearStoredSearches();
     setRecentSearches([]);
-    localStorage.removeItem('recent_searches');
   };
 
   const getTypeIcon = (type: string) => {
@@ -159,84 +130,162 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] p-0 overflow-hidden">
+      <DialogContent className="max-w-2xl max-h-[80vh] p-0 gap-0">
         <DialogHeader className="p-6 pb-4 border-b">
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-xl">
             <Search className="w-5 h-5" />
-            Search Trader Pulse
+            Search Trade Pulse
           </DialogTitle>
         </DialogHeader>
-
-        <div className="p-6 pt-4">
-          <div className="relative mb-6">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search for articles, tools, or features..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && searchQuery.trim()) {
-                  handleSearch(searchQuery);
-                }
-              }}
-              className="pl-10 pr-4 py-3 text-base"
-              autoFocus
-            />
+        
+        <div className="flex flex-col max-h-[60vh]">
+          {/* Search Input */}
+          <div className="p-6 pb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search posts, features, users..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && searchQuery.trim()) {
+                    handleSearch(searchQuery);
+                  }
+                }}
+                className="pl-10 pr-10 h-12 text-base"
+                autoFocus
+              />
+              {isLoading && (
+                <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 animate-spin" />
+              )}
+              {searchQuery && !isLoading && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
           </div>
 
-          <div className="max-h-96 overflow-y-auto">
-            {searchQuery.trim() ? (
-              <div>
-                {filteredResults.length > 0 ? (
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-medium text-muted-foreground mb-3">
-                      Search Results ({filteredResults.length})
+          {/* Search Results */}
+          <div className="flex-1 overflow-y-auto">
+            {!searchQuery.trim() ? (
+              <div className="px-6 pb-6">
+                {/* Recent Searches */}
+                {recentSearches.length > 0 && (
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        Recent Searches
+                      </h3>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearRecentSearches}
+                        className="text-xs text-gray-500"
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {recentSearches.map((search, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+                          onClick={() => handleSearch(search)}
+                        >
+                          {search}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Search Suggestions */}
+                <div>
+                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4" />
+                    Popular Searches
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {searchSuggestions.map((suggestion, index) => (
+                      <Badge
+                        key={index}
+                        variant="outline"
+                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                        onClick={() => handleSearch(suggestion)}
+                      >
+                        {suggestion}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="px-6 pb-6">
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                    <span className="ml-2 text-gray-500">Searching...</span>
+                  </div>
+                ) : filteredResults.length > 0 ? (
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                      Found {filteredResults.length} result{filteredResults.length !== 1 ? 's' : ''}
                     </h3>
-                    {filteredResults.map((result, index) => (
+                    {filteredResults.map((result) => (
                       <motion.div
                         key={result.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
+                        transition={{ duration: 0.2 }}
                       >
-                        <Link
-                          href={result.href}
-                          onClick={() => {
-                            handleSearch(searchQuery);
-                            onClose();
-                          }}
-                          className="block p-4 rounded-lg border hover:bg-muted/50 transition-colors group"
+                        <Link 
+                          href={result.href} 
+                          onClick={() => handleResultClick()}
+                          className="block p-4 rounded-lg border dark:border-gray-700 dark:hover:border-gray-600 hover:bg-muted/50 dark:hover:bg-gray-800 transition-colors"
                         >
                           <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0 mt-1">
+                            <div className={`p-2 rounded-lg ${getTypeBadgeColor(result.type)}`}>
                               {getTypeIcon(result.type)}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h4 className="font-medium text-sm group-hover:text-primary transition-colors line-clamp-1 flex-1">
+                              <div className="flex items-start justify-between gap-2">
+                                <h4 className="font-medium text-gray-100 line-clamp-1">
                                   {result.title}
                                 </h4>
-                                <Badge 
-                                  variant="secondary" 
-                                  className={`text-xs ${getTypeBadgeColor(result.type)} flex-shrink-0`}
-                                >
-                                  {result.type}
-                                </Badge>
-                              </div>
-                              <p className="text-sm text-muted-foreground mb-2 overflow-hidden">
-                                <span className="line-clamp-2">{result.description}</span>
-                              </p>
-                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                {result.category && (
-                                  <span className="bg-muted px-2 py-1 rounded">
-                                    {result.category}
-                                  </span>
-                                )}
                                 {result.date && (
-                                  <span className="flex items-center gap-1">
-                                    <Clock className="w-3 h-3" />
+                                  <span className="text-xs text-gray-400 whitespace-nowrap">
                                     {result.date}
                                   </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                                {result.description}
+                              </p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <Badge variant="outline" className="text-xs">
+                                  {result.category || result.type}
+                                </Badge>
+                                {result.metadata?.tags && result.metadata.tags.length > 0 && (
+                                  <div className="flex gap-1">
+                                    {result.metadata.tags.slice(0, 2).map((tag, index) => (
+                                      <Badge key={index} variant="secondary" className="text-xs">
+                                        {tag}
+                                      </Badge>
+                                    ))}
+                                    {result.metadata.tags.length > 2 && (
+                                      <span className="text-xs text-gray-500">
+                                        +{result.metadata.tags.length - 2} more
+                                      </span>
+                                    )}
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -247,43 +296,27 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="font-medium mb-2">No results found</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Try searching for articles, tools, or features using different keywords.
+                    <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                      No results found
+                    </h3>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      Try adjusting your search terms or browse our popular content below.
                     </p>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div>
-                {recentSearches.length > 0 && (
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-sm font-medium text-muted-foreground">Recent Searches</h3>
-                      <button
-                        onClick={clearRecentSearches}
-                        className="text-xs text-primary hover:underline"
-                      >
-                        Clear all
-                      </button>
-                    </div>
-                    <div className="space-y-1">
-                      {recentSearches.map((search, index) => (
-                        <button
+                    <div className="mt-4 flex flex-wrap gap-2 justify-center">
+                      {searchSuggestions.slice(0, 4).map((suggestion, index) => (
+                        <Badge
                           key={index}
-                          onClick={() => setSearchQuery(search)}
-                          className="flex items-center gap-2 w-full p-2 text-left rounded hover:bg-muted/50 transition-colors"
+                          variant="outline"
+                          className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                          onClick={() => handleSearch(suggestion)}
                         >
-                          <Clock className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">{search}</span>
-                        </button>
+                          {suggestion}
+                        </Badge>
                       ))}
                     </div>
                   </div>
                 )}
-
-                
               </div>
             )}
           </div>
