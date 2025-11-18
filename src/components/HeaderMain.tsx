@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { Menu, X, TrendingUp, User, LogOut, Settings, Search } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,9 +24,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from './ui/alert-dialog';
+} from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getUserProfile, UserProfile } from '@/lib/firestore-service';
+import { UserProfile } from '@/lib/firestore-service';
+import { useAuthorProfile } from '@/hooks/use-author-profile';
+import { BlogAuthor } from '@/types/blog';
 import SearchModal from './SearchModal';
 
 const navItems = [
@@ -35,7 +37,7 @@ const navItems = [
   // { label: 'Testimonials', href: '#testimonials', isAnchor: true },
   // { label: 'Pricing', href: '/pricing', isAnchor: false },
   { label: 'Blog', href: '/blog', isAnchor: false },
-  { label: 'Calendar', href: '/calendar', isAnchor: false, isComingSoon: true },
+  { label: 'Calendar', href: '/calendar'},
   { label: 'About', href: '/', isAnchor: false },
   { label: 'Contact', href: '/contact', isAnchor: false, isComingSoon: true },
 ];
@@ -72,59 +74,35 @@ export function HeaderMain() {
     };
   }, []);
 
+  const fallbackAuthor: BlogAuthor = user
+    ? {
+        name: user.displayName || user.email?.split('@')[0] || 'User',
+        avatar: user.photoURL ?? undefined,
+        avatarUrl: user.photoURL ?? undefined,
+      }
+    : {
+        name: 'User',
+        avatar: undefined,
+        avatarUrl: undefined,
+      };
+
+  const { authorProfile: headerProfile } = useAuthorProfile({ authorId: user?.uid, fallbackAuthor });
+
   useEffect(() => {
-    if (!user) {
+    if (!headerProfile || !user) {
       setUserProfile(null);
       return;
     }
 
-    const loadUserProfile = async () => {
-      // Check cache first (localStorage)
-      const cacheKey = `user_profile_${user.uid}`;
-      const cachedData = localStorage.getItem(cacheKey);
-      
-      if (cachedData) {
-        try {
-          const cached = JSON.parse(cachedData);
-          const cacheAge = Date.now() - cached.timestamp;
-          
-          // Use cache if less than 5 minutes old
-          if (cacheAge < 5 * 60 * 1000) {
-            setUserProfile(cached.profile);
-            // Still fetch in background to update cache
-            fetchAndCacheProfile();
-            return;
-          }
-        } catch (e) {
-          console.error('Error parsing cached profile:', e);
-        }
-      }
-      
-      // No valid cache, fetch immediately
-      await fetchAndCacheProfile();
-    };
-
-    const fetchAndCacheProfile = async () => {
-      try {
-        const profile = await getUserProfile(user.uid);
-        
-        if (profile) {
-          setUserProfile(profile);
-          
-          // Cache the profile
-          const cacheKey = `user_profile_${user.uid}`;
-          localStorage.setItem(cacheKey, JSON.stringify({
-            profile,
-            timestamp: Date.now()
-          }));
-        }
-      } catch (error) {
-        console.error('Error loading user profile:', error);
-      }
-    };
-
-    loadUserProfile();
-  }, [user]);
+    // Map fields to UserProfile
+    setUserProfile({
+      uid: user.uid,
+      displayName: headerProfile.name,
+      email: user.email || '',
+      bio: headerProfile.bio,
+      photoURL: headerProfile.avatarUrl ?? headerProfile.avatar,
+    });
+  }, [headerProfile, user]);
 
   // Keyboard shortcut for search (Cmd+K / Ctrl+K)
   useEffect(() => {
@@ -149,7 +127,7 @@ export function HeaderMain() {
       <div className="container mx-auto px-8 py-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <motion.div 
+            <motion.a 
               className="flex items-center gap-3"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
@@ -161,7 +139,7 @@ export function HeaderMain() {
                 <div className="font-bold text-lg">Trader Pulse</div>
                 <div className="text-xs text-muted-foreground -mt-1">Pre-Market Intelligence</div>
               </div>
-            </motion.div>
+            </motion.a>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-8">
@@ -170,7 +148,7 @@ export function HeaderMain() {
               
               if (item.isComingSoon) {
                 return (
-                  <motion.div
+                  <motion.a
                     key={index}
                     className="relative text-muted-foreground cursor-not-allowed group"
                   >
@@ -178,7 +156,7 @@ export function HeaderMain() {
                     <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                       Coming Soon
                     </span>
-                  </motion.div>
+                  </motion.a>
                 );
               } else if (item.isAnchor) {
                 return (
@@ -196,13 +174,13 @@ export function HeaderMain() {
               } else {
                 return (
                   <Link key={index} href={item.href}>
-                    <motion.div
+                    <motion.a
                       className={`relative transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'}`}
                       whileHover={{ y: -2 }}
                       transition={{ duration: 0.2 }}
                     >
                       {item.label}
-                    </motion.div>
+                    </motion.a>
                   </Link>
                 );
               }
@@ -309,7 +287,7 @@ export function HeaderMain() {
 
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div
+          <motion.a
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -335,7 +313,7 @@ export function HeaderMain() {
                   
                   if (item.isComingSoon) {
                     return (
-                      <motion.div
+                      <motion.a
                         key={index}
                         className="py-2 text-muted-foreground cursor-not-allowed relative group"
                       >
@@ -343,7 +321,7 @@ export function HeaderMain() {
                         <span className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                           Coming Soon
                         </span>
-                      </motion.div>
+                      </motion.a>
                     );
                   } else if (item.isAnchor) {
                     return (
@@ -362,12 +340,12 @@ export function HeaderMain() {
                   } else {
                     return (
                       <Link key={index} href={item.href}>
-                        <motion.div
+                        <motion.a
                           onClick={() => setIsMenuOpen(false)}
                           className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'}`}
                         >
                           {item.label}
-                        </motion.div>
+                        </motion.a>
                       </Link>
                     );
                   }
@@ -412,7 +390,7 @@ export function HeaderMain() {
                 )}
               </div>
             </div>
-          </motion.div>
+          </motion.a>
         )}
       </AnimatePresence>
 

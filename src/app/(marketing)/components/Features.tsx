@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { Brain, Zap, Target, Clock, TrendingUp, Shield } from 'lucide-react';
-import { Card } from './ui/card';
+import { Card } from '@/components/ui/card';
 
 const features = [
   {

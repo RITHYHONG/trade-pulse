@@ -2,8 +2,8 @@
 
 import { motion } from 'motion/react';
 import { TrendingUp, Twitter, Linkedin, Mail, Phone } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const footerLinks = {
   Product: [
@@ -45,7 +45,7 @@ export function Footer() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h3 className="text-3xl mb-4">
+            <h3 className="text-3xl mb-4 font-bold">
               Stay Ahead of the Markets
             </h3>
             <p className="text-muted-foreground mb-8 text-lg">

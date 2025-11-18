@@ -33,7 +33,7 @@ export function BlogCard({ post }: BlogCardProps) {
         <div className="absolute top-3 left-3">
           <Badge 
             variant="secondary" 
-            className="bg-blue-600 text-white border-0 backdrop-blur-sm"
+            className="bg-primary text-primary-foreground border-0 backdrop-blur-sm"
           >
             {post.category}
           </Badge>

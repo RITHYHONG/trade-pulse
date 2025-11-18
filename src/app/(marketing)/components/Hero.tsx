@@ -1,8 +1,8 @@
 "use client";
 
 import { Badge } from '@/components/ui/badge';
-import { ImageWithFallback } from './figma/ImageWithFallback';
-import { Button } from './ui/button';
+import { ImageWithFallback } from '@/components/figma/ImageWithFallback';
+import { Button } from '@/components/ui/button';
 import { ArrowRight, Play } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
@@ -27,9 +27,7 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
             >
-              <Badge variant="outline" className="mb-6 px-4 py-2 bg-primary/10 border-primary/30 text-primary hover:bg-primary/20">
-                Trade Pulse
-              </Badge>
+
             </motion.div>
 
             <motion.div
@@ -38,12 +36,12 @@ export function Hero() {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <h1 className="text-5xl lg:text-6xl xl:text-7xl tracking-tight font-bold">
-                Your{' '}
+                See{' '}
                 <span className="bg-gradient-to-r from-primary via-teal-400 to-primary bg-clip-text text-transparent">
-                  5-Minute
+                   the Pulse
                 </span>
                 <br />
-                Morning Edge
+                Make the Move
               </h1>
             </motion.div>
 

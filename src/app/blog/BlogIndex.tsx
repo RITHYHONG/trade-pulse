@@ -131,16 +131,16 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
       {/* Header */}
       <header className="border-b border-[#2D3246] py-8">
         <div className="container mx-auto px-4">
-          <CustomBreadcrumb className="mb-6" />
+          {/* <CustomBreadcrumb className="mb-6" /> */}
           <div className="text-center relative">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            {/* <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Trader <span className="text-cyan-400">Pulse</span>
             </h1>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
               Professional trading insights and market analysis for time-constrained traders seeking actionable intelligence.
             </p>
-            
-            <div className="absolute right-0 top-0">
+             */}
+            <div className="absolute right-0 top-0 mt-12">
               <Link href="/create-post">
                 <Button className="bg-[#00F5FF] text-black hover:bg-[#00F5FF]/90">
                   <PenSquare className="mr-2 h-4 w-4" />
@@ -153,7 +153,7 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
       </header>
 
       {/* Featured Posts Carousel */}
-      <section className="py-12">
+      <section className="py-12 mt-10">
         <div className="container mx-auto px-4">
           <FeaturedCarousel posts={featuredPosts} />
         </div>

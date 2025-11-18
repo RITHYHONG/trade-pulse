@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react';
 import { Star, Quote } from 'lucide-react';
-import { Card } from './ui/card';
+import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const testimonials = [
@@ -58,7 +58,7 @@ export function SocialProof() {
           {stats.map((stat, index) => (
             <motion.div 
               key={index}
-              className="text-center"
+              className="text-center font-bold"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -115,9 +115,9 @@ export function SocialProof() {
                 </p>
 
                 {/* PnL Badge */}
-                <div className="inline-block bg-success/10 border border-success/20 text-success px-3 py-1 rounded-full text-sm mb-6">
+                {/* <div className="inline-block bg-success/10 border border-success/20 text-success px-3 py-1 rounded-full text-sm mb-6">
                   {testimonial.pnl}
-                </div>
+                </div> */}
 
                 {/* Author */}
                 <div className="flex items-center gap-4">
