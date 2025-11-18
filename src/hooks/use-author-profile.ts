@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getUserProfile, UserProfile } from '@/lib/firestore-service';
 import { BlogAuthor } from '@/types/blog';
 
@@ -16,77 +16,79 @@ export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileO
   const [authorProfile, setAuthorProfile] = useState<BlogAuthor>(fallbackAuthor);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fetchedRef = useRef<string | null>(null);
+  const fallbackRef = useRef(fallbackAuthor);
 
-  const fetchAuthorProfile = useCallback(async () => {
-    if (!authorId) {
-      console.log('No authorId provided, using fallback author');
-      setAuthorProfile(fallbackAuthor);
-      return;
-    }
-
-    console.log('Fetching author profile for ID:', authorId);
-
-    // Check cache first
-    const now = Date.now();
-    const cached = profileCache.get(authorId);
-    const cacheTime = cacheTimestamps.get(authorId);
-    
-    if (cached && cacheTime && (now - cacheTime) < CACHE_DURATION) {
-      console.log('Using cached profile for:', authorId);
-      setAuthorProfile({
-        name: cached.displayName || fallbackAuthor.name,
-        avatar: cached.photoURL || fallbackAuthor.avatar,
-        avatarUrl: cached.photoURL || fallbackAuthor.avatarUrl,
-        bio: fallbackAuthor.bio,
-        role: fallbackAuthor.role
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      console.log('Calling getUserProfile for:', authorId);
-      const profile = await getUserProfile(authorId);
-      console.log('Profile fetched:', profile);
-      
-      // Cache the result (even if null)
-      profileCache.set(authorId, profile);
-      cacheTimestamps.set(authorId, now);
-
-      if (profile) {
-        const updatedProfile = {
-          name: profile.displayName || fallbackAuthor.name,
-          avatar: profile.photoURL || fallbackAuthor.avatar,
-          avatarUrl: profile.photoURL || fallbackAuthor.avatarUrl,
-          bio: fallbackAuthor.bio,
-          role: fallbackAuthor.role
-        };
-        console.log('Setting updated profile:', updatedProfile);
-        setAuthorProfile(updatedProfile);
-      } else {
-        console.log('No profile found, using fallback');
-        setAuthorProfile(fallbackAuthor);
-      }
-    } catch (err) {
-      console.error('Failed to fetch author profile:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch profile');
-      setAuthorProfile(fallbackAuthor);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [authorId, fallbackAuthor]);
+  // Update fallback ref when it changes
+  useEffect(() => {
+    fallbackRef.current = fallbackAuthor;
+  }, [fallbackAuthor]);
 
   useEffect(() => {
+    // Prevent duplicate fetches for the same authorId
+    if (!authorId || fetchedRef.current === authorId) {
+      if (!authorId) {
+        setAuthorProfile(fallbackRef.current);
+      }
+      return;
+    }
+
+    const fetchAuthorProfile = async () => {
+      const fallback = fallbackRef.current;
+      
+      // Check cache first
+      const now = Date.now();
+      const cached = profileCache.get(authorId);
+      const cacheTime = cacheTimestamps.get(authorId);
+      
+      if (cached && cacheTime && (now - cacheTime) < CACHE_DURATION) {
+        setAuthorProfile({
+          name: cached.displayName || fallback.name,
+          avatar: cached.photoURL || fallback.avatar,
+          avatarUrl: cached.photoURL || fallback.avatarUrl,
+          bio: fallback.bio,
+          role: fallback.role
+        });
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const profile = await getUserProfile(authorId);
+        
+        // Cache the result (even if null)
+        profileCache.set(authorId, profile);
+        cacheTimestamps.set(authorId, now);
+
+        if (profile) {
+          setAuthorProfile({
+            name: profile.displayName || fallback.name,
+            avatar: profile.photoURL || fallback.avatar,
+            avatarUrl: profile.photoURL || fallback.avatarUrl,
+            bio: fallback.bio,
+            role: fallback.role
+          });
+        } else {
+          setAuthorProfile(fallback);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch profile');
+        setAuthorProfile(fallback);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchedRef.current = authorId;
     fetchAuthorProfile();
-  }, [fetchAuthorProfile]);
+  }, [authorId]);
 
   return {
     authorProfile,
     isLoading,
-    error,
-    refetch: fetchAuthorProfile
+    error
   };
 }
 
