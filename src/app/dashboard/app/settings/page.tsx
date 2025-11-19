@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { ArrowRight } from "lucide-react";
 
 const sections = [
   {
@@ -48,8 +49,9 @@ export default function SettingsPage() {
             <p className="mt-2 text-sm text-slate-300/80">{section.description}</p>
             <div className="mt-4 space-y-2 text-sm font-semibold text-sky-400">
               {section.actions.map((action) => (
-                <Link key={action.href} href={action.href} className="block transition hover:text-sky-300">
-                  {action.label} →
+                <Link key={action.href} href={action.href} className="block transition hover:text-sky-300 flex items-center gap-1">
+                  {action.label}
+                  <ArrowRight className="w-3 h-3" />
                 </Link>
               ))}
             </div>

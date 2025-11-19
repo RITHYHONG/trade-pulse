@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { getUserProfile, UserProfile } from '@/lib/firestore-service';
 import { BlogAuthor } from '@/types/blog';
 
@@ -16,74 +16,70 @@ export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileO
   const [authorProfile, setAuthorProfile] = useState<BlogAuthor>(fallbackAuthor);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const fetchedRef = useRef<string | null>(null);
-  const fallbackRef = useRef(fallbackAuthor);
-
-  // Update fallback ref when it changes
-  useEffect(() => {
-    fallbackRef.current = fallbackAuthor;
-  }, [fallbackAuthor]);
 
   useEffect(() => {
-    // Prevent duplicate fetches for the same authorId
-    if (!authorId || fetchedRef.current === authorId) {
-      if (!authorId) {
-        setAuthorProfile(fallbackRef.current);
-      }
+    // If no authorId, just use fallback
+    if (!authorId) {
+      setAuthorProfile(fallbackAuthor);
       return;
     }
 
-    const fetchAuthorProfile = async () => {
-      const fallback = fallbackRef.current;
-      
-      // Check cache first
-      const now = Date.now();
-      const cached = profileCache.get(authorId);
-      const cacheTime = cacheTimestamps.get(authorId);
-      
-      if (cached && cacheTime && (now - cacheTime) < CACHE_DURATION) {
-        setAuthorProfile({
-          name: cached.displayName || fallback.name,
-          avatar: cached.photoURL || fallback.avatar,
-          avatarUrl: cached.photoURL || fallback.avatarUrl,
-          bio: fallback.bio,
-          role: fallback.role
-        });
-        return;
-      }
+    // Check cache first
+    const now = Date.now();
+    const cached = profileCache.get(authorId);
+    const cacheTime = cacheTimestamps.get(authorId);
+    
+    if (cached && cacheTime && (now - cacheTime) < CACHE_DURATION) {
+      setAuthorProfile({
+        name: cached.displayName || fallbackAuthor.name,
+        avatar: cached.photoURL || fallbackAuthor.avatar,
+        avatarUrl: cached.photoURL || fallbackAuthor.avatarUrl,
+        bio: fallbackAuthor.bio,
+        role: fallbackAuthor.role
+      });
+      return;
+    }
 
-      setIsLoading(true);
-      setError(null);
+    // Fetch profile from Firestore
+    let cancelled = false;
+    setIsLoading(true);
+    setError(null);
 
-      try {
-        const profile = await getUserProfile(authorId);
-        
-        // Cache the result (even if null)
+    getUserProfile(authorId)
+      .then((profile) => {
+        if (cancelled) return;
+
+        // Cache the result
         profileCache.set(authorId, profile);
         cacheTimestamps.set(authorId, now);
 
         if (profile) {
           setAuthorProfile({
-            name: profile.displayName || fallback.name,
-            avatar: profile.photoURL || fallback.avatar,
-            avatarUrl: profile.photoURL || fallback.avatarUrl,
-            bio: fallback.bio,
-            role: fallback.role
+            name: profile.displayName || fallbackAuthor.name,
+            avatar: profile.photoURL || fallbackAuthor.avatar,
+            avatarUrl: profile.photoURL || fallbackAuthor.avatarUrl,
+            bio: fallbackAuthor.bio,
+            role: fallbackAuthor.role
           });
         } else {
-          setAuthorProfile(fallback);
+          setAuthorProfile(fallbackAuthor);
         }
-      } catch (err) {
+      })
+      .catch((err) => {
+        if (cancelled) return;
         setError(err instanceof Error ? err.message : 'Failed to fetch profile');
-        setAuthorProfile(fallback);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+        setAuthorProfile(fallbackAuthor);
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      });
 
-    fetchedRef.current = authorId;
-    fetchAuthorProfile();
-  }, [authorId]);
+    return () => {
+      cancelled = true;
+    };
+  }, [authorId, fallbackAuthor]);
 
   return {
     authorProfile,

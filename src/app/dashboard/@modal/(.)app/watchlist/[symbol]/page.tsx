@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getInstrumentDetail } from "@/lib/api/market-data";
+import { X } from "lucide-react";
 
 interface WatchlistSymbolModalProps {
   params: { symbol: string };
@@ -23,7 +24,7 @@ export default async function WatchlistSymbolModal({ params }: WatchlistSymbolMo
           className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-700 text-slate-300 transition hover:border-slate-500"
           aria-label="Close modal"
         >
-          ×
+          <X className="w-4 h-4" />
         </Link>
         <div className="flex items-baseline gap-3">
           <h2 className="text-2xl font-semibold text-white">{detail.name}</h2>

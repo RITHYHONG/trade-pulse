@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BlogPost } from '../../types/blog';
@@ -39,10 +39,18 @@ export function FeaturedCarousel({ posts }: FeaturedCarouselProps) {
     return posts.length > 0 && currentSlide < posts.length ? posts[currentSlide] : null;
   }, [posts, currentSlide]);
 
+  const fallbackAuthor = useMemo(() => ({
+    name: currentPost?.author?.name || 'Anonymous',
+    avatar: currentPost?.author?.avatar || '/images/default-avatar.svg',
+    avatarUrl: currentPost?.author?.avatarUrl,
+    bio: currentPost?.author?.bio,
+    role: currentPost?.author?.role
+  }), [currentPost?.author?.name, currentPost?.author?.avatar, currentPost?.author?.avatarUrl, currentPost?.author?.bio, currentPost?.author?.role]);
+
   // Use the optimized author profile hook
   const { authorProfile } = useAuthorProfile({
     authorId: currentPost?.authorId,
-    fallbackAuthor: currentPost?.author || { name: 'Anonymous', avatar: '/images/default-avatar.svg' }
+    fallbackAuthor
   });
 
   const nextSlide = () => {
@@ -78,7 +86,8 @@ export function FeaturedCarousel({ posts }: FeaturedCarouselProps) {
             {/* Featured Badge */}
             <div className="mb-4">
               <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 backdrop-blur-sm">
-                ⭐ Featured
+                <Star className="w-4 h-4 mr-1" />
+                Featured
               </Badge>
             </div>
             

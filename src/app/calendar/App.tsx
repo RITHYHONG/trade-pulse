@@ -78,7 +78,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative min-h-0">
         {/* Sidebar Toggle Button */}
         {!sidebarOpen && (
           <Button
@@ -93,7 +93,7 @@ export default function App() {
 
         {/* Filter Sidebar */}
         {sidebarOpen && (
-          <div className="relative">
+          <div className="relative h-full">
             <FilterSidebar filters={filters} onFiltersChange={handleFiltersChange} />
             <Button
               variant="ghost"
@@ -107,9 +107,9 @@ export default function App() {
         )}
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden min-h-0">
           {/* View Tabs */}
-          <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)} className="flex-1 flex flex-col">
+          <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)} className="flex-1 flex flex-col min-h-0">
             <div className="border-b border-slate-800 bg-slate-950 px-6 py-3">
               <TabsList className="bg-slate-900">
                 <TabsTrigger value="timeline" className="data-[state=active]:bg-blue-600">
@@ -127,7 +127,7 @@ export default function App() {
               </TabsList>
             </div>
 
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-hidden min-h-0">
               <TabsContent value="timeline" className="h-full m-0">
                 <TimelineView events={filteredEvents} onEventClick={handleEventClick} />
               </TabsContent>

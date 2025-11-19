@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, TrendingUp, User, LogOut, Settings, Search } from 'lucide-react';
@@ -74,19 +74,16 @@ export function HeaderMain() {
     };
   }, []);
 
-  const fallbackAuthor: BlogAuthor = user
-    ? {
-        name: user.displayName || user.email?.split('@')[0] || 'User',
-        avatar: user.photoURL ?? undefined,
-        avatarUrl: user.photoURL ?? undefined,
-      }
-    : {
-        name: 'User',
-        avatar: undefined,
-        avatarUrl: undefined,
-      };
+  const fallbackAuthor: BlogAuthor = useMemo(() => ({
+    name: user?.displayName || user?.email?.split('@')[0] || 'User',
+    avatar: user?.photoURL ?? undefined,
+    avatarUrl: user?.photoURL ?? undefined,
+  }), [user?.displayName, user?.email, user?.photoURL]);
 
-  const { authorProfile: headerProfile } = useAuthorProfile({ authorId: user?.uid, fallbackAuthor });
+  const { authorProfile: headerProfile } = useAuthorProfile({ 
+    authorId: user?.uid, 
+    fallbackAuthor 
+  });
 
   useEffect(() => {
     if (!headerProfile || !user) {

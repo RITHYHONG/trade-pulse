@@ -1,4 +1,4 @@
-import { ChevronDown, Filter, Target, Globe, Layers, Clock } from 'lucide-react';
+import { ChevronDown, Filter, Target, Globe, Layers, Clock, TrendingUp, ArrowUpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -269,10 +269,4 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
   );
 }
 
-function TrendingUp({ className }: { className?: string }) {
-  return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>;
-}
 
-function ArrowUpCircle({ className }: { className?: string }) {
-  return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 11l3-3m0 0l3 3m-3-3v8m0-13a9 9 0 110 18 9 9 0 010-18z" /></svg>;
-}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { ArrowRight } from "lucide-react";
 import type { MarketNewsItem } from "@/types";
 
 interface AISummaryWidgetProps {
@@ -48,9 +49,10 @@ export function AISummaryWidget({ news }: AISummaryWidgetProps) {
               </span>
               <Link
                 href={item.url}
-                className="text-xs font-semibold text-sky-400 transition hover:text-sky-300"
+                className="text-xs font-semibold text-sky-400 transition hover:text-sky-300 flex items-center gap-1"
               >
-                Read insight →
+                Read insight
+                <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
           </article>

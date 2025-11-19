@@ -1,5 +1,5 @@
 "use client";
-import { ArrowLeft, Share2, Bookmark, ThumbsUp, Clock, Calendar, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Share2, Bookmark, ThumbsUp, Clock, Calendar, TrendingUp, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BlogPost as BlogPostType } from '../../types/blog';
@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { CustomBreadcrumb } from '@/components/navigation/Breadcrumb';
 import DOMPurify from 'isomorphic-dompurify';
 import { useAuthorProfile } from '@/hooks/use-author-profile';
+import { useMemo } from 'react';
 
 
 interface BlogPostProps {
@@ -20,9 +21,17 @@ interface BlogPostProps {
 }
 
 export function BlogPost({ post, relatedPosts }: BlogPostProps) {
+  const fallbackAuthor = useMemo(() => ({
+    name: post.author.name,
+    avatar: post.author.avatar,
+    avatarUrl: post.author.avatarUrl,
+    bio: post.author.bio,
+    role: post.author.role
+  }), [post.author.name, post.author.avatar, post.author.avatarUrl, post.author.bio, post.author.role]);
+  
   const { authorProfile } = useAuthorProfile({
     authorId: post.authorId,
-    fallbackAuthor: post.author
+    fallbackAuthor
   });
 
   const defaultRelatedPosts = relatedPosts || blogPosts
@@ -357,11 +366,12 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
               <section className="pt-8">
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-3xl font-bold text-white">Related Articles</h3>
-                  <Link 
+                  <Link
                     href="/blog"
-                    className="text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors duration-300"
+                    className="text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors duration-300 flex items-center gap-1"
                   >
-                    View all articles →
+                    View all articles
+                    <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

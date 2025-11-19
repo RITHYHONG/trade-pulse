@@ -5,15 +5,24 @@ import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
 import { useAuthorProfile } from '@/hooks/use-author-profile';
+import { useMemo } from 'react';
 
 interface BlogCardProps {
   post: BlogPost;
 }
 
 export function BlogCard({ post }: BlogCardProps) {
+  const fallbackAuthor = useMemo(() => ({
+    name: post.author.name,
+    avatar: post.author.avatar,
+    avatarUrl: post.author.avatarUrl,
+    bio: post.author.bio,
+    role: post.author.role
+  }), [post.author.name, post.author.avatar, post.author.avatarUrl, post.author.bio, post.author.role]);
+  
   const { authorProfile } = useAuthorProfile({
     authorId: post.authorId,
-    fallbackAuthor: post.author
+    fallbackAuthor
   });
 
   return (

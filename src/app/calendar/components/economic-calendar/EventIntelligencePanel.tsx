@@ -1,4 +1,4 @@
-import { X, TrendingUp, TrendingDown, Activity, Target, BarChart3, Brain, AlertCircle } from 'lucide-react';
+import { X, TrendingUp, TrendingDown, Activity, Target, BarChart3, Brain, AlertCircle, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -169,8 +169,22 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                     : 'border-slate-700'
                 }
               >
-                {event.consensusIntelligence.revisionMomentum === 'up' ? '↑ Upward' : 
-                 event.consensusIntelligence.revisionMomentum === 'down' ? '↓ Downward' : '→ Stable'}
+                {event.consensusIntelligence.revisionMomentum === 'up' ? (
+                  <>
+                    <TrendingUp className="w-4 h-4 mr-1" />
+                    Upward
+                  </>
+                ) : event.consensusIntelligence.revisionMomentum === 'down' ? (
+                  <>
+                    <TrendingDown className="w-4 h-4 mr-1" />
+                    Downward
+                  </>
+                ) : (
+                  <>
+                    <ArrowRight className="w-4 h-4 mr-1" />
+                    Stable
+                  </>
+                )}
               </Badge>
             </div>
 

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { ArrowRight } from "lucide-react";
 import type { WatchlistInstrument } from "@/types";
 
 interface WatchlistWidgetProps {
@@ -18,9 +19,10 @@ export function WatchlistWidget({ instruments }: WatchlistWidgetProps) {
         </div>
         <Link
           href="/app/watchlist"
-          className="text-xs font-semibold text-sky-400 transition hover:text-sky-300"
+          className="text-xs font-semibold text-sky-400 transition hover:text-sky-300 flex items-center gap-1"
         >
-          Manage symbols →
+          Manage symbols
+          <ArrowRight className="w-3 h-3" />
         </Link>
       </div>
 
