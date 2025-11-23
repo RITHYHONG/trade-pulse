@@ -1385,7 +1385,7 @@ export default function CreatePostPage() {
                     <Input
                       type="text"
                       value={post.slug}
-                      onChange={(e) => setPost(prev => ({ ...prev, slug: e.target.value }))}
+                      onChange={(e) => setPost(prev => ({ ...prev, slug: e.target.value.replace(/\s+/g, '-') }))}
                       className="bg-[#0F1116] border-gray-700 text-white font-mono text-sm"
                     />
                   </div>

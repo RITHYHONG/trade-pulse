@@ -4,7 +4,6 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Building2, Calendar, User, TrendingUp } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
 interface CentralBankDashboardProps {
   events: CentralBankEvent[];
 }
@@ -31,7 +30,8 @@ export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
   };
 
   return (
-    <div className="bg-slate-900 rounded-lg p-6 border border-slate-800">
+    <ScrollArea className="h-full">
+    <div className="p-6">
       <div className="flex items-center gap-2 mb-6">
         <Building2 className="w-5 h-5 text-purple-400" />
         <h3 className="text-lg text-white">Central Bank Watch</h3>
@@ -132,5 +132,6 @@ export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
         })}
       </div>
     </div>
+    </ScrollArea>
   );
 }

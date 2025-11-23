@@ -11,7 +11,6 @@ import { ChevronLeft, ChevronRight, PenSquare } from 'lucide-react';
 import { BlogPost, BlogItem } from '../../types/blog';
 import { getPublishedPosts, getFeaturedPosts, BlogPost as FirestoreBlogPost } from '@/lib/blog-firestore-service';
 import Link from 'next/link';
-import { CustomBreadcrumb } from '@/components/navigation/Breadcrumb';
 import { Footer } from '../(marketing)/components/Footer';
 
 interface BlogIndexProps {

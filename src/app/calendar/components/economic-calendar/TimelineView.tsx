@@ -41,7 +41,7 @@ export function TimelineView({ events, onEventClick }: TimelineViewProps) {
   };
 
   return (
-    <ScrollArea className="h-screen">
+    <ScrollArea className="h-full">
       <div className="p-6">
         {/* Timeline Header */}
         <div className="mb-6 flex items-center gap-4">

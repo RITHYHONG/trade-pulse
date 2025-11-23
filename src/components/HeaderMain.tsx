@@ -30,6 +30,8 @@ import { UserProfile } from '@/lib/firestore-service';
 import { useAuthorProfile } from '@/hooks/use-author-profile';
 import { BlogAuthor } from '@/types/blog';
 import SearchModal from './SearchModal';
+import Logo from '../../public/no-bg-logo.svg'; 
+import Image from 'next/image';
 
 const navItems = [
   // { label: 'Demo', href: '#demo', isAnchor: true },
@@ -129,13 +131,7 @@ export function HeaderMain() {
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-400 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <div className="font-bold text-lg">Trader Pulse</div>
-                <div className="text-xs text-muted-foreground -mt-1">Pre-Market Intelligence</div>
-              </div>
+              <Image src={Logo} width={72} height={72} alt="Logo"></Image>
             </motion.a>
           </Link>
 

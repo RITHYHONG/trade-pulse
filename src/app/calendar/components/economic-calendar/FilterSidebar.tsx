@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { FilterState, ImpactLevel, Region, EventCategory } from './types';
 import { useState } from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface FilterSidebarProps {
   filters: FilterState;
@@ -43,8 +44,9 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
   };
 
   return (
-    <div className="w-80 border-r border-slate-800 bg-slate-950 text-white overflow-y-auto">
-      <div className="p-6">
+    <ScrollArea className="h-full">
+    <div className="w-80 border-r ">
+      <div className="p-6 mb-16">
         <div className="flex items-center gap-2 mb-6">
           <Filter className="w-5 h-5 text-blue-400" />
           <h2 className="text-lg">Advanced Filters</h2>
@@ -266,6 +268,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
         </Button>
       </div>
     </div>
+    </ScrollArea>
   );
 }
 

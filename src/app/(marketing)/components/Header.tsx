@@ -23,10 +23,12 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../../../hooks/use-auth';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserProfile, UserProfile } from '@/lib/firestore-service';
+import Logo from '../../../../public/no-bg-logo.svg'; 
 
 const navItems = [
   { label: 'Demo', href: '#demo', isAnchor: true },
@@ -139,13 +141,7 @@ export function Header() {
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-400 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <div className="font-bold text-lg">Trader Pulse</div>
-                <div className="text-xs text-muted-foreground -mt-1">Pre-Market Intelligence</div>
-              </div>
+              <Image src={Logo} width={72} height={72} alt="Logo"></Image>
             </motion.div>
           </Link>
 

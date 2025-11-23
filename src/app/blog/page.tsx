@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { BlogIndex } from './BlogIndex';
 import { blogPosts } from '@/data/blogData';
 import { HeaderMain } from '@/components/HeaderMain';
+import ChatbotModal from '@/components/ai/chatbot';
 
 export const metadata: Metadata = {
   title: 'Trading Insights & Market Analysis | Trader Pulse Blog',
