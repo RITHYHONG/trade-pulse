@@ -11,7 +11,7 @@ declare module "input-otp" {
     slots: OTPSlot[];
   }>;
 
-  export const OTPInput: React.ComponentType<any>;
+  export const OTPInput: React.ComponentType<unknown>;
 
   export default OTPInput;
 }

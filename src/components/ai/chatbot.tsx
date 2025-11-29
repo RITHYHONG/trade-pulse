@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { MessageCircle } from 'lucide-react';
+import Link from 'next/link';
 
 interface Source {
   uri: string;
@@ -206,9 +207,9 @@ const ChatbotModal: React.FC = () => {
                   <ul className="mt-2 space-y-1 list-disc pl-5">
                     {results.sources.map((source, index) => (
                       <li key={index}>
-                        <a href={source.uri} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 transition">
+                        <Link href={source.uri} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 transition">
                           {source.title}
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>

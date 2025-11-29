@@ -81,7 +81,7 @@ export function Header({ filters, onFiltersChange, eventCount, highImpactCount }
           </div>
 
           <div className="flex items-center gap-3">
-            <Select value={filters.viewPreset} onValueChange={(value: any) => onFiltersChange({ viewPreset: value })}>
+            <Select value={filters.viewPreset} onValueChange={(value: string) => onFiltersChange({ viewPreset: value as FilterState['viewPreset'] })}>
               <SelectTrigger className="w-[180px] bg-slate-900 border-slate-700">
                 <SelectValue placeholder="View Preset" />
               </SelectTrigger>

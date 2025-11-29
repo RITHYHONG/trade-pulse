@@ -1307,12 +1307,12 @@ export default function CreatePostPage() {
                             className="px-3 py-1 bg-[#0066FF]/10 border border-[#0066FF]/20 text-[#0066FF] rounded-full text-sm flex items-center gap-2"
                           >
                             {asset}
-                            <button
+                            <Button
                               onClick={() => removeRelatedAsset(asset)}
                               className="hover:text-red-400"
                             >
                               <X size={14} />
-                            </button>
+                            </Button>
                           </span>
                         ))}
                       </div>

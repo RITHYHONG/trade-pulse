@@ -243,19 +243,19 @@ export default function App() {
                 <TabsList className="bg-slate-900">
                   <TabsTrigger 
                     value="central-bank" 
-                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none"
+                    className="data-[state=active]:border-b-2 data-[state=active]:bg-blue-200 rounded-2xl data-[state=active]:text"
                   >
                     Central Bank Watch
                   </TabsTrigger>
                   <TabsTrigger 
                     value="alerts" 
-                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none"
+                    className="data-[state=active]:border-b-2 data-[state=active]:bg-blue-200 rounded-2xl data-[state=active]:text"
                   >
                     Smart Alerts
                   </TabsTrigger>
                   <TabsTrigger 
                     value="correlation" 
-                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none"
+                    className="data-[state=active]:border-b-2 data-[state=active]:bg-blue-200 rounded-2xl data-[state=active]:text"
                   >
                     Correlation Matrix
                   </TabsTrigger>

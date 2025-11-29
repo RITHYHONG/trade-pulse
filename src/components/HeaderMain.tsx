@@ -41,7 +41,7 @@ const navItems = [
   { label: 'Blog', href: '/blog', isAnchor: false },
   { label: 'Calendar', href: '/calendar'},
   { label: 'About', href: '/', isAnchor: false },
-  { label: 'Contact', href: '/contact', isAnchor: false, isComingSoon: true },
+  { label: 'Contact', href: '/contact', isAnchor: false },
 ];
 
 export function HeaderMain() {
@@ -88,22 +88,37 @@ export function HeaderMain() {
   });
 
   useEffect(() => {
-    if (!headerProfile || !user) {
+    if (!user) {
       setUserProfile(null);
       return;
     }
 
+    const cachedProfile = localStorage.getItem(`userProfile_${user.uid}`);
+    if (cachedProfile) {
+      try {
+        setUserProfile(JSON.parse(cachedProfile));
+      } catch (error) {
+        console.error('Error parsing cached user profile:', error);
+      }
+    }
+
+    if (!headerProfile) {
+      return;
+    }
+
     // Map fields to UserProfile
-    setUserProfile({
+    const profile = {
       uid: user.uid,
       displayName: headerProfile.name,
       email: user.email || '',
       bio: headerProfile.bio,
       photoURL: headerProfile.avatarUrl ?? headerProfile.avatar,
-    });
+    };
+
+    setUserProfile(profile);
+    localStorage.setItem(`userProfile_${user.uid}`, JSON.stringify(profile));
   }, [headerProfile, user]);
 
-  // Keyboard shortcut for search (Cmd+K / Ctrl+K)
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.key === '/')) {
@@ -125,15 +140,15 @@ export function HeaderMain() {
     >
       <div className="container mx-auto px-8 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <motion.a 
-              className="flex items-center gap-3"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-            >
+          <motion.div 
+            className="flex items-center gap-3"
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <Image src={Logo} width={72} height={72} alt="Logo"></Image>
-            </motion.a>
-          </Link>
+            </Link>
+          </motion.div>
 
           <nav className="hidden lg:flex items-center gap-8">
             {navItems.map((item, index) => {
@@ -166,15 +181,18 @@ export function HeaderMain() {
                 );
               } else {
                 return (
-                  <Link key={index} href={item.href}>
-                    <motion.a
+                  <motion.div
+                    key={index}
+                    whileHover={{ y: -2 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Link
+                      href={item.href}
                       className={`relative transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'}`}
-                      whileHover={{ y: -2 }}
-                      transition={{ duration: 0.2 }}
                     >
                       {item.label}
-                    </motion.a>
-                  </Link>
+                    </Link>
+                  </motion.div>
                 );
               }
             })}
@@ -280,7 +298,7 @@ export function HeaderMain() {
 
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.a
+          <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -332,14 +350,15 @@ export function HeaderMain() {
                     );
                   } else {
                     return (
-                      <Link key={index} href={item.href}>
-                        <motion.a
-                          onClick={() => setIsMenuOpen(false)}
-                          className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'}`}
-                        >
+                      <motion.div
+                        key={index}
+                        onClick={() => setIsMenuOpen(false)}
+                        className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'}`}
+                      >
+                        <Link href={item.href}>
                           {item.label}
-                        </motion.a>
-                      </Link>
+                        </Link>
+                      </motion.div>
                     );
                   }
                 })}
@@ -383,7 +402,7 @@ export function HeaderMain() {
                 )}
               </div>
             </div>
-          </motion.a>
+          </motion.div>
         )}
       </AnimatePresence>
 

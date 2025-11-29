@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { TrendingUp, Twitter, Linkedin, Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import Link from 'next/link';
 
 const footerLinks = {
   Product: [
@@ -120,12 +121,12 @@ export function Footer() {
               <ul className="space-y-4">
                 {links.map((link, linkIndex) => (
                   <li key={linkIndex}>
-                    <a 
+                    <Link
                       href={link.href}
                       className="text-muted-foreground hover:text-primary transition-colors"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

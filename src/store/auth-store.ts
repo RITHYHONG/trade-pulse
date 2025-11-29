@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { AuthUser, signUp, signIn, signInWithGoogle, signInWithGoogleRedirect, handleGoogleRedirectResult, signOutUser, resetPassword, onAuthStateChange, toAuthUser } from '../lib/auth';
 import { initializeUserProfile } from '../lib/firestore-service';
+import { clearAuthorProfileCache } from '../hooks/use-author-profile';
 
 interface AuthState {
   user: AuthUser | null;
@@ -140,6 +141,9 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
+      
+      // Clear profile cache
+      clearAuthorProfileCache();
       
       set({ user: null, loading: false });
     } catch (error) {

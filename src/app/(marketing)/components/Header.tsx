@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, TrendingUp, User, LogOut, Settings } from 'lucide-react';
+import { Menu, X, User, LogOut, Settings, Search } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useAuth } from '../../../hooks/use-auth';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,31 +25,31 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { useAuth } from '../../../hooks/use-auth';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getUserProfile, UserProfile } from '@/lib/firestore-service';
-import Logo from '../../../../public/no-bg-logo.svg'; 
+import { UserProfile } from '@/lib/firestore-service';
+import { useAuthorProfile } from '@/hooks/use-author-profile';
+import { BlogAuthor } from '@/types/blog';
+import SearchModal from '@/components/SearchModal';
+import Image from 'next/image';
 
 const navItems = [
-  { label: 'Demo', href: '#demo', isAnchor: true },
-  { label: 'Features', href: '#features', isAnchor: true },
-  { label: 'Testimonials', href: '#testimonials', isAnchor: true },
-  { label: 'Pricing', href: '/pricing', isAnchor: false },
+  // { label: 'Demo', href: '#demo', isAnchor: true },
+  // { label: 'Features', href: '#features', isAnchor: true },
+  // { label: 'Testimonials', href: '#testimonials', isAnchor: true },
+  // { label: 'Pricing', href: '/pricing', isAnchor: false },
   { label: 'Blog', href: '/blog', isAnchor: false },
-  // { label: 'About', href: '/about', isAnchor: false },
+  { label: 'Calendar', href: '/calendar'},
+  { label: 'About', href: '/', isAnchor: false },
   { label: 'Contact', href: '/contact', isAnchor: false },
 ];
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [active, setActive] = useState<string>('#demo');
   const pathname = usePathname();
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading } = useAuth();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  
 
   useEffect(() => {
     const ids = ['demo', 'features', 'testimonials', 'pricing'];
@@ -72,59 +75,60 @@ export function Header() {
     };
   }, []);
 
+  const fallbackAuthor: BlogAuthor = useMemo(() => ({
+    name: user?.displayName || user?.email?.split('@')[0] || 'User',
+    avatar: user?.photoURL ?? undefined,
+    avatarUrl: user?.photoURL ?? undefined,
+  }), [user?.displayName, user?.email, user?.photoURL]);
+
+  const { authorProfile: headerProfile } = useAuthorProfile({ 
+    authorId: user?.uid, 
+    fallbackAuthor 
+  });
+
   useEffect(() => {
     if (!user) {
       setUserProfile(null);
       return;
     }
 
-    const loadUserProfile = async () => {
-      // Check cache first (localStorage)
-      const cacheKey = `user_profile_${user.uid}`;
-      const cachedData = localStorage.getItem(cacheKey);
-      
-      if (cachedData) {
-        try {
-          const cached = JSON.parse(cachedData);
-          const cacheAge = Date.now() - cached.timestamp;
-          
-          // Use cache if less than 5 minutes old
-          if (cacheAge < 5 * 60 * 1000) {
-            setUserProfile(cached.profile);
-            // Still fetch in background to update cache
-            fetchAndCacheProfile();
-            return;
-          }
-        } catch (e) {
-          console.error('Error parsing cached profile:', e);
-        }
-      }
-      
-      // No valid cache, fetch immediately
-      await fetchAndCacheProfile();
-    };
-
-    const fetchAndCacheProfile = async () => {
+    const cachedProfile = localStorage.getItem(`userProfile_${user.uid}`);
+    if (cachedProfile) {
       try {
-        const profile = await getUserProfile(user.uid);
-        
-        if (profile) {
-          setUserProfile(profile);
-          
-          // Cache the profile
-          const cacheKey = `user_profile_${user.uid}`;
-          localStorage.setItem(cacheKey, JSON.stringify({
-            profile,
-            timestamp: Date.now()
-          }));
-        }
+        setUserProfile(JSON.parse(cachedProfile));
       } catch (error) {
-        console.error('Error loading user profile:', error);
+        console.error('Error parsing cached user profile:', error);
+      }
+    }
+
+    if (!headerProfile) {
+      return;
+    }
+
+    // Map fields to UserProfile
+    const profile = {
+      uid: user.uid,
+      displayName: headerProfile.name,
+      email: user.email || '',
+      bio: headerProfile.bio,
+      photoURL: headerProfile.avatarUrl ?? headerProfile.avatar,
+    };
+
+    setUserProfile(profile);
+    localStorage.setItem(`userProfile_${user.uid}`, JSON.stringify(profile));
+  }, [headerProfile, user]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.key === '/')) {
+        event.preventDefault();
+        setIsSearchOpen(true);
       }
     };
 
-    loadUserProfile();
-  }, [user]);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <motion.header 
@@ -135,15 +139,15 @@ export function Header() {
     >
       <div className="container mx-auto px-8 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <motion.div 
-              className="flex items-center gap-3"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Image src={Logo} width={72} height={72} alt="Logo"></Image>
-            </motion.div>
-          </Link>
+          <motion.div 
+            className="flex items-center gap-3"
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <Image src="/no-bg-logo.svg" width={72} height={72} alt="Logo"></Image>
+            </Link>
+          </motion.div>
 
           <nav className="hidden lg:flex items-center gap-8">
             {navItems.map((item, index) => {
@@ -164,31 +168,48 @@ export function Header() {
                 );
               } else {
                 return (
-                  <Link key={index} href={item.href}>
-                    <motion.div
+                  <motion.div
+                    key={index}
+                    whileHover={{ y: -2 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Link
+                      href={item.href}
                       className={`relative transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'}`}
-                      whileHover={{ y: -2 }}
-                      transition={{ duration: 0.2 }}
                     >
                       {item.label}
-                    </motion.div>
-                  </Link>
+                    </Link>
+                  </motion.div>
                 );
               }
             })}
           </nav>
 
           <div className="hidden lg:flex items-center gap-4">
+            <Button
+              size="sm"
+              onClick={() => setIsSearchOpen(true)}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground border-2"
+            >
+              <Search className="w-4 h-4" />
+              <span>Search</span>
+              <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 hover:text-foreground">
+                <span className="text-xs text-primary">/</span>
+              </kbd>
+            </Button>
+            
             {user ? (
               <div className="flex items-center gap-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button className="flex items-center gap-2 bg-none">
+                    <Button  className="flex items-center gap-2 bg-none">
                       <Avatar className="w-8 h-8">
-                        <AvatarImage 
-                          src={userProfile?.photoURL || user.photoURL || ''} 
-                          alt="Profile picture"
-                        />
+                        {((userProfile?.photoURL ?? user.photoURL) as string | undefined) && (
+                          <AvatarImage
+                            src={(userProfile?.photoURL ?? user.photoURL) as string | undefined}
+                            alt="Profile picture"
+                          />
+                        )}
                         <AvatarFallback>
                           {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
                         </AvatarFallback>
@@ -240,7 +261,7 @@ export function Header() {
             ) : (
               <>
                 <Link href={`/login?redirect=${encodeURIComponent(pathname)}`}>
-                  <Button variant="ghost" className="hover:bg-primary/90">
+                  <Button variant="ghost" className="hover:bg-card">
                     Login
                   </Button>
                 </Link>
@@ -273,6 +294,18 @@ export function Header() {
           >
             <div className="container mx-auto px-8 py-6">
               <nav className="flex flex-col gap-4 mb-6">
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setIsSearchOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 justify-start text-muted-foreground hover:text-foreground"
+                >
+                  <Search className="w-4 h-4" />
+                  <span>Search</span>
+                </Button>
+                
                 {navItems.map((item, index) => {
                   const isActive = pathname === item.href || (item.isAnchor && active === item.href);
                   
@@ -292,14 +325,15 @@ export function Header() {
                     );
                   } else {
                     return (
-                      <Link key={index} href={item.href}>
-                        <motion.div
-                          onClick={() => setIsMenuOpen(false)}
-                          className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'}`}
-                        >
+                      <motion.div
+                        key={index}
+                        onClick={() => setIsMenuOpen(false)}
+                        className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'}`}
+                      >
+                        <Link href={item.href}>
                           {item.label}
-                        </motion.div>
-                      </Link>
+                        </Link>
+                      </motion.div>
                     );
                   }
                 })}
@@ -308,56 +342,24 @@ export function Header() {
               <div className="flex flex-col gap-3">
                 {user ? (
                   <div className="flex flex-col gap-3">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="flex items-center gap-2 justify-start hover:bg-card w-full">
-                          <User className="w-4 h-4" />
-                          <span className="text-foreground">
-                            {user.displayName || user.email?.split('@')[0] || 'User'}
-                          </span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start" className="w-48">
-                        <DropdownMenuItem asChild>
-                          <Link href="/settings" className="flex items-center gap-2 cursor-pointer" onClick={() => setIsMenuOpen(false)}>
-                            <Settings className="w-4 h-4" />
-                            Settings
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <DropdownMenuItem
-                              onSelect={(e) => e.preventDefault()}
-                              className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-red-600"
-                            >
-                              <LogOut className="w-4 h-4" />
-                              Sign out
-                            </DropdownMenuItem>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                You will be redirected to the login page and will need to sign in again to access your account.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => {
-                                  signOut();
-                                  setIsMenuOpen(false);
-                                }}
-                                className="bg-red-600 hover:bg-red-700"
-                              >
-                                Sign out
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="flex items-center gap-2 py-2 px-3 bg-muted rounded-md">
+                      <User className="w-4 h-4" />
+                      <span className="text-sm text-foreground">
+                        {user.displayName || user.email?.split('@')[0] || 'User'}
+                      </span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        signOut();
+                        setIsMenuOpen(false);
+                      }}
+                      disabled={loading}
+                      className="justify-start hover:bg-card w-full"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </Button>
                   </div>
                 ) : (
                   <>
@@ -378,6 +380,12 @@ export function Header() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Search Modal */}
+      <SearchModal 
+        isOpen={isSearchOpen} 
+        onClose={() => setIsSearchOpen(false)} 
+      />
     </motion.header>
   );
 }

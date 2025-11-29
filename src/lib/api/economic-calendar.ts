@@ -1,6 +1,21 @@
 import type { EconomicCalendarEvent } from "@/types";
 import axios from 'axios';
 
+interface InvestingItem {
+  time: string;
+  event: string;
+  country: string;
+  forecast?: string;
+  previous?: string;
+  actual?: string | null;
+  impact: number;
+}
+
+interface NewsAPIArticle {
+  publishedAt: string;
+  title: string;
+}
+
 const MOCK_EVENTS: EconomicCalendarEvent[] = [
 	{
 		id: "eco-1",
@@ -56,7 +71,7 @@ async function scrapeInvestingCom(): Promise<EconomicCalendarEvent[]> {
   });
   const data = response.data;
   if (data && data.data) {
-    return data.data.map((item: any, index: number) => ({
+    return data.data.map((item: InvestingItem, index: number) => ({
       id: `inv-${index}`,
       time: item.time,
       event: item.event,
@@ -81,7 +96,7 @@ async function fallbackToFreeAPIs(): Promise<EconomicCalendarEvent[]> {
       }
     });
     const articles = response.data.articles.slice(0, 5);
-    return articles.map((article: any, index: number) => ({
+    return articles.map((article: NewsAPIArticle, index: number) => ({
       id: `news-${index}`,
       time: new Date(article.publishedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       event: article.title,
@@ -91,7 +106,7 @@ async function fallbackToFreeAPIs(): Promise<EconomicCalendarEvent[]> {
       actual: null,
       impact: 'medium' as const
     }));
-  } catch (error) {
+  } catch {
     console.error('Free API fallback failed, using mock');
     return MOCK_EVENTS;
   }
@@ -108,8 +123,8 @@ export async function getEconomicCalendar(): Promise<EconomicCalendarEvent[]> {
       cache = { data, timestamp: Date.now() };
       return data;
     }
-  } catch (error) {
-    console.error('Investing.com scraping failed, using fallback');
+  } catch {
+    // console.error('Investing.com scraping failed, using fallback');
   }
   // Fallback: Free APIs
   const data = await fallbackToFreeAPIs();

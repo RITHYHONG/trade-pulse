@@ -7,6 +7,9 @@ const profileCache = new Map<string, UserProfile | null>();
 const cacheTimestamps = new Map<string, number>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
+const LOCAL_STORAGE_PREFIX = 'authorProfile_';
+const LOCAL_STORAGE_DURATION = 60 * 60 * 1000; // 1 hour
+
 interface UseAuthorProfileOptions {
   authorId?: string;
   fallbackAuthor: BlogAuthor;
@@ -24,7 +27,33 @@ export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileO
       return;
     }
 
-    // Check cache first
+    // Check localStorage first
+    const localStorageKey = `${LOCAL_STORAGE_PREFIX}${authorId}`;
+    const cachedData = localStorage.getItem(localStorageKey);
+    if (cachedData) {
+      try {
+        const { profile, timestamp } = JSON.parse(cachedData);
+        const now = Date.now();
+        if (now - timestamp < LOCAL_STORAGE_DURATION) {
+          setAuthorProfile({
+            name: profile.displayName || fallbackAuthor.name,
+            avatar: profile.photoURL || fallbackAuthor.avatar,
+            avatarUrl: profile.photoURL || fallbackAuthor.avatarUrl,
+            bio: fallbackAuthor.bio,
+            role: fallbackAuthor.role
+          });
+          return;
+        } else {
+          // Expired, remove from localStorage
+          localStorage.removeItem(localStorageKey);
+        }
+      } catch (error) {
+        console.error('Error parsing cached author profile:', error);
+        localStorage.removeItem(localStorageKey);
+      }
+    }
+
+    // Check in-memory cache
     const now = Date.now();
     const cached = profileCache.get(authorId);
     const cacheTime = cacheTimestamps.get(authorId);
@@ -52,6 +81,13 @@ export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileO
         // Cache the result
         profileCache.set(authorId, profile);
         cacheTimestamps.set(authorId, now);
+
+        // Also cache in localStorage
+        const localStorageKey = `${LOCAL_STORAGE_PREFIX}${authorId}`;
+        localStorage.setItem(localStorageKey, JSON.stringify({
+          profile,
+          timestamp: now
+        }));
 
         if (profile) {
           setAuthorProfile({
@@ -92,4 +128,11 @@ export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileO
 export function clearAuthorProfileCache() {
   profileCache.clear();
   cacheTimestamps.clear();
+  // Clear localStorage caches
+  for (let i = localStorage.length - 1; i >= 0; i--) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith(LOCAL_STORAGE_PREFIX)) {
+      localStorage.removeItem(key);
+    }
+  }
 }
