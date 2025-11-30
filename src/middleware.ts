@@ -33,9 +33,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  if (pathname === "/" && token) {
-    return NextResponse.redirect(new URL("/blog", request.url));
-  }
+  // if (pathname === "/" && token) {
+  //   return NextResponse.redirect(new URL("/blog", request.url));
+  // }
 
   // Add security headers
   const response = NextResponse.next();

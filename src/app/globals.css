@@ -53,7 +53,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: rgb(3, 170, 199);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -134,7 +134,7 @@
   --card-foreground: #ffffff;
   --popover: #1A1D28;
   --popover-foreground: #ffffff;
-  --primary: #00F5FF;
+  --primary: rgb(3, 170, 199);
   --primary-foreground: #000000;
   --secondary: #1A1D28;
   --secondary-foreground: #ffffff;
@@ -161,7 +161,7 @@
   --radius: 0.625rem;
   --sidebar: #1A1D28;
   --sidebar-foreground: #ffffff;
-  --sidebar-primary: #00F5FF;
+  --sidebar-primary: rgb(3, 170, 199);
   --sidebar-primary-foreground: #000000;
   --sidebar-accent: #666666;
   --sidebar-accent-foreground: #ffffff;
@@ -176,7 +176,7 @@
   --card-foreground: #ffffff;
   --popover: #1A1D28;
   --popover-foreground: #ffffff;
-  --primary: #0066FF;
+  --primary: rgb(3, 170, 199);
   --primary-foreground: #ffffff;
   --secondary: #1A1D28;
   --secondary-foreground: #ffffff;
@@ -336,4 +336,22 @@ html {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  /* Common alias used across codebase */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}   
 

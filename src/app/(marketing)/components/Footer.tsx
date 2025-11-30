@@ -1,10 +1,12 @@
 "use client";
 
 import { motion } from 'motion/react';
-import { TrendingUp, Twitter, Linkedin, Mail, Phone } from 'lucide-react';
+import { TrendingUp, Linkedin, Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import Logo from '../../../../public/logo.png'; 
+import Image from 'next/image';
 
 const footerLinks = {
   Product: [
@@ -56,7 +58,7 @@ export function Footer() {
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <Input 
                 placeholder="Enter your email" 
-                className="flex-1 bg-card border-border"
+                className="flex-1 bg-card border-border h-10"
               />
               <Button className="bg-primary hover:bg-primary/90 px-8">
                 Subscribe
@@ -82,9 +84,15 @@ export function Footer() {
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-400 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
+              <motion.div 
+            className="flex items-center gap-3"
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <Image src={Logo} width={72} height={72} alt="Logo"></Image>
+            </Link>
+          </motion.div>
               <div>
                 <div className="font-bold text-xl">Trader Pulse</div>
                 <div className="text-sm text-muted-foreground">Pre-Market Intelligence</div>
@@ -97,13 +105,13 @@ export function Footer() {
             
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/10">
-                <Twitter className="w-5 h-5" />
+                <Image src="https://upload.wikimedia.org/wikipedia/commons/5/53/X_logo_2023_original.svg" width={20} height={20} alt="X" className="filter invert" />
               </Button>
               <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/10">
-                <Linkedin className="w-5 h-5" />
+                <Linkedin className="w-5 h-5" width={20} height={20} />
               </Button>
               <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/10">
-                <Mail className="w-5 h-5" />
+                <Mail className="w-5 h-5" width={20} height={20} />
               </Button>
             </div>
           </motion.div>

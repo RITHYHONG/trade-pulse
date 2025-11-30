@@ -9,7 +9,6 @@ import {
   createBlogPost,
   updateBlogPost,
   getBlogPost,
-  publishBlogPost,
   dataURLtoFile,
   type BlogPost as FirestoreBlogPost
 } from '@/lib/blog-firestore-service';
@@ -38,18 +37,11 @@ import {
   Lightbulb,
   AlertTriangle,
   Globe,
-  Settings,
-  Palette,
   Zap,
-  CheckCircle,
   AlertCircle,
-  Info,
-  ChevronDown,
-  ChevronUp,
   PanelLeftOpen,
   PanelLeftClose
 } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   DndContext,
   closestCenter,
@@ -74,6 +66,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import styles from './styles.module.css';
+import { toast } from 'sonner';
 
 // Types
 interface ContentBlock {
@@ -328,22 +321,100 @@ export default function CreatePostPage() {
   );
 
   // Auto-save functionality
+  const ensureDraftExists = useCallback(async () => {
+    if (!currentUser) return null;
+    try {
+      // Create a minimal draft so auto-save can continue - use explicit fields to satisfy service typing
+      const minimal: FirestoreBlogPost = {
+        title: post.title || 'Untitled Draft',
+        slug: post.slug || (post.title ? post.title.toLowerCase().replace(/[^a-zA-Z0-9]+/g, '-').replace(/(^-|-$)/g, '') : `draft-${Date.now()}`),
+        content: post.content || '',
+        blocks: post.blocks || [],
+        primaryAsset: post.primaryAsset || '',
+        relatedAssets: post.relatedAssets || [],
+        sentiment: post.sentiment || 'Neutral',
+        confidenceLevel: post.confidenceLevel || 70,
+        timeHorizon: post.timeHorizon || 'Swing (1-4 weeks)',
+        tags: post.tags || [],
+        category: post.category || 'Stocks',
+        metaDescription: post.metaDescription || '',
+        focusKeyword: post.focusKeyword || '',
+        featuredImage: post.featuredImage || '',
+        isDraft: true
+      } as FirestoreBlogPost;
+      const id = await createBlogPost(minimal, currentUser.uid, currentUser.email || '', currentUser.displayName || undefined);
+      setPostId(id);
+      // Update URL with the new post ID if not present
+      try {
+        const sp = new URLSearchParams(window.location.search);
+        if (!sp.get('id')) {
+          router.replace(`/create-post?id=${id}`);
+        }
+      } catch {
+        // Fall back to window history if router.replace fails
+        const searchParams = new URLSearchParams(window.location.search);
+        if (!searchParams.get('id')) {
+          searchParams.set('id', id);
+          const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
+          window.history.replaceState({}, '', newUrl);
+        }
+      }
+      return id;
+    } catch (error) {
+      console.error('Failed to create draft for auto-save:', error);
+      return null;
+    }
+  }, [currentUser, post, router]);
+
+  const uploadFeaturedImageIfNeeded = useCallback(async (currentPost: BlogPost, pId?: string) => {
+    let finalFeaturedImage = currentPost.featuredImage;
+    if (finalFeaturedImage && finalFeaturedImage.startsWith('data:')) {
+      try {
+        setIsUploading(true);
+        setUploadProgress(0);
+        const imageFile = dataURLtoFile(finalFeaturedImage, 'featured-image.jpg');
+        finalFeaturedImage = await uploadFeaturedImage(imageFile, pId || 'temp', (progress: number) => {
+          setUploadProgress(progress);
+        });
+      } catch (error) {
+        console.error('Featured image upload failed:', error);
+        toast.error('Failed to upload featured image');
+      } finally {
+        setIsUploading(false);
+        setUploadProgress(0);
+      }
+    }
+    return finalFeaturedImage;
+  }, []);
+
   const autoSave = useCallback(async () => {
     if (!post.title && !post.content) return;
     if (!currentUser) return;
-    if (!postId) return; // Only auto-save if we have a post ID (after first save)
 
     setIsSaving(true);
     try {
-      await updateBlogPost(postId, {
-        ...post
+      // If postId not set, create a minimal draft automatically
+      let id = postId;
+      if (!id) id = await ensureDraftExists();
+
+      if (!id) {
+        console.warn('Auto-save aborted: no post ID available');
+        return;
+      }
+
+      // Handle featured image upload if needed
+      const finalFeaturedImage = await uploadFeaturedImageIfNeeded(post, id);
+
+      await updateBlogPost(id, {
+        ...post,
+        featuredImage: finalFeaturedImage,
       });
     } catch (error) {
       console.error('Auto-save failed:', error);
     } finally {
       setIsSaving(false);
     }
-  }, [post, currentUser, postId]);
+  }, [post, currentUser, postId, ensureDraftExists, uploadFeaturedImageIfNeeded]);
 
   useEffect(() => {
     if (autoSaveRef.current) {
@@ -478,12 +549,12 @@ export default function CreatePostPage() {
     const maxSize = 10 * 1024 * 1024; // 10MB
 
     if (!validTypes.includes(file.type)) {
-      alert('Invalid file type. Please upload a PNG or JPG image.');
+      toast.error('Invalid file type. Please upload a PNG or JPG image.');
       return;
     }
 
     if (file.size > maxSize) {
-      alert('File too large. Maximum size is 10MB.');
+      toast.error('File too large. Maximum size is 10MB.');
       return;
     }
 
@@ -516,28 +587,18 @@ export default function CreatePostPage() {
   const handlePublish = async () => {
     // Validate required fields
     if (!post.title || !post.content || !post.primaryAsset) {
-      alert('Please fill in all required fields');
+      toast.error('Please fill in all required fields');
       return;
     }
 
     if (!currentUser) {
-      alert('You must be logged in to publish');
+      toast.error('You must be logged in to publish');
       return;
     }
 
     setIsSaving(true);
     try {
-      let finalFeaturedImage = post.featuredImage;
-
-      // If featured image is a data URL, upload it first
-      if (post.featuredImage && post.featuredImage.startsWith('data:')) {
-        setIsUploading(true);
-        setUploadProgress(0);
-        const imageFile = dataURLtoFile(post.featuredImage, 'featured-image.jpg');
-        finalFeaturedImage = await uploadFeaturedImage(imageFile, postId || 'temp', (progress: number) => {
-          setUploadProgress(progress);
-        });
-      }
+      const finalFeaturedImage = await uploadFeaturedImageIfNeeded(post, postId ?? undefined);
 
       const postData = {
         ...post,
@@ -552,11 +613,11 @@ export default function CreatePostPage() {
         setPostId(newPostId);
       }
 
-      alert('Post published successfully!');
+      toast.success('Post published successfully!');
       router.push('/blog');
     } catch (error) {
       console.error('Error publishing post:', error);
-      alert('Failed to publish post. Please try again.');
+      toast.error('Failed to publish post. Please try again.');
     } finally {
       setIsSaving(false);
       setIsUploading(false);
@@ -565,23 +626,13 @@ export default function CreatePostPage() {
 
   const handleSaveDraft = async () => {
     if (!currentUser) {
-      alert('You must be logged in to save drafts');
+      toast.error('You must be logged in to save drafts');
       return;
     }
 
     setIsSaving(true);
     try {
-      let finalFeaturedImage = post.featuredImage;
-
-      // If featured image is a data URL, upload it first
-      if (post.featuredImage && post.featuredImage.startsWith('data:')) {
-        setIsUploading(true);
-        setUploadProgress(0);
-        const imageFile = dataURLtoFile(post.featuredImage, 'featured-image.jpg');
-        finalFeaturedImage = await uploadFeaturedImage(imageFile, postId || 'temp', (progress: number) => {
-          setUploadProgress(progress);
-        });
-      }
+      const finalFeaturedImage = await uploadFeaturedImageIfNeeded(post, postId ?? undefined);
 
       const postData = {
         ...post,
@@ -598,10 +649,10 @@ export default function CreatePostPage() {
         router.push(`/create-post?id=${newPostId}`);
       }
 
-      alert('Draft saved successfully!');
+      toast.success('Draft saved successfully!');
     } catch (error) {
       console.error('Error saving draft:', error);
-      alert('Failed to save draft. Please try again.');
+      toast.error('Failed to save draft. Please try again.');
     } finally {
       setIsSaving(false);
       setIsUploading(false);
@@ -634,7 +685,7 @@ export default function CreatePostPage() {
             {/* Breadcrumb Navigation */}
             <div className="flex items-center gap-2 text-sm">
               <button
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push('/')}
                 className="text-gray-400 hover:text-[#00F5FF] transition-colors"
               >
                 Dashboard
@@ -698,8 +749,8 @@ export default function CreatePostPage() {
               <Button
                 size="sm"
                 onClick={handlePublish}
-                disabled={isSaving || isUploading}
-                className="bg-gradient-to-r from-[#00F5FF] to-[#0066FF] text-black font-semibold hover:opacity-90 disabled:opacity-50"
+                disabled={isSaving || isUploading || !post.title || !post.content || !post.primaryAsset}
+                className="bg-primary text-primary-foreground font-semibold hover:opacity-90 disabled:opacity-50"
               >
                 <Send size={16} className="mr-2" />
                 <span className="hidden sm:inline">Publish</span>
@@ -726,7 +777,7 @@ export default function CreatePostPage() {
                     <Button
                       variant="ghost"
                       onClick={() => setShowPreview(false)}
-                      className="text-gray-400 hover:text-white"
+                      className="text-gray-400 "
                     >
                       <X size={16} className="mr-2" />
                       Exit Preview
@@ -911,7 +962,7 @@ export default function CreatePostPage() {
                 </div>
                 <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-[#00F5FF] to-[#0066FF] rounded-full transition-all duration-500"
+                    className="h-full bg-primary shadow-lg shadow-primary/25 rounded-full transition-all duration-500"
                     style={{ width: `${completionPercentage}%` }}
                   />
                 </div>
@@ -926,8 +977,13 @@ export default function CreatePostPage() {
                         type="text"
                         placeholder="Write a compelling headline that captures attention..."
                         value={post.title}
-                        onChange={(e) => setPost(prev => ({ ...prev, title: e.target.value }))}
+                        onChange={(e) => {
+                          const val = e.target.value.slice(0, 70);
+                          setPost(prev => ({ ...prev, title: val }));
+                          setCharacterCount(val.length);
+                        }}
                         className="text-3xl font-bold bg-transparent border-0 p-0 text-white placeholder:text-gray-600 focus-visible:ring-0 resize-none"
+                        aria-label="Post title"
                       />
                     </div>
                     <Button
@@ -947,6 +1003,12 @@ export default function CreatePostPage() {
                       <span className={characterCount > 60 ? 'text-green-400' : 'text-yellow-400'}>
                         {characterCount}/70
                       </span>
+                      {characterCount > 60 && characterCount < 70 && (
+                        <div className="flex items-center gap-1 text-xs text-yellow-400">
+                          <AlertCircle size={12} />
+                          Close to limit
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -1144,7 +1206,7 @@ export default function CreatePostPage() {
                     </div>
                     <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-[#00F5FF] to-[#0066FF] rounded-full"
+                        className="h-full bg-[#00F5FF] rounded-full"
                         style={{ width: `${qualityScore}%` }}
                       />
                     </div>
@@ -1200,6 +1262,10 @@ export default function CreatePostPage() {
                     onClick={onPlaceholderClick}
                     onDrop={onPlaceholderDrop}
                     onDragOver={onPlaceholderDragOver}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPlaceholderClick(); } }}
+                    aria-label="Featured image preview"
                   >
                     <Image
                       src={post.featuredImage}
@@ -1229,6 +1295,10 @@ export default function CreatePostPage() {
                     onClick={onPlaceholderClick}
                     onDrop={onPlaceholderDrop}
                     onDragOver={onPlaceholderDragOver}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPlaceholderClick(); } }}
+                    aria-label="Upload featured image"
                   >
                     <Upload size={24} className="mx-auto text-gray-500 mb-2" />
                     <p className="text-sm text-gray-400">Click to upload or drag & drop</p>
@@ -1330,8 +1400,9 @@ export default function CreatePostPage() {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Overall Sentiment</label>
+                    <label htmlFor="sentiment-select" className="text-sm text-gray-400 mb-2 block">Overall Sentiment</label>
                     <select
+                      id="sentiment-select"
                       value={post.sentiment}
                       onChange={(e) => setPost(prev => ({ ...prev, sentiment: e.target.value }))}
                       className="w-full bg-[#0F1116] border border-gray-700 rounded-lg px-3 py-2 text-white"
@@ -1354,12 +1425,13 @@ export default function CreatePostPage() {
                       value={post.confidenceLevel}
                       onChange={(e) => setPost(prev => ({ ...prev, confidenceLevel: parseInt(e.target.value) }))}
                       className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                      title="Confidence Level"
                     />
                   </div>
-
                   <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Time Horizon</label>
+                    <label htmlFor="time-horizon-select" className="text-sm text-gray-400 mb-2 block">Time Horizon</label>
                     <select
+                      id="time-horizon-select"
                       value={post.timeHorizon}
                       onChange={(e) => setPost(prev => ({ ...prev, timeHorizon: e.target.value }))}
                       className="w-full bg-[#0F1116] border border-gray-700 rounded-lg px-3 py-2 text-white"
@@ -1369,9 +1441,8 @@ export default function CreatePostPage() {
                       ))}
                     </select>
                   </div>
-                </div>
-              </div>
-
+                  </div>
+                </div> 
               {/* SEO Optimization */}
               <div className="bg-[#1A1D28] rounded-xl border border-gray-800/50 p-6">
                 <div className="flex items-center gap-3 mb-4">
@@ -1433,12 +1504,12 @@ export default function CreatePostPage() {
                         className="px-3 py-1 bg-[#2D3246] text-gray-300 rounded-full text-sm flex items-center gap-2"
                       >
                         #{tag}
-                        <button
+                        <Button
                           onClick={() => removeTag(tag)}
                           className="hover:text-red-400"
                         >
                           <X size={14} />
-                        </button>
+                        </Button>
                       </span>
                     ))}
                   </div>

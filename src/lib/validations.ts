@@ -55,8 +55,51 @@ export const contactSchema = z.object({
     .max(1000, 'Message must be less than 1000 characters'),
 });
 
+// New contact schemas for Trader's Daily Edge
+export const supportFormSchema = z.object({
+  name: z.string().min(2, 'Name is required').max(100),
+  email: z.string().email('Valid email required'),
+  subject: z.string().min(5, 'Subject is required'),
+  urgency: z.enum(['Low - General question', 'Medium - Feature not working', 'High - Cannot access platform', 'Critical - Platform down']),
+  platform: z.enum(['Web Dashboard', 'Mobile App', 'Both']),
+  description: z.string().min(20, 'Please provide more details'),
+  attachments: z.array(z.instanceof(File)).optional(),
+});
+
+export const partnershipsSchema = z.object({
+  name: z.string().min(2, 'Name is required'),
+  email: z.string().email('Valid email required'),
+  subject: z.string().min(5, 'Subject is required'),
+  company: z.string().min(2, 'Company name is required'),
+  role: z.string().min(2, 'Role is required'),
+  useCase: z.string().min(20, 'Please describe your use case'),
+  timeline: z.enum(['Exploring options', '1-3 months', '3-6 months', '6+ months']),
+});
+
+export const generalInquiriesSchema = z.object({
+  name: z.string().min(2, 'Name is required'),
+  email: z.string().email('Valid email required'),
+  subject: z.string().min(5, 'Subject is required'),
+  inquiryType: z.enum(['Billing Question', 'Account Management', 'Feature Request', 'Platform Feedback', 'Other']),
+  message: z.string().min(10, 'Message is required'),
+});
+
+export const pressMediaSchema = z.object({
+  name: z.string().min(2, 'Name is required'),
+  email: z.string().email('Valid email required'),
+  subject: z.string().min(5, 'Subject is required'),
+  outlet: z.string().min(2, 'Media outlet is required'),
+  deadline: z.string().optional(),
+  requestType: z.enum(['Interview Request', 'Media Kit', 'Press Release', 'Quote Request', 'Speaking Engagement']),
+  details: z.string().min(20, 'Please provide details'),
+});
+
 // Type exports
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type SignInFormData = z.infer<typeof signInSchema>;
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 export type ContactFormData = z.infer<typeof contactSchema>;
+export type SupportFormData = z.infer<typeof supportFormSchema>;
+export type PartnershipsFormData = z.infer<typeof partnershipsSchema>;
+export type GeneralInquiriesFormData = z.infer<typeof generalInquiriesSchema>;
+export type PressMediaFormData = z.infer<typeof pressMediaSchema>;

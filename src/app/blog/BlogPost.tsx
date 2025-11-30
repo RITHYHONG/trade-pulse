@@ -54,7 +54,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
             <Link href="/blog">
               <Button
                 variant="ghost"
-                className="group text-gray-400 hover:text-white transition-all duration-300 cursor-pointer"
+                className="group text-gray-400 hover:[#004050] transition-all duration-300 cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
                 <span className="hidden sm:inline">Back to Articles</span>

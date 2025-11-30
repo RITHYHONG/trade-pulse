@@ -73,7 +73,7 @@ export function Header({ filters, onFiltersChange, eventCount, highImpactCount }
               <TrendingUp className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl">Economic Calendar Intelligence</h1>
+              <h1 className="text-xl font-bold">Economic Calendar Intelligence</h1>
               <p className="text-sm text-slate-400">
                 {eventCount} events • {highImpactCount} high impact
               </p>

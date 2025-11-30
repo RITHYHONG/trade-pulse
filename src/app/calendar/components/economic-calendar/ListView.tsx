@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { EconomicEvent } from './types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -121,9 +121,8 @@ export function ListView({ events, onEventClick }: ListViewProps) {
               {sortedEvents.map(event => {
                 const SentimentIcon = sentimentIcon[event.historicalData.directionBias];
                 const isExpanded = expandedRow === event.id;
-
                 return (
-                  <>
+                  <Fragment key={event.id}>
                     <TableRow 
                       key={event.id}
                       className="border-slate-800 hover:bg-slate-800 cursor-pointer transition-colors"
@@ -228,7 +227,7 @@ export function ListView({ events, onEventClick }: ListViewProps) {
 
                     {/* Expanded Row */}
                     {isExpanded && (
-                      <TableRow className="border-slate-800 bg-slate-800/50">
+                      <TableRow key={`${event.id}-expanded`} className="border-slate-800 bg-slate-800/50">
                         <TableCell colSpan={9} className="p-6">
                           <div className="grid grid-cols-3 gap-6">
                             {/* Historical Analysis */}
@@ -307,8 +306,8 @@ export function ListView({ events, onEventClick }: ListViewProps) {
                                 <div className="mt-3">
                                   <div className="text-xs text-slate-400 mb-2">Correlated Assets:</div>
                                   <div className="flex flex-wrap gap-1">
-                                    {event.tradingSetup.correlatedAssets.slice(0, 4).map((asset, i) => (
-                                      <Badge key={i} variant="outline" className="text-xs border-slate-700">
+                                    {event.tradingSetup.correlatedAssets.slice(0, 4).map((asset) => (
+                                      <Badge key={asset} variant="outline" className="text-xs border-slate-700">
                                         {asset}
                                       </Badge>
                                     ))}
@@ -320,7 +319,7 @@ export function ListView({ events, onEventClick }: ListViewProps) {
                         </TableCell>
                       </TableRow>
                     )}
-                  </>
+                  </Fragment>
                 );
               })}
             </TableBody>

@@ -172,7 +172,7 @@ export function HeaderMain() {
                     key={index}
                     href={item.href}
                     onClick={() => setActive(item.href)}
-                    className={`relative transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'}`}
+                    className={`relative transition-colors ${isActive ? 'text-primary font-semibold border-b-2 border-primary pb-1' : 'text-foreground hover:text-primary'}`}
                     whileHover={{ y: -2 }}
                     transition={{ duration: 0.2 }}
                   >
@@ -188,7 +188,7 @@ export function HeaderMain() {
                   >
                     <Link
                       href={item.href}
-                      className={`relative transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'}`}
+                      className={`relative transition-colors ${isActive ? 'text-primary font-semibold border-b-2 border-primary pb-1' : 'text-foreground hover:text-primary'}`}
                     >
                       {item.label}
                     </Link>
@@ -343,7 +343,7 @@ export function HeaderMain() {
                           setIsMenuOpen(false);
                           setActive(item.href);
                         }}
-                        className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'}`}
+                        className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold border-b-2 border-primary' : 'text-foreground hover:text-primary'}`}
                       >
                         {item.label}
                       </motion.a>
@@ -353,7 +353,7 @@ export function HeaderMain() {
                       <motion.div
                         key={index}
                         onClick={() => setIsMenuOpen(false)}
-                        className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'}`}
+                        className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold border-b-2 border-primary' : 'text-foreground hover:text-primary'}`}
                       >
                         <Link href={item.href}>
                           {item.label}

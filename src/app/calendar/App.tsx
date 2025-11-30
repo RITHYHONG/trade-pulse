@@ -205,15 +205,15 @@ export default function App() {
             <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)} className="flex-1 flex flex-col min-h-0">
               <div className="border-b border-slate-800 bg-slate-950 px-6 py-3">
                 <TabsList className="bg-slate-900">
-                  <TabsTrigger value="timeline" className="data-[state=active]:bg-blue-600">
+                  <TabsTrigger value="timeline" className="data-[state=active]:border-b-2 data-[state=active]:bg-primary rounded-2xl text-primary-foreground">
                     <BarChart3 className="w-4 h-4 mr-2" />
                     Timeline
                   </TabsTrigger>
-                  <TabsTrigger value="heatmap" className="data-[state=active]:bg-blue-600">
+                  <TabsTrigger value="heatmap" className="data-[state=active]:border-b-2 data-[state=active]:bg-primary rounded-2xl text-primary-foreground">
                     <Grid3x3 className="w-4 h-4 mr-2" />
                     Heat Map
                   </TabsTrigger>
-                  <TabsTrigger value="list" className="data-[state=active]:bg-blue-600">
+                    <TabsTrigger value="list" className="data-[state=active]:border-b-2 data-[state=active]:bg-primary rounded-2xl text-primary my-auto">
                     <List className="w-4 h-4 mr-2" />
                     List View
                   </TabsTrigger>
