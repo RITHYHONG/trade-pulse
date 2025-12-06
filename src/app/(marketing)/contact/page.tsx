@@ -667,7 +667,7 @@ export default function ContactPage() {
             {!selectedMethod && (
               <Card className="bg-[#1A1D28] border-[#2D3246]">
                 <CardContent className="text-center py-12">
-                  <p className="text-gray-400">Select a contact method above to get started</p>
+                  <p className="text-gray-400">Select a contact method below to get started</p>
                 </CardContent>
               </Card>
             )}
