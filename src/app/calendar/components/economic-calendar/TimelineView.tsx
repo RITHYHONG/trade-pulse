@@ -6,9 +6,10 @@ import { Clock, MapPin } from 'lucide-react';
 interface TimelineViewProps {
   events: EconomicEvent[];
   onEventClick: (event: EconomicEvent) => void;
+  isLoading?: boolean;
 }
 
-export function TimelineView({ events, onEventClick }: TimelineViewProps) {
+export function TimelineView({ events, onEventClick, isLoading = false }: TimelineViewProps) {
   // Group events by hour
   const eventsByHour = events.reduce((acc, event) => {
     const hour = event.datetime.getHours();
@@ -39,6 +40,36 @@ export function TimelineView({ events, onEventClick }: TimelineViewProps) {
     Asia: 'bg-red-600',
     EM: 'bg-green-600'
   };
+
+  if (isLoading) {
+    const hours = [8, 9, 10, 11, 12];
+    return (
+      <ScrollArea className="h-full">
+        <div className="p-6">
+          <div className="mb-6 flex items-center gap-4">
+            <Clock className="w-5 h-5 text-blue-400" />
+            <h3 className="text-lg text-white">Timeline View</h3>
+          </div>
+
+          <div className="space-y-1">
+            {hours.map(hour => (
+              <div key={hour} className="flex items-start gap-4">
+                <div className="w-20 flex-shrink-0 pt-2">
+                  <div className="h-4 w-12 bg-slate-700 rounded-md animate-pulse" />
+                </div>
+                <div className="flex-1 min-h-[60px] relative">
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-800" />
+                  <div className="pl-6 py-2">
+                    <div className="h-8 bg-slate-800 rounded-md p-3 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </ScrollArea>
+    );
+  }
 
   return (
     <ScrollArea className="h-full">

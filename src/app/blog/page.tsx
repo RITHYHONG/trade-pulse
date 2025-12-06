@@ -19,7 +19,9 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen bg-[#0F1116] text-white">
       <HeaderMain />
-      <BlogIndex initialPosts={blogPosts} />
+      <main id="main-content">
+        <BlogIndex initialPosts={blogPosts} />
+      </main>
     </div>
   );
 }

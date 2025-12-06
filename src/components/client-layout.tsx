@@ -2,6 +2,7 @@
 
 import { SessionManager } from './session-manager';
 import ChatbotModal from './ai/chatbot';
+import { ThemeProvider } from './providers/theme-provider';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -12,10 +13,10 @@ interface ClientLayoutProps {
  */
 export function ClientLayout({ children }: ClientLayoutProps) {
   return (
-    <>
+    <ThemeProvider>
       <SessionManager />
       {children}
       <ChatbotModal />
-    </>
+    </ThemeProvider>
   );
 }

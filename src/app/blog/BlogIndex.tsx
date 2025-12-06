@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { FeaturedCarousel } from './FeaturedCarousel';
 import { CategoryFilter } from './CategoryFilter';
-import { BlogCard } from './BlogCard';
+import { BlogCard, BlogCardSkeleton } from './BlogCard';
 import { NewsletterCTA } from './NewsletterCTA';
 import { AdPlaceholder } from './AdPlaceholder';
 import { Button } from '@/components/ui/button';
@@ -141,7 +141,7 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
              */}
             <div className="absolute right-0 top-0 mt-12">
               <Link href="/create-post">
-                <Button className="bg-[#00F5FF] text-black hover:bg-[#00F5FF]/90">
+                <Button className="bg-primary text-black hover:bg-[#00F5FF]/90 flex justify-center items-center">
                   <PenSquare className="mr-2 h-4 w-4" />
                   Create Post
                 </Button>
@@ -154,7 +154,7 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
       {/* Featured Posts Carousel */}
       <section className="py-12 mt-10">
         <div className="container mx-auto px-4">
-          <FeaturedCarousel posts={featuredPosts} />
+          <FeaturedCarousel posts={featuredPosts} isLoading={isLoading} />
         </div>
       </section>
 
@@ -177,10 +177,13 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
           {/* Main Content Grid */}
           <main className="flex-1">
             {isLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="text-center">
-                  <div className="w-12 h-12 border-4 border-[#00F5FF] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                  <p className="text-gray-400">Loading posts...</p>
+              <div className="py-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {Array.from({ length: postsPerPage }).map((_, index) => (
+                    <div key={index}>
+                      <BlogCardSkeleton />
+                    </div>
+                  ))}
                 </div>
               </div>
             ) : posts.length === 0 ? (
@@ -197,7 +200,7 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
                   {postsWithAds.map((item) => {
                     if ('type' in item && item.type === 'ad') {
                       return (

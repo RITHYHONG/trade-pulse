@@ -208,6 +208,7 @@ export function AlertSystem() {
                   size="icon"
                   className="w-8 h-8 hover:bg-slate-900"
                   onClick={() => deleteAlert(alert.id)}
+                  aria-label="Delete alert"
                 >
                   <X className="w-4 h-4" />
                 </Button>

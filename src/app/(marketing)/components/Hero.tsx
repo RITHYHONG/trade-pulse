@@ -37,7 +37,7 @@ export function Hero() {
             >
               <h1 className="text-5xl lg:text-6xl xl:text-7xl tracking-tight font-bold">
                 See{' '}
-                <span className="bg-gradient-to-r from-primary via-teal-400 to-primary bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-white to-primary bg-clip-text text-transparent">
                    the Pulse
                 </span>
                 <br />
@@ -116,11 +116,14 @@ export function Hero() {
 
               {/* Dashboard content */}
               <div className="space-y-6">
-                <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1711637397406-0c5fe8165dc6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaW5hbmNpYWwlMjBjaGFydHMlMjBkYXRhfGVufDF8fHx8MTc1OTIzMjE1MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                  alt="Trading Dashboard"
-                  className="w-full h-64 object-cover rounded-lg border border-border"
-                />
+                <div className="w-full h-64 relative rounded-lg border border-border overflow-hidden">
+                  <ImageWithFallback
+                    src="https://images.unsplash.com/photo-1711637397406-0c5fe8165dc6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaW5hbmNpYWwlMjBjaGFydHMlMjBkYXRhfGVufDF8fHx8MTc1OTIzMjE1MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                    alt="Trading Dashboard"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
                 
                 {/* Live data indicators */}
                 <div className="grid grid-cols-3 gap-4">

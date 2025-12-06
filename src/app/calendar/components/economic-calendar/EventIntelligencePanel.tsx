@@ -66,7 +66,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               })}
             </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-slate-800">
+          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-slate-800" aria-label="Close panel">
             <X className="w-5 h-5" />
           </Button>
         </div>

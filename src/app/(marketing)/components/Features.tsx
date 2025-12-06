@@ -60,7 +60,7 @@ export function Features() {
         >
           <h2 className="text-4xl lg:text-5xl mb-6 font-bold">
             Features That Give {' '}
-            <span className="bg-gradient-to-r from-primary to-teal-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-white to-primary bg-clip-text text-transparent">
               You The Edge
             </span>
           </h2>
@@ -104,11 +104,14 @@ export function Features() {
               {/* Image */}
               <div className={`relative ${feature.reverse ? 'lg:col-start-1' : ''}`}>
                 <div className="relative bg-card/50 rounded-2xl p-6 border border-border backdrop-blur-sm">
-                  <ImageWithFallback
-                    src={feature.image}
-                    alt={feature.title}
-                    className="w-full h-80 object-cover rounded-xl"
-                  />
+                  <div className="w-full h-48 sm:h-64 md:h-80 relative rounded-xl overflow-hidden">
+                    <ImageWithFallback
+                      src={feature.image}
+                      alt={feature.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                   
                   {/* Overlay badge */}
                   <div className="absolute top-8 right-8 bg-primary/90 text-primary-foreground px-3 py-1 rounded-full text-sm backdrop-blur-sm">

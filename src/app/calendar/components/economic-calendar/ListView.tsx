@@ -25,9 +25,10 @@ import {
 interface ListViewProps {
   events: EconomicEvent[];
   onEventClick: (event: EconomicEvent) => void;
+  isLoading?: boolean;
 }
 
-export function ListView({ events, onEventClick }: ListViewProps) {
+export function ListView({ events, onEventClick, isLoading = false }: ListViewProps) {
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'time' | 'impact' | 'name'>('time');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -74,6 +75,65 @@ export function ListView({ events, onEventClick }: ListViewProps) {
     bearish: TrendingDown,
     neutral: Activity
   };
+
+  if (isLoading) {
+    return (
+      <ScrollArea className="h-full">
+        <div className="p-6">
+          <div className="bg-slate-900 rounded-lg overflow-hidden border border-slate-800">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-slate-800 hover:bg-slate-900">
+                  <TableHead className="w-[50px]"></TableHead>
+                  <TableHead>Time</TableHead>
+                  <TableHead>Impact</TableHead>
+                  <TableHead>Event</TableHead>
+                  <TableHead>Country</TableHead>
+                  <TableHead className="text-center">Consensus</TableHead>
+                  <TableHead className="text-center">Previous</TableHead>
+                  <TableHead className="text-center">Expected Move</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <TableRow key={i} className="border-slate-800">
+                    <TableCell>
+                      <div className="h-4 w-4 bg-slate-700 rounded-full animate-pulse" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-20 bg-slate-700 rounded-md animate-pulse" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-16 bg-slate-700 rounded-md animate-pulse" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-48 bg-slate-700 rounded-md animate-pulse" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-20 bg-slate-700 rounded-md animate-pulse" />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="h-4 w-12 bg-slate-700 rounded-md animate-pulse mx-auto" />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="h-4 w-12 bg-slate-700 rounded-md animate-pulse mx-auto" />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="h-4 w-12 bg-slate-700 rounded-md animate-pulse mx-auto" />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="h-8 w-8 bg-slate-700 rounded-md animate-pulse ml-auto" />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      </ScrollArea>
+    );
+  }
 
   return (
     <ScrollArea className="h-full">
@@ -133,6 +193,7 @@ export function ListView({ events, onEventClick }: ListViewProps) {
                           variant="ghost" 
                           size="icon"
                           className="w-8 h-8"
+                          aria-label={isExpanded ? "Collapse row" : "Expand row"}
                         >
                           {isExpanded ? (
                             <ChevronUp className="w-4 h-4" />
@@ -202,6 +263,7 @@ export function ListView({ events, onEventClick }: ListViewProps) {
                               e.stopPropagation();
                               onEventClick(event);
                             }}
+                            aria-label="View event details"
                           >
                             <BarChart2 className="w-4 h-4" />
                           </Button>
@@ -210,6 +272,7 @@ export function ListView({ events, onEventClick }: ListViewProps) {
                             size="icon"
                             className="w-8 h-8 hover:text-yellow-400"
                             onClick={(e) => e.stopPropagation()}
+                            aria-label="Star event"
                           >
                             <Star className="w-4 h-4" />
                           </Button>
@@ -218,6 +281,7 @@ export function ListView({ events, onEventClick }: ListViewProps) {
                             size="icon"
                             className="w-8 h-8 hover:text-green-400"
                             onClick={(e) => e.stopPropagation()}
+                            aria-label="Set alert"
                           >
                             <Bell className="w-4 h-4" />
                           </Button>

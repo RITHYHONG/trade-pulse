@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Header } from './components/economic-calendar/Header';
+import { HeaderMain } from '@/components/HeaderMain';
 import { FilterSidebar } from './components/economic-calendar/FilterSidebar';
 import { TimelineView } from './components/economic-calendar/TimelineView';
 import { HeatMapView } from './components/economic-calendar/HeatMapView';
@@ -10,7 +10,7 @@ import { AlertSystem } from './components/economic-calendar/AlertSystem';
 import { CorrelationMatrix } from './components/economic-calendar/CorrelationMatrix';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, BarChart3, Grid3x3, List } from 'lucide-react';
+import { ChevronLeft, ChevronRight, BarChart3, Grid3x3, List, Filter } from 'lucide-react';
 import { mockEconomicEvents, mockCentralBankEvents } from './components/economic-calendar/mockData';
 import { FilterState, EconomicEvent, ViewMode, Region, EventCategory } from './components/economic-calendar/types';
 import { getEconomicCalendar } from '@/lib/api/economic-calendar';
@@ -18,9 +18,11 @@ import { EconomicCalendarEvent } from '@/types';
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EconomicEvent | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('timeline');
   const [events, setEvents] = useState<EconomicEvent[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<FilterState>({
     dateRange: 'week',
     impacts: ['high', 'medium', 'low'],
@@ -32,8 +34,21 @@ export default function App() {
   });
 
   useEffect(() => {
+    function updateIsMobile() {
+      const width = window.innerWidth || 0;
+      setIsMobile(width < 1024);
+      if (width < 1024) setSidebarOpen(false);
+      else setSidebarOpen(true);
+    }
+    updateIsMobile();
+    window.addEventListener('resize', updateIsMobile);
+    return () => window.removeEventListener('resize', updateIsMobile);
+  }, []);
+
+  useEffect(() => {
     const fetchEvents = async () => {
       try {
+        setIsLoading(true);
         const calendarEvents = await getEconomicCalendar();
         const mappedEvents = calendarEvents.map(mapToEconomicEvent);
         setEvents(mappedEvents);
@@ -41,6 +56,8 @@ export default function App() {
         console.error('Failed to fetch events', error);
         // Fallback to mock
         setEvents(mockEconomicEvents);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchEvents();
@@ -161,16 +178,10 @@ export default function App() {
 
   return (
     <div className="h-screen flex flex-col bg-slate-950">
-      {/* Header */}
-      <Header
-        filters={filters}
-        onFiltersChange={handleFiltersChange}
-        eventCount={filteredEvents.length}
-        highImpactCount={highImpactCount}
-      />
+      <HeaderMain />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex overflow-hidden relative min-h-0">
+      <main id="main-content" className="flex-1 flex overflow-hidden relative min-h-0">
         {/* Sidebar Toggle Button */}
         {!sidebarOpen && (
           <Button
@@ -178,23 +189,42 @@ export default function App() {
             size="icon"
             className="absolute left-0 top-1/2 -translate-y-1/2 z-40 bg-slate-900 border border-slate-800 rounded-r-lg rounded-l-none hover:bg-slate-800"
             onClick={() => setSidebarOpen(true)}
+            aria-label="Open sidebar"
           >
             <ChevronRight className="w-4 h-4 text-white" />
           </Button>
         )}
 
-        {/* Filter Sidebar */}
-        {sidebarOpen && (
-          <div className="relative h-full">
-            <FilterSidebar filters={filters} onFiltersChange={handleFiltersChange} />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute -right-4 top-1/2 -translate-y-1/2 z-40 bg-slate-900 border border-slate-800 rounded-lg hover:bg-slate-800"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <ChevronLeft className="w-4 h-4 text-white" />
-            </Button>
+        {/* Filter Sidebar - show inline on lg, overlay on mobile */}
+        {/* Desktop: show sidebar in layout */}
+        <div className="hidden lg:block relative h-full">
+          {sidebarOpen && (
+            <div className="relative h-full">
+              <FilterSidebar filters={filters} onFiltersChange={handleFiltersChange} />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute -right-4 top-1/2 -translate-y-1/2 z-40 bg-slate-900 border border-slate-800 rounded-lg hover:bg-slate-800"
+                onClick={() => setSidebarOpen(false)}
+                aria-label="Close sidebar"
+              >
+                <ChevronLeft className="w-4 h-4 text-white" />
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile: show overlay when sidebarOpen */}
+        {isMobile && sidebarOpen && (
+          <div className="fixed inset-0 z-50 flex bg-slate-950/90 p-4">
+            <div className="w-full md:w-80 bg-transparent">
+              <FilterSidebar filters={filters} onFiltersChange={handleFiltersChange} />
+            </div>
+            <div className="absolute top-6 right-6">
+              <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} aria-label="Close sidebar">
+                <ChevronLeft className="w-4 h-4 text-white rotate-180" />
+              </Button>
+            </div>
           </div>
         )}
 
@@ -202,6 +232,15 @@ export default function App() {
         <div className="flex-1 flex h-full overflow-auto">
           {/* Left Section - View Tabs */}
           <div className="flex-1 flex flex-col border-r border-slate-800">
+            {/* Mobile filter toggle */}
+            {isMobile && (
+              <div className="px-4 py-3 border-b border-slate-800 bg-slate-950">
+                <Button variant="outline" size="sm" onClick={() => setSidebarOpen(true)}>
+                  <Filter className="w-4 h-4 mr-2" />
+                  Filters
+                </Button>
+              </div>
+            )}
             <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)} className="flex-1 flex flex-col min-h-0">
               <div className="border-b border-slate-800 bg-slate-950 px-6 py-3">
                 <TabsList className="bg-slate-900">
@@ -222,15 +261,15 @@ export default function App() {
 
               <div className="overflow-y-auto flex-1">
                 <TabsContent value="timeline" className="h-full m-0">
-                  <TimelineView events={filteredEvents} onEventClick={handleEventClick} />
+                  <TimelineView events={filteredEvents} onEventClick={handleEventClick} isLoading={isLoading} />
                 </TabsContent>
 
                 <TabsContent value="heatmap" className="h-full m-0">
-                  <HeatMapView events={filteredEvents} onEventClick={handleEventClick} />
+                  <HeatMapView events={filteredEvents} onEventClick={handleEventClick} isLoading={isLoading} />
                 </TabsContent>
 
                 <TabsContent value="list" className="h-full m-0">
-                  <ListView events={filteredEvents} onEventClick={handleEventClick} />
+                  <ListView events={filteredEvents} onEventClick={handleEventClick} isLoading={isLoading} />
                 </TabsContent>
               </div>
             </Tabs>
@@ -286,7 +325,7 @@ export default function App() {
             onClose={() => setSelectedEvent(null)}
           />
         )}
-      </div>
+      </main>
     </div>
   );
 }

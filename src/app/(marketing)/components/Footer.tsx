@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from 'react';
+import { toast } from 'sonner';
 import { motion } from 'motion/react';
-import { TrendingUp, Linkedin, Mail, Phone } from 'lucide-react';
+import { Linkedin, Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
@@ -36,6 +38,27 @@ const footerLinks = {
 };
 
 export function Footer() {
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubscribe = async () => {
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success('Thank you for subscribing! Check your inbox for confirmation.');
+      setEmail('');
+    } catch {
+      toast.error('Failed to subscribe. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <footer className="bg-gradient-to-b from-background to-card/50 border-t border-border">
       {/* Newsletter Section */}
@@ -59,9 +82,16 @@ export function Footer() {
               <Input 
                 placeholder="Enter your email" 
                 className="flex-1 bg-card border-border h-10"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
               />
-              <Button className="bg-primary hover:bg-primary/90 px-8">
-                Subscribe
+              <Button 
+                className="bg-primary hover:bg-primary/90 px-8"
+                onClick={handleSubscribe}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Subscribing...' : 'Subscribe'}
               </Button>
             </div>
             

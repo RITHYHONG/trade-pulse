@@ -86,7 +86,7 @@ export function Pricing() {
         >
           <h2 className="text-4xl lg:text-5xl mb-6 font-bold">
             Choose Your{' '}
-            <span className="bg-gradient-to-r from-primary to-teal-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-white to-primary bg-clip-text text-transparent">
               Trading Edge
             </span>
           </h2>

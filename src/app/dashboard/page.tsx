@@ -25,16 +25,18 @@ async function WatchlistSection() {
 
 export default async function DashboardPage() {
   return (
-    <WidgetGrid className="pb-12">
-      <Suspense fallback={<Skeleton className="h-[360px]" />}>
-        <AISummarySection />
-      </Suspense>
-      <Suspense fallback={<Skeleton className="h-[360px]" />}>
-        <EconomicCalendarSection />
-      </Suspense>
-      <Suspense fallback={<Skeleton className="h-[360px]" />}>
-        <WatchlistSection />
-      </Suspense>
-    </WidgetGrid>
+    <main id="main-content">
+      <WidgetGrid className="pb-12">
+        <Suspense fallback={<Skeleton className="h-[360px]" />}>
+          <AISummarySection />
+        </Suspense>
+        <Suspense fallback={<Skeleton className="h-[360px]" />}>
+          <EconomicCalendarSection />
+        </Suspense>
+        <Suspense fallback={<Skeleton className="h-[360px]" />}>
+          <WatchlistSection />
+        </Suspense>
+      </WidgetGrid>
+    </main>
   );
 }

@@ -6,6 +6,7 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
 import { useAuthorProfile } from '@/hooks/use-author-profile';
 import { useMemo } from 'react';
+import { Skeleton, SkeletonText, SkeletonImage } from '@/components/ui/skeleton';
 
 interface BlogCardProps {
   post: BlogPost;
@@ -35,8 +36,9 @@ export function BlogCard({ post }: BlogCardProps) {
           <ImageWithFallback
             src={post.featuredImage}
             alt={post.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
         
         {/* Category Overlay */}
         <div className="absolute top-3 left-3">
@@ -108,5 +110,30 @@ export function BlogCard({ post }: BlogCardProps) {
       </div>
     </article>
     </Link>
+  );
+}
+
+export function BlogCardSkeleton() {
+  return (
+    <article className="bg-[#1A1D28] border border-[#2D3246] rounded-xl overflow-hidden group flex flex-col h-full">
+      <div className="relative aspect-[3/2] overflow-hidden">
+        <SkeletonImage className="w-full h-full" />
+      </div>
+
+      <div className="p-6 flex flex-col flex-1">
+        <SkeletonText className="h-6 w-3/4 mb-4" />
+        <SkeletonText className="h-4 w-full mb-4" />
+        <div className="mt-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Skeleton className="w-8 h-8 rounded-full" />
+            <div>
+              <SkeletonText className="h-4 w-24 mb-2" />
+              <SkeletonText className="h-3 w-16" />
+            </div>
+          </div>
+          <SkeletonText className="h-4 w-10" />
+        </div>
+      </div>
+    </article>
   );
 }

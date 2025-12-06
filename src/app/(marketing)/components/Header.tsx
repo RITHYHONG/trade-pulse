@@ -32,16 +32,7 @@ import { BlogAuthor } from '@/types/blog';
 import SearchModal from '@/components/SearchModal';
 import Image from 'next/image';
 
-const navItems = [
-  // { label: 'Demo', href: '#demo', isAnchor: true },
-  // { label: 'Features', href: '#features', isAnchor: true },
-  // { label: 'Testimonials', href: '#testimonials', isAnchor: true },
-  // { label: 'Pricing', href: '/pricing', isAnchor: false },
-  { label: 'Blogd', href: '/blog', isAnchor: false },
-  { label: 'Calendar', href: '/calendar'},
-  { label: 'About', href: '/', isAnchor: false },
-  { label: 'Contact', href: '/contact', isAnchor: false },
-];
+import navItems from '@/config/navigation';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

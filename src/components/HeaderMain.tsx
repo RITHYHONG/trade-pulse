@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Menu, X, TrendingUp, User, LogOut, Settings, Search } from 'lucide-react';
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../hooks/use-auth';
 import {
@@ -31,18 +32,9 @@ import { useAuthorProfile } from '@/hooks/use-author-profile';
 import { BlogAuthor } from '@/types/blog';
 import SearchModal from './SearchModal';
 import Logo from '../../public/no-bg-logo.svg'; 
+import navItems from '@/config/navigation';
 import Image from 'next/image';
 
-const navItems = [
-  // { label: 'Demo', href: '#demo', isAnchor: true },
-  // { label: 'Features', href: '#features', isAnchor: true },
-  // { label: 'Testimonials', href: '#testimonials', isAnchor: true },
-  // { label: 'Pricing', href: '/pricing', isAnchor: false },
-  { label: 'Blog', href: '/blog', isAnchor: false },
-  { label: 'Calendar', href: '/calendar'},
-  { label: 'About', href: '/', isAnchor: false },
-  { label: 'Contact', href: '/contact', isAnchor: false },
-];
 
 export function HeaderMain() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -199,6 +191,7 @@ export function HeaderMain() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-4">
+            <ThemeToggle />
             <Button
               size="sm"
               onClick={() => setIsSearchOpen(true)}
@@ -307,6 +300,10 @@ export function HeaderMain() {
           >
             <div className="container mx-auto px-8 py-6">
               <nav className="flex flex-col gap-4 mb-6">
+                <div className="flex items-center justify-between pb-2 border-b border-border">
+                  <span className="text-sm font-medium text-muted-foreground">Appearance</span>
+                  <ThemeToggle />
+                </div>
                 <Button
                   variant="ghost"
                   onClick={() => {

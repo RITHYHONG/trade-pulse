@@ -25,6 +25,7 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} ${poppins.variable} bg-slate-950 text-slate-100 antialiased`}
       >
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-cyan-500 text-white px-4 py-2 rounded-md z-50">Skip to main content</a>
         <ClientLayout>
           <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.25),_transparent_55%)]">
             <header className="sr-only">

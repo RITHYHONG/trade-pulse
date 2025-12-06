@@ -7,9 +7,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 interface HeatMapViewProps {
   events: EconomicEvent[];
   onEventClick: (event: EconomicEvent) => void;
+  isLoading?: boolean;
 }
 
-export function HeatMapView({ events, onEventClick }: HeatMapViewProps) {
+export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMapViewProps) {
   // Group events by hour and region
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const regions: Region[] = ['US', 'EU', 'UK', 'Asia', 'EM'];
@@ -52,6 +53,45 @@ export function HeatMapView({ events, onEventClick }: HeatMapViewProps) {
     Asia: 'Asia Pacific',
     EM: 'Emerging Markets'
   };
+
+  if (isLoading) {
+    const hours = Array.from({ length: 12 }, (_, i) => 8 + i);
+    const regions: Region[] = ['US', 'EU', 'UK', 'Asia', 'EM'];
+    return (
+      <ScrollArea className="h-full">
+        <div className="p-6">
+          <div className="mb-6 flex items-center gap-4">
+            <Flame className="w-5 h-5 text-orange-400" />
+            <h3 className="text-lg text-white">Heat Map View</h3>
+          </div>
+
+          <div className="bg-slate-900 rounded-lg p-4 overflow-x-auto">
+            <div className="min-w-max">
+              <div className="flex mb-2">
+                <div className="w-32 flex-shrink-0" />
+                {hours.map(hour => (
+                  <div key={hour} className="w-12 text-center">
+                    <div className="h-3 w-10 bg-slate-700 rounded-md mx-auto animate-pulse" />
+                  </div>
+                ))}
+              </div>
+
+              {regions.map(region => (
+                <div key={region} className="flex mb-1">
+                  <div className="w-32 flex-shrink-0 flex items-center pr-4">
+                    <div className="h-4 w-24 bg-slate-700 rounded-md animate-pulse" />
+                  </div>
+                  {hours.map(hour => (
+                    <div key={hour} className="w-12 h-12 m-0.5 rounded bg-slate-700 animate-pulse" />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </ScrollArea>
+    );
+  }
 
   return (
     <ScrollArea className="h-full">

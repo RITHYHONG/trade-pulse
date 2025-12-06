@@ -5,14 +5,25 @@ import { Badge } from '@/components/ui/badge';
 import { BlogPost as BlogPostType } from '../../types/blog';
 import { blogPosts } from '../../data/blogData';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { AdPlaceholder } from './AdPlaceholder';
-import { NewsletterCTA } from './NewsletterCTA';
-import { BlogCard } from './BlogCard';
 import Link from 'next/link';
 import { CustomBreadcrumb } from '@/components/navigation/Breadcrumb';
 import DOMPurify from 'isomorphic-dompurify';
 import { useAuthorProfile } from '@/hooks/use-author-profile';
 import { useMemo } from 'react';
+import dynamic from 'next/dynamic';
+
+// Lazy load below-the-fold components
+const AdPlaceholder = dynamic(() => import('./AdPlaceholder').then(mod => ({ default: mod.AdPlaceholder })), {
+  loading: () => <div className="h-24 bg-card/20 animate-pulse rounded-lg" />
+});
+
+const NewsletterCTA = dynamic(() => import('./NewsletterCTA').then(mod => ({ default: mod.NewsletterCTA })), {
+  loading: () => <div className="h-32 bg-card/20 animate-pulse rounded-lg" />
+});
+
+const BlogCard = dynamic(() => import('./BlogCard').then(mod => ({ default: mod.BlogCard })), {
+  loading: () => <div className="h-64 bg-card/20 animate-pulse rounded-lg" />
+});
 
 
 interface BlogPostProps {
@@ -67,6 +78,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                 variant="ghost" 
                 size="icon" 
                 className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-300"
+                aria-label="Share article"
               >
                 <Share2 className="w-4 h-4" />
               </Button>
@@ -74,6 +86,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                 variant="ghost" 
                 size="icon" 
                 className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-300"
+                aria-label="Bookmark article"
               >
                 <Bookmark className="w-4 h-4" />
               </Button>
@@ -168,7 +181,8 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                 <ImageWithFallback
                   src={post.featuredImage}
                   alt={post.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               </div>
             </div>
