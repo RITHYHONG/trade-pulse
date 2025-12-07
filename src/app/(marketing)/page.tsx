@@ -4,6 +4,8 @@ import { Hero } from "./components/Hero";
 import { Pricing } from "./components/Pricing";
 import { ProblemSolution } from "./components/ProblemSolution";
 import { SocialProof } from "./components/SocialProof";
+import { generateMetadata } from '@/lib/seo';
+import type { Metadata } from 'next';
 
 export default function MarketingHome() {
   return (
@@ -18,3 +20,10 @@ export default function MarketingHome() {
     </div>
   );
 }
+
+export const metadata: Metadata = generateMetadata({
+  title: 'Home',
+  description:
+    'AI-powered pre-market intelligence and real-time trading insights. Start every trading day ahead with Trader Pulse.',
+  path: '/',
+});

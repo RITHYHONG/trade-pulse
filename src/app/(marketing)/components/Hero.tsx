@@ -9,10 +9,10 @@ import { motion } from 'motion/react';
 
 export function Hero() {
   return (
-  <section id="demo" className="scroll-mt-24 relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-card">
+    <section id="demo" className="scroll-mt-24 relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-card">
       {/* Background gradient effect */}
       <div className="absolute inset-0 bg-gradient-radial from-primary/10 via-transparent to-transparent opacity-30" />
-      
+
       <div className="container mx-auto px-8 py-24 relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Column - Content */}
@@ -25,27 +25,19 @@ export function Hero() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <h1 className="text-5xl lg:text-6xl xl:text-7xl tracking-tight font-bold">
                 See{' '}
                 <span className="bg-gradient-to-r from-white to-primary bg-clip-text text-transparent">
-                   the Pulse
+                  the Pulse
                 </span>
                 <br />
                 Make the Move
               </h1>
             </motion.div>
 
-            <motion.p 
+            <motion.p
               className="text-xl text-muted-foreground max-w-lg leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -54,28 +46,28 @@ export function Hero() {
               AI-powered pre-market intelligence. Cut through the noise and start every trading day ahead of the curve.
             </motion.p>
 
-            <motion.div 
+            <motion.div
               className="flex flex-col sm:flex-row gap-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-                <Button asChild size="lg" className="group px-8 py-6 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25">
-                  <Link href="#pricing">
-                    Start Your Free Morning Routine
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="px-8 py-6 border-border hover:bg-card hover:text-amber-50">
-                  <Link href="#demo">
-                    <Play className="mr-2 h-5 w-5" />
-                    Watch 90-Second Demo
-                  </Link>
-                </Button>
+              <Button asChild size="lg" className="group px-8 py-6 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25">
+                <Link href="#pricing">
+                  Start Your Free Morning Routine
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="px-8 py-6 border-border hover:bg-card hover:text-amber-50">
+                <Link href="#demo">
+                  <Play className="mr-2 h-5 w-5" />
+                  Watch 90-Second Demo
+                </Link>
+              </Button>
             </motion.div>
 
             {/* Trust indicators */}
-            <motion.div 
+            <motion.div
               className="flex items-center gap-8 pt-8"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -91,7 +83,7 @@ export function Hero() {
           </motion.div>
 
           {/* Right Column - Dashboard Mockup */}
-          <motion.div 
+          <motion.div
             className="relative"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -124,7 +116,7 @@ export function Hero() {
                     className="object-cover"
                   />
                 </div>
-                
+
                 {/* Live data indicators */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="bg-card/80 rounded-lg p-4 border border-border">
@@ -144,25 +136,25 @@ export function Hero() {
             </div>
 
             {/* Floating elements */}
-            <motion.div 
+            <motion.div
               className="absolute -top-4 -right-4 bg-primary/20 rounded-full w-16 h-16 blur-xl"
-              animate={{ 
+              animate={{
                 scale: [1, 1.2, 1],
                 opacity: [0.3, 0.6, 0.3]
               }}
-              transition={{ 
+              transition={{
                 duration: 3,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
             />
-            <motion.div 
+            <motion.div
               className="absolute -bottom-8 -left-8 bg-success/20 rounded-full w-24 h-24 blur-xl"
-              animate={{ 
+              animate={{
                 scale: [1.2, 1, 1.2],
                 opacity: [0.2, 0.4, 0.2]
               }}
-              transition={{ 
+              transition={{
                 duration: 4,
                 repeat: Infinity,
                 ease: "easeInOut"

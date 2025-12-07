@@ -31,6 +31,7 @@ import { useAuthorProfile } from '@/hooks/use-author-profile';
 import { BlogAuthor } from '@/types/blog';
 import SearchModal from '@/components/SearchModal';
 import Image from 'next/image';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 import navItems from '@/config/navigation';
 
@@ -72,9 +73,9 @@ export function Header() {
     avatarUrl: user?.photoURL ?? undefined,
   }), [user?.displayName, user?.email, user?.photoURL]);
 
-  const { authorProfile: headerProfile } = useAuthorProfile({ 
-    authorId: user?.uid, 
-    fallbackAuthor 
+  const { authorProfile: headerProfile } = useAuthorProfile({
+    authorId: user?.uid,
+    fallbackAuthor
   });
 
   useEffect(() => {
@@ -122,7 +123,7 @@ export function Header() {
   }, []);
 
   return (
-    <motion.header 
+    <motion.header
       className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -130,7 +131,7 @@ export function Header() {
     >
       <div className="container mx-auto px-8 py-4">
         <div className="flex items-center justify-between">
-          <motion.div 
+          <motion.div
             className="flex items-center gap-3"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
@@ -143,7 +144,7 @@ export function Header() {
           <nav className="hidden lg:flex items-center gap-8">
             {navItems.map((item, index) => {
               const isActive = pathname === item.href || (item.isAnchor && active === item.href);
-              
+
               if (item.isAnchor) {
                 return (
                   <motion.a
@@ -177,6 +178,8 @@ export function Header() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-4">
+            <ThemeToggle />
+
             <Button
               size="sm"
               onClick={() => setIsSearchOpen(true)}
@@ -188,12 +191,12 @@ export function Header() {
                 <span className="text-xs text-primary">/</span>
               </kbd>
             </Button>
-            
+
             {user ? (
               <div className="flex items-center gap-4">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button  className="flex items-center gap-2 bg-none">
+                    <Button className="flex items-center gap-2 bg-none">
                       <Avatar className="w-8 h-8">
                         {((userProfile?.photoURL ?? user.photoURL) as string | undefined) && (
                           <AvatarImage
@@ -285,6 +288,11 @@ export function Header() {
           >
             <div className="container mx-auto px-8 py-6">
               <nav className="flex flex-col gap-4 mb-6">
+                <div className="flex items-center justify-between pb-2 border-b border-border">
+                  <span className="text-sm text-muted-foreground">Theme</span>
+                  <ThemeToggle />
+                </div>
+
                 <Button
                   variant="ghost"
                   onClick={() => {
@@ -296,10 +304,10 @@ export function Header() {
                   <Search className="w-4 h-4" />
                   <span>Search</span>
                 </Button>
-                
+
                 {navItems.map((item, index) => {
                   const isActive = pathname === item.href || (item.isAnchor && active === item.href);
-                  
+
                   if (item.isAnchor) {
                     return (
                       <motion.a
@@ -329,7 +337,7 @@ export function Header() {
                   }
                 })}
               </nav>
-              
+
               <div className="flex flex-col gap-3">
                 {user ? (
                   <div className="flex flex-col gap-3">
@@ -373,9 +381,9 @@ export function Header() {
       </AnimatePresence>
 
       {/* Search Modal */}
-      <SearchModal 
-        isOpen={isSearchOpen} 
-        onClose={() => setIsSearchOpen(false)} 
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
       />
     </motion.header>
   );

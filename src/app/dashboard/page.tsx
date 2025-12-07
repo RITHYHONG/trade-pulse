@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import type { Metadata } from 'next';
+import { generateMetadata } from '@/lib/seo';
 import { WidgetGrid } from "@/components/dashboard/widget-grid";
 import { AISummaryWidget } from "@/components/dashboard/widgets/ai-summary";
 import { EconomicCalendarWidget } from "@/components/dashboard/widgets/economic-calendar";
@@ -40,3 +42,10 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
+export const metadata: Metadata = generateMetadata({
+  title: 'Dashboard',
+  description:
+    'Personalized trading dashboard with live market data, watchlists, and AI summaries to keep you informed before market open.',
+  path: '/dashboard',
+});
