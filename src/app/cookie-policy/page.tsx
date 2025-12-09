@@ -1,12 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
       ChevronDown, Download, Printer, FileText, Cookie, Search, Filter,
-      ArrowUpDown, Check, X, Info, Clock, Shield, Globe, ExternalLink,
-      Settings, History, AlertCircle, RefreshCw, Calendar, Database,
-      Eye, ChevronRight, Smartphone, Monitor
+      ArrowUpDown, Check, Info, Clock, Shield, Globe, ExternalLink,
+      Settings, History, AlertCircle, RefreshCw, Database,
+      ChevronRight, ChartNoAxesCombined,
+      ChartSpline,
+      BookHeart,
+      ChartCandlestick,
+      LockKeyhole,
+      Handshake,
+      Target,
+      Blocks,
+      Monitor
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 // Cookie data structure
 interface CookieData {
@@ -39,7 +49,7 @@ function Accordion({ title, icon, children, defaultOpen = false, color = '#00F5F
 
       return (
             <div className="border border-[#2D3246] rounded-lg overflow-hidden mb-4 transition-all duration-300 hover:border-[#00F5FF]/30">
-                  <button
+                  <Button
                         onClick={() => setIsOpen(!isOpen)}
                         className="w-full flex items-center justify-between p-6 bg-[#2D3246] hover:bg-[#353B52] transition-colors"
                         aria-expanded={isOpen}
@@ -52,7 +62,7 @@ function Accordion({ title, icon, children, defaultOpen = false, color = '#00F5F
                               className={`w-5 h-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
                               style={{ color }}
                         />
-                  </button>
+                  </Button>
                   {isOpen && (
                         <div className="p-6 bg-[#1A1D28] animate-slideDown">
                               {children}
@@ -67,7 +77,7 @@ const cookieCategories = [
             name: 'Strictly Necessary',
             color: '#10B981',
             mandatory: true,
-            icon: '🔒',
+            icon: <Shield className="w-6 h-6" />,
             purpose: 'Core platform functionality, security, login sessions',
             examples: ['Session cookies', 'Authentication tokens', 'CSRF protection', 'Load balancing'],
             description: 'These cookies are essential for the platform to function properly. They enable core functionalities such as security, network management, and accessibility.'
@@ -76,7 +86,7 @@ const cookieCategories = [
             name: 'Performance & Analytics',
             color: '#00F5FF',
             mandatory: false,
-            icon: '📊',
+            icon: <ChartNoAxesCombined className="w-6 h-6" />,
             purpose: 'Platform optimization, bug tracking, user behavior analytics',
             examples: ['Google Analytics', 'Error tracking', 'Performance metrics', 'User behavior analysis'],
             description: 'These cookies help us understand how you interact with the platform, allowing us to improve performance and user experience.'
@@ -85,7 +95,7 @@ const cookieCategories = [
             name: 'Functionality & Personalization',
             color: '#0066FF',
             mandatory: false,
-            icon: '⚙️',
+            icon: <Settings className="w-6 h-6" />,
             purpose: 'Remember preferences, watchlists, dashboard layouts, alerts',
             examples: ['Layout preferences', 'Watchlist storage', 'Theme selection', 'Language preferences'],
             description: 'These cookies enable personalized features and remember your preferences across sessions.'
@@ -94,7 +104,7 @@ const cookieCategories = [
             name: 'Marketing & Targeting',
             color: '#F59E0B',
             mandatory: false,
-            icon: '🎯',
+            icon: <Target className="w-6 h-6" />,
             purpose: 'Relevant trading offers, broker recommendations, content suggestions',
             examples: ['Ad personalization', 'Retargeting pixels', 'Affiliate tracking', 'Conversion tracking'],
             description: 'These cookies track your activity to deliver personalized advertising and measure campaign effectiveness.'
@@ -103,7 +113,7 @@ const cookieCategories = [
             name: 'Third-Party Integrations',
             color: '#8B5CF6',
             mandatory: false,
-            icon: '🔌',
+            icon: <Blocks className="w-6 h-6" />,
             purpose: 'TradingView charts, news feeds, broker API connections',
             examples: ['TradingView widgets', 'News provider cookies', 'Payment processors', 'Social media embeds'],
             description: 'These cookies enable third-party services integrated into our platform to function properly.'
@@ -456,7 +466,7 @@ export default function CookiePolicyPage() {
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                               {/* Breadcrumb */}
                               <div className="flex items-center gap-2 text-sm text-[#A0A0A0] mb-4">
-                                    <a href="/" className="hover:text-[#00F5FF] transition-colors">Home</a>
+                                    <Link href="/" className="hover:text-[#00F5FF] transition-colors">Home</Link>
                                     <span>→</span>
                                     <span>Legal</span>
                                     <span>→</span>
@@ -580,32 +590,33 @@ export default function CookiePolicyPage() {
                                                             {
                                                                   title: 'Essential Platform Functionality',
                                                                   description: 'Maintain your login session, secure authentication, and core platform operations',
-                                                                  icon: '🔐'
+                                                                  icon: <ChartSpline className="w-8 h-8" />
                                                             },
                                                             {
                                                                   title: 'Personalized Trading Experience',
                                                                   description: 'Remember your watchlists, dashboard layouts, and custom alert preferences',
-                                                                  icon: '⚙️'
+                                                                  icon: <BookHeart className="w-8 h-8" />
                                                             },
                                                             {
                                                                   title: 'Market Data Performance',
                                                                   description: 'Optimize real-time data delivery and reduce loading times for frequently accessed markets',
-                                                                  icon: '⚡'
+                                                                  icon: <ChartCandlestick className="w-8 h-8" />
                                                             },
                                                             {
                                                                   title: 'Security & Fraud Prevention',
                                                                   description: 'Detect suspicious activity, prevent unauthorized access, and protect your account',
-                                                                  icon: '🛡️'
+                                                                  icon: <LockKeyhole className="w-8 h-8" />
                                                             },
                                                             {
                                                                   title: 'Analytics & Platform Improvement',
                                                                   description: 'Understand usage patterns to enhance features and fix bugs proactively',
-                                                                  icon: '📊'
+                                                                  icon: <ChartNoAxesCombined className="w-8 h-8" />
+                                                                  
                                                             },
                                                             {
                                                                   title: 'Relevant Content Delivery',
                                                                   description: 'Show you broker recommendations and trading tools relevant to your interests',
-                                                                  icon: '🎯'
+                                                                  icon: <Handshake className="w-8 h-8" />
                                                             }
                                                       ].map((item, idx) => (
                                                             <div
@@ -791,7 +802,7 @@ export default function CookiePolicyPage() {
                                     </section>
 
                                     {/* Third-Party Services */}
-                                    <section id="third-party" className="mb-12">
+                                    <section id="third-party" className="mb-4">
                                           <Accordion
                                                 title="Third-Party Services & Cookies"
                                                 icon={<Globe className="w-6 h-6" />}
@@ -837,14 +848,14 @@ export default function CookiePolicyPage() {
                                     </section>
 
                                     {/* Browser Instructions */}
-                                    <section id="browser-controls" className="mb-12">
+                                    <section id="browser-controls" className="mb-4">
                                           <Accordion
                                                 title="Browser-Level Cookie Controls"
                                                 icon={<Monitor className="w-6 h-6" />}
                                           >
                                                 <div className="space-y-6">
                                                       <p className="text-[#A0A0A0] leading-relaxed">
-                                                            You can control and delete cookies through your browser settings. Here's how to manage cookies in popular browsers:
+                                                            You can control and delete cookies through your browser settings. Here is how to manage cookies in popular browsers:
                                                       </p>
 
                                                       {browserInstructions.map((browser, idx) => (
@@ -977,21 +988,23 @@ export default function CookiePolicyPage() {
                                                             return (
                                                                   <div
                                                                         key={key}
-                                                                        className={`p-4 rounded-lg border ${value
+                                                                        // make it to center but not use flex
+                                                                        className={`p-4 rounded-lg border flex flex-col justify-center  ${value
                                                                                     ? 'bg-[#0066FF]/10 border-[#0066FF]/50'
                                                                                     : 'bg-[#0F1116] border-[#2D3246]'
                                                                               }`}
                                                                   >
-                                                                        <div className="flex items-start justify-between mb-2">
+                                                                        <div className="flex items-start justify-between">
                                                                               <div className="flex-1">
                                                                                     <h4 className="text-white font-semibold text-sm mb-1">
                                                                                           {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                                                                                    </h4>
-                                                                                    {isRequired && (
+                                                                                    <span className='ml-2'>{isRequired && (
                                                                                           <span className="text-[#F59E0B] text-xs">Required</span>
-                                                                                    )}
+                                                                                    )}</span></h4>
+                                                                                    
+                                                                                    
                                                                               </div>
-                                                                              <button
+                                                                              <Button
                                                                                     onClick={() => handleConsentToggle(key as keyof ConsentPreferences)}
                                                                                     disabled={isRequired}
                                                                                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${value ? 'bg-[#0066FF]' : 'bg-[#2D3246]'
@@ -1001,7 +1014,7 @@ export default function CookiePolicyPage() {
                                                                                           className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${value ? 'translate-x-6' : 'translate-x-1'
                                                                                                 }`}
                                                                                     />
-                                                                              </button>
+                                                                              </Button>
                                                                         </div>
                                                                   </div>
                                                             );
@@ -1050,7 +1063,7 @@ export default function CookiePolicyPage() {
 
                                                 <div className="mb-4">
                                                       <p className="text-sm text-[#A0A0A0] mb-4">
-                                                            California residents can opt-out of the "sale" of personal information through cookies.
+                                                            California residents can opt-out of the &quot;sale&quot; of personal information through cookies.
                                                       </p>
 
                                                       <div className={`p-4 rounded-lg border flex items-center justify-between ${doNotSell
@@ -1065,7 +1078,7 @@ export default function CookiePolicyPage() {
                                                                         {doNotSell ? 'Opted out' : 'Not opted out'}
                                                                   </p>
                                                             </div>
-                                                            <button
+                                                            <Button
                                                                   onClick={() => setDoNotSell(!doNotSell)}
                                                                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${doNotSell ? 'bg-[#10B981]' : 'bg-[#2D3246]'
                                                                         }`}
@@ -1074,7 +1087,7 @@ export default function CookiePolicyPage() {
                                                                         className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${doNotSell ? 'translate-x-6' : 'translate-x-1'
                                                                               }`}
                                                                   />
-                                                            </button>
+                                                            </Button>
                                                       </div>
                                                 </div>
                                           </div>
