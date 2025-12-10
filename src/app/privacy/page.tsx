@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { Metadata } from 'next';
-import { ChevronDown, Download, Printer, FileText, Shield, Globe, Info, Lock, Users, Database, Cookie, AlertCircle, Mail, ExternalLink, Check } from 'lucide-react';
+import { ChevronDown, Download, Printer, FileText, Shield, Globe, Info, Lock, Users, Database, Cookie, AlertCircle, Mail, ExternalLink, Check, BarChart3, TestTube, HardDrive } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const complianceBadges = [
   { name: 'GDPR', region: 'EU/EEA', color: '#0066FF' },
@@ -24,8 +25,8 @@ function Accordion({ title, icon, children, defaultOpen = false }: AccordionProp
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border border-[#2D3246] rounded-lg overflow-hidden mb-4 transition-all duration-300 hover:border-[#00F5FF]/30">
-      <button
+    <div className="border border-[#2D3246] rounded-lg overflow-hidden mb-5 transition-all duration-300 hover:border-[#00F5FF]/30">
+      <Button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-6 bg-[#2D3246] hover:bg-[#353B52] transition-colors"
         aria-expanded={isOpen}
@@ -38,7 +39,7 @@ function Accordion({ title, icon, children, defaultOpen = false }: AccordionProp
           className={`w-5 h-5 text-[#00F5FF] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''
             }`}
         />
-      </button>
+      </Button>
       {isOpen && (
         <div className="p-6 bg-[#1A1D28] animate-slideDown">
           {children}
@@ -90,7 +91,7 @@ function DataCategory({ name, items, legalBasis, specialNote }: DataCategoryProp
 }
 
 interface SecurityMeasureProps {
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   description: string;
 }
@@ -98,7 +99,7 @@ interface SecurityMeasureProps {
 function SecurityMeasure({ icon, title, description }: SecurityMeasureProps) {
   return (
     <div className="p-6 bg-[#1A1D28] rounded-lg border border-[#2D3246] hover:border-[#00F5FF]/50 transition-all duration-300 hover:transform hover:scale-105">
-      <div className="text-4xl mb-3">{icon}</div>
+      <div className="mb-3">{icon}</div>
       <h4 className="text-lg font-semibold text-white mb-2">{title}</h4>
       <p className="text-[#A0A0A0] text-sm">{description}</p>
     </div>
@@ -164,15 +165,7 @@ export default function PrivacyPolicyPage() {
     <div className="min-h-screen bg-[#0F1116]">
       {/* Header */}
       <div className="border-b border-[#2D3246] bg-[#1A1D28]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-sm text-[#A0A0A0] mb-4">
-            <a href="/" className="hover:text-[#00F5FF] transition-colors">Home</a>
-            <span>→</span>
-            <span>Legal</span>
-            <span>→</span>
-            <span className="text-[#00F5FF]">Privacy Policy</span>
-          </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
 
           {/* Title & Version */}
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-6">
@@ -227,30 +220,30 @@ export default function PrivacyPolicyPage() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <button
+              <Button
                 onClick={handleDownload}
                 className="flex items-center gap-2 px-4 py-2 bg-[#2D3246] text-white rounded-lg hover:bg-[#353B52] transition-colors"
                 aria-label="Download PDF"
               >
                 <Download className="w-4 h-4" />
                 <span className="hidden sm:inline">Download PDF</span>
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handlePrint}
                 className="flex items-center gap-2 px-4 py-2 bg-[#2D3246] text-white rounded-lg hover:bg-[#353B52] transition-colors"
                 aria-label="Print"
               >
                 <Printer className="w-4 h-4" />
                 <span className="hidden sm:inline">Print</span>
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleDataRequest}
-                className="flex items-center gap-2 px-4 py-2 bg-[#0066FF] text-white rounded-lg hover:bg-[#0052CC] transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-[#0052CC] transition-colors"
                 aria-label="Request your data"
               >
                 <Shield className="w-4 h-4" />
                 <span className="hidden sm:inline">Request Data</span>
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -262,24 +255,24 @@ export default function PrivacyPolicyPage() {
           {/* Sidebar Navigation */}
           <aside className="lg:w-64 flex-shrink-0">
             <div className="lg:sticky lg:top-8 space-y-2">
-              <div className="mb-4">
+              <div className="mb-5">
                 <h3 className="text-sm font-semibold text-[#A0A0A0] uppercase tracking-wide mb-3">
                   Table of Contents
                 </h3>
               </div>
               {navigationSections.map((section) => (
-                <button
+                <Button
                   key={section.id}
                   onClick={() => scrollToSection(section.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200 ${activeSection === section.id
-                      ? 'bg-[#0066FF] text-white'
-                      : 'text-[#A0A0A0] hover:bg-[#2D3246] hover:text-white'
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200 justify-start ${activeSection === section.id
+                    ? 'bg-primary text-white'
+                    : 'text-[#A0A0A0] hover:bg-[#2D3246] hover:text-white'
                     }`}
                   aria-current={activeSection === section.id ? 'true' : 'false'}
                 >
                   {section.icon}
                   <span className="text-sm">{section.label}</span>
-                </button>
+                </Button>
               ))}
 
               {/* Quick Actions */}
@@ -310,20 +303,20 @@ export default function PrivacyPolicyPage() {
           {/* Main Content Area */}
           <main className="flex-1 max-w-4xl">
             {/* Introduction */}
-            <section id="introduction" className="mb-12 scroll-mt-8">
+            <section id="introduction" className="mb-5 scroll-mt-8">
               <Accordion
                 title="1. Introduction & Scope"
                 icon={<Info className="w-6 h-6" />}
                 defaultOpen={true}
               >
                 <div className="prose prose-invert max-w-none">
-                  <p className="text-[#A0A0A0] leading-relaxed mb-4">
+                  <p className="text-[#A0A0A0] leading-relaxed mb-5">
                     Welcome to <strong className="text-white">Trade Pulse</strong>, your comprehensive financial intelligence platform. We are committed to protecting your privacy and ensuring transparency in how we collect, use, and safeguard your personal information.
                   </p>
-                  <p className="text-[#A0A0A0] leading-relaxed mb-4">
+                  <p className="text-[#A0A0A0] leading-relaxed mb-5">
                     This Privacy Policy explains our data practices across our website, mobile applications, and all related services. It applies to all users globally and contains region-specific information for EU/EEA, California, Canada, and Brazil residents.
                   </p>
-                  <div className="bg-[#0066FF]/10 border border-[#0066FF]/30 rounded-lg p-4 mb-4">
+                  <div className="bg-[#0066FF]/10 border border-[#0066FF]/30 rounded-lg p-4 mb-5">
                     <h4 className="text-white font-semibold mb-2">Data Controller Information</h4>
                     <p className="text-[#A0A0A0] text-sm mb-2">
                       <strong>Company:</strong> Trade Pulse Inc.
@@ -343,7 +336,7 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Data Collection */}
-            <section id="data-collection" className="mb-12 scroll-mt-8">
+            <section id="data-collection" className="mb-5 scroll-mt-8">
               <Accordion
                 title="2. Data We Collect"
                 icon={<Database className="w-6 h-6" />}
@@ -399,7 +392,7 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Data Use */}
-            <section id="data-use" className="mb-12 scroll-mt-8">
+            <section id="data-use" className="mb-5 scroll-mt-8">
               <Accordion title="3. How We Use Your Data" icon={<FileText className="w-6 h-6" />}>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -471,7 +464,7 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Data Sharing */}
-            <section id="data-sharing" className="mb-12 scroll-mt-8">
+            <section id="data-sharing" className="mb-5 scroll-mt-8">
               <Accordion title="4. Data Sharing & Third Parties" icon={<Users className="w-6 h-6" />}>
                 <div className="grid md:grid-cols-2 gap-4">
                   {[
@@ -484,7 +477,7 @@ export default function PrivacyPolicyPage() {
                     {
                       name: 'Advertising Partners',
                       description: 'Only with explicit consent',
-                      examples: ['Google AdSense', 'Affiliate networks', 'Social media platforms'],
+                      examples: ['Google AdSense', 'Affiliate networks', 'Social media platforms', 'Email marketing platforms'],
                       protection: 'Cookie consent required',
                     },
                     {
@@ -496,7 +489,7 @@ export default function PrivacyPolicyPage() {
                     {
                       name: 'Business Transfers',
                       description: 'In case of merger/acquisition',
-                      examples: ['Company sale', 'Asset transfer'],
+                      examples: ['Company sale', 'Asset transfer', 'Business restructuring'],
                       protection: 'Contractual protections',
                     },
                   ].map((category, idx) => (
@@ -524,7 +517,7 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Cookies */}
-            <section id="cookies" className="mb-12 scroll-mt-8">
+            <section id="cookies" className="mb-5 scroll-mt-8">
               <Accordion title="5. Cookies & Tracking Technologies" icon={<Cookie className="w-6 h-6" />}>
                 <div className="space-y-6">
                   <p className="text-[#A0A0A0]">
@@ -595,37 +588,37 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Security */}
-            <section id="security" className="mb-12 scroll-mt-8">
+            <section id="security" className="mb-5 scroll-mt-8">
               <Accordion title="6. Data Security Measures" icon={<Lock className="w-6 h-6" />}>
                 <div className="grid md:grid-cols-2 gap-4 mb-6">
                   {[
                     {
-                      icon: '🔒',
+                      icon: <Lock className="w-6 h-6" />,
                       title: 'Encryption',
                       description: 'TLS 1.3 for data in transit, AES-256 for data at rest',
                     },
                     {
-                      icon: '🛡️',
+                      icon: <Shield className="w-6 h-6" />,
                       title: 'Access Control',
                       description: 'Role-based access, multi-factor authentication option',
                     },
                     {
-                      icon: '📊',
+                      icon: <BarChart3 className="w-6 h-6" />,
                       title: 'Monitoring',
                       description: '24/7 security monitoring, anomaly detection',
                     },
                     {
-                      icon: '🧪',
+                      icon: <TestTube className="w-6 h-6" />,
                       title: 'Testing',
                       description: 'Regular penetration testing, vulnerability scans',
                     },
                     {
-                      icon: '👥',
+                      icon: <Users className="w-6 h-6" />,
                       title: 'Training',
                       description: 'Employee security awareness training',
                     },
                     {
-                      icon: '💾',
+                      icon: <HardDrive className="w-6 h-6" />,
                       title: 'Backup',
                       description: 'Regular encrypted backups, disaster recovery plan',
                     },
@@ -650,7 +643,7 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* User Rights */}
-            <section id="rights" className="mb-12 scroll-mt-8">
+            <section id="rights" className="mb-5 scroll-mt-8">
               <Accordion title="7. Your Data Protection Rights" icon={<Shield className="w-6 h-6" />}>
                 <div className="space-y-6">
                   {selectedRegion === 'EU' || selectedRegion === 'Global' ? (
@@ -703,32 +696,32 @@ export default function PrivacyPolicyPage() {
                   ) : null}
 
                   <div className="grid md:grid-cols-2 gap-4">
-                    <button
+                    <Button
                       onClick={handleDataRequest}
-                      className="p-4 bg-[#0066FF] text-white rounded-lg hover:bg-[#0052CC] transition-all transform hover:scale-105"
+                      className="p-4 bg-primary h-24 flex-col text-white rounded-lg hover:bg-primary-dark transition-all transform hover:scale-105"
                     >
-                      <FileText className="w-6 h-6 mb-2" />
-                      <h5 className="font-semibold mb-1">Request Data Export</h5>
+                      <FileText className="w-8 h-8 mb-2" />
+                      <h5 className="font-semibold">Request Data Export</h5>
                       <p className="text-xs opacity-90">Download all your personal data</p>
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => alert('This would open the account deletion form')}
-                      className="p-4 bg-[#2D3246] text-white rounded-lg hover:bg-[#353B52] transition-all transform hover:scale-105"
+                      className="p-4 bg-[#2D3246] h-24 flex-col text-white rounded-lg hover:bg-[#353B52] transition-all transform hover:scale-105"
                     >
-                      <AlertCircle className="w-6 h-6 mb-2" />
+                      <AlertCircle className="w-8 h-8 mb-2" />
                       <h5 className="font-semibold mb-1">Delete Account</h5>
                       <p className="text-xs opacity-90">Permanently delete your account</p>
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </Accordion>
             </section>
 
             {/* Children's Privacy */}
-            <section id="children" className="mb-12 scroll-mt-8">
+            <section id="children" className="mb-5 scroll-mt-8">
               <Accordion title="8. Children's Privacy" icon={<AlertCircle className="w-6 h-6" />}>
                 <div className="prose prose-invert max-w-none">
-                  <p className="text-[#A0A0A0] leading-relaxed mb-4">
+                  <p className="text-[#A0A0A0] leading-relaxed mb-5">
                     Trade Pulse is not intended for individuals under the age of 18. We do not knowingly collect personal information from children.
                   </p>
                   <div className="p-4 bg-[#DC2626]/10 border border-[#DC2626]/30 rounded-lg">
@@ -745,13 +738,13 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* International Transfers */}
-            <section id="international" className="mb-12 scroll-mt-8">
+            <section id="international" className="mb-5 scroll-mt-8">
               <Accordion title="9. International Data Transfers" icon={<Globe className="w-6 h-6" />}>
                 <div className="prose prose-invert max-w-none">
-                  <p className="text-[#A0A0A0] leading-relaxed mb-4">
+                  <p className="text-[#A0A0A0] leading-relaxed mb-5">
                     Your information may be transferred to and processed in countries other than your country of residence. These countries may have data protection laws different from those in your jurisdiction.
                   </p>
-                  <div className="grid md:grid-cols-2 gap-4 mb-4">
+                  <div className="grid md:grid-cols-2 gap-4 mb-5">
                     <div className="p-4 bg-[#0F1116] rounded-lg border border-[#2D3246]">
                       <h4 className="text-white font-semibold mb-2">Transfer Mechanisms</h4>
                       <ul className="space-y-2">
@@ -795,7 +788,7 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Contact */}
-            <section id="contact" className="mb-12 scroll-mt-8">
+            <section id="contact" className="mb-5 scroll-mt-8">
               <Accordion title="10. Contact Us" icon={<Mail className="w-6 h-6" />}>
                 <div className="space-y-4">
                   <p className="text-[#A0A0A0] leading-relaxed">
@@ -847,7 +840,7 @@ export default function PrivacyPolicyPage() {
 
             {/* Footer Related Documents */}
             <div className="mt-12 p-6 bg-[#1A1D28] rounded-lg border border-[#2D3246]">
-              <h3 className="text-lg font-semibold text-white mb-4">Related Legal Documents</h3>
+              <h3 className="text-lg font-semibold text-white mb-5">Related Legal Documents</h3>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {[
                   { name: 'Terms of Service', href: '/terms' },

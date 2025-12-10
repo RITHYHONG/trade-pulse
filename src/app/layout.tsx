@@ -6,6 +6,8 @@ import "./globals.css";
 import "@/lib/firebase";
 import { Toaster } from "@/components/ui/sonner";
 import { ClientLayout } from "@/components/client-layout";
+import { HeaderMain } from "@/components/HeaderMain";
+import { Footer } from "./(marketing)/components/Footer";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -22,6 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <HeaderMain />
       <body
         className={`${poppins.variable} ${poppins.variable} bg-slate-950 text-slate-100 antialiased`}
       >
@@ -36,6 +39,7 @@ export default function RootLayout({
           <Toaster position="top-right" />
         </ClientLayout>
       </body>
+      <Footer />
     </html>
   );
 }

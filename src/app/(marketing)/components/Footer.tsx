@@ -30,10 +30,10 @@ const footerLinks = {
     { label: 'Security', href: '#security' }
   ],
   Legal: [
-    { label: 'Privacy Policy', href: '#privacy' },
-    { label: 'Terms of Service', href: '#terms' },
-    { label: 'Cookie Policy', href: '#cookies' },
-    { label: 'Disclaimer', href: '#disclaimer' }
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Cookie Policy', href: '/cookies' },
+    { label: 'Disclaimer', href: '/disclaimer' }
   ]
 };
 
