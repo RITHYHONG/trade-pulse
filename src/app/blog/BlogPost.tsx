@@ -150,7 +150,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   <div className="relative flex-shrink-0">
                     <div className="absolute -inset-0.5 from-cyan-500 to-blue-500 rounded-full opacity-75 blur"></div>
                     <ImageWithFallback
-                      src={authorProfile.avatar}
+                        src={authorProfile.avatar ?? ''}
                       alt={authorProfile.name}
                       className="relative w-12 h-12 rounded-full ring-2 ring-[#0F1116]"
                     />
@@ -179,7 +179,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
               <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-2xl opacity-10 group-hover:opacity-20 blur transition duration-300"></div>
               <div className="relative aspect-[16/9] rounded-xl overflow-hidden ring-1 ring-white/10">
                 <ImageWithFallback
-                  src={post.featuredImage}
+                  src={post.featuredImage ?? ''}
                   alt={post.title}
                   fill
                   className="object-cover"
@@ -337,7 +337,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   <div className="relative flex-shrink-0">
                     <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full opacity-75 blur group-hover:opacity-100 transition duration-300"></div>
                     <ImageWithFallback
-                      src={authorProfile.avatar}
+                      src={authorProfile.avatar ?? ''}
                       alt={authorProfile.name}
                       className="relative w-20 h-20 rounded-full ring-2 ring-[#0F1116]"
                     />

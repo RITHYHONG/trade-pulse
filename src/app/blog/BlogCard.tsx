@@ -34,7 +34,7 @@ export function BlogCard({ post }: BlogCardProps) {
         {/* Image Header */}
         <div className="relative aspect-[3/2] overflow-hidden">
           <ImageWithFallback
-            src={post.featuredImage}
+            src={post.featuredImage ?? ''}
             alt={post.title}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -77,7 +77,7 @@ export function BlogCard({ post }: BlogCardProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <ImageWithFallback
-                src={authorProfile.avatar}
+                src={authorProfile.avatar ?? ''}
                 alt={authorProfile.name}
                 className="w-8 h-8 rounded-full"
               />

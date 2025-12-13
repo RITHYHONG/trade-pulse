@@ -152,7 +152,7 @@ export function FeaturedCarousel({ posts, isLoading }: FeaturedCarouselProps) {
             {/* Author Info */}
             <div className="flex items-center gap-4">
               <ImageWithFallback
-                src={authorProfile?.avatar}
+                src={authorProfile?.avatar ?? ''}
                 alt={authorProfile?.name}
                 width={40}
                 height={40}

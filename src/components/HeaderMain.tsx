@@ -31,10 +31,11 @@ import { UserProfile } from '@/lib/firestore-service';
 import { useAuthorProfile } from '@/hooks/use-author-profile';
 import { BlogAuthor } from '@/types/blog';
 import SearchModal from './SearchModal';
-import Logo from '../../public/no-bg-logo.svg'; 
+import LogoDark from '../../public/no-bg-logo.svg';
+import LogoLight from '../../public/black-logo.svg';
 import navItems from '@/config/navigation';
 import Image from 'next/image';
-
+import { useTheme } from 'next-themes';
 
 export function HeaderMain() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,6 +44,7 @@ export function HeaderMain() {
   const pathname = usePathname();
   const { user, signOut, loading } = useAuth();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const ids = ['demo', 'features', 'testimonials', 'pricing'];
@@ -138,7 +140,13 @@ export function HeaderMain() {
             transition={{ duration: 0.2 }}
           >
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <Image src={Logo} width={72} height={72} alt="Logo"></Image>
+              <Image 
+                src={theme === 'light' ? LogoLight : LogoDark} 
+                width={72} 
+                height={72} 
+                alt="Logo"
+                priority
+              />
             </Link>
           </motion.div>
 

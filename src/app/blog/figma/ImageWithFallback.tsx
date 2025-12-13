@@ -23,7 +23,7 @@ export function ImageWithFallback(props: ImageWithFallbackProps) {
   // Handle empty or undefined src
   const shouldShowError = didError || !src || src === '';
 
-  const imageProps = {
+  const imageProps: Partial<ImageProps & { fill?: boolean; width?: number; height?: number }> = {
     ...rest,
     onError: handleError,
   };
@@ -31,8 +31,10 @@ export function ImageWithFallback(props: ImageWithFallbackProps) {
   if (fill) {
     imageProps.fill = true;
   } else {
-    imageProps.width = width || 88;
-    imageProps.height = height || 88;
+    const w = typeof width === 'string' ? parseInt(width as string, 10) : (width as number | undefined);
+    const h = typeof height === 'string' ? parseInt(height as string, 10) : (height as number | undefined);
+    imageProps.width = w ?? 88;
+    imageProps.height = h ?? 88;
   }
 
   return shouldShowError ? (

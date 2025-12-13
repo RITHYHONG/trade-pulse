@@ -7,8 +7,10 @@ import { Linkedin, Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import Logo from '../../../../public/logo.png'; 
+import LogoDark from '../../../../public/logo.png';
+import LogoLight from '../../../../public/logo-black.svg';
 import Image from 'next/image';
+import { useTheme } from 'next-themes';
 
 const footerLinks = {
   Product: [
@@ -40,6 +42,7 @@ const footerLinks = {
 export function Footer() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { theme } = useTheme();
 
   const handleSubscribe = async () => {
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
@@ -120,7 +123,13 @@ export function Footer() {
             transition={{ duration: 0.2 }}
           >
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <Image src={Logo} width={72} height={72} alt="Logo"></Image>
+              <Image 
+                src={theme === 'light' ? LogoLight : LogoDark} 
+                width={72} 
+                height={72} 
+                alt="Logo"
+                priority
+              />
             </Link>
           </motion.div>
               <div>

@@ -140,6 +140,7 @@ export default function ContactPage() {
   const [selectedMethod, setSelectedMethod] = useState<ContactMethod | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const getFormSchema = (method: ContactMethod) => {
     switch (method) {
