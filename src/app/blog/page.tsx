@@ -17,8 +17,7 @@ export const metadata: Metadata = {
 
 export default function BlogPage() {
   return (
-    <div className="min-h-screen bg-[#0F1116] text-white">
-      <HeaderMain />
+    <div className="overflow-x-hidden min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <main id="main-content">
         <BlogIndex initialPosts={blogPosts} />
       </main>
