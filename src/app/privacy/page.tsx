@@ -25,23 +25,23 @@ function Accordion({ title, icon, children, defaultOpen = false }: AccordionProp
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border border-[#2D3246] rounded-lg overflow-hidden mb-5 transition-all duration-300 hover:border-[#00F5FF]/30">
+    <div className="border border-border rounded-lg overflow-hidden mb-5 transition-all duration-300 hover:border-[#00F5FF]/30">
       <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-6 bg-[#2D3246] hover:bg-[#353B52] transition-colors"
+        className="w-full flex items-center justify-between p-6 bg-muted hover:bg-[#353B52] transition-colors"
         aria-expanded={isOpen}
       >
         <div className="flex items-center gap-4">
-          <div className="text-[#00F5FF]">{icon}</div>
-          <h2 className="text-xl font-semibold text-white text-left">{title}</h2>
+          <div className="text-primary">{icon}</div>
+          <h2 className="text-xl font-semibold text-foreground text-left">{title}</h2>
         </div>
         <ChevronDown
-          className={`w-5 h-5 text-[#00F5FF] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''
+          className={`w-5 h-5 text-primary transition-transform duration-300 ${isOpen ? 'rotate-180' : ''
             }`}
         />
       </Button>
       {isOpen && (
-        <div className="p-6 bg-[#1A1D28] animate-slideDown">
+        <div className="p-6 bg-card animate-slideDown">
           {children}
         </div>
       )}
@@ -58,12 +58,12 @@ interface DataCategoryProps {
 
 function DataCategory({ name, items, legalBasis, specialNote }: DataCategoryProps) {
   return (
-    <div className="mb-6 p-4 bg-[#0F1116] rounded-lg border border-[#2D3246]">
-      <h4 className="text-lg font-semibold text-[#00F5FF] mb-3">{name}</h4>
+    <div className="mb-6 p-4 bg-background rounded-lg border border-border">
+      <h4 className="text-lg font-semibold text-primary mb-3">{name}</h4>
       <ul className="space-y-2 mb-3">
         {items.map((item, idx) => (
-          <li key={idx} className="flex items-start gap-2 text-[#A0A0A0]">
-            <Check className="w-4 h-4 text-[#00F5FF] mt-1 flex-shrink-0" />
+          <li key={idx} className="flex items-start gap-2 text-muted-foreground">
+            <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
             <span>{item}</span>
           </li>
         ))}
@@ -72,7 +72,7 @@ function DataCategory({ name, items, legalBasis, specialNote }: DataCategoryProp
         {legalBasis.map((basis, idx) => (
           <span
             key={idx}
-            className="px-3 py-1 bg-[#0066FF]/20 text-[#00F5FF] text-xs rounded-full border border-[#0066FF]/30"
+            className="px-3 py-1 bg-[#0066FF]/20 text-primary text-xs rounded-full border border-[#0066FF]/30"
           >
             {basis}
           </span>
@@ -80,7 +80,7 @@ function DataCategory({ name, items, legalBasis, specialNote }: DataCategoryProp
       </div>
       {specialNote && (
         <div className="mt-3 p-3 bg-[#00F5FF]/10 border border-[#00F5FF]/30 rounded-lg">
-          <p className="text-sm text-[#00F5FF] flex items-start gap-2">
+          <p className="text-sm text-primary flex items-start gap-2">
             <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
             <span>{specialNote}</span>
           </p>
@@ -98,10 +98,10 @@ interface SecurityMeasureProps {
 
 function SecurityMeasure({ icon, title, description }: SecurityMeasureProps) {
   return (
-    <div className="p-6 bg-[#1A1D28] rounded-lg border border-[#2D3246] hover:border-[#00F5FF]/50 transition-all duration-300 hover:transform hover:scale-105">
+    <div className="p-6 bg-card rounded-lg border border-border hover:border-[#00F5FF]/50 transition-all duration-300 hover:transform hover:scale-105">
       <div className="mb-3">{icon}</div>
-      <h4 className="text-lg font-semibold text-white mb-2">{title}</h4>
-      <p className="text-[#A0A0A0] text-sm">{description}</p>
+      <h4 className="text-lg font-semibold text-foreground mb-2">{title}</h4>
+      <p className="text-muted-foreground text-sm">{description}</p>
     </div>
   );
 }
@@ -162,20 +162,20 @@ export default function PrivacyPolicyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F1116]">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b border-[#2D3246] bg-[#1A1D28]">
+      <div className="border-b border-border bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
 
           {/* Title & Version */}
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-3">Privacy Policy</h1>
+              <h1 className="text-4xl font-bold text-foreground mb-3">Privacy Policy</h1>
               <div className="flex flex-wrap items-center gap-3">
-                <span className="px-3 py-1 bg-[#0066FF]/20 text-[#00F5FF] text-sm rounded-full border border-[#0066FF]/30">
+                <span className="px-3 py-1 bg-[#0066FF]/20 text-primary text-sm rounded-full border border-[#0066FF]/30">
                   Version 2.1
                 </span>
-                <span className="text-[#A0A0A0] text-sm">
+                <span className="text-muted-foreground text-sm">
                   Effective: January 15, 2024 • Updated: March 15, 2024
                 </span>
               </div>
@@ -195,7 +195,7 @@ export default function PrivacyPolicyPage() {
                   <div className="text-sm font-semibold" style={{ color: badge.color }}>
                     {badge.name}
                   </div>
-                  <div className="text-xs text-[#A0A0A0]">{badge.region}</div>
+                  <div className="text-xs text-muted-foreground">{badge.region}</div>
                 </div>
               ))}
             </div>
@@ -204,11 +204,11 @@ export default function PrivacyPolicyPage() {
           {/* Region Selector & Actions */}
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <Globe className="w-5 h-5 text-[#00F5FF]" />
+              <Globe className="w-5 h-5 text-primary" />
               <select
                 value={selectedRegion}
                 onChange={(e) => setSelectedRegion(e.target.value)}
-                className="bg-[#2D3246] text-white px-4 py-2 rounded-lg border border-[#2D3246] hover:border-[#00F5FF]/50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#00F5FF]/50"
+                className="bg-muted text-foreground px-4 py-2 rounded-lg border border-border hover:border-[#00F5FF]/50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#00F5FF]/50"
                 aria-label="Select your region"
               >
                 {regions.map((region) => (
@@ -222,7 +222,7 @@ export default function PrivacyPolicyPage() {
             <div className="flex flex-wrap gap-3">
               <Button
                 onClick={handleDownload}
-                className="flex items-center gap-2 px-4 py-2 bg-[#2D3246] text-white rounded-lg hover:bg-[#353B52] transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-[#353B52] transition-colors"
                 aria-label="Download PDF"
               >
                 <Download className="w-4 h-4" />
@@ -230,7 +230,7 @@ export default function PrivacyPolicyPage() {
               </Button>
               <Button
                 onClick={handlePrint}
-                className="flex items-center gap-2 px-4 py-2 bg-[#2D3246] text-white rounded-lg hover:bg-[#353B52] transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-[#353B52] transition-colors"
                 aria-label="Print"
               >
                 <Printer className="w-4 h-4" />
@@ -238,7 +238,7 @@ export default function PrivacyPolicyPage() {
               </Button>
               <Button
                 onClick={handleDataRequest}
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-[#0052CC] transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-foreground rounded-lg hover:bg-[#0052CC] transition-colors"
                 aria-label="Request your data"
               >
                 <Shield className="w-4 h-4" />
@@ -256,7 +256,7 @@ export default function PrivacyPolicyPage() {
           <aside className="lg:w-64 flex-shrink-0">
             <div className="lg:sticky lg:top-8 space-y-2">
               <div className="mb-5">
-                <h3 className="text-sm font-semibold text-[#A0A0A0] uppercase tracking-wide mb-3">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
                   Table of Contents
                 </h3>
               </div>
@@ -265,8 +265,8 @@ export default function PrivacyPolicyPage() {
                   key={section.id}
                   onClick={() => scrollToSection(section.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200 justify-start ${activeSection === section.id
-                    ? 'bg-primary text-white'
-                    : 'text-[#A0A0A0] hover:bg-[#2D3246] hover:text-white'
+                    ? 'bg-primary text-foreground'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                     }`}
                   aria-current={activeSection === section.id ? 'true' : 'false'}
                 >
@@ -276,21 +276,21 @@ export default function PrivacyPolicyPage() {
               ))}
 
               {/* Quick Actions */}
-              <div className="mt-6 pt-6 border-t border-[#2D3246]">
-                <h3 className="text-sm font-semibold text-[#A0A0A0] uppercase tracking-wide mb-3">
+              <div className="mt-6 pt-6 border-t border-border">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
                   Quick Actions
                 </h3>
                 <div className="space-y-2">
                   <a
                     href="/terms"
-                    className="flex items-center gap-2 text-sm text-[#A0A0A0] hover:text-[#00F5FF] transition-colors"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Terms of Service
                   </a>
                   <a
                     href="/disclaimer"
-                    className="flex items-center gap-2 text-sm text-[#A0A0A0] hover:text-[#00F5FF] transition-colors"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Disclaimer
@@ -310,25 +310,25 @@ export default function PrivacyPolicyPage() {
                 defaultOpen={true}
               >
                 <div className="prose prose-invert max-w-none">
-                  <p className="text-[#A0A0A0] leading-relaxed mb-5">
-                    Welcome to <strong className="text-white">Trade Pulse</strong>, your comprehensive financial intelligence platform. We are committed to protecting your privacy and ensuring transparency in how we collect, use, and safeguard your personal information.
+                  <p className="text-muted-foreground leading-relaxed mb-5">
+                    Welcome to <strong className="text-foreground">Trade Pulse</strong>, your comprehensive financial intelligence platform. We are committed to protecting your privacy and ensuring transparency in how we collect, use, and safeguard your personal information.
                   </p>
-                  <p className="text-[#A0A0A0] leading-relaxed mb-5">
+                  <p className="text-muted-foreground leading-relaxed mb-5">
                     This Privacy Policy explains our data practices across our website, mobile applications, and all related services. It applies to all users globally and contains region-specific information for EU/EEA, California, Canada, and Brazil residents.
                   </p>
                   <div className="bg-[#0066FF]/10 border border-[#0066FF]/30 rounded-lg p-4 mb-5">
-                    <h4 className="text-white font-semibold mb-2">Data Controller Information</h4>
-                    <p className="text-[#A0A0A0] text-sm mb-2">
+                    <h4 className="text-foreground font-semibold mb-2">Data Controller Information</h4>
+                    <p className="text-muted-foreground text-sm mb-2">
                       <strong>Company:</strong> Trade Pulse Inc.
                     </p>
-                    <p className="text-[#A0A0A0] text-sm mb-2">
+                    <p className="text-muted-foreground text-sm mb-2">
                       <strong>Data Protection Officer:</strong> dpo@tradepulse.com
                     </p>
-                    <p className="text-[#A0A0A0] text-sm">
+                    <p className="text-muted-foreground text-sm">
                       <strong>General Inquiries:</strong> privacy@tradepulse.com (48-hour response time)
                     </p>
                   </div>
-                  <p className="text-[#A0A0A0] leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     By using Trade Pulse, you agree to the collection and use of information in accordance with this policy. If you do not agree with our policies and practices, please do not use our services.
                   </p>
                 </div>
@@ -397,11 +397,11 @@ export default function PrivacyPolicyPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-[#2D3246]">
-                        <th className="text-left text-[#00F5FF] font-semibold py-3 px-2">Purpose</th>
-                        <th className="text-left text-[#00F5FF] font-semibold py-3 px-2">Data Used</th>
-                        <th className="text-left text-[#00F5FF] font-semibold py-3 px-2">Legal Basis</th>
-                        <th className="text-left text-[#00F5FF] font-semibold py-3 px-2">Retention</th>
+                      <tr className="border-b border-border">
+                        <th className="text-left text-primary font-semibold py-3 px-2">Purpose</th>
+                        <th className="text-left text-primary font-semibold py-3 px-2">Data Used</th>
+                        <th className="text-left text-primary font-semibold py-3 px-2">Legal Basis</th>
+                        <th className="text-left text-primary font-semibold py-3 px-2">Retention</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -445,16 +445,16 @@ export default function PrivacyPolicyPage() {
                       ].map((row, idx) => (
                         <tr
                           key={idx}
-                          className="border-b border-[#2D3246]/50 hover:bg-[#0F1116] transition-colors"
+                          className="border-b border-border/50 hover:bg-background transition-colors"
                         >
-                          <td className="py-3 px-2 text-white">{row.purpose}</td>
-                          <td className="py-3 px-2 text-[#A0A0A0]">{row.data}</td>
+                          <td className="py-3 px-2 text-foreground">{row.purpose}</td>
+                          <td className="py-3 px-2 text-muted-foreground">{row.data}</td>
                           <td className="py-3 px-2">
-                            <span className="px-2 py-1 bg-[#0066FF]/20 text-[#00F5FF] text-xs rounded">
+                            <span className="px-2 py-1 bg-[#0066FF]/20 text-primary text-xs rounded">
                               {row.basis}
                             </span>
                           </td>
-                          <td className="py-3 px-2 text-[#A0A0A0]">{row.retention}</td>
+                          <td className="py-3 px-2 text-muted-foreground">{row.retention}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -495,20 +495,20 @@ export default function PrivacyPolicyPage() {
                   ].map((category, idx) => (
                     <div
                       key={idx}
-                      className="p-5 bg-[#0F1116] rounded-lg border border-[#2D3246] hover:border-[#00F5FF]/30 transition-all"
+                      className="p-5 bg-background rounded-lg border border-border hover:border-[#00F5FF]/30 transition-all"
                     >
-                      <h4 className="text-lg font-semibold text-[#00F5FF] mb-2">{category.name}</h4>
-                      <p className="text-sm text-[#A0A0A0] mb-3">{category.description}</p>
+                      <h4 className="text-lg font-semibold text-primary mb-2">{category.name}</h4>
+                      <p className="text-sm text-muted-foreground mb-3">{category.description}</p>
                       <ul className="space-y-1 mb-3">
                         {category.examples.map((example, i) => (
-                          <li key={i} className="text-xs text-[#A0A0A0] flex items-start gap-2">
-                            <span className="text-[#00F5FF]">•</span>
+                          <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
+                            <span className="text-primary">•</span>
                             <span>{example}</span>
                           </li>
                         ))}
                       </ul>
-                      <div className="pt-3 border-t border-[#2D3246]">
-                        <p className="text-xs text-[#00F5FF]">🛡️ {category.protection}</p>
+                      <div className="pt-3 border-t border-border">
+                        <p className="text-xs text-primary">🛡️ {category.protection}</p>
                       </div>
                     </div>
                   ))}
@@ -520,7 +520,7 @@ export default function PrivacyPolicyPage() {
             <section id="cookies" className="mb-5 scroll-mt-8">
               <Accordion title="5. Cookies & Tracking Technologies" icon={<Cookie className="w-6 h-6" />}>
                 <div className="space-y-6">
-                  <p className="text-[#A0A0A0]">
+                  <p className="text-muted-foreground">
                     We use cookies and similar tracking technologies to enhance your experience, analyze usage, and deliver personalized content and advertising.
                   </p>
 
@@ -556,13 +556,13 @@ export default function PrivacyPolicyPage() {
                   ].map((cookie, idx) => (
                     <div
                       key={idx}
-                      className="p-4 bg-[#0F1116] rounded-lg border"
+                      className="p-4 bg-background rounded-lg border"
                       style={{ borderColor: `${cookie.color}30` }}
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div>
-                          <h4 className="text-lg font-semibold text-white">{cookie.category}</h4>
-                          <p className="text-sm text-[#A0A0A0]">{cookie.description}</p>
+                          <h4 className="text-lg font-semibold text-foreground">{cookie.category}</h4>
+                          <p className="text-sm text-muted-foreground">{cookie.description}</p>
                         </div>
                         <span
                           className="px-3 py-1 text-xs font-semibold rounded-full"
@@ -579,7 +579,7 @@ export default function PrivacyPolicyPage() {
                   ))}
 
                   <div className="mt-4 p-4 bg-[#0066FF]/10 border border-[#0066FF]/30 rounded-lg">
-                    <p className="text-sm text-[#00F5FF]">
+                    <p className="text-sm text-primary">
                       You can manage cookie preferences through your browser settings or our cookie consent manager. Note that disabling certain cookies may affect platform functionality.
                     </p>
                   </div>
@@ -628,15 +628,15 @@ export default function PrivacyPolicyPage() {
                 </div>
 
                 <div className="p-4 bg-[#DC2626]/10 border border-[#DC2626]/30 rounded-lg">
-                  <h4 className="text-white font-semibold mb-2 flex items-center gap-2">
+                  <h4 className="text-foreground font-semibold mb-2 flex items-center gap-2">
                     <AlertCircle className="w-5 h-5 text-[#DC2626]" />
                     Security Incident Response
                   </h4>
-                  <p className="text-[#A0A0A0] text-sm mb-2">
+                  <p className="text-muted-foreground text-sm mb-2">
                     In the unlikely event of a data breach, we will notify affected users within 72 hours as required by GDPR and applicable laws.
                   </p>
-                  <p className="text-[#A0A0A0] text-sm">
-                    <strong className="text-white">Report security concerns:</strong> security@tradepulse.com
+                  <p className="text-muted-foreground text-sm">
+                    <strong className="text-foreground">Report security concerns:</strong> security@tradepulse.com
                   </p>
                 </div>
               </Accordion>
@@ -648,7 +648,7 @@ export default function PrivacyPolicyPage() {
                 <div className="space-y-6">
                   {selectedRegion === 'EU' || selectedRegion === 'Global' ? (
                     <div className="p-5 bg-[#0066FF]/10 border border-[#0066FF]/30 rounded-lg">
-                      <h4 className="text-lg font-semibold text-[#00F5FF] mb-3">
+                      <h4 className="text-lg font-semibold text-primary mb-3">
                         GDPR Rights (EU/EEA Residents)
                       </h4>
                       <ul className="space-y-2">
@@ -661,21 +661,21 @@ export default function PrivacyPolicyPage() {
                           'Right to object to processing',
                           'Right to withdraw consent at any time',
                         ].map((right, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-[#A0A0A0]">
-                            <Check className="w-4 h-4 text-[#00F5FF] mt-1 flex-shrink-0" />
+                          <li key={idx} className="flex items-start gap-2 text-muted-foreground">
+                            <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                             <span>{right}</span>
                           </li>
                         ))}
                       </ul>
-                      <p className="text-sm text-[#A0A0A0] mt-4">
-                        <strong className="text-white">Response time:</strong> 30 days for access and deletion requests
+                      <p className="text-sm text-muted-foreground mt-4">
+                        <strong className="text-foreground">Response time:</strong> 30 days for access and deletion requests
                       </p>
                     </div>
                   ) : null}
 
                   {selectedRegion === 'California' || selectedRegion === 'Global' ? (
                     <div className="p-5 bg-[#00F5FF]/10 border border-[#00F5FF]/30 rounded-lg">
-                      <h4 className="text-lg font-semibold text-[#00F5FF] mb-3">
+                      <h4 className="text-lg font-semibold text-primary mb-3">
                         CCPA Rights (California Residents)
                       </h4>
                       <ul className="space-y-2">
@@ -686,8 +686,8 @@ export default function PrivacyPolicyPage() {
                           'Right to delete personal information',
                           'Right to non-discrimination for exercising CCPA rights',
                         ].map((right, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-[#A0A0A0]">
-                            <Check className="w-4 h-4 text-[#00F5FF] mt-1 flex-shrink-0" />
+                          <li key={idx} className="flex items-start gap-2 text-muted-foreground">
+                            <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                             <span>{right}</span>
                           </li>
                         ))}
@@ -698,7 +698,7 @@ export default function PrivacyPolicyPage() {
                   <div className="grid md:grid-cols-2 gap-4">
                     <Button
                       onClick={handleDataRequest}
-                      className="p-4 bg-primary h-24 flex-col text-white rounded-lg hover:bg-primary-dark transition-all transform hover:scale-105"
+                      className="p-4 bg-primary h-24 flex-col text-foreground rounded-lg hover:bg-primary-dark transition-all transform hover:scale-105"
                     >
                       <FileText className="w-8 h-8 mb-2" />
                       <h5 className="font-semibold">Request Data Export</h5>
@@ -706,7 +706,7 @@ export default function PrivacyPolicyPage() {
                     </Button>
                     <Button
                       onClick={() => alert('This would open the account deletion form')}
-                      className="p-4 bg-[#2D3246] h-24 flex-col text-white rounded-lg hover:bg-[#353B52] transition-all transform hover:scale-105"
+                      className="p-4 bg-muted h-24 flex-col text-foreground rounded-lg hover:bg-[#353B52] transition-all transform hover:scale-105"
                     >
                       <AlertCircle className="w-8 h-8 mb-2" />
                       <h5 className="font-semibold mb-1">Delete Account</h5>
@@ -721,15 +721,15 @@ export default function PrivacyPolicyPage() {
             <section id="children" className="mb-5 scroll-mt-8">
               <Accordion title="8. Children's Privacy" icon={<AlertCircle className="w-6 h-6" />}>
                 <div className="prose prose-invert max-w-none">
-                  <p className="text-[#A0A0A0] leading-relaxed mb-5">
+                  <p className="text-muted-foreground leading-relaxed mb-5">
                     Trade Pulse is not intended for individuals under the age of 18. We do not knowingly collect personal information from children.
                   </p>
                   <div className="p-4 bg-[#DC2626]/10 border border-[#DC2626]/30 rounded-lg">
-                    <h4 className="text-white font-semibold mb-2">Age Verification</h4>
-                    <p className="text-[#A0A0A0] text-sm mb-2">
+                    <h4 className="text-foreground font-semibold mb-2">Age Verification</h4>
+                    <p className="text-muted-foreground text-sm mb-2">
                       During account registration, users must confirm they are 18 years or older. We implement age verification checks to prevent underage access.
                     </p>
-                    <p className="text-[#A0A0A0] text-sm">
+                    <p className="text-muted-foreground text-sm">
                       If you believe we have inadvertently collected information from a child under 18, please contact us immediately at privacy@tradepulse.com, and we will delete such information promptly.
                     </p>
                   </div>
@@ -741,46 +741,46 @@ export default function PrivacyPolicyPage() {
             <section id="international" className="mb-5 scroll-mt-8">
               <Accordion title="9. International Data Transfers" icon={<Globe className="w-6 h-6" />}>
                 <div className="prose prose-invert max-w-none">
-                  <p className="text-[#A0A0A0] leading-relaxed mb-5">
+                  <p className="text-muted-foreground leading-relaxed mb-5">
                     Your information may be transferred to and processed in countries other than your country of residence. These countries may have data protection laws different from those in your jurisdiction.
                   </p>
                   <div className="grid md:grid-cols-2 gap-4 mb-5">
-                    <div className="p-4 bg-[#0F1116] rounded-lg border border-[#2D3246]">
-                      <h4 className="text-white font-semibold mb-2">Transfer Mechanisms</h4>
+                    <div className="p-4 bg-background rounded-lg border border-border">
+                      <h4 className="text-foreground font-semibold mb-2">Transfer Mechanisms</h4>
                       <ul className="space-y-2">
-                        <li className="text-sm text-[#A0A0A0] flex items-start gap-2">
-                          <Check className="w-4 h-4 text-[#00F5FF] mt-0.5 flex-shrink-0" />
+                        <li className="text-sm text-muted-foreground flex items-start gap-2">
+                          <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                           <span>Standard Contractual Clauses (SCCs)</span>
                         </li>
-                        <li className="text-sm text-[#A0A0A0] flex items-start gap-2">
-                          <Check className="w-4 h-4 text-[#00F5FF] mt-0.5 flex-shrink-0" />
+                        <li className="text-sm text-muted-foreground flex items-start gap-2">
+                          <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                           <span>EU-US Data Privacy Framework</span>
                         </li>
-                        <li className="text-sm text-[#A0A0A0] flex items-start gap-2">
-                          <Check className="w-4 h-4 text-[#00F5FF] mt-0.5 flex-shrink-0" />
+                        <li className="text-sm text-muted-foreground flex items-start gap-2">
+                          <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                           <span>Adequacy Decisions</span>
                         </li>
                       </ul>
                     </div>
-                    <div className="p-4 bg-[#0F1116] rounded-lg border border-[#2D3246]">
-                      <h4 className="text-white font-semibold mb-2">Data Locations</h4>
+                    <div className="p-4 bg-background rounded-lg border border-border">
+                      <h4 className="text-foreground font-semibold mb-2">Data Locations</h4>
                       <ul className="space-y-2">
-                        <li className="text-sm text-[#A0A0A0] flex items-start gap-2">
-                          <Globe className="w-4 h-4 text-[#00F5FF] mt-0.5 flex-shrink-0" />
+                        <li className="text-sm text-muted-foreground flex items-start gap-2">
+                          <Globe className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                           <span>United States</span>
                         </li>
-                        <li className="text-sm text-[#A0A0A0] flex items-start gap-2">
-                          <Globe className="w-4 h-4 text-[#00F5FF] mt-0.5 flex-shrink-0" />
+                        <li className="text-sm text-muted-foreground flex items-start gap-2">
+                          <Globe className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                           <span>European Union</span>
                         </li>
-                        <li className="text-sm text-[#A0A0A0] flex items-start gap-2">
-                          <Globe className="w-4 h-4 text-[#00F5FF] mt-0.5 flex-shrink-0" />
+                        <li className="text-sm text-muted-foreground flex items-start gap-2">
+                          <Globe className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
                           <span>With adequate protection</span>
                         </li>
                       </ul>
                     </div>
                   </div>
-                  <p className="text-[#A0A0A0] text-sm">
+                  <p className="text-muted-foreground text-sm">
                     We ensure that adequate safeguards are in place to protect your data wherever it is processed.
                   </p>
                 </div>
@@ -791,35 +791,35 @@ export default function PrivacyPolicyPage() {
             <section id="contact" className="mb-5 scroll-mt-8">
               <Accordion title="10. Contact Us" icon={<Mail className="w-6 h-6" />}>
                 <div className="space-y-4">
-                  <p className="text-[#A0A0A0] leading-relaxed">
+                  <p className="text-muted-foreground leading-relaxed">
                     If you have questions about this Privacy Policy or wish to exercise your data protection rights, please contact us:
                   </p>
 
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div className="p-5 bg-[#0F1116] rounded-lg border border-[#2D3246]">
-                      <h4 className="text-white font-semibold mb-3">General Privacy Inquiries</h4>
-                      <p className="text-sm text-[#A0A0A0] mb-2">
-                        <strong className="text-white">Email:</strong> privacy@tradepulse.com
+                    <div className="p-5 bg-background rounded-lg border border-border">
+                      <h4 className="text-foreground font-semibold mb-3">General Privacy Inquiries</h4>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        <strong className="text-foreground">Email:</strong> privacy@tradepulse.com
                       </p>
-                      <p className="text-sm text-[#A0A0A0]">
-                        <strong className="text-white">Response Time:</strong> 48 hours
+                      <p className="text-sm text-muted-foreground">
+                        <strong className="text-foreground">Response Time:</strong> 48 hours
                       </p>
                     </div>
 
-                    <div className="p-5 bg-[#0F1116] rounded-lg border border-[#2D3246]">
-                      <h4 className="text-white font-semibold mb-3">Data Protection Officer</h4>
-                      <p className="text-sm text-[#A0A0A0] mb-2">
-                        <strong className="text-white">Email:</strong> dpo@tradepulse.com
+                    <div className="p-5 bg-background rounded-lg border border-border">
+                      <h4 className="text-foreground font-semibold mb-3">Data Protection Officer</h4>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        <strong className="text-foreground">Email:</strong> dpo@tradepulse.com
                       </p>
-                      <p className="text-sm text-[#A0A0A0]">
-                        <strong className="text-white">For:</strong> GDPR requests
+                      <p className="text-sm text-muted-foreground">
+                        <strong className="text-foreground">For:</strong> GDPR requests
                       </p>
                     </div>
                   </div>
 
                   <div className="p-5 bg-[#0066FF]/10 border border-[#0066FF]/30 rounded-lg">
-                    <h4 className="text-white font-semibold mb-2">Trade Pulse Inc.</h4>
-                    <p className="text-sm text-[#A0A0A0] mb-2">
+                    <h4 className="text-foreground font-semibold mb-2">Trade Pulse Inc.</h4>
+                    <p className="text-sm text-muted-foreground mb-2">
                       123 Financial District<br />
                       San Francisco, CA 94105<br />
                       United States
@@ -839,8 +839,8 @@ export default function PrivacyPolicyPage() {
             </section>
 
             {/* Footer Related Documents */}
-            <div className="mt-12 p-6 bg-[#1A1D28] rounded-lg border border-[#2D3246]">
-              <h3 className="text-lg font-semibold text-white mb-5">Related Legal Documents</h3>
+            <div className="mt-12 p-6 bg-card rounded-lg border border-border">
+              <h3 className="text-lg font-semibold text-foreground mb-5">Related Legal Documents</h3>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {[
                   { name: 'Terms of Service', href: '/terms' },
@@ -850,11 +850,11 @@ export default function PrivacyPolicyPage() {
                   <a
                     key={idx}
                     href={doc.href}
-                    className="flex items-center gap-2 p-3 bg-[#2D3246] rounded-lg hover:bg-[#353B52] transition-colors"
+                    className="flex items-center gap-2 p-3 bg-muted rounded-lg hover:bg-[#353B52] transition-colors"
                   >
-                    <FileText className="w-4 h-4 text-[#00F5FF]" />
-                    <span className="text-sm text-white">{doc.name}</span>
-                    <ExternalLink className="w-3 h-3 text-[#A0A0A0] ml-auto" />
+                    <FileText className="w-4 h-4 text-primary" />
+                    <span className="text-sm text-foreground">{doc.name}</span>
+                    <ExternalLink className="w-3 h-3 text-muted-foreground ml-auto" />
                   </a>
                 ))}
               </div>

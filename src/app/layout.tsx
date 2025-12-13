@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${poppins.variable} ${poppins.variable} bg-slate-950 text-slate-100 antialiased`}
+        className={`${poppins.variable} font-sans antialiased bg-background text-foreground`}
       >
         <HeaderMain />
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-cyan-500 text-white px-4 py-2 rounded-md z-50">Skip to main content</a>

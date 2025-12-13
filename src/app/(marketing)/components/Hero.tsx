@@ -29,7 +29,7 @@ export function Hero() {
             >
               <h1 className="text-5xl lg:text-6xl xl:text-7xl tracking-tight font-bold">
                 See{' '}
-                <span className="bg-gradient-to-r from-white to-primary bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
                   the Pulse
                 </span>
                 <br />
@@ -58,7 +58,7 @@ export function Hero() {
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="px-8 py-6 border-border hover:bg-card hover:text-amber-50">
+              <Button asChild variant="outline" size="lg" className="px-8 py-6 border-border hover:bg-card dark:hover:text-amber-50">
                 <Link href="#demo">
                   <Play className="mr-2 h-5 w-5" />
                   Watch 90-Second Demo

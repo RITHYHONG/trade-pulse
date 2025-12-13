@@ -283,7 +283,7 @@ export default function AboutPage() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link href="/signup">
-                    <Button className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-8 py-6 text-lg">
+                    <Button className="bg-primary px-8 py-6 text-lg">
                       Start Your Free Trial
                     </Button>
                   </Link>
