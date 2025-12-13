@@ -1,7 +1,4 @@
 "use client";
-import type { Metadata } from 'next';
-import { generateMetadata } from '@/lib/seo';
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -1029,9 +1026,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-export const metadata: Metadata = generateMetadata({
-  title: 'Settings',
-  description: 'Manage your Trader Pulse account settings, preferences, and profile information.',
-  path: '/settings',
-});

@@ -60,7 +60,7 @@ export function Features() {
         >
           <h2 className="text-4xl lg:text-5xl mb-6 font-bold">
             Features That Give {' '}
-            <span className="bg-gradient-to-r from-white to-primary bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
               You The Edge
             </span>
           </h2>
