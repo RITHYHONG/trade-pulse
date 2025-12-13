@@ -24,10 +24,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <HeaderMain />
       <body
         className={`${poppins.variable} ${poppins.variable} bg-slate-950 text-slate-100 antialiased`}
       >
+        <HeaderMain />
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-cyan-500 text-white px-4 py-2 rounded-md z-50">Skip to main content</a>
         <ClientLayout>
           <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.25),_transparent_55%)]">
@@ -38,8 +38,8 @@ export default function RootLayout({
           </div>
           <Toaster position="top-right" />
         </ClientLayout>
+        <Footer />
       </body>
-      <Footer />
     </html>
   );
 }

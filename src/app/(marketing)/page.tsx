@@ -16,7 +16,6 @@ export default function MarketingHome() {
       <Features />
       <SocialProof />
       <Pricing />
-      <Footer />
     </div>
   );
 }

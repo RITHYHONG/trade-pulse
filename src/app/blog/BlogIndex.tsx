@@ -286,8 +286,6 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
         </div>
       </section>
 
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }
