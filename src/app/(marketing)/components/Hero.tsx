@@ -47,18 +47,18 @@ export function Hero() {
             </motion.p>
 
             <motion.div
-              className="flex flex-col sm:flex-row gap-4 h-[3rem]"
+              className="flex flex-row flex-wrap gap-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <Button asChild size="lg" className="group px-8 h-full bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25">
+              <Button asChild size="lg" className="group px-8 flex-1 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25">
                 <Link href="#pricing">
                   Start Your Free Morning Routine
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="px-8 h-full border-border border-2 hover:bg-card dark:hover:text-amber-50">
+              <Button asChild variant="outline" size="lg" className="px-8 flex-1 border-border border-2 hover:bg-card dark:hover:text-amber-50 ">
                 <Link href="#demo">
                   <Play className="mr-2 h-5 w-5" />
                   Watch 90-Second Demo

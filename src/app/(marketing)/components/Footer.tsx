@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { Linkedin, Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import LogoDark from '../../../../public/logo.png';
+import LogoDark from '../../../../public/logo.svg';
 import LogoLight from '../../../../public/logo-black.svg';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
@@ -43,6 +43,11 @@ export function Footer() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubscribe = async () => {
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
@@ -117,16 +122,16 @@ export function Footer() {
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-3 mb-6">
-              <motion.div 
+            <motion.div 
             className="flex items-center gap-3"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
           >
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <Image 
-                src={theme === 'light' ? LogoLight : LogoDark} 
-                width={72} 
-                height={72} 
+                src={mounted ? (theme === 'light' ? LogoLight : LogoDark) : LogoDark} 
+                width={65} 
+                  height={65} 
                 alt="Logo"
                 priority
               />
