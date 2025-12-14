@@ -226,3 +226,12 @@ html {
     scrollbar-width: none; /* Firefox */
   }
 }
+
+@keyframes scroll-right-to-left {
+  0% { transform: translateX(50%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  animation: scroll-right-to-left 20s linear infinite;
+}

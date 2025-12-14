@@ -6,6 +6,10 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Play } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
+import {
+  ScrollVelocityContainer,
+  ScrollVelocityRow,
+} from '@/components/ui/scroll-based-velocity';
 
 export function Hero() {
   return (
@@ -14,7 +18,7 @@ export function Hero() {
       <div className="absolute inset-0 bg-gradient-radial from-primary/10 via-transparent to-transparent opacity-30" />
 
       <div className="container mx-auto px-8 py-24 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="sm:grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Column - Content */}
           <motion.div
             className="space-y-8"
@@ -73,12 +77,22 @@ export function Hero() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
-              <div className="text-sm text-muted-foreground">Trusted by traders at</div>
-              <div className="flex items-center gap-6 opacity-60">
-                <div className="px-3 py-1 border border-border rounded text-sm">Goldman</div>
-                <div className="px-3 py-1 border border-border rounded text-sm">JP Morgan</div>
-                <div className="px-3 py-1 border border-border rounded text-sm">Citadel</div>
-              </div>
+              <ScrollVelocityContainer className="w-full opacity-60 relative">
+                <ScrollVelocityRow baseVelocity={5} direction={-1}>
+                  <div className="flex items-center">
+                    <div className="px-3 py-1 border border-border rounded text-sm mr-6">Goldman</div>
+                    <div className="px-3 py-1 border border-border rounded text-sm mr-6">JP Morgan</div>
+                    <div className="px-3 py-1 border border-border rounded text-sm mr-6">Citadel</div>
+                    <div className="px-3 py-1 border border-border rounded text-sm mr-6">Morgan Stanley</div>
+                    <div className="px-3 py-1 border border-border rounded text-sm mr-6">Blackrock</div>
+                    <div className="px-3 py-1 border border-border rounded text-sm mr-6">Vanguard</div>
+                    <div className="px-3 py-1 border border-border rounded text-sm mr-6">Fidelity</div>
+                    <div className="px-3 py-1 border border-border rounded text-sm mr-6">Charles Schwab</div>
+                  </div>
+                </ScrollVelocityRow>
+                <div className="from-background pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r"></div>
+                <div className="from-background pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l"></div>
+              </ScrollVelocityContainer>
             </motion.div>
           </motion.div>
 
