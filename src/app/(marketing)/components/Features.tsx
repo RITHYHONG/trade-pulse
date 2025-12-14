@@ -49,7 +49,7 @@ const additionalFeatures = [
 
 export function Features() {
   return (
-  <section id="features" className="scroll-mt-24 py-24 bg-gradient-to-b from-card/30 to-background">
+  <section id="features" className="scroll-mt-24 pb-24 bg-gradient-to-b from-card/30 to-background">
       <div className="container mx-auto px-8">
         <motion.div 
           className="text-center mb-20"
