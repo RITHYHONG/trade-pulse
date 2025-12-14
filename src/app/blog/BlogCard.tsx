@@ -29,7 +29,7 @@ export function BlogCard({ post }: BlogCardProps) {
   return (
     <Link href={`/blog/${post.slug}`}>
       <article 
-        className="bg-[#1A1D28] border border-[#2D3246] rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-cyan-500/10 hover:border-cyan-500/30 group flex flex-col h-full"
+        className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-[#2D3246] rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-cyan-500/10 hover:border-cyan-500/30 group flex flex-col h-full"
       >
         {/* Image Header */}
         <div className="relative aspect-[3/2] overflow-hidden">
@@ -63,12 +63,12 @@ export function BlogCard({ post }: BlogCardProps) {
       {/* Content */}
       <div className="p-6 flex flex-col flex-1">
         {/* Title */}
-        <h3 className="text-xl font-semibold text-white mb-3 leading-tight group-hover:text-cyan-300 transition-colors line-clamp-2">
+        <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3 leading-tight transition-colors line-clamp-2">
           {post.title}
         </h3>
         
         {/* Excerpt */}
-        <p className="text-gray-400 mb-4 line-clamp-2 leading-relaxed">
+        <p className="text-slate-600 dark:text-gray-400 mb-4 line-clamp-2 leading-relaxed">
           {post.excerpt}
         </p>
         
@@ -82,12 +82,12 @@ export function BlogCard({ post }: BlogCardProps) {
                 className="w-8 h-8 rounded-full"
               />
               <div>
-                <div className="text-sm font-medium text-white">{authorProfile.name}</div>
-                <div className="text-xs text-gray-500">{post.publishDate}</div>
+                <div className="text-sm font-medium text-slate-900 dark:text-white">{authorProfile.name}</div>
+                <div className="text-xs text-slate-500 dark:text-gray-500">{post.publishDate}</div>
               </div>
             </div>
 
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-slate-500 dark:text-gray-500">
               {post.readTime}
             </div>
           </div>
@@ -99,7 +99,7 @@ export function BlogCard({ post }: BlogCardProps) {
                 <Badge 
                   key={tag} 
                   variant="outline" 
-                  className="text-xs text-gray-400 border-[#2D3246] hover:border-cyan-500/30"
+                  className="text-xs text-slate-600 dark:text-gray-400 border-slate-300 dark:border-[#2D3246] hover:border-cyan-500/30"
                 >
                   {tag}
                 </Badge>
@@ -115,7 +115,7 @@ export function BlogCard({ post }: BlogCardProps) {
 
 export function BlogCardSkeleton() {
   return (
-    <article className="bg-[#1A1D28] border border-[#2D3246] rounded-xl overflow-hidden group flex flex-col h-full">
+    <article className="bg-white dark:bg-slate-800 border border-slate-300 dark:border-[#2D3246] rounded-xl overflow-hidden group flex flex-col h-full">
       <div className="relative aspect-[3/2] overflow-hidden">
         <SkeletonImage className="w-full h-full" />
       </div>

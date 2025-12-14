@@ -81,7 +81,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F1116] text-white">
+    <div className="min-h-screen text-white">
       <BlogPostComponent 
         post={post} 
         relatedPosts={relatedPosts}

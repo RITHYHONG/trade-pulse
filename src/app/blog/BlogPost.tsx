@@ -1,5 +1,5 @@
 "use client";
-import { ArrowLeft, Share2, Bookmark, ThumbsUp, Clock, Calendar, TrendingUp, ArrowRight } from 'lucide-react';
+import { Share2, Bookmark, ThumbsUp, Clock, Calendar, TrendingUp, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BlogPost as BlogPostType } from '../../types/blog';
@@ -58,41 +58,9 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0A0B0F] via-[#0F1116] to-[#0A0B0F]">
-      <div className="sticky top-0 z-50 bg-[#0F1116]/80 backdrop-blur-xl border-b border-white/5">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <Link href="/blog">
-              <Button
-                variant="ghost"
-                className="group text-gray-400 hover:[#004050] transition-all duration-300 cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-                <span className="hidden sm:inline">Back to Articles</span>
-                <span className="sm:hidden">Back</span>
-              </Button>
-            </Link>
-            
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-300"
-                aria-label="Share article"
-              >
-                <Share2 className="w-4 h-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-300"
-                aria-label="Bookmark article"
-              >
-                <Bookmark className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen">
+      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+
       </div>
 
       {/* Hero Section - Clean & Organized */}
@@ -100,7 +68,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent pointer-events-none" />
         
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-12">
           <div className="max-w-4xl mx-auto">
             {/* Breadcrumb - Simplified */}
             <CustomBreadcrumb 
@@ -135,39 +103,39 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
               </div>
               
               {/* Title */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight tracking-tight">
                 {post.title}
               </h1>
               
               {/* Excerpt */}
-              <p className="text-lg sm:text-xl text-gray-400 leading-relaxed">
+              <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
                 {post.excerpt}
               </p>
               
               {/* Author and Meta Info - Cleaner Layout */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-6 pb-8 border-b border-white/5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-6 pb-8 border-b border-border">
                 <div className="flex items-center gap-4">
                   <div className="relative flex-shrink-0">
                     <div className="absolute -inset-0.5 from-cyan-500 to-blue-500 rounded-full opacity-75 blur"></div>
                     <ImageWithFallback
                         src={authorProfile.avatar ?? ''}
                       alt={authorProfile.name}
-                      className="relative w-12 h-12 rounded-full ring-2 ring-[#0F1116]"
+                      className="relative w-12 h-12 rounded-full ring-2 ring-background"
                     />
                   </div>
                   <div>
-                    <div className="font-semibold text-white">{authorProfile.name}</div>
-                    {/* <div className="text-sm text-gray-500">{authorProfile.bio || 'Market Analyst'}</div> */}
+                    <div className="font-semibold text-foreground">{authorProfile.name}</div>
+                    {/* <div className="text-sm text-muted-foreground">{authorProfile.bio || 'Market Analyst'}</div> */}
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-6 text-sm text-gray-400">
+                <div className="flex items-center gap-6 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-gray-500" />
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
                     <span>{formatDate(post.publishedAt)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-gray-500" />
+                    <Clock className="w-4 h-4 text-muted-foreground" />
                     <span>{post.readingTime}</span>
                   </div>
                 </div>
@@ -177,7 +145,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
             {/* Featured Image - Cleaner Style */}
             <div className="relative my-10 group">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-2xl opacity-10 group-hover:opacity-20 blur transition duration-300"></div>
-              <div className="relative aspect-[16/9] rounded-xl overflow-hidden ring-1 ring-white/10">
+              <div className="relative aspect-[16/9] rounded-xl overflow-hidden ring-1 ring-border">
                 <ImageWithFallback
                   src={post.featuredImage ?? ''}
                   alt={post.title}
@@ -203,22 +171,22 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
           <article className="prose prose-lg prose-invert max-w-none">
             {isLikelyHtml(post.content) ? (
               <div
-                className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-gray-300 prose-a:text-cyan-400 hover:prose-a:text-cyan-300"
+                className="prose prose-invert max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-cyan-400 hover:prose-a:text-cyan-300"
                 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
               />
             ) : (
-              <div className="text-gray-300 leading-relaxed space-y-8">
+              <div className="text-muted-foreground leading-relaxed space-y-8">
                 {post.content.split('\n\n').map((paragraph, index) => {
                   if (paragraph.startsWith('# ')) {
                     return (
-                      <h1 key={index} className="text-4xl font-bold text-white mt-16 mb-8 tracking-tight">
+                      <h1 key={index} className="text-4xl font-bold text-foreground mt-16 mb-8 tracking-tight">
                         {paragraph.replace('# ', '')}
                       </h1>
                     );
                   }
                   if (paragraph.startsWith('## ')) {
                     return (
-                      <h2 key={index} className="relative text-3xl font-bold text-white mt-12 mb-6 pl-6">
+                      <h2 key={index} className="relative text-3xl font-bold text-foreground mt-12 mb-6 pl-6">
                         <span className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-500 to-blue-500 rounded-full"></span>
                         {paragraph.replace('## ', '')}
                       </h2>
@@ -226,7 +194,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   }
                   if (paragraph.startsWith('### ')) {
                     return (
-                      <h3 key={index} className="text-2xl font-semibold text-white mt-10 mb-4">
+                      <h3 key={index} className="text-2xl font-semibold text-foreground mt-10 mb-4">
                         {paragraph.replace('### ', '')}
                       </h3>
                     );
@@ -242,7 +210,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                             </div>
                             <div>
                               <h4 className="font-semibold text-cyan-300 mb-2 text-lg">Key Takeaway</h4>
-                              <p className="text-gray-300 leading-relaxed">{paragraph.replace(/\*\*/g, '')}</p>
+                              <p className="text-muted-foreground leading-relaxed">{paragraph.replace(/\*\*/g, '')}</p>
                             </div>
                           </div>
                         </div>
@@ -254,7 +222,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                     return (
                       <ul key={index} className="space-y-3 ml-6 my-6">
                         {items.map((item, itemIndex) => (
-                          <li key={itemIndex} className="text-gray-300 leading-relaxed relative pl-4 before:content-[''] before:absolute before:left-0 before:top-[0.6em] before:w-1.5 before:h-1.5 before:bg-cyan-500 before:rounded-full">
+                          <li key={itemIndex} className="text-muted-foreground leading-relaxed relative pl-4 before:content-[''] before:absolute before:left-0 before:top-[0.6em] before:w-1.5 before:h-1.5 before:bg-cyan-500 before:rounded-full">
                             {item.replace('- ', '')}
                           </li>
                         ))}
@@ -262,7 +230,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                     );
                   }
                   return (
-                    <p key={index} className="text-gray-300 leading-relaxed text-lg">
+                    <p key={index} className="text-muted-foreground leading-relaxed text-lg">
                       {paragraph}
                     </p>
                   );
@@ -280,14 +248,14 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
           <footer className="mt-16 space-y-12">
             {/* Tags Section */}
             {post.tags && post.tags.length > 0 && (
-              <div className="pt-8 border-t border-white/5">
-                <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Topics</h4>
+              <div className="pt-8 border-t border-border">
+                <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-4">Topics</h4>
                 <div className="flex flex-wrap gap-3">
                   {post.tags.map((tag) => (
                     <Badge 
                       key={tag} 
                       variant="outline" 
-                      className="text-gray-400 bg-white/5 border-white/10 hover:border-cyan-500/50 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-300 px-4 py-1.5"
+                      className="text-muted-foreground bg-card/5 border-border hover:border-cyan-500/50 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-300 px-4 py-1.5"
                     >
                       #{tag}
                     </Badge>
@@ -299,11 +267,11 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
             {/* Engagement Actions - Glassmorphism Style */}
             <div className="relative overflow-hidden rounded-2xl">
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5"></div>
-              <div className="relative flex flex-col sm:flex-row items-center justify-between gap-4 p-6 border border-white/5 backdrop-blur-sm">
+              <div className="relative flex flex-col sm:flex-row items-center justify-between gap-4 p-6 border border-border backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                   <Button 
                     variant="outline" 
-                    className="border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
+                    className="border-border bg-card/5 text-muted-foreground hover:text-foreground hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
                   >
                     <ThumbsUp className="w-4 h-4 mr-2" />
                     <span className="hidden sm:inline">Found this helpful</span>
@@ -311,7 +279,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
+                    className="border-border bg-card/5 text-muted-foreground hover:text-foreground hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
                   >
                     <Share2 className="w-4 h-4 mr-2" />
                     Share
@@ -320,7 +288,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                 
                 <Button 
                   variant="outline" 
-                  className="border-white/10 bg-white/5 text-gray-300 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
+                  className="border-border bg-card/5 text-muted-foreground hover:text-foreground hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
                 >
                   <Bookmark className="w-4 h-4 mr-2" />
                   <span className="hidden sm:inline">Save for Later</span>
@@ -332,21 +300,21 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
             {/* Author Bio - Premium Card */}
             <div className="relative overflow-hidden rounded-2xl group">
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-purple-500/10 opacity-50"></div>
-              <div className="relative border border-white/10 backdrop-blur-sm p-8">
+              <div className="relative border border-border backdrop-blur-sm p-8">
                 <div className="flex flex-col sm:flex-row items-start gap-6">
                   <div className="relative flex-shrink-0">
                     <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full opacity-75 blur group-hover:opacity-100 transition duration-300"></div>
                     <ImageWithFallback
                       src={authorProfile.avatar ?? ''}
                       alt={authorProfile.name}
-                      className="relative w-20 h-20 rounded-full ring-2 ring-[#0F1116]"
+                      className="relative w-20 h-20 rounded-full ring-2 ring-background"
                     />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-2xl font-bold text-zinc-300 mb-3">
-                      About <span className='text-amber-50'>{authorProfile.name}</span>
+                    <h4 className="text-2xl font-bold text-card-foreground mb-3">
+                      About <span className='text-foreground'>{authorProfile.name}</span>
                     </h4>
-                    <p className="text-gray-400 mb-6 leading-relaxed">
+                    <p className="text-muted-foreground mb-6 leading-relaxed">
                       {authorProfile.bio || 'Experienced market analyst and trading expert, providing insights and strategies to help traders navigate the financial markets.'}
                     </p>
                     <div className="flex gap-3">
@@ -360,7 +328,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                       <Button 
                         variant="outline" 
                         size="sm" 
-                        className="border-white/10 bg-white/5 text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300"
+                        className="border-border bg-card/5 text-muted-foreground hover:text-foreground hover:bg-card/10 transition-all duration-300"
                       >
                         More Articles
                       </Button>
@@ -379,7 +347,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
             {defaultRelatedPosts.length > 0 && (
               <section className="pt-8">
                 <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-3xl font-bold text-white">Related Articles</h3>
+                  <h3 className="text-3xl font-bold text-foreground">Related Articles</h3>
                   <Link
                     href="/blog"
                     className="text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors duration-300 flex items-center gap-1"

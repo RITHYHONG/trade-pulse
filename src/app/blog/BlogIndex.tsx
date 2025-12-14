@@ -126,7 +126,7 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F1116]">
+    <div className="min-h-screen">
       {/* Header */}
       <header className="border-b border-[#2D3246] py-8">
         <div className="container mx-auto px-4">
@@ -141,7 +141,7 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
              */}
             <div className="absolute right-0 top-0 mt-12">
               <Link href="/create-post">
-                <Button className="bg-primary text-black hover:bg-[#00F5FF]/90 flex justify-center items-center">
+                <Button className="px-5 py-4 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 group">
                   <PenSquare className="mr-2 h-4 w-4" />
                   Create Post
                 </Button>

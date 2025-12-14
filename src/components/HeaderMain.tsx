@@ -45,6 +45,11 @@ export function HeaderMain() {
   const { user, signOut, loading } = useAuth();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const ids = ['demo', 'features', 'testimonials', 'pricing'];
@@ -141,7 +146,7 @@ export function HeaderMain() {
           >
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <Image 
-                src={theme === 'light' ? LogoLight : LogoDark} 
+                src={mounted ? (theme === 'light' ? LogoLight : LogoDark) : LogoDark} 
                 width={72} 
                 height={72} 
                 alt="Logo"
