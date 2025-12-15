@@ -23,7 +23,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
   const sentimentColor = {
     bullish: 'text-green-400',
     bearish: 'text-red-400',
-    neutral: 'text-slate-400'
+    neutral: 'text-slate-600 dark:text-slate-400'
   }[event.historicalData.directionBias];
 
   const sentimentIcon = {
@@ -42,9 +42,9 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
   }));
 
   return (
-    <div className="fixed right-0 top-0 h-full w-[600px] bg-slate-950 border-l border-slate-800 text-white shadow-2xl z-50 overflow-y-auto">
+    <div className="fixed right-0 top-0 h-full w-[600px] bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white shadow-2xl z-50 overflow-y-auto">
       {/* Header */}
-      <div className="sticky top-0 bg-slate-900 border-b border-slate-800 p-6 z-10">
+      <div className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-6 z-10">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
@@ -56,7 +56,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               </Badge>
             </div>
             <h2 className="text-xl mb-1">{event.name}</h2>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               {event.country} • {event.datetime.toLocaleString('en-US', { 
                 weekday: 'short', 
                 month: 'short', 
@@ -66,7 +66,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               })}
             </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-slate-800" aria-label="Close panel">
+          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="Close panel">
             <X className="w-5 h-5" />
           </Button>
         </div>
@@ -74,15 +74,15 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
         {/* Quick Stats */}
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-slate-800/50 p-3 rounded-lg">
-            <div className="text-xs text-slate-400 mb-1">Consensus</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Consensus</div>
             <div className="text-lg">{event.consensus}{event.unit}</div>
           </div>
           <div className="bg-slate-800/50 p-3 rounded-lg">
-            <div className="text-xs text-slate-400 mb-1">Previous</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Previous</div>
             <div className="text-lg">{event.previous}{event.unit}</div>
           </div>
           <div className="bg-slate-800/50 p-3 rounded-lg">
-            <div className="text-xs text-slate-400 mb-1">Expected Move</div>
+            <div className="text-xs text-slate-600 dark:text-slate-400 mb-1">Expected Move</div>
             <div className="text-lg text-orange-400">±{event.tradingSetup.expectedMove}%</div>
           </div>
         </div>
@@ -97,14 +97,14 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
             <h3 className="text-lg">Historical Impact Analysis</h3>
           </div>
 
-          <div className="bg-slate-900 p-4 rounded-lg space-y-4">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-lg space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Average Absolute Move</span>
+              <span className="text-sm text-slate-600 dark:text-slate-400">Average Absolute Move</span>
               <span className="text-lg">±{event.historicalData.avgMove}%</span>
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Directional Bias</span>
+              <span className="text-sm text-slate-600 dark:text-slate-400">Directional Bias</span>
               <div className="flex items-center gap-2">
                 <SentimentIcon className={`w-4 h-4 ${sentimentColor}`} />
                 <span className={sentimentColor}>
@@ -120,11 +120,11 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Peak Impact Time</span>
+                <span className="text-slate-600 dark:text-slate-400">Peak Impact Time</span>
                 <span>{event.historicalData.peakImpactMinutes} minutes</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Fade Time</span>
+                <span className="text-slate-600 dark:text-slate-400">Fade Time</span>
                 <span>{event.historicalData.fadeTimeHours} hours</span>
               </div>
             </div>
@@ -148,9 +148,9 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
             <h3 className="text-lg">Consensus Intelligence</h3>
           </div>
 
-          <div className="bg-slate-900 p-4 rounded-lg space-y-4">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-lg space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Surprise Probability</span>
+              <span className="text-sm text-slate-600 dark:text-slate-400">Surprise Probability</span>
               <div className="flex items-center gap-3 flex-1 max-w-[200px]">
                 <Progress value={event.consensusIntelligence.surpriseProbability} className="flex-1" />
                 <span className="text-lg">{event.consensusIntelligence.surpriseProbability}%</span>
@@ -158,7 +158,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Revision Momentum</span>
+              <span className="text-sm text-slate-600 dark:text-slate-400">Revision Momentum</span>
               <Badge 
                 variant="outline" 
                 className={
@@ -190,7 +190,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
 
             {event.consensusIntelligence.whisperNumber && (
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-400">Whisper Number</span>
+                <span className="text-sm text-slate-600 dark:text-slate-400">Whisper Number</span>
                 <span className="text-lg text-amber-400">
                   {event.consensusIntelligence.whisperNumber}{event.unit}
                 </span>
@@ -200,7 +200,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
             {/* Distribution Chart */}
             {distributionData.length > 0 && (
               <div className="mt-4">
-                <div className="text-xs text-slate-400 mb-2">Estimate Distribution</div>
+                <div className="text-xs text-slate-600 dark:text-slate-400 mb-2">Estimate Distribution</div>
                 <ResponsiveContainer width="100%" height={120}>
                   <BarChart data={distributionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" />

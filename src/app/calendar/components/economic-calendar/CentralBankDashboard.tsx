@@ -34,8 +34,8 @@ export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
     <div className="p-6">
       <div className="flex items-center gap-2 mb-6">
         <Building2 className="w-5 h-5 text-purple-400" />
-        <h3 className="text-lg text-white">Central Bank Watch</h3>
-        <Badge variant="outline" className="ml-auto border-slate-700">
+        <h3 className="text-lg text-slate-900 dark:text-white">Central Bank Watch</h3>
+        <Badge variant="outline" className="ml-auto border-slate-200 dark:border-slate-700">
           {events.length} Upcoming
         </Badge>
       </div>
@@ -47,22 +47,22 @@ export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
           const hasProbabilities = event.rateProbabilities.cut + event.rateProbabilities.hold + event.rateProbabilities.hike > 0;
 
           return (
-            <Card key={event.id} className="bg-slate-950 border-slate-800 p-4 hover:border-slate-700 transition-colors">
+            <Card key={event.id} className="border-slate-200 dark:border-slate-800 p-4 hover:border-slate-50 dark:hover:border-slate-700 transition-colors">
               <div className="flex items-start gap-4">
                 <div className={`${typeColor} p-2 rounded-lg`}>
-                  <TypeIcon className="w-5 h-5 text-white" />
+                  <TypeIcon className="w-5 h-5 text-slate-900 dark:text-white" />
                 </div>
                 
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-white">{event.bank}</span>
+                    <span className="text-slate-900 dark:text-white">{event.bank}</span>
                     <Badge className={typeColor}>
                       {event.type}
                     </Badge>
                   </div>
 
                   {event.speaker && (
-                    <div className="text-sm text-slate-400 mb-2">
+                    <div className="text-sm text-slate-600 dark:text-slate-400 mb-2">
                       Speaker: {event.speaker}
                     </div>
                   )}
@@ -79,13 +79,13 @@ export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
 
                   {hasProbabilities && (
                     <div className="space-y-2 mb-3">
-                      <div className="text-xs text-slate-400 mb-2">Rate Decision Probabilities</div>
+                      <div className="text-xs text-slate-600 dark:text-slate-400 mb-2">Rate Decision Probabilities</div>
                       
                       {event.rateProbabilities.cut > 0 && (
                         <div className="space-y-1">
                           <div className="flex items-center justify-between text-xs">
                             <span className="text-green-400">Cut</span>
-                            <span className="text-white">{event.rateProbabilities.cut}%</span>
+                            <span className="text-slate-900 dark:text-white">{event.rateProbabilities.cut}%</span>
                           </div>
                           <Progress value={event.rateProbabilities.cut} className="h-1.5 bg-slate-800" />
                         </div>
@@ -95,7 +95,7 @@ export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
                         <div className="space-y-1">
                           <div className="flex items-center justify-between text-xs">
                             <span className="text-blue-400">Hold</span>
-                            <span className="text-white">{event.rateProbabilities.hold}%</span>
+                            <span className="text-slate-900 dark:text-white">{event.rateProbabilities.hold}%</span>
                           </div>
                           <Progress value={event.rateProbabilities.hold} className="h-1.5 bg-slate-800" />
                         </div>
@@ -105,7 +105,7 @@ export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
                         <div className="space-y-1">
                           <div className="flex items-center justify-between text-xs">
                             <span className="text-red-400">Hike</span>
-                            <span className="text-white">{event.rateProbabilities.hike}%</span>
+                            <span className="text-slate-900 dark:text-white">{event.rateProbabilities.hike}%</span>
                           </div>
                           <Progress value={event.rateProbabilities.hike} className="h-1.5 bg-slate-800" />
                         </div>

@@ -48,7 +48,7 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
         <div className="p-6">
           <div className="mb-6 flex items-center gap-4">
             <Clock className="w-5 h-5 text-blue-400" />
-            <h3 className="text-lg text-white">Timeline View</h3>
+            <h3 className="text-lg text-slate-900 dark:text-white">Timeline View</h3>
           </div>
 
           <div className="space-y-1">
@@ -58,9 +58,9 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
                   <div className="h-4 w-12 bg-slate-700 rounded-md animate-pulse" />
                 </div>
                 <div className="flex-1 min-h-[60px] relative">
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-800" />
+                  <div className="absolute left-0 top-0 bottom-0 w-1" />
                   <div className="pl-6 py-2">
-                    <div className="h-8 bg-slate-800 rounded-md p-3 animate-pulse" />
+                    <div className="h-8rounded-md p-3 animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -77,19 +77,19 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
         {/* Timeline Header */}
         <div className="mb-6 flex items-center gap-4">
           <Clock className="w-5 h-5 text-blue-400" />
-          <h3 className="text-lg text-white">Timeline View</h3>
+          <h3 className="text-lg text-slate-900 dark:text-white">Timeline View</h3>
           <div className="flex items-center gap-3 ml-auto">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-red-500" />
-              <span className="text-xs text-slate-400">High</span>
+              <span className="text-xs text-slate-600 dark:text-slate-400">High</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-orange-500" />
-              <span className="text-xs text-slate-400">Medium</span>
+              <span className="text-xs text-slate-600 dark:text-slate-400">Medium</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-500" />
-              <span className="text-xs text-slate-400">Low</span>
+              <span className="text-xs text-slate-600 dark:text-slate-400">Low</span>
             </div>
           </div>
         </div>
@@ -104,7 +104,7 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
               <div key={hour} className="flex items-start gap-4">
                 {/* Time Label */}
                 <div className="w-20 flex-shrink-0 pt-2">
-                  <div className={`text-sm ${hasEvents ? 'text-white' : 'text-slate-600'}`}>
+                  <div className={`text-sm ${hasEvents ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400'}`}>
                     {hour.toString().padStart(2, '0')}:00
                   </div>
                 </div>
@@ -122,9 +122,9 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
                           key={event.id}
                           onClick={() => onEventClick(event)}
                           className={`
-                            relative bg-slate-900 border-l-4 ${impactBorder[event.impact]}
+                            relative bg-white dark:bg-slate-900 border-l-4 ${impactBorder[event.impact]}
                             rounded-r-lg p-3 cursor-pointer
-                            hover:bg-slate-800 transition-all hover:shadow-lg
+                            hover:bg-slate-100 dark:hover:bg-slate-800 transition-all hover:shadow-lg
                             group
                           `}
                         >
@@ -147,10 +147,10 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
                                   })}
                                 </span>
                               </div>
-                              <h4 className="text-white mb-1 group-hover:text-blue-400 transition-colors">
+                              <h4 className="text-slate-900 dark:text-white mb-1 group-hover:text-blue-400 transition-colors">
                                 {event.name}
                               </h4>
-                              <div className="flex items-center gap-2 text-xs text-slate-400">
+                              <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
                                 <MapPin className="w-3 h-3" />
                                 <span>{event.country}</span>
                                 <span>•</span>
@@ -166,8 +166,8 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
                           </div>
 
                           {/* Strategy Tag */}
-                          <div className="mt-2 pt-2 border-t border-slate-800">
-                            <div className="text-xs text-slate-400">
+                          <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                            <div className="text-xs text-slate-600 dark:text-slate-400">
                               {event.tradingSetup.strategyTag}
                             </div>
                           </div>

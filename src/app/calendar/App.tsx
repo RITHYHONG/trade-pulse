@@ -177,9 +177,7 @@ export default function App() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-slate-950">
-      <HeaderMain />
-
+    <div className="h-screen flex flex-col">
       {/* Main Content Area */}
       <main id="main-content" className="flex-1 flex overflow-hidden relative min-h-0">
         {/* Sidebar Toggle Button */}

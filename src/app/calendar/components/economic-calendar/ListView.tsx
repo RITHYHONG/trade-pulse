@@ -80,10 +80,10 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
     return (
       <ScrollArea className="h-full">
         <div className="p-6">
-          <div className="bg-slate-900 rounded-lg overflow-hidden border border-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800">
             <Table>
               <TableHeader>
-                <TableRow className="border-slate-800 hover:bg-slate-900">
+                <TableRow className="border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900">
                   <TableHead className="w-[50px]"></TableHead>
                   <TableHead>Time</TableHead>
                   <TableHead>Impact</TableHead>
@@ -97,7 +97,7 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
               </TableHeader>
               <TableBody>
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <TableRow key={i} className="border-slate-800">
+                  <TableRow key={i} className="border-slate-200 dark:border-slate-800">
                     <TableCell>
                       <div className="h-4 w-4 bg-slate-700 rounded-full animate-pulse" />
                     </TableCell>
@@ -138,10 +138,10 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
   return (
     <ScrollArea className="h-full">
       <div className="p-6">
-        <div className="bg-slate-900 rounded-lg overflow-hidden border border-slate-800">
+        <div className="bg-white dark:bg-slate-900 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800">
           <Table>
             <TableHeader>
-              <TableRow className="border-slate-800 hover:bg-slate-900">
+              <TableRow className="border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900">
                 <TableHead className="w-[50px]"></TableHead>
                 <TableHead 
                   className="cursor-pointer hover:bg-slate-800 transition-colors"

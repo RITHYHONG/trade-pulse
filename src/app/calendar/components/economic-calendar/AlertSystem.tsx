@@ -76,11 +76,11 @@ export function AlertSystem() {
   };
 
   return (
-    <div className="bg-slate-900 rounded-lg p-6 border border-slate-800">
+    <div className="bg-white dark:bg-slate-900 rounded-lg p-6 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <Bell className="w-5 h-5 text-blue-400" />
-          <h3 className="text-lg text-white">Smart Alerts</h3>
+          <h3 className="text-lg text-slate-900 dark:text-white">Smart Alerts</h3>
           <Badge variant="outline" className="border-green-700 text-green-400">
             {alerts.filter(a => a.enabled).length} Active
           </Badge>
@@ -96,12 +96,12 @@ export function AlertSystem() {
       </div>
 
       {showNewAlert && (
-        <Card className="bg-slate-950 border-slate-800 p-4 mb-4">
+        <Card className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 p-4 mb-4">
           <div className="space-y-4">
             <div>
-              <Label className="text-sm text-slate-400 mb-2">Alert Type</Label>
+              <Label className="text-sm text-slate-600 dark:text-slate-400 mb-2">Alert Type</Label>
               <Select>
-                <SelectTrigger className="bg-slate-900 border-slate-700">
+                <SelectTrigger className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
                   <SelectValue placeholder="Select alert type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -114,10 +114,10 @@ export function AlertSystem() {
             </div>
 
             <div>
-              <Label className="text-sm text-slate-400 mb-2">Event</Label>
+              <Label className="text-sm text-slate-600 dark:text-slate-400 mb-2">Event</Label>
               <Input 
                 placeholder="Search events..."
-                className="bg-slate-900 border-slate-700"
+                className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700"
               />
             </div>
 
@@ -137,7 +137,7 @@ export function AlertSystem() {
                 <Input 
                   type="number"
                   placeholder="Threshold"
-                  className="bg-slate-900 border-slate-700"
+                  className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700"
                 />
               </div>
             </div>
@@ -167,9 +167,9 @@ export function AlertSystem() {
           return (
             <Card 
               key={alert.id} 
-              className={`bg-slate-950 border-slate-800 p-4 transition-all ${
+              className={`bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 p-4 transition-all ${
                 alert.enabled ? 'border-l-4 border-l-blue-600' : ''
-              }`}
+              }`} 
             >
               <div className="flex items-start gap-4">
                 <div className={`${iconColor} mt-1`}>
@@ -190,7 +190,7 @@ export function AlertSystem() {
                     />
                   </div>
 
-                  <div className="text-xs text-slate-400 mb-2">
+                  <div className="text-xs text-slate-600 dark:text-slate-400 mb-2">
                     {alert.condition}
                     {alert.threshold && ` by ${alert.threshold}${alert.type === 'consensus' ? '%' : ''}`}
                   </div>
@@ -206,7 +206,7 @@ export function AlertSystem() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="w-8 h-8 hover:bg-slate-900"
+                  className="w-8 h-8 hover:bg-slate-100 dark:hover:bg-slate-900"
                   onClick={() => deleteAlert(alert.id)}
                   aria-label="Delete alert"
                 >

@@ -174,7 +174,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                         {hasEvents && (
                           <TooltipContent 
                             side="right" 
-                            className="bg-slate-800 border-slate-700 p-0 max-w-sm"
+                            className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-0 max-w-sm"
                           >
                             <div className="p-3">
                               <div className="text-xs text-slate-400 mb-2">
@@ -233,7 +233,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
               .slice(0, 3);
 
             return hotspots.map((hotspot, index) => (
-              <div key={hotspot.key} className="bg-slate-900 p-4 rounded-lg border border-slate-800">
+              <div key={hotspot.key} className="bg-white dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800">
                 <div className="flex items-center gap-2 mb-2">
                   <Flame className="w-4 h-4 text-orange-400" />
                   <span className="text-sm text-slate-400">Hotspot #{index + 1}</span>

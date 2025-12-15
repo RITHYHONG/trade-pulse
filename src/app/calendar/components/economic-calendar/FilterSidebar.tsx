@@ -55,17 +55,17 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
         {/* Smart Filters */}
         <div className="space-y-2 mb-6">
           <h3 className="text-sm text-slate-400 mb-3">SMART FILTERS</h3>
-          <Button variant="outline" className="w-full justify-start bg-slate-900 border-slate-700 hover:bg-slate-800">
+          <Button variant="outline" className="w-full justify-start border-slate-700 hover:bg-slate-800">
             <Target className="w-4 h-4 mr-2 text-red-400" />
             Market Movers Only
             <Badge className="ml-auto bg-red-600">12</Badge>
           </Button>
-          <Button variant="outline" className="w-full justify-start bg-slate-900 border-slate-700 hover:bg-slate-800">
+          <Button variant="outline" className="w-full justify-start border-slate-700 hover:bg-slate-800">
             <TrendingUp className="w-4 h-4 mr-2 text-orange-400" />
             Volatility Focus
             <Badge className="ml-auto bg-orange-600">8</Badge>
           </Button>
-          <Button variant="outline" className="w-full justify-start bg-slate-900 border-slate-700 hover:bg-slate-800">
+          <Button variant="outline" className="w-full justify-start border-slate-700 hover:bg-slate-800">
             <ArrowUpCircle className="w-4 h-4 mr-2 text-green-400" />
             Directional Bias
             <Badge className="ml-auto bg-green-600">15</Badge>
@@ -237,15 +237,15 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
             <ChevronDown className={`w-4 h-4 transition-transform ${openSections.sessions ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-2 mb-6">
-            <Button variant="outline" className="w-full justify-start bg-slate-900 border-slate-700">
+            <Button variant="outline" className="w-full justify-start border-slate-700">
               <Clock className="w-4 h-4 mr-2" />
               Asian Session
             </Button>
-            <Button variant="outline" className="w-full justify-start bg-slate-900 border-slate-700">
+            <Button variant="outline" className="w-full justify-start border-slate-700">
               <Clock className="w-4 h-4 mr-2" />
               London Open
             </Button>
-            <Button variant="outline" className="w-full justify-start bg-slate-900 border-slate-700">
+            <Button variant="outline" className="w-full justify-start border-slate-700">
               <Clock className="w-4 h-4 mr-2" />
               NY Power Hours
             </Button>
@@ -255,7 +255,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
         {/* Reset Button */}
         <Button
           variant="outline"
-          className="w-full bg-slate-900 border-slate-700 hover:bg-slate-800"
+          className="w-full border-slate-700 hover:bg-slate-800"
           onClick={() => onFiltersChange({
             impacts: ['high', 'medium', 'low'],
             regions: ['US', 'EU', 'UK', 'Asia', 'EM'],
