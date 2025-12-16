@@ -367,7 +367,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 py-8 h-full">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
