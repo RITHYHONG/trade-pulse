@@ -50,3 +50,11 @@ Trade Pulse is a Next.js 15 financial trading platform with Firebase backend, fe
 - API routes: RESTful structure under `src/app/api/`
 - Environment: Separate public/private vars, public ones prefixed `NEXT_PUBLIC_`</content>
 <parameter name="filePath">c:\Users\Tk custom\trade-pulse\.github\copilot-instructions.md
+
+
+Visual System: Propose a 6‑color palette (primary, accent, neutral, success, warning, background) for light/dark modes; add token values and Tailwind variables.
+Typography: Pair a clean sans (for UI) with an expressive display; provide scale, weights, and line-height for headings, body, captions.
+Layout & Spacing: Use a 4‑ or 8‑point spacing system; define container widths and grid rules for cards and dashboard widgets.
+Interactions: Define hover/focus states, micro-animations (subtle), and accessible motion settings.
+Accessibility: 4.5:1 text contrast minimum, keyboard focus states, large hit targets on mobile.
+Deliverables: Style guide (tokens + Tailwind mapping), high-fidelity Figma screens (desktop & mobile) for Home, Blog post, Dashboard + component spec for HeaderMain, post cards, and widget cards.
