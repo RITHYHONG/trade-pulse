@@ -1,4 +1,4 @@
-import { ChevronDown, Filter, Target, Globe, Layers, Clock, TrendingUp, ArrowUpCircle } from 'lucide-react';
+import { ChevronDown, Filter, Target, Globe, Layers, Clock, TrendingUp, ArrowUpCircle, Sparkles, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -43,231 +43,312 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
     onFiltersChange({ categories: newCategories });
   };
 
+  const getImpactStyles = (impact: ImpactLevel) => {
+    return {
+      high: {
+        dot: 'bg-gradient-to-br from-red-500 to-rose-600 shadow-lg shadow-red-500/30',
+        badge: 'bg-gradient-to-r from-red-500/15 to-rose-500/15 text-red-400 border-red-500/30',
+        count: 7
+      },
+      medium: {
+        dot: 'bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30',
+        badge: 'bg-gradient-to-r from-amber-500/15 to-orange-500/15 text-amber-400 border-amber-500/30',
+        count: 12
+      },
+      low: {
+        dot: 'bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/30',
+        badge: 'bg-gradient-to-r from-emerald-500/15 to-teal-500/15 text-emerald-400 border-emerald-500/30',
+        count: 18
+      }
+    }[impact];
+  };
+
+  const getRegionStyles = (region: Region) => {
+    return {
+      US: {
+        icon: 'text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]',
+        badge: 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-400 border-blue-500/30',
+        count: 8
+      },
+      EU: {
+        icon: 'text-yellow-400 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]',
+        badge: 'bg-gradient-to-r from-yellow-500/20 to-amber-500/20 text-yellow-400 border-yellow-500/30',
+        count: 6
+      },
+      UK: {
+        icon: 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]',
+        badge: 'bg-gradient-to-r from-purple-500/20 to-violet-500/20 text-purple-400 border-purple-500/30',
+        count: 4
+      },
+      Asia: {
+        icon: 'text-pink-400 drop-shadow-[0_0_8px_rgba(236,72,153,0.5)]',
+        badge: 'bg-gradient-to-r from-pink-500/20 to-rose-500/20 text-pink-400 border-pink-500/30',
+        count: 5
+      },
+      EM: {
+        icon: 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]',
+        badge: 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-400 border-emerald-500/30',
+        count: 3
+      }
+    }[region];
+  };
+
+  const regionLabels = {
+    US: 'United States',
+    EU: 'European Union',
+    UK: 'United Kingdom',
+    Asia: 'Asia Pacific',
+    EM: 'Emerging Markets'
+  };
+
   return (
     <ScrollArea className="h-full">
-    <div className="w-80 border-r ">
-      <div className="p-6 mb-16">
-        <div className="flex items-center gap-2 mb-6">
-          <Filter className="w-5 h-5 text-blue-400" />
-          <h2 className="text-lg">Advanced Filters</h2>
-        </div>
+      <div className="w-80 bg-card/80 backdrop-blur-xl border-r border-border/50">
+        <div className="p-6 mb-16">
+          {/* Header */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 rounded-xl bg-primary/10 text-primary">
+              <Filter className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">Advanced Filters</h2>
+              <p className="text-xs text-muted-foreground">Refine your market view</p>
+            </div>
+          </div>
 
-        {/* Smart Filters */}
-        <div className="space-y-2 mb-6">
-          <h3 className="text-sm text-slate-400 mb-3">SMART FILTERS</h3>
-          <Button variant="outline" className="w-full justify-start border-slate-700 hover:bg-slate-800">
-            <Target className="w-4 h-4 mr-2 text-red-400" />
-            Market Movers Only
-            <Badge className="ml-auto bg-red-600">12</Badge>
-          </Button>
-          <Button variant="outline" className="w-full justify-start border-slate-700 hover:bg-slate-800">
-            <TrendingUp className="w-4 h-4 mr-2 text-orange-400" />
-            Volatility Focus
-            <Badge className="ml-auto bg-orange-600">8</Badge>
-          </Button>
-          <Button variant="outline" className="w-full justify-start border-slate-700 hover:bg-slate-800">
-            <ArrowUpCircle className="w-4 h-4 mr-2 text-green-400" />
-            Directional Bias
-            <Badge className="ml-auto bg-green-600">15</Badge>
-          </Button>
-        </div>
+          {/* Smart Filters */}
+          <div className="space-y-3 mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                Smart Filters
+              </h3>
+            </div>
 
-        <Separator className="bg-slate-800 my-6" />
+            <div className="space-y-2">
+              <Button
+                variant="outline"
+                className="w-full justify-start border-border/50 hover:bg-rose-500/5 hover:border-rose-500/30 transition-all duration-200 group"
+              >
+                <Target className="w-4 h-4 mr-3 text-rose-400 group-hover:scale-110 transition-transform" />
+                <span className="flex-1 text-left">Market Movers Only</span>
+                <Badge className="bg-rose-500/10 text-rose-400 border-rose-500/20 ml-2">
+                  12
+                </Badge>
+              </Button>
 
-        {/* Impact Filters */}
-        <Collapsible
-          open={openSections.impact}
-          onOpenChange={(open) => setOpenSections({ ...openSections, impact: open })}
-        >
-          <CollapsibleTrigger className="flex items-center justify-between w-full mb-3">
-            <h3 className="text-sm text-slate-400">IMPACT LEVEL</h3>
-            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.impact ? 'rotate-180' : ''}`} />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-3 mb-6">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="impact-high"
-                checked={filters.impacts.includes('high')}
-                onCheckedChange={() => toggleImpact('high')}
-              />
-              <Label htmlFor="impact-high" className="flex items-center gap-2 cursor-pointer flex-1">
-                <div className="w-2 h-2 rounded-full bg-red-500" />
-                High Impact
-                <Badge className="ml-auto bg-red-600">7</Badge>
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="impact-medium"
-                checked={filters.impacts.includes('medium')}
-                onCheckedChange={() => toggleImpact('medium')}
-              />
-              <Label htmlFor="impact-medium" className="flex items-center gap-2 cursor-pointer flex-1">
-                <div className="w-2 h-2 rounded-full bg-orange-500" />
-                Medium Impact
-                <Badge className="ml-auto bg-orange-600">12</Badge>
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="impact-low"
-                checked={filters.impacts.includes('low')}
-                onCheckedChange={() => toggleImpact('low')}
-              />
-              <Label htmlFor="impact-low" className="flex items-center gap-2 cursor-pointer flex-1">
-                <div className="w-2 h-2 rounded-full bg-green-500" />
-                Low Impact
-                <Badge className="ml-auto bg-slate-600">18</Badge>
-              </Label>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
+              <Button
+                variant="outline"
+                className="w-full justify-start border-border/50 hover:bg-amber-500/5 hover:border-amber-500/30 transition-all duration-200 group"
+              >
+                <TrendingUp className="w-4 h-4 mr-3 text-amber-400 group-hover:scale-110 transition-transform" />
+                <span className="flex-1 text-left">Volatility Focus</span>
+                <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 ml-2">
+                  8
+                </Badge>
+              </Button>
 
-        <Separator className="bg-slate-800 my-6" />
+              <Button
+                variant="outline"
+                className="w-full justify-start border-border/50 hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all duration-200 group"
+              >
+                <ArrowUpCircle className="w-4 h-4 mr-3 text-emerald-400 group-hover:scale-110 transition-transform" />
+                <span className="flex-1 text-left">Directional Bias</span>
+                <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 ml-2">
+                  15
+                </Badge>
+              </Button>
+            </div>
+          </div>
 
-        {/* Region Filters */}
-        <Collapsible
-          open={openSections.regions}
-          onOpenChange={(open) => setOpenSections({ ...openSections, regions: open })}
-        >
-          <CollapsibleTrigger className="flex items-center justify-between w-full mb-3">
-            <h3 className="text-sm text-slate-400">REGIONS</h3>
-            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.regions ? 'rotate-180' : ''}`} />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-3 mb-6">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="region-us"
-                checked={filters.regions.includes('US')}
-                onCheckedChange={() => toggleRegion('US')}
-              />
-              <Label htmlFor="region-us" className="flex items-center gap-2 cursor-pointer flex-1">
-                <Globe className="w-4 h-4 text-blue-400" />
-                United States
-                <Badge className="ml-auto">8</Badge>
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="region-eu"
-                checked={filters.regions.includes('EU')}
-                onCheckedChange={() => toggleRegion('EU')}
-              />
-              <Label htmlFor="region-eu" className="flex items-center gap-2 cursor-pointer flex-1">
-                <Globe className="w-4 h-4 text-yellow-400" />
-                European Union
-                <Badge className="ml-auto">6</Badge>
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="region-uk"
-                checked={filters.regions.includes('UK')}
-                onCheckedChange={() => toggleRegion('UK')}
-              />
-              <Label htmlFor="region-uk" className="flex items-center gap-2 cursor-pointer flex-1">
-                <Globe className="w-4 h-4 text-purple-400" />
-                United Kingdom
-                <Badge className="ml-auto">4</Badge>
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="region-asia"
-                checked={filters.regions.includes('Asia')}
-                onCheckedChange={() => toggleRegion('Asia')}
-              />
-              <Label htmlFor="region-asia" className="flex items-center gap-2 cursor-pointer flex-1">
-                <Globe className="w-4 h-4 text-red-400" />
-                Asia Pacific
-                <Badge className="ml-auto">5</Badge>
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="region-em"
-                checked={filters.regions.includes('EM')}
-                onCheckedChange={() => toggleRegion('EM')}
-              />
-              <Label htmlFor="region-em" className="flex items-center gap-2 cursor-pointer flex-1">
-                <Globe className="w-4 h-4 text-green-400" />
-                Emerging Markets
-                <Badge className="ml-auto">3</Badge>
-              </Label>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
+          <Separator className="bg-border/30 my-6" />
 
-        <Separator className="bg-slate-800 my-6" />
-
-        {/* Category Filters */}
-        <Collapsible
-          open={openSections.categories}
-          onOpenChange={(open) => setOpenSections({ ...openSections, categories: open })}
-        >
-          <CollapsibleTrigger className="flex items-center justify-between w-full mb-3">
-            <h3 className="text-sm text-slate-400">EVENT CATEGORIES</h3>
-            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.categories ? 'rotate-180' : ''}`} />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-3 mb-6">
-            {(['inflation', 'employment', 'gdp', 'centralBank', 'trade', 'retail', 'manufacturing', 'housing'] as EventCategory[]).map(category => (
-              <div key={category} className="flex items-center gap-2">
-                <Checkbox
-                  id={`category-${category}`}
-                  checked={filters.categories.includes(category)}
-                  onCheckedChange={() => toggleCategory(category)}
-                />
-                <Label htmlFor={`category-${category}`} className="cursor-pointer flex-1 capitalize">
-                  {category === 'centralBank' ? 'Central Bank' : category}
-                </Label>
+          {/* Impact Filters */}
+          <Collapsible
+            open={openSections.impact}
+            onOpenChange={(open) => setOpenSections({ ...openSections, impact: open })}
+          >
+            <CollapsibleTrigger className="flex items-center justify-between w-full mb-4 group">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-primary" />
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                  Impact Level
+                </h3>
               </div>
-            ))}
-          </CollapsibleContent>
-        </Collapsible>
+              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${openSections.impact ? 'rotate-180' : ''} group-hover:text-foreground`} />
+            </CollapsibleTrigger>
 
-        <Separator className="bg-slate-800 my-6" />
+            <CollapsibleContent className="space-y-3 mb-6">
+              {(['high', 'medium', 'low'] as ImpactLevel[]).map((impact) => {
+                const styles = getImpactStyles(impact);
+                return (
+                  <div key={impact} className="flex items-center gap-3 group">
+                    <Checkbox
+                      id={`impact-${impact}`}
+                      checked={filters.impacts.includes(impact)}
+                      onCheckedChange={() => toggleImpact(impact)}
+                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <Label
+                      htmlFor={`impact-${impact}`}
+                      className="flex items-center gap-3 cursor-pointer flex-1 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <div className={`w-3 h-3 rounded-full ${styles.dot} ring-2 ring-transparent group-hover:ring-muted-foreground/20 transition-all`} />
+                      <span className="capitalize font-medium text-foreground">
+                        {impact} Impact
+                      </span>
+                      <Badge className={`ml-auto ${styles.badge} text-xs`}>
+                        {styles.count}
+                      </Badge>
+                    </Label>
+                  </div>
+                );
+              })}
+            </CollapsibleContent>
+          </Collapsible>
 
-        {/* Trading Sessions */}
-        <Collapsible
-          open={openSections.sessions}
-          onOpenChange={(open) => setOpenSections({ ...openSections, sessions: open })}
-        >
-          <CollapsibleTrigger className="flex items-center justify-between w-full mb-3">
-            <h3 className="text-sm text-slate-400">TRADING SESSIONS</h3>
-            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.sessions ? 'rotate-180' : ''}`} />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-2 mb-6">
-            <Button variant="outline" className="w-full justify-start border-slate-700">
-              <Clock className="w-4 h-4 mr-2" />
-              Asian Session
-            </Button>
-            <Button variant="outline" className="w-full justify-start border-slate-700">
-              <Clock className="w-4 h-4 mr-2" />
-              London Open
-            </Button>
-            <Button variant="outline" className="w-full justify-start border-slate-700">
-              <Clock className="w-4 h-4 mr-2" />
-              NY Power Hours
-            </Button>
-          </CollapsibleContent>
-        </Collapsible>
+          <Separator className="bg-border/30 my-6" />
 
-        {/* Reset Button */}
-        <Button
-          variant="outline"
-          className="w-full border-slate-700 hover:bg-slate-800"
-          onClick={() => onFiltersChange({
-            impacts: ['high', 'medium', 'low'],
-            regions: ['US', 'EU', 'UK', 'Asia', 'EM'],
-            categories: [],
-            searchQuery: '',
-            highImpactOnly: false
-          })}
-        >
-          Reset All Filters
-        </Button>
+          {/* Region Filters */}
+          <Collapsible
+            open={openSections.regions}
+            onOpenChange={(open) => setOpenSections({ ...openSections, regions: open })}
+          >
+            <CollapsibleTrigger className="flex items-center justify-between w-full mb-4 group">
+              <div className="flex items-center gap-2">
+                <Globe className="w-4 h-4 text-primary" />
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                  Regions
+                </h3>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${openSections.regions ? 'rotate-180' : ''} group-hover:text-foreground`} />
+            </CollapsibleTrigger>
+
+            <CollapsibleContent className="space-y-3 mb-6">
+              {(['US', 'EU', 'UK', 'Asia', 'EM'] as Region[]).map((region) => {
+                const styles = getRegionStyles(region);
+                return (
+                  <div key={region} className="flex items-center gap-3 group">
+                    <Checkbox
+                      id={`region-${region}`}
+                      checked={filters.regions.includes(region)}
+                      onCheckedChange={() => toggleRegion(region)}
+                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <Label
+                      htmlFor={`region-${region}`}
+                      className="flex items-center gap-3 cursor-pointer flex-1 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <Globe className={`w-4 h-4 ${styles.icon} group-hover:scale-110 transition-transform`} />
+                      <span className="font-medium text-foreground">
+                        {regionLabels[region]}
+                      </span>
+                      <Badge className={`ml-auto ${styles.badge} text-xs`}>
+                        {styles.count}
+                      </Badge>
+                    </Label>
+                  </div>
+                );
+              })}
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Separator className="bg-border/30 my-6" />
+
+          {/* Category Filters */}
+          <Collapsible
+            open={openSections.categories}
+            onOpenChange={(open) => setOpenSections({ ...openSections, categories: open })}
+          >
+            <CollapsibleTrigger className="flex items-center justify-between w-full mb-4 group">
+              <div className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-primary" />
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                  Event Categories
+                </h3>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${openSections.categories ? 'rotate-180' : ''} group-hover:text-foreground`} />
+            </CollapsibleTrigger>
+
+            <CollapsibleContent className="space-y-2 mb-6">
+              {(['inflation', 'employment', 'gdp', 'centralBank', 'trade', 'retail', 'manufacturing', 'housing'] as EventCategory[]).map(category => (
+                <div key={category} className="flex items-center gap-3 group">
+                  <Checkbox
+                    id={`category-${category}`}
+                    checked={filters.categories.includes(category)}
+                    onCheckedChange={() => toggleCategory(category)}
+                    className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <Label
+                    htmlFor={`category-${category}`}
+                    className="cursor-pointer flex-1 p-2 rounded-lg hover:bg-muted/50 transition-colors font-medium text-foreground capitalize"
+                  >
+                    {category === 'centralBank' ? 'Central Bank' : category}
+                  </Label>
+                </div>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+
+          <Separator className="bg-border/30 my-6" />
+
+          {/* Trading Sessions */}
+          <Collapsible
+            open={openSections.sessions}
+            onOpenChange={(open) => setOpenSections({ ...openSections, sessions: open })}
+          >
+            <CollapsibleTrigger className="flex items-center justify-between w-full mb-4 group">
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-primary" />
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                  Trading Sessions
+                </h3>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${openSections.sessions ? 'rotate-180' : ''} group-hover:text-foreground`} />
+            </CollapsibleTrigger>
+
+            <CollapsibleContent className="space-y-2 mb-6">
+              <Button
+                variant="outline"
+                className="w-full justify-start border-border/50 hover:bg-muted/50 transition-all duration-200 group"
+              >
+                <Clock className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-foreground group-hover:scale-110 transition-all" />
+                Asian Session
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start border-border/50 hover:bg-muted/50 transition-all duration-200 group"
+              >
+                <Clock className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-foreground group-hover:scale-110 transition-all" />
+                London Open
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start border-border/50 hover:bg-muted/50 transition-all duration-200 group"
+              >
+                <Clock className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-foreground group-hover:scale-110 transition-all" />
+                NY Power Hours
+              </Button>
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* Reset Button */}
+          <Button
+            variant="outline"
+            className="w-full border-border/50 hover:bg-destructive/5 hover:border-destructive/30 hover:text-destructive transition-all duration-200 group mt-6"
+            onClick={() => onFiltersChange({
+              impacts: ['high', 'medium', 'low'],
+              regions: ['US', 'EU', 'UK', 'Asia', 'EM'],
+              categories: [],
+              searchQuery: '',
+              highImpactOnly: false
+            })}
+          >
+            <RotateCcw className="w-4 h-4 mr-2 group-hover:rotate-180 transition-transform duration-300" />
+            Reset All Filters
+          </Button>
+        </div>
       </div>
-    </div>
     </ScrollArea>
   );
 }
