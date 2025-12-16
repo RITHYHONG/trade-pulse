@@ -283,21 +283,21 @@ export default function App() {
                 <TabsList className="bg-muted/50 p-1 rounded-xl">
                   <TabsTrigger
                     value="timeline"
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 flex items-center gap-2 px-4 py-2"
+                    className="data-[state=active]:bg-primary dark:data-[state=active]:bg-primary/80 data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 flex items-center gap-2 px-4 py-2"
                   >
                     <BarChart3 className="w-4 h-4" />
                     Timeline
                   </TabsTrigger>
                   <TabsTrigger
                     value="heatmap"
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 flex items-center gap-2 px-4 py-2"
+                    className="data-[state=active]:bg-primary dark:data-[state=active]:bg-primary/80  data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 flex items-center gap-2 px-4 py-2"
                   >
                     <Grid3x3 className="w-4 h-4" />
                     Heat Map
                   </TabsTrigger>
                   <TabsTrigger
                     value="list"
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 flex items-center gap-2 px-4 py-2"
+                    className="data-[state=active]:bg-primary dark:data-[state=active]:bg-primary/80  data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 flex items-center gap-2 px-4 py-2"
                   >
                     <List className="w-4 h-4" />
                     List View

@@ -107,7 +107,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
         <div className="p-6 mb-16">
           {/* Header */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-xl bg-primary/10 text-primary">
+            <div className="p-2 rounded-xl dark:bg-primary/50 bg-primary text-primary">
               <Filter className="w-5 h-5" />
             </div>
             <div>
