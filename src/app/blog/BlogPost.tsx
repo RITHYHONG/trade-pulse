@@ -168,7 +168,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
           </div>
 
           {/* Article Content - Premium Typography */}
-          <article className="prose prose-lg prose-invert max-w-none">
+          <article className="prose prose-lg prose-invert max-w-none text-gray-800 dark:text-gray-200">
             {isLikelyHtml(post.content) ? (
               <div
                 className="prose prose-invert max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-cyan-400 hover:prose-a:text-cyan-300"
