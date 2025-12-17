@@ -1,17 +1,16 @@
 "use client";
-
-import { useState, useMemo, useEffect } from 'react';
 import { FeaturedCarousel } from './FeaturedCarousel';
+import { useState, useMemo, useEffect } from 'react';
+import { ReadersChoice } from './ReadersChoice';
+import { CategorySection } from './CategorySection';
 import { CategoryFilter } from './CategoryFilter';
-import { BlogCard, BlogCardSkeleton } from './BlogCard';
 import { NewsletterCTA } from './NewsletterCTA';
 import { AdPlaceholder } from './AdPlaceholder';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, PenSquare } from 'lucide-react';
-import { BlogPost, BlogItem } from '../../types/blog';
+import { PenSquare } from 'lucide-react';
+import { BlogPost } from '../../types/blog';
 import { getPublishedPosts, getFeaturedPosts, BlogPost as FirestoreBlogPost } from '@/lib/blog-firestore-service';
 import Link from 'next/link';
-import { Footer } from '../(marketing)/components/Footer';
 
 interface BlogIndexProps {
   initialPosts?: BlogPost[];
@@ -61,11 +60,9 @@ function mapFirestorePostToUIPost(firestorePost: FirestoreBlogPost): BlogPost {
 
 export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
   const [activeCategory, setActiveCategory] = useState('All Posts');
-  const [currentPage, setCurrentPage] = useState(1);
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
   const [featuredPosts, setFeaturedPosts] = useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const postsPerPage = 9;
 
   // Fetch posts from Firestore on mount
   useEffect(() => {
@@ -100,35 +97,29 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
     return posts.filter(post => post.category === activeCategory);
   }, [activeCategory, posts]);
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-  const startIndex = (currentPage - 1) * postsPerPage;
-  const endIndex = startIndex + postsPerPage;
-  const currentPosts = filteredPosts.slice(startIndex, endIndex);
+  // Group posts by category
+  const postsByCategory = useMemo(() => {
+    const grouped: Record<string, BlogPost[]> = {};
+    filteredPosts.forEach(post => {
+      const category = post.category || 'Uncategorized';
+      if (!grouped[category]) {
+        grouped[category] = [];
+      }
+      grouped[category].push(post);
+    });
+    return grouped;
+  }, [filteredPosts]);
 
-  // Add native ads every 6th post
-  const postsWithAds: BlogItem[] = [];
-  for (let i = 0; i < currentPosts.length; i++) {
-    postsWithAds.push(currentPosts[i]);
-    if ((i + 1) % 6 === 0 && i < currentPosts.length - 1) {
-      postsWithAds.push({ type: 'ad', id: `ad-${i}` });
-    }
-  }
+  const categories = useMemo(() => Object.keys(postsByCategory), [postsByCategory]);
 
   const handleCategoryChange = (category: string) => {
     setActiveCategory(category);
-    setCurrentPage(1);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       {/* Header */}
-      <header className="border-b border-[#2D3246] py-8">
+      <header className="border-b border-slate-200 dark:border-slate-800 py-8">
         <div className="container mx-auto px-4">
           {/* <CustomBreadcrumb className="mb-6" /> */}
           <div className="text-center relative">
@@ -141,7 +132,7 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
              */}
             <div className="absolute right-0 top-0 mt-12">
               <Link href="/create-post">
-                <Button className="px-5 py-4 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 group">
+                <Button className="px-5 py-4 bg-violet-600 hover:bg-violet-700 text-white shadow-lg shadow-violet-500/25 group">
                   <PenSquare className="mr-2 h-4 w-4" />
                   Create Post
                 </Button>
@@ -174,24 +165,20 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
       {/* Main Content Area */}
       <div className="container mx-auto px-4 py-12">
         <div className="flex gap-8">
-          {/* Main Content Grid */}
+          {/* Main Content */}
           <main className="flex-1">
             {isLoading ? (
-              <div className="py-8">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {Array.from({ length: postsPerPage }).map((_, index) => (
-                    <div key={index}>
-                      <BlogCardSkeleton />
-                    </div>
-                  ))}
-                </div>
+              <div className="space-y-12">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <CategorySection key={index} category="" posts={[]} isLeft={index % 2 === 0} isLoading={true} />
+                ))}
               </div>
-            ) : posts.length === 0 ? (
+            ) : categories.length === 0 ? (
               <div className="flex items-center justify-center py-20">
                 <div className="text-center">
                   <p className="text-xl text-gray-400 mb-4">No posts published yet</p>
                   <Link href="/create-post">
-                    <Button className="bg-[#00F5FF] text-black hover:bg-[#00F5FF]/90">
+                    <Button className="bg-violet-600 text-white hover:bg-violet-700">
                       <PenSquare className="mr-2 h-4 w-4" />
                       Create First Post
                     </Button>
@@ -200,71 +187,22 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
-                  {postsWithAds.map((item) => {
-                    if ('type' in item && item.type === 'ad') {
-                      return (
-                        <div key={item.id} className="md:col-span-2 lg:col-span-3">
-                          <AdPlaceholder type="native" className="mb-6" />
-                        </div>
-                      );
-                    }
-                    const post = item as BlogPost;
-                    return (
-                      <BlogCard 
-                        key={post.slug} 
-                        post={post} 
-                      />
-                    );
-                  })}
+                <div className="space-y-12">
+                  {categories.map((category, index) => (
+                    <CategorySection
+                      key={category}
+                      category={category}
+                      posts={postsByCategory[category]}
+                      isLeft={index % 2 === 0}
+                      isLoading={false}
+                    />
+                  ))}
                 </div>
 
                 {/* Newsletter CTA */}
-                <div className="mb-12">
+                <div className="mt-12">
                   <NewsletterCTA />
                 </div>
-
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-4">
-                    <Button
-                      variant="outline"
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className="border-[#2D3246] text-gray-300 hover:text-white disabled:opacity-50"
-                    >
-                      <ChevronLeft className="w-4 h-4 mr-2" />
-                      Previous
-                    </Button>
-
-                    <div className="flex gap-2">
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? "default" : "outline"}
-                          onClick={() => handlePageChange(page)}
-                          className={
-                            currentPage === page
-                              ? "bg-cyan-500 text-black hover:bg-cyan-600"
-                              : "border-[#2D3246] text-gray-300 hover:text-white hover:border-cyan-500"
-                          }
-                        >
-                          {page}
-                        </Button>
-                      ))}
-                    </div>
-
-                    <Button
-                      variant="outline"
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className="border-[#2D3246] text-gray-300 hover:text-white disabled:opacity-50"
-                    >
-                      Next
-                      <ChevronRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </div>
-                )}
               </>
             )}
           </main>
