@@ -38,12 +38,12 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
   };
 
   const getIntensityColor = (intensity: number) => {
-    if (intensity === 0) return 'bg-slate-900';
-    if (intensity >= 2.5) return 'bg-red-600';
-    if (intensity >= 2) return 'bg-red-500';
+    if (intensity === 0) return 'bg-muted';
+    if (intensity >= 2.5) return 'bg-rose-600';
+    if (intensity >= 2) return 'bg-rose-500';
     if (intensity >= 1.5) return 'bg-orange-500';
-    if (intensity >= 1) return 'bg-yellow-500';
-    return 'bg-green-500';
+    if (intensity >= 1) return 'bg-amber-500';
+    return 'bg-emerald-500';
   };
 
   const regionLabels = {
@@ -61,17 +61,19 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
       <ScrollArea className="h-full">
         <div className="p-6">
           <div className="mb-6 flex items-center gap-4">
-            <Flame className="w-5 h-5 text-orange-400" />
-            <h3 className="text-lg text-white">Heat Map View</h3>
+            <div className="p-2 rounded-xl bg-primary/10 text-primary">
+              <Flame className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-semibold text-foreground">Heat Map View</h3>
           </div>
 
-          <div className="bg-slate-900 rounded-lg p-4 overflow-x-auto">
+          <div className="bg-card rounded-xl p-4 overflow-x-auto border border-border shadow-sm">
             <div className="min-w-max">
               <div className="flex mb-2">
                 <div className="w-32 flex-shrink-0" />
                 {hours.map(hour => (
                   <div key={hour} className="w-12 text-center">
-                    <div className="h-3 w-10 bg-slate-700 rounded-md mx-auto animate-pulse" />
+                    <div className="h-3 w-10 bg-muted rounded-md mx-auto animate-pulse" />
                   </div>
                 ))}
               </div>
@@ -79,10 +81,10 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
               {regions.map(region => (
                 <div key={region} className="flex mb-1">
                   <div className="w-32 flex-shrink-0 flex items-center pr-4">
-                    <div className="h-4 w-24 bg-slate-700 rounded-md animate-pulse" />
+                    <div className="h-4 w-24 bg-muted rounded-md animate-pulse" />
                   </div>
                   {hours.map(hour => (
-                    <div key={hour} className="w-12 h-12 m-0.5 rounded bg-slate-700 animate-pulse" />
+                    <div key={hour} className="w-12 h-12 m-0.5 rounded-lg bg-muted animate-pulse" />
                   ))}
                 </div>
               ))}
@@ -98,31 +100,33 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
       <div className="p-6">
         {/* Header */}
         <div className="mb-6 flex items-center gap-4">
-          <Flame className="w-5 h-5 text-orange-400" />
-          <h3 className="text-lg text-white">Heat Map View</h3>
+          <div className="p-2 rounded-xl bg-primary/10 text-primary">
+            <Flame className="w-5 h-5" />
+          </div>
+          <h3 className="text-base font-semibold text-foreground">Heat Map View</h3>
           <div className="flex items-center gap-2 ml-auto">
-            <span className="text-xs text-slate-400">Intensity:</span>
+            <span className="text-xs text-muted-foreground">Intensity:</span>
             <div className="flex items-center gap-1">
-              <div className="w-4 h-4 bg-green-500 rounded" />
-              <span className="text-xs text-slate-400">Low</span>
+              <div className="w-4 h-4 bg-emerald-500 rounded" />
+              <span className="text-xs text-muted-foreground">Low</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-4 h-4 bg-yellow-500 rounded" />
-              <span className="text-xs text-slate-400">Medium</span>
+              <div className="w-4 h-4 bg-amber-500 rounded" />
+              <span className="text-xs text-muted-foreground">Medium</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-4 h-4 bg-orange-500 rounded" />
-              <span className="text-xs text-slate-400">High</span>
+              <span className="text-xs text-muted-foreground">High</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-4 h-4 bg-red-600 rounded" />
-              <span className="text-xs text-slate-400">Extreme</span>
+              <div className="w-4 h-4 bg-rose-600 rounded" />
+              <span className="text-xs text-muted-foreground">Extreme</span>
             </div>
           </div>
         </div>
 
         {/* Heat Map Grid */}
-        <div className="bg-slate-900 rounded-lg p-4 overflow-x-auto">
+        <div className="bg-card rounded-xl p-4 overflow-x-auto border border-border shadow-sm">
           <TooltipProvider>
             <div className="min-w-max">
               {/* Header Row */}
@@ -130,7 +134,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                 <div className="w-32 flex-shrink-0" /> {/* Empty corner */}
                 {hours.map(hour => (
                   <div key={hour} className="w-12 text-center">
-                    <div className="text-xs text-slate-400">
+                    <div className="text-xs text-muted-foreground">
                       {hour.toString().padStart(2, '0')}
                     </div>
                   </div>
@@ -142,7 +146,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                 <div key={region} className="flex mb-1">
                   {/* Region Label */}
                   <div className="w-32 flex-shrink-0 flex items-center pr-4">
-                    <span className="text-sm text-slate-300">{regionLabels[region]}</span>
+                    <span className="text-sm text-foreground">{regionLabels[region]}</span>
                   </div>
 
                   {/* Hour Cells */}
@@ -158,14 +162,14 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                         <TooltipTrigger asChild>
                           <div
                             className={`
-                              w-12 h-12 m-0.5 rounded ${color}
-                              ${hasEvents ? 'cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all' : ''}
+                              w-12 h-12 m-0.5 rounded-lg ${color}
+                              ${hasEvents ? 'cursor-pointer hover:ring-2 hover:ring-primary transition-all' : ''}
                               flex items-center justify-center
                             `}
                             onClick={() => hasEvents && cellEvents.length === 1 && onEventClick(cellEvents[0])}
                           >
                             {hasEvents && (
-                              <span className="text-xs text-white/90">
+                              <span className="text-xs text-white font-medium">
                                 {cellEvents.length}
                               </span>
                             )}
@@ -192,13 +196,13 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                                   >
                                     <div className="flex items-center gap-2 mb-1">
                                       <div className={`w-2 h-2 rounded-full ${
-                                        event.impact === 'high' ? 'bg-red-500' :
-                                        event.impact === 'medium' ? 'bg-orange-500' :
-                                        'bg-green-500'
+                                        event.impact === 'high' ? 'bg-rose-500' :
+                                        event.impact === 'medium' ? 'bg-amber-500' :
+                                        'bg-emerald-500'
                                       }`} />
-                                      <span className="text-white">{event.name}</span>
+                                      <span className="text-foreground">{event.name}</span>
                                     </div>
-                                    <div className="text-xs text-slate-400 ml-4">
+                                    <div className="text-xs text-muted-foreground ml-4">
                                       {event.country} • {event.consensus}{event.unit}
                                     </div>
                                   </div>
@@ -233,15 +237,15 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
               .slice(0, 3);
 
             return hotspots.map((hotspot, index) => (
-              <div key={hotspot.key} className="bg-white dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800">
+              <div key={hotspot.key} className="bg-card p-4 rounded-xl border border-border shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
-                  <Flame className="w-4 h-4 text-orange-400" />
-                  <span className="text-sm text-slate-400">Hotspot #{index + 1}</span>
+                  <Flame className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-muted-foreground">Hotspot #{index + 1}</span>
                 </div>
-                <div className="text-white mb-1">
+                <div className="text-foreground font-medium mb-1">
                   {hotspot.hour.toString().padStart(2, '0')}:00 • {regionLabels[hotspot.region]}
                 </div>
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-muted-foreground">
                   {hotspot.events.length} events • High volatility expected
                 </div>
               </div>

@@ -65,9 +65,9 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
   const SortIcon = sortOrder === 'asc' ? ChevronUp : ChevronDown;
 
   const impactColor = {
-    high: 'bg-red-500',
-    medium: 'bg-orange-500',
-    low: 'bg-green-500'
+    high: 'bg-rose-500',
+    medium: 'bg-amber-500',
+    low: 'bg-emerald-500'
   };
 
   const sentimentIcon = {
@@ -80,10 +80,10 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
     return (
       <ScrollArea className="h-full">
         <div className="p-6">
-          <div className="bg-white dark:bg-slate-900 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800">
+          <div className="bg-card rounded-xl overflow-hidden border border-border shadow-sm">
             <Table>
               <TableHeader>
-                <TableRow className="border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900">
+                <TableRow className="border-border hover:bg-muted/50">
                   <TableHead className="w-[50px]"></TableHead>
                   <TableHead>Time</TableHead>
                   <TableHead>Impact</TableHead>
@@ -97,33 +97,33 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
               </TableHeader>
               <TableBody>
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <TableRow key={i} className="border-slate-200 dark:border-slate-800">
+                  <TableRow key={i} className="border-border">
                     <TableCell>
-                      <div className="h-4 w-4 bg-slate-700 rounded-full animate-pulse" />
+                      <div className="h-4 w-4 bg-muted rounded-full animate-pulse" />
                     </TableCell>
                     <TableCell>
-                      <div className="h-4 w-20 bg-slate-700 rounded-md animate-pulse" />
+                      <div className="h-4 w-20 bg-muted rounded-md animate-pulse" />
                     </TableCell>
                     <TableCell>
-                      <div className="h-4 w-16 bg-slate-700 rounded-md animate-pulse" />
+                      <div className="h-4 w-16 bg-muted rounded-md animate-pulse" />
                     </TableCell>
                     <TableCell>
-                      <div className="h-4 w-48 bg-slate-700 rounded-md animate-pulse" />
+                      <div className="h-4 w-48 bg-muted rounded-md animate-pulse" />
                     </TableCell>
                     <TableCell>
-                      <div className="h-4 w-20 bg-slate-700 rounded-md animate-pulse" />
+                      <div className="h-4 w-20 bg-muted rounded-md animate-pulse" />
                     </TableCell>
                     <TableCell className="text-center">
-                      <div className="h-4 w-12 bg-slate-700 rounded-md animate-pulse mx-auto" />
+                      <div className="h-4 w-12 bg-muted rounded-md animate-pulse mx-auto" />
                     </TableCell>
                     <TableCell className="text-center">
-                      <div className="h-4 w-12 bg-slate-700 rounded-md animate-pulse mx-auto" />
+                      <div className="h-4 w-12 bg-muted rounded-md animate-pulse mx-auto" />
                     </TableCell>
                     <TableCell className="text-center">
-                      <div className="h-4 w-12 bg-slate-700 rounded-md animate-pulse mx-auto" />
+                      <div className="h-4 w-12 bg-muted rounded-md animate-pulse mx-auto" />
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="h-8 w-8 bg-slate-700 rounded-md animate-pulse ml-auto" />
+                      <div className="h-8 w-8 bg-muted rounded-md animate-pulse ml-auto" />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -138,13 +138,13 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
   return (
     <ScrollArea className="h-full">
       <div className="p-6">
-        <div className="bg-white dark:bg-slate-900 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800">
+        <div className="bg-card rounded-xl overflow-hidden border border-border shadow-sm">
           <Table>
             <TableHeader>
-              <TableRow className="border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900">
+              <TableRow className="border-border hover:bg-muted/50">
                 <TableHead className="w-[50px]"></TableHead>
                 <TableHead 
-                  className="cursor-pointer hover:bg-slate-800 transition-colors"
+                  className="cursor-pointer hover:bg-muted transition-colors"
                   onClick={() => handleSort('time')}
                 >
                   <div className="flex items-center gap-2">
@@ -153,7 +153,7 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
                   </div>
                 </TableHead>
                 <TableHead 
-                  className="cursor-pointer hover:bg-slate-800 transition-colors"
+                  className="cursor-pointer hover:bg-muted transition-colors"
                   onClick={() => handleSort('impact')}
                 >
                   <div className="flex items-center gap-2">
@@ -162,7 +162,7 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
                   </div>
                 </TableHead>
                 <TableHead 
-                  className="cursor-pointer hover:bg-slate-800 transition-colors"
+                  className="cursor-pointer hover:bg-muted transition-colors"
                   onClick={() => handleSort('name')}
                 >
                   <div className="flex items-center gap-2">
@@ -185,7 +185,7 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
                   <Fragment key={event.id}>
                     <TableRow 
                       key={event.id}
-                      className="border-slate-800 hover:bg-slate-800 cursor-pointer transition-colors"
+                      className="border-border hover:bg-muted/50 cursor-pointer transition-colors"
                       onClick={() => setExpandedRow(isExpanded ? null : event.id)}
                     >
                       <TableCell>
@@ -227,24 +227,24 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-white mb-1">{event.name}</div>
-                        <Badge variant="outline" className="text-xs border-slate-700">
+                        <div className="text-foreground mb-1">{event.name}</div>
+                        <Badge variant="outline" className="text-xs border-border">
                           {event.category}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">{event.country}</div>
-                        <Badge variant="outline" className="text-xs border-slate-700 mt-1">
+                        <Badge variant="outline" className="text-xs border-border mt-1">
                           {event.region}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-center">
-                        <div className="text-white">
+                        <div className="text-foreground">
                           {event.consensus}{event.unit}
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <div className="text-slate-400">
+                        <div className="text-muted-foreground">
                           {event.previous}{event.unit}
                         </div>
                       </TableCell>
@@ -258,7 +258,7 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
                           <Button 
                             variant="ghost" 
                             size="icon"
-                            className="w-8 h-8 hover:text-blue-400"
+                            className="w-8 h-8 hover:text-primary"
                             onClick={(e) => {
                               e.stopPropagation();
                               onEventClick(event);
@@ -270,7 +270,7 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
                           <Button 
                             variant="ghost" 
                             size="icon"
-                            className="w-8 h-8 hover:text-yellow-400"
+                            className="w-8 h-8 hover:text-amber-500"
                             onClick={(e) => e.stopPropagation()}
                             aria-label="Star event"
                           >
@@ -279,7 +279,7 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
                           <Button 
                             variant="ghost" 
                             size="icon"
-                            className="w-8 h-8 hover:text-green-400"
+                            className="w-8 h-8 hover:text-emerald-500"
                             onClick={(e) => e.stopPropagation()}
                             aria-label="Set alert"
                           >
@@ -291,53 +291,53 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
 
                     {/* Expanded Row */}
                     {isExpanded && (
-                      <TableRow key={`${event.id}-expanded`} className="border-slate-800 bg-slate-800/50">
+                      <TableRow key={`${event.id}-expanded`} className="border-border bg-muted/30">
                         <TableCell colSpan={9} className="p-6">
                           <div className="grid grid-cols-3 gap-6">
                             {/* Historical Analysis */}
                             <div>
-                              <h4 className="text-sm text-slate-400 mb-3">Historical Analysis</h4>
+                              <h4 className="text-sm text-muted-foreground mb-3">Historical Analysis</h4>
                               <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
-                                  <span className="text-slate-400">Avg Move:</span>
-                                  <span className="text-white">±{event.historicalData.avgMove}%</span>
+                                  <span className="text-muted-foreground">Avg Move:</span>
+                                  <span className="text-foreground">±{event.historicalData.avgMove}%</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                  <span className="text-slate-400">Direction:</span>
+                                  <span className="text-muted-foreground">Direction:</span>
                                   <div className="flex items-center gap-2">
                                     <SentimentIcon className="w-3 h-3" />
-                                    <span className="text-white">{event.historicalData.directionBias}</span>
+                                    <span className="text-foreground">{event.historicalData.directionBias}</span>
                                   </div>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                  <span className="text-slate-400">Success Rate:</span>
-                                  <span className="text-white">{event.historicalData.biasSuccessRate}%</span>
+                                  <span className="text-muted-foreground">Success Rate:</span>
+                                  <span className="text-foreground">{event.historicalData.biasSuccessRate}%</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                  <span className="text-slate-400">Peak Impact:</span>
-                                  <span className="text-white">{event.historicalData.peakImpactMinutes}min</span>
+                                  <span className="text-muted-foreground">Peak Impact:</span>
+                                  <span className="text-foreground">{event.historicalData.peakImpactMinutes}min</span>
                                 </div>
                               </div>
                             </div>
 
                             {/* Consensus Data */}
                             <div>
-                              <h4 className="text-sm text-slate-400 mb-3">Consensus Intelligence</h4>
+                              <h4 className="text-sm text-muted-foreground mb-3">Consensus Intelligence</h4>
                               <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
-                                  <span className="text-slate-400">Surprise Prob:</span>
-                                  <span className="text-white">{event.consensusIntelligence.surpriseProbability}%</span>
+                                  <span className="text-muted-foreground">Surprise Prob:</span>
+                                  <span className="text-foreground">{event.consensusIntelligence.surpriseProbability}%</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                  <span className="text-slate-400">Revision:</span>
+                                  <span className="text-muted-foreground">Revision:</span>
                                   <Badge 
                                     variant="outline" 
                                     className={
                                       event.consensusIntelligence.revisionMomentum === 'up' 
-                                        ? 'border-green-700 text-green-400'
+                                        ? 'border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
                                         : event.consensusIntelligence.revisionMomentum === 'down'
-                                        ? 'border-red-700 text-red-400'
-                                        : 'border-slate-700'
+                                        ? 'border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400'
+                                        : 'border-border'
                                     }
                                   >
                                     {event.consensusIntelligence.revisionMomentum}
@@ -345,8 +345,8 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
                                 </div>
                                 {event.consensusIntelligence.whisperNumber && (
                                   <div className="flex justify-between text-sm">
-                                    <span className="text-slate-400">Whisper:</span>
-                                    <span className="text-amber-400">
+                                    <span className="text-muted-foreground">Whisper:</span>
+                                    <span className="text-amber-600 dark:text-amber-400">
                                       {event.consensusIntelligence.whisperNumber}{event.unit}
                                     </span>
                                   </div>
@@ -356,22 +356,22 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
 
                             {/* Trading Strategy */}
                             <div>
-                              <h4 className="text-sm text-slate-400 mb-3">Trading Strategy</h4>
+                              <h4 className="text-sm text-muted-foreground mb-3">Trading Strategy</h4>
                               <div className="space-y-2">
-                                <div className="text-sm text-white mb-2">
+                                <div className="text-sm text-foreground mb-2">
                                   {event.tradingSetup.strategyTag}
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                  <span className="text-slate-400">Confidence:</span>
-                                  <Badge className="bg-blue-600">
+                                  <span className="text-muted-foreground">Confidence:</span>
+                                  <Badge className="bg-primary">
                                     {event.tradingSetup.confidenceScore}%
                                   </Badge>
                                 </div>
                                 <div className="mt-3">
-                                  <div className="text-xs text-slate-400 mb-2">Correlated Assets:</div>
+                                  <div className="text-xs text-muted-foreground mb-2">Correlated Assets:</div>
                                   <div className="flex flex-wrap gap-1">
                                     {event.tradingSetup.correlatedAssets.slice(0, 4).map((asset) => (
-                                      <Badge key={asset} variant="outline" className="text-xs border-slate-700">
+                                      <Badge key={asset} variant="outline" className="text-xs border-border">
                                         {asset}
                                       </Badge>
                                     ))}

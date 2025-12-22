@@ -46,18 +46,18 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
   const getImpactStyles = (impact: ImpactLevel) => {
     return {
       high: {
-        dot: 'bg-gradient-to-br from-red-500 to-rose-600 shadow-lg shadow-red-500/30',
-        badge: 'bg-gradient-to-r from-red-500/15 to-rose-500/15 text-red-400 border-red-500/30',
+        dot: 'bg-rose-500',
+        badge: 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-500/20',
         count: 7
       },
       medium: {
-        dot: 'bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/30',
-        badge: 'bg-gradient-to-r from-amber-500/15 to-orange-500/15 text-amber-400 border-amber-500/30',
+        dot: 'bg-amber-500',
+        badge: 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
         count: 12
       },
       low: {
-        dot: 'bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/30',
-        badge: 'bg-gradient-to-r from-emerald-500/15 to-teal-500/15 text-emerald-400 border-emerald-500/30',
+        dot: 'bg-emerald-500',
+        badge: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
         count: 18
       }
     }[impact];
@@ -66,28 +66,28 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
   const getRegionStyles = (region: Region) => {
     return {
       US: {
-        icon: 'text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]',
-        badge: 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-400 border-blue-500/30',
+        icon: 'text-blue-600 dark:text-blue-400',
+        badge: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20',
         count: 8
       },
       EU: {
-        icon: 'text-yellow-400 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]',
-        badge: 'bg-gradient-to-r from-yellow-500/20 to-amber-500/20 text-yellow-400 border-yellow-500/30',
+        icon: 'text-amber-600 dark:text-amber-400',
+        badge: 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
         count: 6
       },
       UK: {
-        icon: 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]',
-        badge: 'bg-gradient-to-r from-purple-500/20 to-violet-500/20 text-purple-400 border-purple-500/30',
+        icon: 'text-purple-600 dark:text-purple-400',
+        badge: 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-500/20',
         count: 4
       },
       Asia: {
-        icon: 'text-pink-400 drop-shadow-[0_0_8px_rgba(236,72,153,0.5)]',
-        badge: 'bg-gradient-to-r from-pink-500/20 to-rose-500/20 text-pink-400 border-pink-500/30',
+        icon: 'text-pink-600 dark:text-pink-400',
+        badge: 'bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-500/20',
         count: 5
       },
       EM: {
-        icon: 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]',
-        badge: 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-400 border-emerald-500/30',
+        icon: 'text-emerald-600 dark:text-emerald-400',
+        badge: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
         count: 3
       }
     }[region];
@@ -103,16 +103,16 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
 
   return (
     <ScrollArea className="h-full">
-      <div className="w-80 bg-card/80 backdrop-blur-xl border-r border-border/50">
+      <div className="w-80 bg-card border-r border-border">
         <div className="p-6 mb-16">
           {/* Header */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 rounded-xl dark:bg-primary/50 bg-primary text-primary">
-              <Filter className="w-5 h-5" />
+            <div className="p-2.5 rounded-xl bg-primary/10">
+              <Filter className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Advanced Filters</h2>
-              <p className="text-xs text-muted-foreground">Refine your market view</p>
+              <h2 className="text-base font-semibold text-foreground">Advanced Filters</h2>
+              <p className="text-sm text-muted-foreground">Refine your market view</p>
             </div>
           </div>
 
@@ -120,7 +120,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
           <div className="space-y-3 mb-6">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-4 h-4 text-primary" />
-              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 Smart Filters
               </h3>
             </div>
@@ -128,40 +128,40 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
             <div className="space-y-2">
               <Button
                 variant="outline"
-                className="w-full justify-start border-border/50 hover:bg-rose-500/5 hover:border-rose-500/30 transition-all duration-200 group"
+                className="w-full justify-start border-border hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-200 dark:hover:border-rose-500/20 transition-all duration-200 group"
               >
-                <Target className="w-4 h-4 mr-3 text-rose-400 group-hover:scale-110 transition-transform" />
+                <Target className="w-4 h-4 mr-3 text-rose-500 group-hover:scale-110 transition-transform" />
                 <span className="flex-1 text-left">Market Movers Only</span>
-                <Badge className="bg-rose-500/10 text-rose-400 border-rose-500/20 ml-2">
+                <Badge className="bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/20 ml-2">
                   12
                 </Badge>
               </Button>
 
               <Button
                 variant="outline"
-                className="w-full justify-start border-border/50 hover:bg-amber-500/5 hover:border-amber-500/30 transition-all duration-200 group"
+                className="w-full justify-start border-border hover:bg-amber-50 dark:hover:bg-amber-500/10 hover:border-amber-200 dark:hover:border-amber-500/20 transition-all duration-200 group"
               >
-                <TrendingUp className="w-4 h-4 mr-3 text-amber-400 group-hover:scale-110 transition-transform" />
+                <TrendingUp className="w-4 h-4 mr-3 text-amber-500 group-hover:scale-110 transition-transform" />
                 <span className="flex-1 text-left">Volatility Focus</span>
-                <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 ml-2">
+                <Badge className="bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20 ml-2">
                   8
                 </Badge>
               </Button>
 
               <Button
                 variant="outline"
-                className="w-full justify-start border-border/50 hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all duration-200 group"
+                className="w-full justify-start border-border hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-200 dark:hover:border-emerald-500/20 transition-all duration-200 group"
               >
-                <ArrowUpCircle className="w-4 h-4 mr-3 text-emerald-400 group-hover:scale-110 transition-transform" />
+                <ArrowUpCircle className="w-4 h-4 mr-3 text-emerald-500 group-hover:scale-110 transition-transform" />
                 <span className="flex-1 text-left">Directional Bias</span>
-                <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 ml-2">
+                <Badge className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 ml-2">
                   15
                 </Badge>
               </Button>
             </div>
           </div>
 
-          <Separator className="bg-border/30 my-6" />
+          <Separator className="bg-border my-6" />
 
           {/* Impact Filters */}
           <Collapsible
@@ -191,13 +191,13 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
                     />
                     <Label
                       htmlFor={`impact-${impact}`}
-                      className="flex items-center gap-3 cursor-pointer flex-1 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                      className="flex items-center gap-3 cursor-pointer flex-1 p-2 rounded-lg hover:bg-muted transition-colors"
                     >
-                      <div className={`w-3 h-3 rounded-full ${styles.dot} ring-2 ring-transparent group-hover:ring-muted-foreground/20 transition-all`} />
-                      <span className="capitalize font-medium text-foreground">
+                      <div className={`w-2.5 h-2.5 rounded-full ${styles.dot}`} />
+                      <span className="capitalize font-medium text-foreground text-sm">
                         {impact} Impact
                       </span>
-                      <Badge className={`ml-auto ${styles.badge} text-xs`}>
+                      <Badge className={`ml-auto ${styles.badge} text-xs border`}>
                         {styles.count}
                       </Badge>
                     </Label>
@@ -207,7 +207,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
             </CollapsibleContent>
           </Collapsible>
 
-          <Separator className="bg-border/30 my-6" />
+          <Separator className="bg-border my-6" />
 
           {/* Region Filters */}
           <Collapsible
@@ -237,13 +237,13 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
                     />
                     <Label
                       htmlFor={`region-${region}`}
-                      className="flex items-center gap-3 cursor-pointer flex-1 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                      className="flex items-center gap-3 cursor-pointer flex-1 p-2 rounded-lg hover:bg-muted transition-colors"
                     >
-                      <Globe className={`w-4 h-4 ${styles.icon} group-hover:scale-110 transition-transform`} />
-                      <span className="font-medium text-foreground">
+                      <Globe className={`w-4 h-4 ${styles.icon} transition-transform group-hover:scale-110`} />
+                      <span className="font-medium text-foreground text-sm">
                         {regionLabels[region]}
                       </span>
-                      <Badge className={`ml-auto ${styles.badge} text-xs`}>
+                      <Badge className={`ml-auto ${styles.badge} text-xs border`}>
                         {styles.count}
                       </Badge>
                     </Label>
@@ -253,7 +253,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
             </CollapsibleContent>
           </Collapsible>
 
-          <Separator className="bg-border/30 my-6" />
+          <Separator className="bg-border my-6" />
 
           {/* Category Filters */}
           <Collapsible
@@ -281,7 +281,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
                   />
                   <Label
                     htmlFor={`category-${category}`}
-                    className="cursor-pointer flex-1 p-2 rounded-lg hover:bg-muted/50 transition-colors font-medium text-foreground capitalize"
+                    className="cursor-pointer flex-1 p-2 rounded-lg hover:bg-muted transition-colors font-medium text-foreground text-sm capitalize"
                   >
                     {category === 'centralBank' ? 'Central Bank' : category}
                   </Label>
@@ -290,7 +290,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
             </CollapsibleContent>
           </Collapsible>
 
-          <Separator className="bg-border/30 my-6" />
+          <Separator className="bg-border my-6" />
 
           {/* Trading Sessions */}
           <Collapsible
@@ -310,23 +310,23 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
             <CollapsibleContent className="space-y-2 mb-6">
               <Button
                 variant="outline"
-                className="w-full justify-start border-border/50 hover:bg-muted/50 transition-all duration-200 group"
+                className="w-full justify-start border-border hover:bg-muted transition-all duration-200 group"
               >
-                <Clock className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-foreground group-hover:scale-110 transition-all" />
+                <Clock className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-foreground transition-all" />
                 Asian Session
               </Button>
               <Button
                 variant="outline"
-                className="w-full justify-start border-border/50 hover:bg-muted/50 transition-all duration-200 group"
+                className="w-full justify-start border-border hover:bg-muted transition-all duration-200 group"
               >
-                <Clock className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-foreground group-hover:scale-110 transition-all" />
+                <Clock className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-foreground transition-all" />
                 London Open
               </Button>
               <Button
                 variant="outline"
-                className="w-full justify-start border-border/50 hover:bg-muted/50 transition-all duration-200 group"
+                className="w-full justify-start border-border hover:bg-muted transition-all duration-200 group"
               >
-                <Clock className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-foreground group-hover:scale-110 transition-all" />
+                <Clock className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-foreground transition-all" />
                 NY Power Hours
               </Button>
             </CollapsibleContent>
@@ -335,7 +335,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
           {/* Reset Button */}
           <Button
             variant="outline"
-            className="w-full border-border/50 hover:bg-destructive/5 hover:border-destructive/30 hover:text-destructive transition-all duration-200 group mt-6"
+            className="w-full border-border hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:border-rose-200 dark:hover:border-rose-500/20 hover:text-rose-600 dark:hover:text-rose-400 transition-all duration-200 group mt-6"
             onClick={() => onFiltersChange({
               impacts: ['high', 'medium', 'low'],
               regions: ['US', 'EU', 'UK', 'Asia', 'EM'],

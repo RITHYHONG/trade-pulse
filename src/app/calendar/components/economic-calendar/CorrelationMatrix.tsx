@@ -27,59 +27,59 @@ export function CorrelationMatrix() {
     if (abs >= 0.8) {
       return strength > 0
         ? {
-            bg: 'bg-gradient-to-br from-emerald-500/20 to-teal-500/20',
-            border: 'border-emerald-500/40',
-            text: 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]',
-            dot: 'bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/50',
-            glow: 'shadow-lg shadow-emerald-500/15 hover:shadow-emerald-500/25'
+            bg: 'bg-emerald-50 dark:bg-emerald-500/10',
+            border: 'border-emerald-200 dark:border-emerald-500/20',
+            text: 'text-emerald-600 dark:text-emerald-400',
+            dot: 'bg-emerald-500',
+            glow: 'shadow-sm hover:shadow-md'
           }
         : {
-            bg: 'bg-gradient-to-br from-rose-500/20 to-red-500/20',
-            border: 'border-rose-500/40',
-            text: 'text-rose-400 drop-shadow-[0_0_8px_rgba(251,113,133,0.5)]',
-            dot: 'bg-gradient-to-br from-rose-400 to-red-500 shadow-lg shadow-rose-500/50',
-            glow: 'shadow-lg shadow-rose-500/15 hover:shadow-rose-500/25'
+            bg: 'bg-rose-50 dark:bg-rose-500/10',
+            border: 'border-rose-200 dark:border-rose-500/20',
+            text: 'text-rose-600 dark:text-rose-400',
+            dot: 'bg-rose-500',
+            glow: 'shadow-sm hover:shadow-md'
           };
     }
     if (abs >= 0.6) {
       return strength > 0
         ? {
-            bg: 'bg-gradient-to-br from-emerald-500/15 to-green-500/15',
-            border: 'border-emerald-500/30',
-            text: 'text-emerald-400',
-            dot: 'bg-gradient-to-br from-emerald-400 to-green-500 shadow-md shadow-emerald-500/40',
-            glow: 'shadow-md shadow-emerald-500/10 hover:shadow-emerald-500/20'
+            bg: 'bg-emerald-50/50 dark:bg-emerald-500/5',
+            border: 'border-emerald-200/70 dark:border-emerald-500/15',
+            text: 'text-emerald-600 dark:text-emerald-400',
+            dot: 'bg-emerald-400',
+            glow: 'shadow-sm hover:shadow-md'
           }
         : {
-            bg: 'bg-gradient-to-br from-rose-500/15 to-pink-500/15',
-            border: 'border-rose-500/30',
-            text: 'text-rose-400',
-            dot: 'bg-gradient-to-br from-rose-400 to-pink-500 shadow-md shadow-rose-500/40',
-            glow: 'shadow-md shadow-rose-500/10 hover:shadow-rose-500/20'
+            bg: 'bg-rose-50/50 dark:bg-rose-500/5',
+            border: 'border-rose-200/70 dark:border-rose-500/15',
+            text: 'text-rose-600 dark:text-rose-400',
+            dot: 'bg-rose-400',
+            glow: 'shadow-sm hover:shadow-md'
           };
     }
     if (abs >= 0.4) {
       return strength > 0
         ? {
-            bg: 'bg-gradient-to-br from-emerald-500/10 to-cyan-500/10',
-            border: 'border-emerald-500/25',
-            text: 'text-emerald-500',
-            dot: 'bg-gradient-to-br from-emerald-300 to-cyan-400 shadow-sm shadow-emerald-500/30',
-            glow: 'shadow-sm shadow-emerald-500/5 hover:shadow-emerald-500/15'
+            bg: 'bg-emerald-50/30 dark:bg-emerald-500/5',
+            border: 'border-emerald-200/50 dark:border-emerald-500/10',
+            text: 'text-emerald-500 dark:text-emerald-500',
+            dot: 'bg-emerald-300 dark:bg-emerald-400',
+            glow: 'shadow-sm hover:shadow'
           }
         : {
-            bg: 'bg-gradient-to-br from-rose-500/10 to-orange-500/10',
-            border: 'border-rose-500/25',
-            text: 'text-rose-500',
-            dot: 'bg-gradient-to-br from-rose-300 to-orange-400 shadow-sm shadow-rose-500/30',
-            glow: 'shadow-sm shadow-rose-500/5 hover:shadow-rose-500/15'
+            bg: 'bg-rose-50/30 dark:bg-rose-500/5',
+            border: 'border-rose-200/50 dark:border-rose-500/10',
+            text: 'text-rose-500 dark:text-rose-500',
+            dot: 'bg-rose-300 dark:bg-rose-400',
+            glow: 'shadow-sm hover:shadow'
           };
     }
     return {
-      bg: 'bg-gradient-to-br from-slate-500/10 to-gray-500/10',
-      border: 'border-border/30',
+      bg: 'bg-muted/30',
+      border: 'border-border/50',
       text: 'text-muted-foreground',
-      dot: 'bg-gradient-to-br from-slate-400 to-gray-500',
+      dot: 'bg-muted-foreground',
       glow: ''
     };
   };
@@ -100,7 +100,7 @@ export function CorrelationMatrix() {
   ];
 
   return (
-    <div className="bg-card/80 backdrop-blur-xl rounded-2xl p-6 border border-border/50 shadow-xl">
+    <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -133,10 +133,8 @@ export function CorrelationMatrix() {
         {correlationChains.map((chain, chainIndex) => (
           <div
             key={chainIndex}
-            className="relative p-5 rounded-xl bg-muted/20 border border-border/30 backdrop-blur-sm"
+            className="relative p-5 rounded-xl bg-muted/30 border border-border"
           >
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" />
 
             <div className="relative flex items-center justify-between">
               {chain.map((item, index) => {
@@ -220,14 +218,10 @@ export function CorrelationMatrix() {
               <div
                 key={index}
                 className={`
-                  group relative p-4 rounded-xl border transition-all duration-300
+                  group relative p-4 rounded-xl border transition-all duration-200
                   ${styles.bg} ${styles.border} ${styles.glow}
-                  hover:scale-[1.01] hover:shadow-lg hover:shadow-primary/5
-                  backdrop-blur-sm
                 `}
               >
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
 
                 <div className="relative">
                   <div className="flex items-center justify-between mb-3">

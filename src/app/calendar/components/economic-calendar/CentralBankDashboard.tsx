@@ -16,22 +16,22 @@ export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
   const getTypeStyles = (type: string) => {
     return {
       meeting: {
-        bg: 'bg-gradient-to-br from-rose-500/15 to-red-600/15',
-        border: 'border-rose-500/30',
-        icon: 'text-rose-400 drop-shadow-[0_0_10px_rgba(251,113,133,0.6)]',
-        glow: 'shadow-lg shadow-rose-500/10 hover:shadow-rose-500/20'
+        bg: 'bg-rose-50 dark:bg-rose-500/10',
+        border: 'border-rose-200 dark:border-rose-500/20',
+        icon: 'text-rose-600 dark:text-rose-400',
+        glow: 'shadow-sm hover:shadow-md'
       },
       speech: {
-        bg: 'bg-gradient-to-br from-blue-500/15 to-cyan-500/15',
-        border: 'border-blue-500/30',
-        icon: 'text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.6)]',
-        glow: 'shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20'
+        bg: 'bg-blue-50 dark:bg-blue-500/10',
+        border: 'border-blue-200 dark:border-blue-500/20',
+        icon: 'text-blue-600 dark:text-blue-400',
+        glow: 'shadow-sm hover:shadow-md'
       },
       minutes: {
-        bg: 'bg-gradient-to-br from-violet-500/15 to-purple-600/15',
-        border: 'border-violet-500/30',
-        icon: 'text-violet-400 drop-shadow-[0_0_10px_rgba(167,139,250,0.6)]',
-        glow: 'shadow-lg shadow-violet-500/10 hover:shadow-violet-500/20'
+        bg: 'bg-violet-50 dark:bg-violet-500/10',
+        border: 'border-violet-200 dark:border-violet-500/20',
+        icon: 'text-violet-600 dark:text-violet-400',
+        glow: 'shadow-sm hover:shadow-md'
       }
     }[type] || {
       bg: 'bg-muted/50',
@@ -51,17 +51,17 @@ export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
 
   const getProbabilityColor = (action: 'cut' | 'hold' | 'hike') => {
     return {
-      cut: 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]',
-      hold: 'text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.5)]',
-      hike: 'text-rose-400 drop-shadow-[0_0_8px_rgba(251,113,133,0.5)]'
+      cut: 'text-emerald-600 dark:text-emerald-400',
+      hold: 'text-blue-600 dark:text-blue-400',
+      hike: 'text-rose-600 dark:text-rose-400'
     }[action];
   };
 
   const getProbabilityBg = (action: 'cut' | 'hold' | 'hike') => {
     return {
-      cut: 'bg-gradient-to-r from-emerald-500/15 to-teal-500/15',
-      hold: 'bg-gradient-to-r from-blue-500/15 to-cyan-500/15',
-      hike: 'bg-gradient-to-r from-rose-500/15 to-red-500/15'
+      cut: 'bg-emerald-50 dark:bg-emerald-500/10',
+      hold: 'bg-blue-50 dark:bg-blue-500/10',
+      hike: 'bg-rose-50 dark:bg-rose-500/10'
     }[action];
   };
 
@@ -99,14 +99,11 @@ export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
               <div
                 key={event.id}
                 className={`
-                  group relative p-5 rounded-xl border transition-all duration-300
-                  ${typeStyles.bg} ${typeStyles.border} shadow-lg ${typeStyles.glow}
-                  hover:scale-[1.01] hover:shadow-xl hover:shadow-primary/5
-                  backdrop-blur-sm
+                  group relative p-5 rounded-xl border transition-all duration-200
+                  ${typeStyles.bg} ${typeStyles.border} ${typeStyles.glow}
+                  hover:shadow-lg
                 `}
               >
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
 
                 <div className="relative flex items-start gap-4">
                   {/* Icon */}

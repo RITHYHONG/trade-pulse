@@ -69,62 +69,59 @@ export function AlertSystem() {
   const getAlertStyles = (type: string) => {
     return {
       consensus: {
-        icon: 'text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.6)]',
-        bg: 'bg-gradient-to-br from-amber-500/15 to-orange-500/15',
-        border: 'border-amber-500/30',
-        glow: 'shadow-lg shadow-amber-500/10 hover:shadow-amber-500/20'
+        icon: 'text-amber-600 dark:text-amber-400',
+        bg: 'bg-amber-50 dark:bg-amber-500/10',
+        border: 'border-amber-200 dark:border-amber-500/20',
+        dot: 'bg-amber-500'
       },
       volatility: {
-        icon: 'text-rose-400 drop-shadow-[0_0_10px_rgba(251,113,133,0.6)]',
-        bg: 'bg-gradient-to-br from-rose-500/15 to-red-500/15',
-        border: 'border-rose-500/30',
-        glow: 'shadow-lg shadow-rose-500/10 hover:shadow-rose-500/20'
+        icon: 'text-rose-600 dark:text-rose-400',
+        bg: 'bg-rose-50 dark:bg-rose-500/10',
+        border: 'border-rose-200 dark:border-rose-500/20',
+        dot: 'bg-rose-500'
       },
       correlation: {
-        icon: 'text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.6)]',
-        bg: 'bg-gradient-to-br from-cyan-500/15 to-blue-500/15',
-        border: 'border-cyan-500/30',
-        glow: 'shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20'
+        icon: 'text-blue-600 dark:text-blue-400',
+        bg: 'bg-blue-50 dark:bg-blue-500/10',
+        border: 'border-blue-200 dark:border-blue-500/20',
+        dot: 'bg-blue-500'
       },
       keyword: {
-        icon: 'text-violet-400 drop-shadow-[0_0_10px_rgba(167,139,250,0.6)]',
-        bg: 'bg-gradient-to-br from-violet-500/15 to-purple-500/15',
-        border: 'border-violet-500/30',
-        glow: 'shadow-lg shadow-violet-500/10 hover:shadow-violet-500/20'
+        icon: 'text-violet-600 dark:text-violet-400',
+        bg: 'bg-violet-50 dark:bg-violet-500/10',
+        border: 'border-violet-200 dark:border-violet-500/20',
+        dot: 'bg-violet-500'
       }
     }[type] || {
       icon: 'text-muted-foreground',
-      bg: 'bg-muted/50',
+      bg: 'bg-muted',
       border: 'border-border',
-      glow: ''
+      dot: 'bg-muted-foreground'
     };
   };
 
   return (
-    <div className="bg-card/80 backdrop-blur-xl rounded-2xl p-6 border border-border/50 shadow-xl">
+    <div className="bg-card rounded-xl p-6 border border-border shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-primary/10 text-primary">
-            <Bell className="w-5 h-5" />
+          <div className="p-2.5 rounded-xl bg-primary/10">
+            <Bell className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-foreground">Smart Alerts</h3>
-            <p className="text-xs text-muted-foreground">Real-time market monitoring</p>
+            <h3 className="text-base font-semibold text-foreground">Smart Alerts</h3>
+            <p className="text-sm text-muted-foreground">Real-time market monitoring</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Badge 
-            variant="outline" 
-            className="bg-emerald-500/10 border-emerald-500/30 text-emerald-400 px-3 py-1"
-          >
-            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full mr-2 animate-pulse" />
+          <Badge className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full">
+            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2 animate-pulse" />
             {alerts.filter(a => a.enabled).length} Active
           </Badge>
           <Button 
             size="sm"
             onClick={() => setShowNewAlert(!showNewAlert)}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-200 hover:shadow-primary/30 hover:scale-[1.02]"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg shadow-sm"
           >
             <Plus className="w-4 h-4 mr-2" />
             New Alert
@@ -134,10 +131,8 @@ export function AlertSystem() {
 
       {/* New Alert Form */}
       {showNewAlert && (
-        <div className="relative mb-6 p-5 rounded-xl bg-muted/30 border border-border/50 backdrop-blur-sm animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
-          
-          <div className="relative space-y-4">
+        <div className="mb-6 p-5 rounded-xl bg-muted/50 border border-border animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="space-y-4">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium text-foreground">Create New Alert</span>
@@ -244,24 +239,23 @@ export function AlertSystem() {
             <div 
               key={alert.id}
               className={`
-                group relative p-4 rounded-xl border transition-all duration-300
+                group relative p-4 rounded-xl border transition-all duration-200
                 ${alert.enabled 
-                  ? `${styles.bg} ${styles.border} shadow-lg ${styles.glow}` 
-                  : 'bg-muted/20 border-border/30 opacity-60'
+                  ? `${styles.bg} ${styles.border} shadow-sm hover:shadow-md` 
+                  : 'bg-muted/30 border-border opacity-60'
                 }
-                hover:scale-[1.01] hover:shadow-xl
               `}
             >
               {/* Active indicator bar */}
               {alert.enabled && (
-                <div className={`absolute left-0 top-3 bottom-3 w-1 rounded-full ${styles.icon.replace('text-', 'bg-')}`} />
+                <div className={`absolute left-0 top-3 bottom-3 w-1 rounded-full ${styles.dot}`} />
               )}
 
               <div className="flex items-start gap-4 pl-2">
                 {/* Icon */}
                 <div className={`
-                  p-2.5 rounded-xl transition-all duration-200
-                  ${alert.enabled ? `${styles.bg} ${styles.icon}` : 'bg-muted/50 text-muted-foreground'}
+                  p-2.5 rounded-lg transition-all duration-200
+                  ${alert.enabled ? `${styles.bg} ${styles.icon}` : 'bg-muted text-muted-foreground'}
                 `}>
                   <AlertIcon className="w-4 h-4" />
                 </div>

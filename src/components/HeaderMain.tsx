@@ -132,30 +132,30 @@ export function HeaderMain() {
 
   return (
     <motion.header 
-      className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border"
+      className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border shadow-sm"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <div className="container mx-auto px-8 py-4">
+      <div className="container mx-auto px-6 lg:px-8 py-3">
         <div className="flex items-center justify-between">
           <motion.div 
             className="flex items-center gap-3"
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.2 }}
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.15 }}
           >
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-90">
               <Image 
                 src={mounted ? (theme === 'light' ? LogoLight : LogoDark) : LogoDark} 
-                width={72} 
-                height={72} 
+                width={64} 
+                height={64} 
                 alt="Logo"
                 priority
               />
             </Link>
           </motion.div>
 
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-1">
             {navItems.map((item, index) => {
               const isActive = pathname === item.href || (item.isAnchor && active === item.href);
               
@@ -163,10 +163,10 @@ export function HeaderMain() {
                 return (
                   <motion.a
                     key={index}
-                    className="relative text-muted-foreground cursor-not-allowed group"
+                    className="relative px-4 py-2 text-sm text-muted-foreground cursor-not-allowed group rounded-lg"
                   >
                     {item.label}
-                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-foreground text-background text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                       Coming Soon
                     </span>
                   </motion.a>
@@ -177,9 +177,9 @@ export function HeaderMain() {
                     key={index}
                     href={item.href}
                     onClick={() => setActive(item.href)}
-                    className={`relative transition-colors ${isActive ? 'text-primary font-semibold border-b-2 border-primary pb-1' : 'text-foreground hover:text-primary'}`}
-                    whileHover={{ y: -2 }}
-                    transition={{ duration: 0.2 }}
+                    className={`relative px-4 py-2 text-sm rounded-lg transition-colors ${isActive ? 'text-primary font-medium bg-primary-muted' : 'text-foreground hover:text-primary hover:bg-muted'}`}
+                    whileHover={{ y: -1 }}
+                    transition={{ duration: 0.15 }}
                   >
                     {item.label}
                   </motion.a>
@@ -188,12 +188,12 @@ export function HeaderMain() {
                 return (
                   <motion.div
                     key={index}
-                    whileHover={{ y: -2 }}
-                    transition={{ duration: 0.2 }}
+                    whileHover={{ y: -1 }}
+                    transition={{ duration: 0.15 }}
                   >
                     <Link
                       href={item.href}
-                      className={`relative transition-colors ${isActive ? 'text-primary font-semibold border-b-2 border-primary pb-1' : 'text-foreground hover:text-primary'}`}
+                      className={`relative px-4 py-2 text-sm rounded-lg transition-colors inline-block ${isActive ? 'text-primary font-medium bg-primary-muted' : 'text-foreground hover:text-primary hover:bg-muted'}`}
                     >
                       {item.label}
                     </Link>
@@ -203,37 +203,38 @@ export function HeaderMain() {
             })}
           </nav>
 
-          <div className="hidden lg:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-3">
             <ThemeToggle />
             <Button
+              variant="outline"
               size="sm"
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground border-2"
+              className="flex items-center gap-2 h-9 px-4 text-muted-foreground hover:text-foreground bg-muted/50 border-border/50 rounded-full"
             >
               <Search className="w-4 h-4" />
-              <span>Search</span>
-              <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 hover:text-foreground">
-                <span className="text-xs text-primary">/</span>
+              <span className="text-sm">Search</span>
+              <kbd className="pointer-events-none hidden sm:inline-flex h-5 select-none items-center gap-1 rounded-md border bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground ml-1">
+                <span className="text-xs">/</span>
               </kbd>
             </Button>
             
             {user ? (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button  className="flex items-center gap-2 bg-none">
-                      <Avatar className="w-8 h-8">
+                    <Button variant="ghost" className="flex items-center gap-2 h-9 px-2 hover:bg-muted rounded-full">
+                      <Avatar className="w-7 h-7">
                         {((userProfile?.photoURL ?? user.photoURL) as string | undefined) && (
                           <AvatarImage
                             src={(userProfile?.photoURL ?? user.photoURL) as string | undefined}
                             alt="Profile picture"
                           />
                         )}
-                        <AvatarFallback>
+                        <AvatarFallback className="text-xs bg-primary/10 text-primary">
                           {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-foreground">
+                      <span className="text-sm font-medium text-foreground max-w-[120px] truncate">
                         {user.displayName || user.email?.split('@')[0] || 'User'}
                       </span>
                     </Button>
@@ -280,12 +281,12 @@ export function HeaderMain() {
             ) : (
               <>
                 <Link href={`/login?redirect=${encodeURIComponent(pathname)}`}>
-                  <Button variant="ghost" className="hover:bg-card">
+                  <Button variant="ghost" size="sm" className="h-9 px-4 hover:bg-muted rounded-full">
                     Login
                   </Button>
                 </Link>
                 <Link href={`/signup?redirect=${encodeURIComponent(pathname)}`}>
-                  <Button className="bg-primary hover:bg-primary/90">
+                  <Button size="sm" className="h-9 px-5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-sm hover:shadow-md transition-all">
                     Start Free Trial
                   </Button>
                 </Link>
@@ -295,9 +296,10 @@ export function HeaderMain() {
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden p-2 text-foreground hover:text-primary transition-colors"
+            className="lg:hidden p-2 text-foreground hover:text-primary hover:bg-muted rounded-lg transition-all"
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
@@ -308,12 +310,12 @@ export function HeaderMain() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="lg:hidden bg-background/95 backdrop-blur-md border-t border-border"
+            transition={{ duration: 0.25 }}
+            className="lg:hidden bg-card border-t border-border"
           >
-            <div className="container mx-auto px-8 py-6">
-              <nav className="flex flex-col gap-4 mb-6">
-                <div className="flex items-center justify-between pb-2 border-b border-border">
+            <div className="container mx-auto px-6 py-4">
+              <nav className="flex flex-col gap-1 mb-4">
+                <div className="flex items-center justify-between py-2 px-3 mb-2 border-b border-border">
                   <span className="text-sm font-medium text-muted-foreground">Appearance</span>
                   <ThemeToggle />
                 </div>
@@ -323,7 +325,7 @@ export function HeaderMain() {
                     setIsSearchOpen(true);
                     setIsMenuOpen(false);
                   }}
-                  className="flex items-center gap-2 justify-start text-muted-foreground hover:text-foreground"
+                  className="flex items-center gap-2 justify-start text-muted-foreground hover:text-foreground h-10 px-3 rounded-lg"
                 >
                   <Search className="w-4 h-4" />
                   <span>Search</span>

@@ -239,7 +239,7 @@ export function PopularStorySection({ posts, isLoading }: PopularStorySectionPro
           )}
           
           {/* Right - Main + Grid */}
-          <div className="lg:col-span-7 space-y-6">
+          <div className="lg:col-span-7 space-y-6 flex flex-col">
             {/* Main Story Card */}
             {mainPost && (
               <MainStoryCard post={mainPost} />

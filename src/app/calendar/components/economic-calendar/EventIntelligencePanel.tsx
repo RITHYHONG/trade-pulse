@@ -17,22 +17,22 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
   const getImpactStyles = (impact: string) => {
     return {
       high: {
-        bg: 'bg-gradient-to-br from-rose-500/15 to-red-600/15',
-        border: 'border-rose-500/30',
-        text: 'text-rose-400 drop-shadow-[0_0_8px_rgba(251,113,133,0.5)]',
-        glow: 'shadow-lg shadow-rose-500/20 hover:shadow-rose-500/30'
+        bg: 'bg-rose-50 dark:bg-rose-500/10',
+        border: 'border-rose-200 dark:border-rose-500/20',
+        text: 'text-rose-600 dark:text-rose-400',
+        glow: 'shadow-sm hover:shadow-md'
       },
       medium: {
-        bg: 'bg-gradient-to-br from-amber-500/15 to-orange-500/15',
-        border: 'border-amber-500/30',
-        text: 'text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]',
-        glow: 'shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30'
+        bg: 'bg-amber-50 dark:bg-amber-500/10',
+        border: 'border-amber-200 dark:border-amber-500/20',
+        text: 'text-amber-600 dark:text-amber-400',
+        glow: 'shadow-sm hover:shadow-md'
       },
       low: {
-        bg: 'bg-gradient-to-br from-emerald-500/15 to-teal-500/15',
-        border: 'border-emerald-500/30',
-        text: 'text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]',
-        glow: 'shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30'
+        bg: 'bg-emerald-50 dark:bg-emerald-500/10',
+        border: 'border-emerald-200 dark:border-emerald-500/20',
+        text: 'text-emerald-600 dark:text-emerald-400',
+        glow: 'shadow-sm hover:shadow-md'
       }
     }[impact] || {
       bg: 'bg-muted/50',
@@ -46,21 +46,21 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
     return {
       bullish: {
         icon: TrendingUp,
-        color: 'text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.6)]',
-        bg: 'bg-gradient-to-br from-emerald-500/15 to-teal-500/15',
-        border: 'border-emerald-500/30'
+        color: 'text-emerald-600 dark:text-emerald-400',
+        bg: 'bg-emerald-50 dark:bg-emerald-500/10',
+        border: 'border-emerald-200 dark:border-emerald-500/20'
       },
       bearish: {
         icon: TrendingDown,
-        color: 'text-rose-400 drop-shadow-[0_0_10px_rgba(251,113,133,0.6)]',
-        bg: 'bg-gradient-to-br from-rose-500/15 to-red-600/15',
-        border: 'border-rose-500/30'
+        color: 'text-rose-600 dark:text-rose-400',
+        bg: 'bg-rose-50 dark:bg-rose-500/10',
+        border: 'border-rose-200 dark:border-rose-500/20'
       },
       neutral: {
         icon: Activity,
-        color: 'text-slate-400 drop-shadow-[0_0_6px_rgba(148,163,184,0.4)]',
-        bg: 'bg-gradient-to-br from-slate-500/10 to-gray-500/10',
-        border: 'border-slate-500/20'
+        color: 'text-muted-foreground',
+        bg: 'bg-muted/30',
+        border: 'border-border/50'
       }
     }[sentiment] || {
       icon: Activity,
@@ -82,9 +82,9 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
   }));
 
   return (
-    <div className="fixed right-0 top-0 h-full w-[600px] bg-card/95 backdrop-blur-xl border-l border-border/50 shadow-2xl z-50 overflow-y-auto">
+    <div className="fixed right-0 top-0 h-full w-[600px] bg-card border-l border-border shadow-xl z-50 overflow-y-auto">
       {/* Header */}
-      <div className="sticky top-0 bg-card/95 backdrop-blur-xl border-b border-border/30 p-6 z-10">
+      <div className="sticky top-0 bg-card border-b border-border p-6 z-10">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-3">
@@ -129,17 +129,17 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
 
         {/* Quick Stats */}
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-muted/30 p-4 rounded-xl border border-border/30 backdrop-blur-sm">
+          <div className="bg-muted/30 p-4 rounded-xl border border-border">
             <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Consensus</div>
             <div className="text-2xl font-bold text-foreground">{event.consensus}{event.unit}</div>
           </div>
-          <div className="bg-muted/30 p-4 rounded-xl border border-border/30 backdrop-blur-sm">
+          <div className="bg-muted/30 p-4 rounded-xl border border-border">
             <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Previous</div>
             <div className="text-2xl font-bold text-foreground">{event.previous}{event.unit}</div>
           </div>
-          <div className="bg-muted/30 p-4 rounded-xl border border-border/30 backdrop-blur-sm">
+          <div className="bg-muted/30 p-4 rounded-xl border border-border">
             <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Expected Move</div>
-            <div className="text-2xl font-bold text-amber-400 flex items-center gap-1">
+            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
               <Zap className="w-4 h-4" />
               ±{event.tradingSetup.expectedMove}%
             </div>
@@ -161,7 +161,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
             </div>
           </div>
 
-          <div className="bg-card/50 p-5 rounded-xl border border-border/30 backdrop-blur-sm space-y-5">
+          <div className="bg-card p-5 rounded-xl border border-border shadow-sm space-y-5">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-muted-foreground">Average Absolute Move</span>
               <span className="text-xl font-bold text-foreground">±{event.historicalData.avgMove}%</span>
@@ -182,7 +182,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               </div>
             </div>
 
-            <Separator className="bg-border/30" />
+            <Separator className="bg-border" />
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
@@ -225,7 +225,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
             </div>
           </div>
 
-          <div className="bg-card/50 p-5 rounded-xl border border-border/30 backdrop-blur-sm space-y-5">
+          <div className="bg-card p-5 rounded-xl border border-border shadow-sm space-y-5">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-muted-foreground">Surprise Probability</span>
               <div className="flex items-center gap-3 flex-1 max-w-[200px]">

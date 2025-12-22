@@ -179,28 +179,26 @@ export default function App() {
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* Header */}
-      <header className="border-b border-border/50 bg-card/95 backdrop-blur-xl">
-        <div className="px-6 py-4">
+      <header className="border-b border-border bg-card shadow-sm">
+        <div className="px-6 py-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                <Activity className="w-6 h-6" />
+              <div className="p-2.5 rounded-xl bg-primary/10">
+                <Activity className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Economic Calendar</h1>
+                <h1 className="text-xl font-semibold text-foreground">Economic Calendar</h1>
                 <p className="text-sm text-muted-foreground">Track global economic events and market impact</p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="border-rose-500/30 text-rose-400 bg-rose-500/5">
-                  <Zap className="w-3 h-3 mr-1.5" />
-                  {highImpactCount} High Impact
-                </Badge>
-                <Badge variant="outline" className="border-border/50 bg-background/50">
-                  {filteredEvents.length} Events
-                </Badge>
-              </div>
+            <div className="flex items-center gap-3">
+              <Badge className="border border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 px-3 py-1 rounded-full font-medium">
+                <Zap className="w-3.5 h-3.5 mr-1.5" />
+                {highImpactCount} High Impact
+              </Badge>
+              <Badge variant="outline" className="border-border bg-muted/50 px-3 py-1 rounded-full">
+                {filteredEvents.length} Events
+              </Badge>
             </div>
           </div>
         </div>
@@ -211,13 +209,13 @@ export default function App() {
         {/* Sidebar Toggle Button */}
         {!sidebarOpen && (
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-40 bg-card/95 backdrop-blur-xl border border-border/50 rounded-r-xl rounded-l-none hover:bg-card transition-colors shadow-lg"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-40 bg-card border border-border rounded-r-lg rounded-l-none hover:bg-muted transition-colors shadow-md h-12 w-6"
             onClick={() => setSidebarOpen(true)}
             aria-label="Open sidebar"
           >
-            <ChevronRight className="w-4 h-4 text-primary" />
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </Button>
         )}
 
@@ -228,13 +226,13 @@ export default function App() {
             <div className="relative h-full">
               <FilterSidebar filters={filters} onFiltersChange={handleFiltersChange} />
               <Button
-                variant="ghost"
+                variant="outline"
                 size="icon"
-                className="absolute -right-4 top-1/2 -translate-y-1/2 z-40 bg-card/95 backdrop-blur-xl border border-border/50 rounded-xl hover:bg-card transition-colors shadow-lg"
+                className="absolute -right-3 top-1/2 -translate-y-1/2 z-40 bg-card border border-border rounded-full hover:bg-muted transition-colors shadow-md h-6 w-6"
                 onClick={() => setSidebarOpen(false)}
                 aria-label="Close sidebar"
               >
-                <ChevronLeft className="w-4 h-4 text-primary" />
+                <ChevronLeft className="w-3 h-3 text-muted-foreground" />
               </Button>
             </div>
           )}
@@ -242,35 +240,38 @@ export default function App() {
 
         {/* Mobile: show overlay when sidebarOpen */}
         {isMobile && sidebarOpen && (
-          <div className="fixed inset-0 z-50 flex bg-background/95 backdrop-blur-xl p-4">
-            <div className="w-full md:w-80 bg-card/50 backdrop-blur-xl rounded-xl border border-border/50 p-4">
+          <div className="fixed inset-0 z-50 flex bg-background/80 backdrop-blur-sm">
+            <div className="w-full max-w-sm bg-card border-r border-border shadow-xl">
               <FilterSidebar filters={filters} onFiltersChange={handleFiltersChange} />
             </div>
-            <div className="absolute top-6 right-6">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="bg-card/95 backdrop-blur-xl border border-border/50 rounded-xl hover:bg-card transition-colors"
-                onClick={() => setSidebarOpen(false)}
-                aria-label="Close sidebar"
-              >
-                <ChevronLeft className="w-4 h-4 text-primary rotate-180" />
-              </Button>
-            </div>
+            <div 
+              className="flex-1" 
+              onClick={() => setSidebarOpen(false)}
+              aria-hidden="true"
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-4 right-4 bg-card border border-border rounded-full hover:bg-muted"
+              onClick={() => setSidebarOpen(false)}
+              aria-label="Close sidebar"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
           </div>
         )}
 
         {/* Main Content */}
         <div className="flex-1 flex h-full overflow-auto">
           {/* Left Section - View Tabs */}
-          <div className="flex-1 flex flex-col border-r border-border/50">
+          <div className="flex-1 flex flex-col border-r border-border">
             {/* Mobile filter toggle */}
             {isMobile && (
-              <div className="px-4 py-3 border-b border-border/50 bg-card/95 backdrop-blur-xl">
+              <div className="px-4 py-3 border-b border-border bg-card">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-border/50 hover:bg-muted/50 transition-colors"
+                  className="border-border hover:bg-muted transition-colors rounded-lg"
                   onClick={() => setSidebarOpen(true)}
                 >
                   <Filter className="w-4 h-4 mr-2" />
@@ -279,25 +280,25 @@ export default function App() {
               </div>
             )}
             <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)} className="flex-1 flex flex-col min-h-0">
-              <div className="border-b border-border/50 bg-card/95 backdrop-blur-xl px-6 py-4">
-                <TabsList className="bg-muted/50 p-1 rounded-xl">
+              <div className="border-b border-border bg-card px-6 py-4">
+                <TabsList className="bg-muted p-1 rounded-lg h-10">
                   <TabsTrigger
                     value="timeline"
-                    className="data-[state=active]:bg-primary dark:data-[state=active]:bg-primary/80 data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 flex items-center gap-2 px-4 py-2"
+                    className="data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-md transition-all duration-150 flex items-center gap-2 px-4 h-8 text-sm"
                   >
                     <BarChart3 className="w-4 h-4" />
                     Timeline
                   </TabsTrigger>
                   <TabsTrigger
                     value="heatmap"
-                    className="data-[state=active]:bg-primary dark:data-[state=active]:bg-primary/80  data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 flex items-center gap-2 px-4 py-2"
+                    className="data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-md transition-all duration-150 flex items-center gap-2 px-4 h-8 text-sm"
                   >
                     <Grid3x3 className="w-4 h-4" />
                     Heat Map
                   </TabsTrigger>
                   <TabsTrigger
                     value="list"
-                    className="data-[state=active]:bg-primary dark:data-[state=active]:bg-primary/80  data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 flex items-center gap-2 px-4 py-2"
+                    className="data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-md transition-all duration-150 flex items-center gap-2 px-4 h-8 text-sm"
                   >
                     <List className="w-4 h-4" />
                     List View
@@ -324,33 +325,33 @@ export default function App() {
           {/* Right Section - Advanced Features */}
           <div className="flex-1 flex flex-col">
             <Tabs defaultValue="central-bank" className="flex-1 flex flex-col min-h-0">
-              <div className="border-b border-border/50 bg-card/95 backdrop-blur-xl px-6 py-4">
-                <TabsList className="bg-muted/50 p-1 rounded-xl">
+              <div className="border-b border-border bg-card px-6 py-4">
+                <TabsList className="bg-muted p-1 rounded-lg h-10">
                   <TabsTrigger
                     value="central-bank"
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 flex items-center gap-2 px-4 py-2"
+                    className="data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-md transition-all duration-150 flex items-center gap-2 px-3 h-8 text-sm"
                   >
                     <Target className="w-4 h-4" />
-                    Central Bank Watch
+                    Central Bank
                   </TabsTrigger>
                   <TabsTrigger
                     value="alerts"
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 flex items-center gap-2 px-4 py-2"
+                    className="data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-md transition-all duration-150 flex items-center gap-2 px-3 h-8 text-sm"
                   >
                     <Bell className="w-4 h-4" />
-                    Smart Alerts
+                    Alerts
                   </TabsTrigger>
                   <TabsTrigger
                     value="correlation"
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 flex items-center gap-2 px-4 py-2"
+                    className="data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm rounded-md transition-all duration-150 flex items-center gap-2 px-3 h-8 text-sm"
                   >
                     <Activity className="w-4 h-4" />
-                    Correlation Matrix
+                    Correlation
                   </TabsTrigger>
                 </TabsList>
               </div>
 
-              <div className="overflow-y-auto flex-1">
+              <div className="overflow-y-auto flex-1 bg-muted/30">
                 <TabsContent value="central-bank" className="m-0 p-6 h-full">
                   <CentralBankDashboard events={mockCentralBankEvents} />
                 </TabsContent>

@@ -1,19 +1,21 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getAllMarketData, type MarketItem } from '@/lib/market-data-service';
+import { Marquee } from '@/components/ui/marquee';
 
 interface NewsTickerProps {
   isLoading?: boolean;
 }
 
+const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
 export function NewsTicker({ isLoading }: NewsTickerProps) {
   const [marketData, setMarketData] = useState<MarketItem[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number>();
 
+  // Fetch market data
   useEffect(() => {
     const fetchMarketData = async () => {
       try {
@@ -30,56 +32,25 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
     };
 
     fetchMarketData();
-
-    // Refresh data every 5 minutes
-    const interval = setInterval(fetchMarketData, 5 * 60 * 1000);
+    const interval = setInterval(fetchMarketData, REFRESH_INTERVAL);
 
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    if (!scrollRef.current || marketData.length === 0) return;
+  // Format helper functions
+  const formatPrice = useCallback((price: number, type: string) => {
+    if (type === 'crypto' || type === 'stock') {
+      return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    return price.toFixed(4);
+  }, []);
 
-    const scrollElement = scrollRef.current;
-    let position = 0;
-    const speed = 0.5; // pixels per frame
+  const formatChange = useCallback((change: number, changePercent: number) => {
+    const sign = change >= 0 ? '+' : '';
+    return `${sign}${changePercent.toFixed(2)}%`;
+  }, []);
 
-    const animate = () => {
-      position -= speed;
-
-      // Reset position when we've scrolled through half the content
-      if (Math.abs(position) >= scrollElement.scrollWidth / 2) {
-        position = 0;
-      }
-
-      scrollElement.style.transform = `translateX(${position}px)`;
-      animationRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    const handleMouseEnter = () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-
-    const handleMouseLeave = () => {
-      animate();
-    };
-
-    scrollElement.addEventListener('mouseenter', handleMouseEnter);
-    scrollElement.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-      scrollElement.removeEventListener('mouseenter', handleMouseEnter);
-      scrollElement.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, [marketData]);
-
+  // Loading state
   if (isLoading || dataLoading || marketData.length === 0) {
     return (
       <section className="py-3 bg-muted/50 border-y border-border overflow-hidden">
@@ -102,6 +73,7 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
     );
   }
 
+  // Error state
   if (error) {
     return (
       <section className="py-3 bg-muted/50 border-y border-border overflow-hidden">
@@ -119,21 +91,6 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
     );
   }
 
-  // Create multiple duplicated data for ultra-smooth endless scrolling
-  const duplicatedData = Array(6).fill(marketData).flat();
-
-  const formatPrice = (price: number, type: string) => {
-    if (type === 'crypto' || type === 'stock') {
-      return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
-    return price.toFixed(4);
-  };
-
-  const formatChange = (change: number, changePercent: number) => {
-    const sign = change >= 0 ? '+' : '';
-    return `${sign}${changePercent.toFixed(2)}%`;
-  };
-
   return (
     <section className="py-3 bg-muted/50 border-y border-border overflow-hidden">
       <div className="container mx-auto px-4">
@@ -145,12 +102,12 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
 
           {/* Scrolling Content */}
           <div className="flex-1 overflow-hidden relative">
-            <div
-              ref={scrollRef}
-              className="flex gap-8 whitespace-nowrap"
-              style={{ width: 'max-content' }}
+            <Marquee
+              pauseOnHover={true}
+              repeat={6}
+              className="[--duration:60s] [--gap:2rem]"
             >
-              {duplicatedData.map((item, index) => (
+              {marketData.map((item, index) => (
                 <div
                   key={`${item.symbol}-${index}`}
                   className="inline-flex items-center gap-3 flex-shrink-0"
@@ -185,7 +142,7 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
                   }`} />
                 </div>
               ))}
-            </div>
+            </Marquee>
           </div>
         </div>
       </div>
@@ -193,12 +150,4 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
   );
 }
 
-// lib/market-data-service.ts
-const COINGECKO_API = 'https://api.coingecko.com/api/v3';
-
-export async function getCryptoPrices() {
-  const response = await fetch(
-    `${COINGECKO_API}/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true`
-  );
-  return response.json();
-}
+export type { MarketItem };

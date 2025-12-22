@@ -1,5 +1,5 @@
 // lib/market-data-service.ts
-interface MarketItem {
+export interface MarketItem {
   symbol: string;
   name: string;
   price: number;
