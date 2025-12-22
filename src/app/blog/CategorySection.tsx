@@ -4,9 +4,11 @@ import { useMemo } from 'react';
 import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Divide } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Separator } from '@/components/ui/separator';
+import { useAuthorProfile } from '@/hooks/use-author-profile';
 
 interface CategorySectionProps {
   category: string;
@@ -29,6 +31,15 @@ function formatRelativeTime(dateString: string): string {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
+function formatViews(count?: number): string {
+  if (!count) return '0 views';
+  if (count < 1000) return `${count} views`;
+  if (count < 1000000) return `${(count / 1000).toFixed(count % 1000 === 0 ? 0 : 1)}k views`;
+  return `${(count / 1000000).toFixed(1)}M views`;
+}
+
+
+
 // Skeleton for loading state
 function CategorySectionSkeleton({ isLeft }: { isLeft: boolean }) {
   return (
@@ -37,7 +48,7 @@ function CategorySectionSkeleton({ isLeft }: { isLeft: boolean }) {
         {/* Section Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-1 h-8 bg-violet-500 rounded-full" />
+            <div className="w-1 h-8 bg-primary rounded-full" />
             <Skeleton className="h-7 w-40" />
           </div>
           <Skeleton className="h-5 w-24" />
@@ -70,13 +81,27 @@ function CategorySectionSkeleton({ isLeft }: { isLeft: boolean }) {
 
 // Small card component
 function SmallPostCard({ post }: { post: BlogPost }) {
+  const fallbackAuthor = useMemo(() => ({
+    name: post.author.name,
+    avatar: post.author.avatar,
+    avatarUrl: post.author.avatarUrl,
+    bio: post.author.bio,
+    role: post.author.role
+  }), [post.author.name, post.author.avatar, post.author.avatarUrl, post.author.bio, post.author.role]);
+  
+  const { authorProfile } = useAuthorProfile({
+    authorId: post.authorId,
+    fallbackAuthor
+  });
+
   return (
     <Link href={`/blog/${post.slug}`}>
-      <article className="flex gap-4 p-3 rounded-xl bg-white/5 dark:bg-slate-800/30 hover:bg-white/10 dark:hover:bg-slate-700/40 transition-all duration-300 group cursor-pointer border border-transparent hover:border-violet-500/20">
-        <div className="flex-1 min-w-0">
+      <article className=" gap-4 p-3 rounded-xl bg-white/5 dark:bg-slate-800/30 hover:bg-white/10 dark:hover:bg-slate-700/40 transition-all duration-300 group cursor-pointer border border-transparent hover:border-violet-500/20">
+        <div className='flex'>
+          <div className="flex-1 min-w-0">
           {/* Category and Time */}
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-violet-500 dark:text-violet-400 text-sm font-medium">
+            <span className="text-primary dark:text-primary text-sm font-medium">
               {post.category}
             </span>
             <span className="text-slate-400 dark:text-slate-500 text-xs">•</span>
@@ -90,6 +115,7 @@ function SmallPostCard({ post }: { post: BlogPost }) {
             {post.title}
           </h3>
         </div>
+        
 
         {/* Thumbnail */}
         <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
@@ -100,7 +126,32 @@ function SmallPostCard({ post }: { post: BlogPost }) {
             className="object-cover transition-transform duration-300 group-hover:scale-110"
           />
         </div>
+        </div>
+        <Separator className="my-4" />
+
+
+
+        <div className="flex items-center justify-between gap-4">
+          <div className='flex justify-between items-center'>
+            <ImageWithFallback
+              src={authorProfile?.avatar ?? ''}
+              alt={authorProfile?.name}
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+            <div className="text-white ml-2">
+              <div className="font-medium">{authorProfile?.name}</div>
+            </div>
+          </div>
+          <div className="text-sm text-gray-300">
+            <span>{formatViews(post.views)}</span>
+          </div>
+
+        </div>
+
       </article>
+      
     </Link>
   );
 }
@@ -177,7 +228,7 @@ export function CategorySection({ category, posts, isLeft, isLoading }: Category
         {/* Section Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-1 h-8 bg-violet-500 rounded-full" />
+            <div className="w-1 h-8 bg-primary rounded-full" />
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
               {category.toUpperCase()}
             </h2>

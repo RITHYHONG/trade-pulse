@@ -51,6 +51,7 @@ export interface BlogPost {
   createdAt?: Date | Timestamp;
   updatedAt?: Date | Timestamp;
   publishedAt?: Date | Timestamp;
+  views?: number;
 }
 
 /**
@@ -305,6 +306,7 @@ export async function getPublishedPosts(limitCount?: number): Promise<BlogPost[]
         createdAt: data.createdAt?.toDate?.() || data.createdAt,
         updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
         publishedAt: data.publishedAt?.toDate?.() || data.publishedAt,
+        views: typeof data.views === 'number' ? data.views : 0,
       } as BlogPost);
     });
 
@@ -362,6 +364,7 @@ export async function getPostsByCategory(category: string, limitCount?: number):
         createdAt: data.createdAt?.toDate?.() || data.createdAt,
         updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
         publishedAt: data.publishedAt?.toDate?.() || data.publishedAt,
+        views: typeof data.views === 'number' ? data.views : 0,
       } as BlogPost);
     });
 
@@ -402,6 +405,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       createdAt: data.createdAt?.toDate?.() || data.createdAt,
       updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
       publishedAt: data.publishedAt?.toDate?.() || data.publishedAt,
+      views: typeof data.views === 'number' ? data.views : 0,
     } as BlogPost;
   } catch (error) {
     console.error('Error getting post by slug:', error);

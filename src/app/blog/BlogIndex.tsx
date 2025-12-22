@@ -132,7 +132,7 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
              */}
             <div className="absolute right-0 top-0 mt-12">
               <Link href="/create-post">
-                <Button className="px-5 py-4 bg-violet-600 hover:bg-violet-700 text-white shadow-lg shadow-violet-500/25 group">
+                <Button className="px-5 py-4 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 group">
                   <PenSquare className="mr-2 h-4 w-4" />
                   Create Post
                 </Button>

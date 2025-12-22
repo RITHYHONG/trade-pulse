@@ -7,7 +7,7 @@ interface WatchlistErrorProps {
 
 export default function WatchlistError({ error, reset }: WatchlistErrorProps) {
   return (
-    <div className="rounded-3xl border border-rose-500/30 bg-rose-500/10 p-8 text-rose-100">
+    <div className="rounded-3xl border border-rose-500/30 bg-rose-500/10 p-8 text-rose-100  mt-24">
   <h2 className="text-lg font-semibold">We couldn’t load your watchlist</h2>
       <p className="mt-2 text-sm opacity-80">{error.message}</p>
       <button

@@ -35,7 +35,7 @@ function ReadersChoiceSkeleton() {
         {/* Section Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-1 h-8 bg-violet-500 rounded-full" />
+            <div className="w-1 h-8 bg-primary rounded-full" />
             <Skeleton className="h-7 w-40" />
           </div>
           <Skeleton className="h-5 w-24" />
@@ -175,7 +175,7 @@ export function ReadersChoice({ posts, isLoading }: ReadersChoiceProps) {
         {/* Section Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-1 h-8 bg-violet-500 rounded-full" />
+            <div className="w-1 h-8 bg-primary rounded-full" />
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
               READERS&apos; CHOICE
             </h2>

@@ -24,6 +24,7 @@ export interface BlogPost {
 	authorId?: string;
 	category?: string;
 	isFeatured?: boolean;
+	views?: number;
 }
 
 export interface AdItem {

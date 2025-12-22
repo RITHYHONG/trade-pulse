@@ -1,5 +1,5 @@
 "use client";
-import { Share2, Bookmark, ThumbsUp, Clock, Calendar, TrendingUp, ArrowRight } from 'lucide-react';
+import { Share2, Bookmark, ThumbsUp, Clock, Calendar, TrendingUp, ArrowRight, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BlogPost as BlogPostType } from '../../types/blog';
@@ -31,7 +31,12 @@ interface BlogPostProps {
   relatedPosts?: BlogPostType[];
 }
 
+import useRecordView from '@/hooks/use-view-count';
+
 export function BlogPost({ post, relatedPosts }: BlogPostProps) {
+  // record a view on initial render (client-side only) - uses localStorage TTL to avoid duplicates
+  useRecordView(post.id, { ttlHours: 1, requireConsent: false });
+
   const fallbackAuthor = useMemo(() => ({
     name: post.author.name,
     avatar: post.author.avatar,
@@ -55,6 +60,13 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
       month: 'long',
       day: 'numeric'
     });
+  };
+
+  const formatViews = (count?: number) => {
+    if (!count) return '0 views';
+    if (count < 1000) return `${count} views`;
+    if (count < 1000000) return `${(count / 1000).toFixed(count % 1000 === 0 ? 0 : 1)}k views`;
+    return `${(count / 1000000).toFixed(1)}M views`;
   };
 
   return (
@@ -137,6 +149,10 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-muted-foreground" />
                     <span>{post.readingTime}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Eye className="w-4 h-4 text-muted-foreground" />
+                    <span>{formatViews(post.views)}</span>
                   </div>
                 </div>
               </div>

@@ -121,5 +121,6 @@ function mapFirestoreToUI(fsp: FirestoreBlogPost): UIBlogPost {
     authorId: fsp.authorId,
     category: fsp.category,
     isFeatured: false,
+    views: typeof fsp.views === 'number' ? fsp.views : 0,
   };
 }
