@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Mail, TrendingUp } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { showSuccess, showError, validation } from '@/lib/toast';
 
 
@@ -98,7 +98,7 @@ export function NewsletterCTA() {
       
       // Here you would typically integrate with your email service
       console.log('Newsletter signup:', email);
-    } catch (error) {
+    } catch {
       showError('Subscription Failed', {
         description: 'Unable to subscribe at the moment. Please try again later.',
       });
@@ -109,19 +109,23 @@ export function NewsletterCTA() {
 
   if (isSubmitted) {
     return (
-      <div className="bg-[#1A1D28] border border-[#2D3246] rounded-xl p-8 text-center">
-        <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Mail className="w-8 h-8 text-green-400" />
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="w-10 h-10 text-green-500" />
+            </div>
+            <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+              Welcome to Trader Pulse!
+            </h3>
+            <p className="text-muted-foreground text-lg">
+              You&apos;ll receive our next market insight directly in your inbox.
+            </p>
+          </div>
         </div>
-        <h3 className="text-xl font-semibold text-white mb-2">
-          Welcome to Trader Pulse!
-        </h3>
-        <p className="text-gray-400">
-          You&apos;ll receive our next market insight directly in your inbox.
-        </p>
-      </div>
+      </section>
     );
   }
 
-  
+
 }

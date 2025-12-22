@@ -4,10 +4,9 @@ import { useMemo } from 'react';
 import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
-import { ArrowRight, Divide } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
 import { useAuthorProfile } from '@/hooks/use-author-profile';
 
 interface CategorySectionProps {
@@ -38,38 +37,30 @@ function formatViews(count?: number): string {
   return `${(count / 1000000).toFixed(1)}M views`;
 }
 
-
-
 // Skeleton for loading state
 function CategorySectionSkeleton({ isLeft }: { isLeft: boolean }) {
   return (
-    <section className="py-12">
+    <section className="py-12 bg-background">
       <div className="container mx-auto px-4">
-        {/* Section Header */}
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-1 h-8 bg-primary rounded-full" />
-            <Skeleton className="h-7 w-40" />
-          </div>
+          <Skeleton className="h-8 w-40" />
           <Skeleton className="h-5 w-24" />
         </div>
 
         <div className={`grid grid-cols-1 lg:grid-cols-12 gap-6 ${isLeft ? '' : 'lg:grid-flow-col-dense'}`}>
-          {/* Large Featured Card Skeleton */}
-          <div className={`lg:col-span-5 h-[520px] rounded-2xl overflow-hidden bg-slate-800/50 ${isLeft ? '' : 'lg:col-start-8'}`}>
+          <div className={`lg:col-span-5 h-[520px] rounded-2xl overflow-hidden ${isLeft ? '' : 'lg:col-start-8'}`}>
             <Skeleton className="w-full h-full" />
           </div>
 
-          {/* Grid Skeleton */}
           <div className={`lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-4 ${isLeft ? '' : 'lg:col-start-1 lg:col-span-7'}`}>
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="flex gap-4 p-3 rounded-xl bg-slate-800/30">
+              <div key={i} className="flex gap-4 p-4 rounded-xl bg-card border border-border">
                 <div className="flex-1 space-y-2">
                   <Skeleton className="h-4 w-32" />
                   <Skeleton className="h-5 w-full" />
                   <Skeleton className="h-5 w-3/4" />
                 </div>
-                <Skeleton className="w-20 h-20 rounded-lg flex-shrink-0" />
+                <Skeleton className="w-20 h-20 rounded-xl flex-shrink-0" />
               </div>
             ))}
           </div>
@@ -96,62 +87,53 @@ function SmallPostCard({ post }: { post: BlogPost }) {
 
   return (
     <Link href={`/blog/${post.slug}`}>
-      <article className=" gap-4 p-3 rounded-xl bg-white/5 dark:bg-slate-800/30 hover:bg-white/10 dark:hover:bg-slate-700/40 transition-all duration-300 group cursor-pointer border border-transparent hover:border-violet-500/20">
-        <div className='flex'>
+      <article className="flex flex-col p-4 rounded-xl bg-card hover:bg-muted/50 transition-all duration-300 group cursor-pointer border border-border hover:border-primary/20 hover:shadow-lg h-full">
+        <div className="flex gap-4 mb-4">
           <div className="flex-1 min-w-0">
-          {/* Category and Time */}
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-primary dark:text-primary text-sm font-medium">
-              {post.category}
-            </span>
-            <span className="text-slate-400 dark:text-slate-500 text-xs">•</span>
-            <span className="text-slate-500 dark:text-slate-400 text-xs">
-              {formatRelativeTime(post.publishedAt)}
-            </span>
+            {/* Category and Time */}
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-primary text-xs font-semibold uppercase tracking-wide">
+                {post.category}
+              </span>
+              <span className="text-muted-foreground text-xs">•</span>
+              <span className="text-muted-foreground text-xs">
+                {formatRelativeTime(post.publishedAt)}
+              </span>
+            </div>
+            
+            {/* Title */}
+            <h3 className="text-foreground text-sm font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+              {post.title}
+            </h3>
           </div>
           
-          {/* Title */}
-          <h3 className="text-slate-800 dark:text-white text-sm font-medium leading-snug line-clamp-2 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
-            {post.title}
-          </h3>
+          {/* Thumbnail */}
+          <div className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+            <ImageWithFallback
+              src={post.featuredImage ?? ''}
+              alt={post.title}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-110"
+            />
+          </div>
         </div>
         
-
-        {/* Thumbnail */}
-        <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
-          <ImageWithFallback
-            src={post.featuredImage ?? ''}
-            alt={post.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-110"
-          />
-        </div>
-        </div>
-        <Separator className="my-4" />
-
-
-
-        <div className="flex items-center justify-between gap-4">
-          <div className='flex justify-between items-center'>
-            <ImageWithFallback
-              src={authorProfile?.avatar ?? ''}
-              alt={authorProfile?.name}
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-            <div className="text-white ml-2">
-              <div className="font-medium">{authorProfile?.name}</div>
+        {/* Author and Views */}
+        <div className="flex items-center justify-between gap-4 pt-4 border-t border-border mt-auto">
+          <div className="flex items-center gap-2">
+            <div className="relative w-6 h-6 rounded-full overflow-hidden">
+              <ImageWithFallback
+                src={authorProfile?.avatar ?? ''}
+                alt={authorProfile?.name}
+                fill
+                className="object-cover"
+              />
             </div>
+            <span className="text-sm text-foreground font-medium">{authorProfile?.name}</span>
           </div>
-          <div className="text-sm text-gray-300">
-            <span>{formatViews(post.views)}</span>
-          </div>
-
+          <span className="text-xs text-muted-foreground">{formatViews(post.views)}</span>
         </div>
-
       </article>
-      
     </Link>
   );
 }
@@ -161,7 +143,6 @@ function LargeFeaturedCard({ post }: { post: BlogPost }) {
   return (
     <Link href={`/blog/${post.slug}`}>
       <article className="relative h-full min-h-[520px] rounded-2xl overflow-hidden group cursor-pointer">
-        {/* Background Image */}
         <ImageWithFallback
           src={post.featuredImage ?? ''}
           alt={post.title}
@@ -169,28 +150,22 @@ function LargeFeaturedCard({ post }: { post: BlogPost }) {
           className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
         
-        {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
         
-        {/* Content */}
+        {/* Arrow Icon */}
+        <div className="absolute bottom-6 right-6 w-12 h-12 bg-primary rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-12">
+          <ArrowRight className="w-5 h-5 text-white" />
+        </div>
+        
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-          {/* Category and Time */}
-          <div className="flex items-center gap-2 mb-4">
-            <Badge className="bg-violet-600 text-white border-0 hover:bg-violet-700">
-              {post.category}
-            </Badge>
-            <span className="text-white/60 text-sm">•</span>
-            <span className="text-white/60 text-sm">
-              {formatRelativeTime(post.publishedAt)}
-            </span>
-          </div>
+          <Badge className="bg-primary text-white border-0 mb-4">
+            {post.category}
+          </Badge>
           
-          {/* Title */}
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 leading-tight group-hover:text-violet-300 transition-colors">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 leading-tight group-hover:text-primary/90 transition-colors">
             {post.title}
           </h2>
           
-          {/* Tags */}
           {post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {post.tags.slice(0, 3).map((tag) => (
@@ -210,7 +185,6 @@ function LargeFeaturedCard({ post }: { post: BlogPost }) {
 }
 
 export function CategorySection({ category, posts, isLeft, isLoading }: CategorySectionProps) {
-  // Get featured post (first one) and remaining posts
   const featuredPost = useMemo(() => posts[0] || null, [posts]);
   const gridPosts = useMemo(() => posts.slice(1, 7), [posts]);
 
@@ -223,20 +197,17 @@ export function CategorySection({ category, posts, isLeft, isLoading }: Category
   }
 
   return (
-    <section className="py-12">
+    <section className="py-12 bg-background">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-1 h-8 bg-primary rounded-full" />
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-              {category.toUpperCase()}
-            </h2>
-          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+            {category}
+          </h2>
           
           <Link 
             href={`/blog?category=${encodeURIComponent(category)}`} 
-            className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors group"
+            className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors group"
           >
             <span className="text-sm font-medium">View more</span>
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -244,14 +215,12 @@ export function CategorySection({ category, posts, isLeft, isLoading }: Category
         </div>
 
         <div className={`grid grid-cols-1 lg:grid-cols-12 gap-6 ${isLeft ? '' : 'lg:grid-flow-col-dense'}`}>
-          {/* Large Featured Card */}
           {featuredPost && (
             <div className={`lg:col-span-5 ${isLeft ? '' : 'lg:col-start-8'}`}>
               <LargeFeaturedCard post={featuredPost} />
             </div>
           )}
 
-          {/* Grid */}
           <div className={`lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-4 content-start ${isLeft ? '' : 'lg:col-start-1 lg:col-span-7'}`}>
             {gridPosts.map((post) => (
               <SmallPostCard key={post.slug} post={post} />

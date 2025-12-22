@@ -1,11 +1,13 @@
 "use client";
-import { FeaturedCarousel } from './FeaturedCarousel';
+import { HeroSection } from './HeroSection';
+import { LatestNewsSection } from './LatestNewsSection';
+import { PopularStorySection } from './PopularStorySection';
+import { HighlightSection } from './HighlightSection';
+import { NewsTicker } from './NewsTicker';
 import { useState, useMemo, useEffect } from 'react';
-import { ReadersChoice } from './ReadersChoice';
-import { CategorySection } from './CategorySection';
 import { CategoryFilter } from './CategoryFilter';
 import { NewsletterCTA } from './NewsletterCTA';
-import { AdPlaceholder } from './AdPlaceholder';
+import { BlogCard } from './BlogCard';
 import { Button } from '@/components/ui/button';
 import { PenSquare } from 'lucide-react';
 import { BlogPost } from '../../types/blog';
@@ -97,133 +99,79 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
     return posts.filter(post => post.category === activeCategory);
   }, [activeCategory, posts]);
 
-  // Group posts by category
-  const postsByCategory = useMemo(() => {
-    const grouped: Record<string, BlogPost[]> = {};
-    filteredPosts.forEach(post => {
-      const category = post.category || 'Uncategorized';
-      if (!grouped[category]) {
-        grouped[category] = [];
-      }
-      grouped[category].push(post);
-    });
-    return grouped;
-  }, [filteredPosts]);
-
-  const categories = useMemo(() => Object.keys(postsByCategory), [postsByCategory]);
-
   const handleCategoryChange = (category: string) => {
     setActiveCategory(category);
   };
 
+  // Get posts for different sections
+  const heroPost = useMemo(() => featuredPosts[0] || posts[0] || null, [featuredPosts, posts]);
+  const sidebarPosts = useMemo(() => posts.slice(1, 4), [posts]);
+  const popularPosts = useMemo(() => [...posts].sort(() => Math.random() - 0.5).slice(0, 5), [posts]);
+  const highlightPosts = useMemo(() => posts.slice(4, 9), [posts]);
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      {/* Header */}
-      <header className="border-b border-slate-200 dark:border-slate-800 py-8">
-        <div className="container mx-auto px-4">
-          {/* <CustomBreadcrumb className="mb-6" /> */}
-          <div className="text-center relative">
-            {/* <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Trader <span className="text-cyan-400">Pulse</span>
-            </h1>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Professional trading insights and market analysis for time-constrained traders seeking actionable intelligence.
-            </p>
-             */}
-            <div className="absolute right-0 top-0 mt-12">
-              <Link href="/create-post">
-                <Button className="px-5 py-4 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 group">
-                  <PenSquare className="mr-2 h-4 w-4" />
-                  Create Post
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background">
+      {/* Hero Section with Search */}
+      <HeroSection 
+        featuredPost={heroPost}
+        sidebarPosts={sidebarPosts}
+        isLoading={isLoading}
+      />
 
-      {/* Featured Posts Carousel */}
-      <section className="py-12 mt-10">
-        <div className="container mx-auto px-4">
-          <FeaturedCarousel posts={featuredPosts} isLoading={isLoading} />
-        </div>
-      </section>
+      {/* News Ticker */}
+      <NewsTicker isLoading={isLoading} />
 
-      {/* Leaderboard Ad */}
-      <section className="py-6">
-        <div className="container mx-auto px-4 flex justify-center">
-          <AdPlaceholder type="leaderboard" />
-        </div>
-      </section>
-
-      {/* Category Filter */}
+      {/* Category Filter / Navigation */}
       <CategoryFilter 
         activeCategory={activeCategory} 
         onCategoryChange={handleCategoryChange} 
       />
 
-      {/* Main Content Area */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="flex gap-8">
-          {/* Main Content */}
-          <main className="flex-1">
-            {isLoading ? (
-              <div className="space-y-12">
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <CategorySection key={index} category="" posts={[]} isLeft={index % 2 === 0} isLoading={true} />
-                ))}
-              </div>
-            ) : categories.length === 0 ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="text-center">
-                  <p className="text-xl text-gray-400 mb-4">No posts published yet</p>
-                  <Link href="/create-post">
-                    <Button className="bg-violet-600 text-white hover:bg-violet-700">
-                      <PenSquare className="mr-2 h-4 w-4" />
-                      Create First Post
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="space-y-12">
-                  {categories.map((category, index) => (
-                    <CategorySection
-                      key={category}
-                      category={category}
-                      posts={postsByCategory[category]}
-                      isLeft={index % 2 === 0}
-                      isLoading={false}
-                    />
-                  ))}
-                </div>
+      {/* Latest News Section */}
+      <LatestNewsSection 
+        posts={filteredPosts.slice(0, 6)} 
+        isLoading={isLoading}
+      />
 
-                {/* Newsletter CTA */}
-                <div className="mt-12">
-                  <NewsletterCTA />
-                </div>
-              </>
-            )}
-          </main>
+      {/* Popular Story Section */}
+      <PopularStorySection 
+        posts={popularPosts} 
+        isLoading={isLoading}
+      />
 
-          {/* Sidebar - Desktop Only */}
-          <aside className="hidden lg:block w-80 space-y-8">
-            {/* Skyscraper Ad */}
-            <div className="sticky top-24">
-              <AdPlaceholder type="skyscraper" />
+      {/* Highlight Section */}
+      <HighlightSection 
+        posts={highlightPosts} 
+        isLoading={isLoading}
+      />
+
+      {/* More Posts Grid */}
+      {filteredPosts.length > 9 && (
+        <section className="py-12 bg-muted/20">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+                More Stories
+              </h2>
+              <Link href="/create-post">
+                <Button className="bg-primary hover:bg-primary/90 text-white rounded-full px-6">
+                  <PenSquare className="mr-2 h-4 w-4" />
+                  Write a Story
+                </Button>
+              </Link>
             </div>
-          </aside>
-        </div>
-      </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredPosts.slice(9).map((post) => (
+                <BlogCard key={post.slug} post={post} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
-      {/* Bottom Banner Ad */}
-      <section className="py-6 border-t border-[#2D3246]">
-        <div className="container mx-auto px-4 flex justify-center">
-          <AdPlaceholder type="banner" />
-        </div>
-      </section>
-
+      {/* Newsletter CTA */}
+      <NewsletterCTA />
     </div>
   );
 }

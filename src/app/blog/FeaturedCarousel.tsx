@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BlogPost } from '../../types/blog';
@@ -16,17 +16,14 @@ interface FeaturedCarouselProps {
 
 function FeaturedCarouselSkeleton() {
   return (
-    <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden bg-gray-800/50">
-      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-800/30 to-transparent" />
+    <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[500px] rounded-2xl overflow-hidden bg-muted">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-8">
-
-
         {/* Title Skeleton */}
         <div className="mb-4 space-y-3">
           <Skeleton className="h-8 w-3/4 rounded-md" />
           <Skeleton className="h-8 w-1/2 rounded-md" />
         </div>
-
 
         {/* Author Info Skeleton */}
         <div className="flex items-center gap-4">
@@ -118,49 +115,47 @@ export function FeaturedCarousel({ posts, isLoading }: FeaturedCarouselProps) {
             src={currentPost.featuredImage || '/images/placeholder-blog.svg'}
             alt={currentPost.title}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
           
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
           
+          {/* Arrow Icon */}
+          <div className="absolute bottom-8 right-8 w-14 h-14 bg-primary rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-12">
+            <ArrowRight className="w-6 h-6 text-white" />
+          </div>
+          
           {/* Content Overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-8">
-            {/* Featured Badge */}
-            <div className="mb-4">
-              <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 backdrop-blur-sm">
-                <Star className="w-4 h-4 mr-1" />
-                Featured
-              </Badge>
-            </div>
-            
             {/* Category Badge */}
-            <Badge variant="secondary" className="mb-4 bg-blue-600 text-white border-0">
+            <Badge className="mb-4 bg-primary text-white border-0">
               {currentPost.category}
             </Badge>
             
             {/* Title and Excerpt */}
             <Link href={`/blog/${currentPost.slug}`}>
-              <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4 leading-tight cursor-pointer hover:text-cyan-300 transition-colors">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight cursor-pointer hover:text-primary/90 transition-colors max-w-3xl">
                 {currentPost.title}
               </h2>
             </Link>
-            <p className="text-gray-200 text-lg mb-6 max-w-2xl leading-relaxed">
+            <p className="text-white/80 text-base md:text-lg mb-6 max-w-2xl leading-relaxed line-clamp-2">
               {currentPost.excerpt}
             </p>
             
             {/* Author Info */}
             <div className="flex items-center gap-4">
-              <ImageWithFallback
-                src={authorProfile?.avatar ?? ''}
-                alt={authorProfile?.name}
-                width={40}
-                height={40}
-                className="rounded-full"
-              />
+              <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white/30">
+                <ImageWithFallback
+                  src={authorProfile?.avatar ?? ''}
+                  alt={authorProfile?.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
               <div className="text-white">
                 <div className="font-medium">{authorProfile?.name}</div>
-                <div className="text-sm text-gray-300">{currentPost.readingTime || currentPost.readTime}</div>
+                <div className="text-sm text-white/60">{currentPost.readingTime || currentPost.readTime}</div>
               </div>
             </div>
           </div>
@@ -171,7 +166,7 @@ export function FeaturedCarousel({ posts, isLoading }: FeaturedCarouselProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300"
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 rounded-full"
         onClick={prevSlide}
         aria-label="Previous slide"
       >
@@ -181,7 +176,7 @@ export function FeaturedCarousel({ posts, isLoading }: FeaturedCarouselProps) {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300"
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 rounded-full"
         onClick={nextSlide}
         aria-label="Next slide"
       >
@@ -196,7 +191,7 @@ export function FeaturedCarousel({ posts, isLoading }: FeaturedCarouselProps) {
             aria-label={`Go to slide ${index + 1}`}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
               index === currentSlide 
-                ? 'bg-cyan-400 shadow-lg shadow-cyan-400/30' 
+                ? 'bg-primary shadow-lg shadow-primary/30' 
                 : 'bg-white/50 hover:bg-white/70'
             }`}
             onClick={() => goToSlide(index)}

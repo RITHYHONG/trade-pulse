@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge';
 import { categories } from '../../data/blogData';
 
 interface CategoryFilterProps {
@@ -8,22 +7,21 @@ interface CategoryFilterProps {
 
 export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFilterProps) {
   return (
-    <div className="sticky top-0 z-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-4">
+    <div className="sticky top-16 z-10 bg-background/95 backdrop-blur-md border-b border-border py-4">
       <div className="container mx-auto px-4">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide">
           {categories.map((category) => (
-            <Badge
+            <button
               key={category}
-              variant={activeCategory === category ? "default" : "secondary"}
-              className={`cursor-pointer whitespace-nowrap px-4 py-2 transition-all duration-200 ${
-                activeCategory === category
-                  ? 'bg-cyan-500 text-black border-cyan-400 shadow-lg shadow-cyan-500/20'
-                  : 'bg-[#1A1D28] text-gray-300 border-[#2D3246] hover:bg-[#2D3246] hover:text-white hover:border-cyan-500/30'
-              }`}
               onClick={() => onCategoryChange(category)}
+              className={`whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                activeCategory === category
+                  ? 'bg-foreground text-background shadow-lg'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
             >
               {category}
-            </Badge>
+            </button>
           ))}
         </div>
       </div>
