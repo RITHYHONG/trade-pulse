@@ -27,9 +27,9 @@ function PopularStorySkeleton() {
             <Skeleton className="w-full h-[500px] rounded-2xl" />
           </div>
           
-          <div className="lg:col-span-7">
+          <div className="lg:col-span-7  space-y-6 flex flex-col justify-between">
             <Skeleton className="w-full h-64 rounded-2xl mb-6" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-3/5">
               {[1, 2, 3].map((i) => (
                 <Skeleton key={i} className="h-48 rounded-xl" />
               ))}
@@ -47,7 +47,7 @@ function SmallStoryCard({ post }: { post: BlogPost }) {
     <Link href={`/blog/${post.slug}`}>
       <article className="bg-card rounded-xl overflow-hidden border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 group cursor-pointer h-full">
         {/* Image */}
-        <div className="relative h-28 overflow-hidden">
+        <div className="relative h-35 overflow-hidden">
           <ImageWithFallback
             src={post.featuredImage ?? ''}
             alt={post.title}
@@ -163,21 +163,23 @@ function MainStoryCard({ post }: { post: BlogPost }) {
           </div>
           
           {/* Content */}
-          <div className="p-6 flex flex-col justify-center">
+          <div className="p-6 flex flex-col justify-between">
             {/* Category Badge */}
-            <Badge variant="outline" className="w-fit mb-3 border-primary/30 text-primary text-xs">
-              {post.category}
-            </Badge>
-            
-            {/* Title */}
-            <h3 className="text-xl font-bold text-foreground leading-snug mb-3 group-hover:text-primary transition-colors">
-              {post.title}
-            </h3>
-            
-            {/* Excerpt */}
-            <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
-              {post.excerpt}
-            </p>
+            <div>
+              <Badge variant="outline" className="w-fit mb-3 border-primary/30 text-primary text-xs">
+                {post.category}
+              </Badge>
+
+              {/* Title */}
+              <h3 className="text-xl font-bold text-foreground leading-snug mb-3 group-hover:text-primary transition-colors">
+                {post.title}
+              </h3>
+
+              {/* Excerpt */}
+              <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
+                {post.excerpt}
+              </p>
+            </div>
             
             {/* Author */}
             <div className="flex items-center gap-3">
@@ -239,14 +241,14 @@ export function PopularStorySection({ posts, isLoading }: PopularStorySectionPro
           )}
           
           {/* Right - Main + Grid */}
-          <div className="lg:col-span-7 space-y-6 flex flex-col">
+          <div className="lg:col-span-7 space-y-6 flex flex-col justify-between">
             {/* Main Story Card */}
             {mainPost && (
               <MainStoryCard post={mainPost} />
             )}
             
             {/* Bottom Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-3/5">
               {gridPosts.map((post) => (
                 <SmallStoryCard key={post.slug} post={post} />
               ))}

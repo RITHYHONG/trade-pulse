@@ -83,14 +83,14 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-12">
           <div className="max-w-4xl mx-auto">
             {/* Breadcrumb - Simplified */}
-            <CustomBreadcrumb 
+            {/* <CustomBreadcrumb 
               items={[
                 { label: 'Home', href: '/' },
                 { label: 'Blog', href: '/blog' },
                 { label: post.title, href: `/blog/${post.slug}` }
               ]} 
               className="mb-6" 
-            />
+            /> */}
 
             {/* Article Header */}
             <header className="space-y-6">

@@ -70,7 +70,7 @@ function HeroSkeleton() {
 function SidebarPostCard({ post }: { post: BlogPost }) {
   return (
     <Link href={`/blog/${post.slug}`}>
-      <article className="flex gap-4 p-4 py-6 bg-card hover:bg-muted/50 rounded-xl transition-all duration-300 group cursor-pointer border border-border hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 flex-1 h-full">
+      <article className="flex gap-3 p-4 py-6 bg-card hover:bg-muted/50 rounded-xl transition-all duration-300 group cursor-pointer border border-border hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 flex-1 h-full">
         {/* Thumbnail */}
         <div className="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
           <ImageWithFallback
@@ -186,7 +186,7 @@ export function HeroSection({ featuredPost, sidebarPosts, isLoading, onSearch }:
           )}
           
           {/* Sidebar Posts */}
-          <div className="lg:col-span-4 flex flex-col gap-4">
+          <div className="lg:col-span-4 flex flex-col gap-4 justify-between">
             {sidebarPosts.slice(0, 3).map((post) => (
               <SidebarPostCard key={post.slug} post={post} />
             ))}

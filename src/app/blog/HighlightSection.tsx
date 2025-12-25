@@ -40,7 +40,7 @@ function HighlightGridCard({ post }: { post: BlogPost }) {
     <Link href={`/blog/${post.slug}`}>
       <article className="bg-card rounded-xl overflow-hidden border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 group cursor-pointer h-full">
         {/* Image */}
-        <div className="relative h-36 overflow-hidden">
+        <div className="relative h-39 overflow-hidden">
           <ImageWithFallback
             src={post.featuredImage ?? ''}
             alt={post.title}
@@ -111,7 +111,7 @@ export function HighlightSection({ posts, isLoading }: HighlightSectionProps) {
         {/* Main Highlight */}
         {mainPost && (
           <Link href={`/blog/${mainPost.slug}`}>
-            <article className="relative w-full h-[350px] md:h-[400px] rounded-2xl overflow-hidden group cursor-pointer mb-6">
+            <article className="relative w-full h-[30rem] md:h-[30rem] rounded-2xl overflow-hidden group cursor-pointer mb-6">
               {/* Background Image */}
               <ImageWithFallback
                 src={mainPost.featuredImage ?? ''}

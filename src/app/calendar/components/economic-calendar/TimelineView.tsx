@@ -1,7 +1,8 @@
 import { EconomicEvent } from './types';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Clock, MapPin } from 'lucide-react';
+import { Clock, MapPin, TrendingUp } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface TimelineViewProps {
   events: EconomicEvent[];
@@ -21,10 +22,10 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
   // Create timeline hours (0-23)
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
-  const impactColor = {
-    high: 'bg-rose-500',
-    medium: 'bg-amber-500',
-    low: 'bg-emerald-500'
+  const impactStyles = {
+    high: 'bg-rose-500 border-rose-500/30',
+    medium: 'bg-amber-500 border-amber-500/30',
+    low: 'bg-emerald-500 border-emerald-500/30'
   };
 
   const impactBorder = {
@@ -33,68 +34,22 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
     low: 'border-emerald-500'
   };
 
-  const regionColor = {
-    US: 'bg-blue-500',
-    EU: 'bg-amber-500',
-    UK: 'bg-purple-500',
-    Asia: 'bg-pink-500',
-    EM: 'bg-emerald-500'
-  };
-
   if (isLoading) {
-    const hours = [8, 9, 10, 11, 12];
     return (
-      <ScrollArea className="h-full">
-        <div className="p-6">
-          <div className="mb-6 flex items-center gap-4">
-            <div className="p-2 rounded-xl bg-primary/10 text-primary">
-              <Clock className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-semibold text-foreground">Timeline View</h3>
+      <div className="p-6 space-y-6">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="flex gap-4">
+            <div className="w-16 h-4 bg-muted/20 animate-pulse rounded" />
+            <div className="flex-1 h-24 bg-muted/20 animate-pulse rounded-xl" />
           </div>
-
-          <div className="space-y-1">
-            {hours.map(hour => (
-              <div key={hour} className="flex items-start gap-4">
-                <div className="w-20 flex-shrink-0 pt-2">
-                    <div className="h-4 w-12 bg-muted rounded-md animate-pulse" />
-                </div>
-                <div className="flex-1 min-h-[60px] relative">
-                  <div className="absolute left-0 top-0 bottom-0 w-1" />
-                  <div className="pl-6 py-2">
-                    <div className="h-8rounded-md p-3 animate-pulse" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </ScrollArea>
-    );
+        ))}
+      </div>
+    )
   }
 
   return (
     <ScrollArea className="h-full">
-      <div className="p-6">
-        {/* Timeline Header */}
-        <div className="mb-6 flex items-center gap-4">
-          <Clock className="w-5 h-5 text-primary" />
-          <h3 className="text-base font-semibold text-foreground">Timeline View</h3>
-          <div className="flex items-center gap-3 ml-auto">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-rose-500" />
-              <span className="text-xs text-muted-foreground">High</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-amber-500" />
-              <span className="text-xs text-muted-foreground">Medium</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span className="text-xs text-muted-foreground">Low</span>
-            </div>
-          </div>
-        </div>
+      <div className="p-4 md:p-6 max-w-4xl mx-auto">
 
         {/* Timeline Grid */}
         <div className="space-y-1">
@@ -102,81 +57,78 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
             const hourEvents = eventsByHour[hour] || [];
             const hasEvents = hourEvents.length > 0;
 
+            if (!hasEvents) return null; // Skip empty hours for minimal look
+
             return (
-              <div key={hour} className="flex items-start gap-4">
+              <div key={hour} className="flex items-start gap-4 md:gap-6 group">
                 {/* Time Label */}
-                <div className="w-20 flex-shrink-0 pt-2">
-                  <div className={`text-sm ${hasEvents ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
+                <div className="w-16 flex-shrink-0 pt-4 text-right">
+                  <div className="text-sm font-mono text-muted-foreground group-hover:text-foreground transition-colors">
                     {hour.toString().padStart(2, '0')}:00
                   </div>
                 </div>
 
                 {/* Timeline Track */}
-                <div className="flex-1 min-h-[60px] relative">
-                  {/* Background line */}
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-border" />
+                <div className="flex-1 pb-8 relative border-l border-border/40 pl-6 md:pl-8">
+                  {/* Active Dot */}
+                  <div className="absolute -left-[5px] top-[22px] w-2.5 h-2.5 rounded-full bg-border group-hover:bg-primary transition-colors border-2 border-background" />
 
                   {/* Events */}
-                  {hasEvents && (
-                    <div className="pl-6 space-y-2 py-2">
-                      {hourEvents.map(event => (
-                        <div
-                          key={event.id}
-                          onClick={() => onEventClick(event)}
-                          className={`
-                            relative bg-card border-l-4 ${impactBorder[event.impact]}
-                            rounded-r-xl p-3 cursor-pointer border border-border
-                            hover:bg-muted/50 transition-all hover:shadow-md
-                            group
-                          `}
-                        >
-                          {/* Connection dot */}
-                          <div className={`absolute -left-[29px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full ${impactColor[event.impact]} ring-4 ring-background`} />
+                  <div className="space-y-3">
+                    {hourEvents.map(event => (
+                      <div
+                        key={event.id}
+                        onClick={() => onEventClick(event)}
+                        className={cn(
+                          "relative bg-card hover:bg-card/80 border border-border/40 rounded-xl p-4 cursor-pointer transition-all duration-200 group/card",
+                          "hover:shadow-md hover:border-border/60 hover:-translate-y-0.5"
+                        )}
+                      >
+                        <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl opacity-0 group-hover/card:opacity-100 transition-opacity bg-primary" />
 
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Badge className={`${regionColor[event.region]} text-xs`}>
-                                  {event.region}
-                                </Badge>
-                                <Badge variant="outline" className="text-xs border-border">
-                                  {event.category}
-                                </Badge>
-                                <span className="text-xs text-muted-foreground">
-                                  {event.datetime.toLocaleTimeString('en-US', { 
-                                    hour: '2-digit', 
-                                    minute: '2-digit' 
-                                  })}
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <div className={cn("w-1.5 h-1.5 rounded-full shadow-sm", impactStyles[event.impact].split(' ')[0])} />
+                              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                                {event.impact} Impact
+                              </span>
+                              <span className="text-[10px] text-muted-foreground px-1">•</span>
+                              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                                {event.country}
+                              </span>
+                            </div>
+
+                            <h4 className="font-semibold text-foreground group-hover/card:text-primary transition-colors">
+                              {event.name}
+                            </h4>
+
+                            <div className="flex items-center gap-3 pt-1">
+                              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                <Clock className="w-3.5 h-3.5" />
+                                <span className="font-mono">
+                                  {event.datetime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                               </div>
-                              <h4 className="text-foreground mb-1 group-hover:text-primary transition-colors">
-                                {event.name}
-                              </h4>
-                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                <MapPin className="w-3 h-3" />
-                                <span>{event.country}</span>
-                                <span>•</span>
-                                <span>Expected: {event.consensus}{event.unit}</span>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-xs text-muted-foreground mb-1">Expected Move</div>
-                              <div className="text-lg text-primary font-semibold">
-                                ±{event.tradingSetup.expectedMove}%
-                              </div>
+                              <Badge variant="secondary" className="text-[10px] h-5 bg-secondary/50 font-normal">
+                                {event.category}
+                              </Badge>
                             </div>
                           </div>
 
-                          {/* Strategy Tag */}
-                          <div className="mt-2 pt-2 border-t border-border">
-                            <div className="text-xs text-muted-foreground">
-                              {event.tradingSetup.strategyTag}
+                          <div className="text-right">
+                            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">Expected Move</div>
+                            <div className="text-sm font-mono font-medium text-foreground">
+                              ±{event.tradingSetup.expectedMove}%
+                            </div>
+                            <div className="mt-2 flex justify-end">
+                              <TrendingUp className="w-3.5 h-3.5 text-muted-foreground/50 group-hover/card:text-primary transition-colors" />
                             </div>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             );

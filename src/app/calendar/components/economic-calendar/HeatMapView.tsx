@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Flame } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 interface HeatMapViewProps {
   events: EconomicEvent[];
@@ -17,7 +18,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
 
   // Create heat map data structure
   const heatMapData: Record<string, EconomicEvent[]> = {};
-  
+
   events.forEach(event => {
     const hour = event.datetime.getHours();
     const key = `${hour}-${event.region}`;
@@ -28,22 +29,22 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
   // Calculate intensity for each cell
   const getIntensity = (eventsInCell: EconomicEvent[]) => {
     if (!eventsInCell || eventsInCell.length === 0) return 0;
-    
+
     const totalImpact = eventsInCell.reduce((sum, event) => {
       const impactScore = event.impact === 'high' ? 3 : event.impact === 'medium' ? 2 : 1;
       return sum + impactScore;
     }, 0);
-    
+
     return totalImpact / eventsInCell.length;
   };
 
   const getIntensityColor = (intensity: number) => {
-    if (intensity === 0) return 'bg-muted';
-    if (intensity >= 2.5) return 'bg-rose-600';
-    if (intensity >= 2) return 'bg-rose-500';
-    if (intensity >= 1.5) return 'bg-orange-500';
-    if (intensity >= 1) return 'bg-amber-500';
-    return 'bg-emerald-500';
+    if (intensity === 0) return 'bg-muted/10';
+    if (intensity >= 2.5) return 'bg-rose-500/90 shadow-sm shadow-rose-500/20';
+    if (intensity >= 2) return 'bg-rose-500/70';
+    if (intensity >= 1.5) return 'bg-amber-500/70';
+    if (intensity >= 1) return 'bg-amber-500/50';
+    return 'bg-emerald-500/50';
   };
 
   const regionLabels = {
@@ -55,86 +56,48 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
   };
 
   if (isLoading) {
-    const hours = Array.from({ length: 12 }, (_, i) => 8 + i);
-    const regions: Region[] = ['US', 'EU', 'UK', 'Asia', 'EM'];
     return (
-      <ScrollArea className="h-full">
-        <div className="p-6">
-          <div className="mb-6 flex items-center gap-4">
-            <div className="p-2 rounded-xl bg-primary/10 text-primary">
-              <Flame className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-semibold text-foreground">Heat Map View</h3>
-          </div>
-
-          <div className="bg-card rounded-xl p-4 overflow-x-auto border border-border shadow-sm">
-            <div className="min-w-max">
-              <div className="flex mb-2">
-                <div className="w-32 flex-shrink-0" />
-                {hours.map(hour => (
-                  <div key={hour} className="w-12 text-center">
-                    <div className="h-3 w-10 bg-muted rounded-md mx-auto animate-pulse" />
-                  </div>
-                ))}
-              </div>
-
-              {regions.map(region => (
-                <div key={region} className="flex mb-1">
-                  <div className="w-32 flex-shrink-0 flex items-center pr-4">
-                    <div className="h-4 w-24 bg-muted rounded-md animate-pulse" />
-                  </div>
-                  {hours.map(hour => (
-                    <div key={hour} className="w-12 h-12 m-0.5 rounded-lg bg-muted animate-pulse" />
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </ScrollArea>
-    );
+      <div className="p-4 space-y-4">
+        <div className="h-[400px] w-full bg-muted/20 animate-pulse rounded-xl" />
+      </div>
+    )
   }
 
   return (
     <ScrollArea className="h-full">
-      <div className="p-6">
-        {/* Header */}
-        <div className="mb-6 flex items-center gap-4">
-          <div className="p-2 rounded-xl bg-primary/10 text-primary">
-            <Flame className="w-5 h-5" />
+      <div className="p-4 md:p-6 min-w-[800px]">
+
+        {/* Legend */}
+        <div className="mb-6 flex items-center justify-end gap-3">
+          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Intensity</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 bg-emerald-500/50 rounded-sm" />
+            <span className="text-[10px] text-muted-foreground">Low</span>
           </div>
-          <h3 className="text-base font-semibold text-foreground">Heat Map View</h3>
-          <div className="flex items-center gap-2 ml-auto">
-            <span className="text-xs text-muted-foreground">Intensity:</span>
-            <div className="flex items-center gap-1">
-              <div className="w-4 h-4 bg-emerald-500 rounded" />
-              <span className="text-xs text-muted-foreground">Low</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-4 h-4 bg-amber-500 rounded" />
-              <span className="text-xs text-muted-foreground">Medium</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-4 h-4 bg-orange-500 rounded" />
-              <span className="text-xs text-muted-foreground">High</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-4 h-4 bg-rose-600 rounded" />
-              <span className="text-xs text-muted-foreground">Extreme</span>
-            </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 bg-amber-500/50 rounded-sm" />
+            <span className="text-[10px] text-muted-foreground">Medium</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 bg-rose-500/70 rounded-sm" />
+            <span className="text-[10px] text-muted-foreground">High</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 bg-rose-500/90 rounded-sm" />
+            <span className="text-[10px] text-muted-foreground">Extreme</span>
           </div>
         </div>
 
         {/* Heat Map Grid */}
-        <div className="bg-card rounded-xl p-4 overflow-x-auto border border-border shadow-sm">
+        <div className="bg-card/50 rounded-xl p-6 border border-border/40 overflow-x-auto">
           <TooltipProvider>
             <div className="min-w-max">
               {/* Header Row */}
               <div className="flex mb-2">
                 <div className="w-32 flex-shrink-0" /> {/* Empty corner */}
                 {hours.map(hour => (
-                  <div key={hour} className="w-12 text-center">
-                    <div className="text-xs text-muted-foreground">
+                  <div key={hour} className="w-10 text-center">
+                    <div className="text-[10px] font-mono text-muted-foreground">
                       {hour.toString().padStart(2, '0')}
                     </div>
                   </div>
@@ -143,10 +106,10 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
 
               {/* Data Rows */}
               {regions.map(region => (
-                <div key={region} className="flex mb-1">
+                <div key={region} className="flex mb-1.5 items-center">
                   {/* Region Label */}
                   <div className="w-32 flex-shrink-0 flex items-center pr-4">
-                    <span className="text-sm text-foreground">{regionLabels[region]}</span>
+                    <span className="text-xs font-medium text-foreground/80">{regionLabels[region]}</span>
                   </div>
 
                   {/* Hour Cells */}
@@ -158,56 +121,62 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                     const hasEvents = cellEvents.length > 0;
 
                     return (
-                      <Tooltip key={hour}>
+                      <Tooltip key={hour} delayDuration={0}>
                         <TooltipTrigger asChild>
                           <div
-                            className={`
-                              w-12 h-12 m-0.5 rounded-lg ${color}
-                              ${hasEvents ? 'cursor-pointer hover:ring-2 hover:ring-primary transition-all' : ''}
-                              flex items-center justify-center
-                            `}
+                            className={cn(
+                              "w-10 h-10 m-0.5 rounded-md transition-all duration-200 flex items-center justify-center border border-transparent",
+                              color,
+                              hasEvents && "cursor-pointer hover:scale-110 hover:shadow-sm hover:z-10 hover:border-black/5 dark:hover:border-white/10"
+                            )}
                             onClick={() => hasEvents && cellEvents.length === 1 && onEventClick(cellEvents[0])}
                           >
                             {hasEvents && (
-                              <span className="text-xs text-white font-medium">
+                              <span className="text-[10px] text-white/90 font-medium">
                                 {cellEvents.length}
                               </span>
                             )}
                           </div>
                         </TooltipTrigger>
                         {hasEvents && (
-                          <TooltipContent 
-                            side="right" 
-                            className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-0 max-w-sm"
+                          <TooltipContent
+                            side="top"
+                            className="bg-popover/95 backdrop-blur-sm border-border p-0 w-64 shadow-xl rounded-xl overflow-hidden"
                           >
-                            <div className="p-3">
-                              <div className="text-xs text-slate-400 mb-2">
-                                {hour.toString().padStart(2, '0')}:00 • {regionLabels[region]}
+                            <div className="p-3 bg-muted/30 border-b border-border/50">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-semibold text-foreground">
+                                  {regionLabels[region]}
+                                </span>
+                                <span className="text-[10px] font-mono text-muted-foreground">
+                                  {hour.toString().padStart(2, '0')}:00
+                                </span>
                               </div>
-                              <div className="space-y-2">
-                                {cellEvents.map(event => (
-                                  <div 
-                                    key={event.id}
-                                    className="text-sm cursor-pointer hover:text-blue-400 transition-colors"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onEventClick(event);
-                                    }}
-                                  >
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <div className={`w-2 h-2 rounded-full ${
-                                        event.impact === 'high' ? 'bg-rose-500' :
+                            </div>
+                            <div className="p-2 space-y-1">
+                              {cellEvents.map(event => (
+                                <div
+                                  key={event.id}
+                                  className="p-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEventClick(event);
+                                  }}
+                                >
+                                  <div className="flex items-start justify-between gap-2">
+                                    <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">{event.name}</span>
+                                    <div className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5",
+                                      event.impact === 'high' ? 'bg-rose-500' :
                                         event.impact === 'medium' ? 'bg-amber-500' :
-                                        'bg-emerald-500'
-                                      }`} />
-                                      <span className="text-foreground">{event.name}</span>
-                                    </div>
-                                    <div className="text-xs text-muted-foreground ml-4">
-                                      {event.country} • {event.consensus}{event.unit}
-                                    </div>
+                                          'bg-emerald-500'
+                                    )} />
                                   </div>
-                                ))}
-                              </div>
+                                  <div className="text-[10px] text-muted-foreground mt-1 flex justify-between">
+                                    <span>{event.country}</span>
+                                    <span className="font-mono">Exp: {event.consensus}{event.unit}</span>
+                                  </div>
+                                </div>
+                              ))}
                             </div>
                           </TooltipContent>
                         )}
@@ -220,9 +189,8 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
           </TooltipProvider>
         </div>
 
-        {/* Hotspot Summary */}
-        <div className="mt-6 grid grid-cols-3 gap-4">
-          {/* Calculate hotspots */}
+        {/* Hotspot Summary - Minimalist Cards */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
           {(() => {
             const hotspots = Object.entries(heatMapData)
               .map(([key, events]) => ({
@@ -237,16 +205,19 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
               .slice(0, 3);
 
             return hotspots.map((hotspot, index) => (
-              <div key={hotspot.key} className="bg-card p-4 rounded-xl border border-border shadow-sm">
-                <div className="flex items-center gap-2 mb-2">
-                  <Flame className="w-4 h-4 text-primary" />
-                  <span className="text-sm text-muted-foreground">Hotspot #{index + 1}</span>
+              <div key={hotspot.key} className="bg-card/40 p-4 rounded-xl border border-border/40 hover:bg-card/60 transition-colors">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="p-1.5 rounded-md bg-primary/10 text-primary">
+                    <Flame className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">High Volatility Area</span>
                 </div>
-                <div className="text-foreground font-medium mb-1">
-                  {hotspot.hour.toString().padStart(2, '0')}:00 • {regionLabels[hotspot.region]}
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-xl font-mono font-medium text-foreground">{hotspot.hour.toString().padStart(2, '0')}:00</span>
+                  <span className="text-sm text-foreground">{regionLabels[hotspot.region]}</span>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {hotspot.events.length} events • High volatility expected
+                  {hotspot.events.length} high-impact events clustered
                 </div>
               </div>
             ));
