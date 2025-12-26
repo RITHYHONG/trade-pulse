@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Clock, MapPin, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface TimelineViewProps {
   events: EconomicEvent[];
@@ -29,9 +30,15 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
   };
 
   const impactBorder = {
-    high: 'border-rose-500',
-    medium: 'border-amber-500',
-    low: 'border-emerald-500'
+    high: 'border-rose-500/30',
+    medium: 'border-amber-500/30',
+    low: 'border-emerald-500/30'
+  };
+
+  const sentimentGlow = {
+    bullish: 'group-hover/card:shadow-[0_0_15px_rgba(16,185,129,0.1)] group-hover/card:border-emerald-500/30',
+    bearish: 'group-hover/card:shadow-[0_0_15px_rgba(244,63,94,0.1)] group-hover/card:border-rose-500/30',
+    neutral: 'group-hover/card:shadow-[0_0_15px_rgba(229,87,63,0.1)] group-hover/card:border-primary/30'
   };
 
   if (isLoading) {
@@ -49,10 +56,12 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
 
   return (
     <ScrollArea className="h-full">
-      <div className="p-4 md:p-6 max-w-4xl mx-auto">
+      <div className="p-4 md:p-6 max-w-4xl mx-auto relative">
+        {/* Current Time Indicator Line */}
+        <div className="absolute left-[79px] top-6 bottom-6 w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent z-0 pointer-events-none" />
 
         {/* Timeline Grid */}
-        <div className="space-y-1">
+        <div className="space-y-1 relative z-10">
           {hours.map(hour => {
             const hourEvents = eventsByHour[hour] || [];
             const hasEvents = hourEvents.length > 0;
@@ -75,16 +84,32 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
 
                   {/* Events */}
                   <div className="space-y-3">
-                    {hourEvents.map(event => (
-                      <div
+                    {hourEvents.map((event, eventIdx) => (
+                      <motion.div
                         key={event.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: eventIdx * 0.1 }}
                         onClick={() => onEventClick(event)}
                         className={cn(
-                          "relative bg-card hover:bg-card/80 border border-border/40 rounded-xl p-4 cursor-pointer transition-all duration-200 group/card",
-                          "hover:shadow-md hover:border-border/60 hover:-translate-y-0.5"
+                          "relative bg-card hover:bg-card/80 border border-border/40 rounded-xl p-4 cursor-pointer transition-all duration-300 group/card overflow-hidden",
+                          sentimentGlow[event.historicalData.directionBias],
+                          "hover:-translate-y-0.5"
                         )}
                       >
-                        <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl opacity-0 group-hover/card:opacity-100 transition-opacity bg-primary" />
+                        {/* Dynamic Background Glow */}
+                        <div className={cn(
+                          "absolute inset-0 opacity-0 group-hover/card:opacity-10 transition-opacity duration-500",
+                          event.historicalData.directionBias === 'bullish' ? "bg-emerald-500" :
+                            event.historicalData.directionBias === 'bearish' ? "bg-rose-500" :
+                              "bg-primary"
+                        )} />
+                        <div className={cn(
+                          "absolute left-0 top-0 bottom-0 w-1 rounded-l-xl opacity-0 group-hover/card:opacity-100 transition-opacity",
+                          event.historicalData.directionBias === 'bullish' ? "bg-emerald-500" :
+                            event.historicalData.directionBias === 'bearish' ? "bg-rose-500" :
+                              "bg-primary"
+                        )} />
 
                         <div className="flex items-start justify-between gap-4">
                           <div className="space-y-1">
@@ -126,7 +151,7 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 </div>

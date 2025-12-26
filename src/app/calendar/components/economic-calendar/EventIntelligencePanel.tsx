@@ -171,7 +171,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                 </h3>
                 <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight opacity-70">Probability Distribution Density</p>
               </div>
-              <Badge variant="secondary" className="text-[10px] font-mono bg-primary/10 text-primary border-primary/20">
+              <Badge variant="secondary" className="text-[10px] font-mono bg-primary/20 text-primary border-primary/30 shadow-sm shadow-primary/10">
                 {event.consensusIntelligence.surpriseProbability}% Surprise Prob
               </Badge>
             </div>
@@ -243,7 +243,8 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#colorValue)"
-                      animationDuration={1500}
+                      animationDuration={2000}
+                      className="drop-shadow-[0_0_8px_rgba(16,185,129,0.3)] dark:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
                     />
                     <ReferenceLine
                       x={event.consensus.toString()}
@@ -278,7 +279,34 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               <h3 className="text-xs font-bold uppercase tracking-widest">AI Intelligence Insight</h3>
             </div>
 
-            <div className="bg-gradient-to-br from-primary/10 via-background to-secondary/5 border border-primary/20 rounded-2xl p-6 relative overflow-hidden group">
+            <div className="relative border border-primary/20 rounded-2xl p-6 overflow-hidden group">
+              {/* Strategic Background Shimmer */}
+              <div
+                className={cn(
+                  "absolute inset-0 opacity-10 transition-colors duration-1000",
+                  event.historicalData.directionBias === 'bullish' ? "bg-emerald-500" :
+                    event.historicalData.directionBias === 'bearish' ? "bg-rose-500" :
+                      "bg-primary"
+                )}
+              />
+              <motion.div
+                animate={{
+                  x: ["-20%", "20%", "-20%"],
+                  opacity: [0.03, 0.08, 0.03]
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                className={cn(
+                  "absolute inset-0 blur-3xl",
+                  event.historicalData.directionBias === 'bullish' ? "bg-emerald-500" :
+                    event.historicalData.directionBias === 'bearish' ? "bg-rose-500" :
+                      "bg-primary"
+                )}
+              />
+
               <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
                 <Brain className="w-32 h-32" />
               </div>
@@ -307,12 +335,16 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                 <div className="grid grid-cols-2 gap-6 pt-2">
                   <div className="space-y-2">
                     <div className="text-[9px] text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-60">Cross Correlation</div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {event.tradingSetup.correlatedAssets.map((asset) => (
-                        <Badge key={asset} variant="secondary" className="text-[9px] font-bold h-5 bg-background/50 border border-border/10 hover:bg-primary/5 hover:text-primary transition-all cursor-default">
-                          {asset}
-                        </Badge>
-                      ))}
+                    <div className="flex flex-wrap gap-1.5 min-h-[20px]">
+                      {event.tradingSetup.correlatedAssets.length > 0 ? (
+                        event.tradingSetup.correlatedAssets.map((asset) => (
+                          <Badge key={asset} variant="secondary" className="text-[9px] font-bold h-5 bg-background/50 border border-border/10 hover:bg-primary/5 hover:text-primary transition-all cursor-default">
+                            {asset}
+                          </Badge>
+                        ))
+                      ) : (
+                        <span className="text-[10px] text-muted-foreground/40 font-italic italic">No correlations identified</span>
+                      )}
                     </div>
                   </div>
                   <div className="text-right space-y-1">

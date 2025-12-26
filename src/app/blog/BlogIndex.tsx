@@ -76,11 +76,15 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
           getFeaturedPosts(5)
         ]);
 
-        const mappedPosts = allPosts.map(mapFirestorePostToUIPost);
-        const mappedFeatured = featured.map(mapFirestorePostToUIPost);
+        if (allPosts && allPosts.length > 0) {
+          const mappedPosts = allPosts.map(mapFirestorePostToUIPost);
+          setPosts(mappedPosts);
+        }
 
-        setPosts(mappedPosts);
-        setFeaturedPosts(mappedFeatured);
+        if (featured && featured.length > 0) {
+          const mappedFeatured = featured.map(mapFirestorePostToUIPost);
+          setFeaturedPosts(mappedFeatured);
+        }
       } catch (error) {
         console.error('Error fetching posts:', error);
       } finally {
@@ -112,7 +116,7 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section with Search */}
-      <HeroSection 
+      <HeroSection
         featuredPost={heroPost}
         sidebarPosts={sidebarPosts}
         isLoading={isLoading}
@@ -122,26 +126,26 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
       <NewsTicker isLoading={isLoading} />
 
       {/* Category Filter / Navigation */}
-      <CategoryFilter 
-        activeCategory={activeCategory} 
-        onCategoryChange={handleCategoryChange} 
+      <CategoryFilter
+        activeCategory={activeCategory}
+        onCategoryChange={handleCategoryChange}
       />
 
       {/* Latest News Section */}
-      <LatestNewsSection 
-        posts={filteredPosts.slice(0, 6)} 
+      <LatestNewsSection
+        posts={filteredPosts.slice(0, 6)}
         isLoading={isLoading}
       />
 
       {/* Popular Story Section */}
-      <PopularStorySection 
-        posts={popularPosts} 
+      <PopularStorySection
+        posts={popularPosts}
         isLoading={isLoading}
       />
 
       {/* Highlight Section */}
-      <HighlightSection 
-        posts={highlightPosts} 
+      <HighlightSection
+        posts={highlightPosts}
         isLoading={isLoading}
       />
 
@@ -160,7 +164,7 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
                 </Button>
               </Link>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPosts.slice(9).map((post) => (
                 <BlogCard key={post.slug} post={post} />

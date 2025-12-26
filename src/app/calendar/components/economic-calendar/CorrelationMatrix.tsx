@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Correlation {
   event1: string;
@@ -108,7 +109,19 @@ export function CorrelationMatrix() {
         <div className="space-y-3">
           {correlationChains.map((chain, chainIndex) => (
             <ScrollArea key={chainIndex} className="w-full">
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-secondary/20 border border-border/20 min-w-max">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-secondary/20 border border-border/20 min-w-max relative overflow-hidden group/chain">
+                {/* Horizontal Flow Aura */}
+                <motion.div
+                  animate={{
+                    x: ["-100%", "100%"]
+                  }}
+                  transition={{
+                    duration: 10,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent pointer-events-none"
+                />
                 {chain.map((item, index) => {
                   const correlation = mockCorrelations.find(
                     c => (c.event1 === chain[index] && c.event2 === chain[index + 1]) ||
@@ -117,7 +130,7 @@ export function CorrelationMatrix() {
 
                   return (
                     <div key={index} className="flex items-center">
-                      <div className="px-3 py-2 bg-background/50 rounded-lg border border-border/40 hover:border-primary/40 transition-colors">
+                      <div className="px-3 py-2 bg-background/80 backdrop-blur-sm rounded-lg border border-border/40 hover:border-primary/40 transition-colors relative z-10 shadow-sm">
                         <div className="text-[11px] font-semibold text-foreground whitespace-nowrap">
                           {item}
                         </div>
@@ -130,7 +143,17 @@ export function CorrelationMatrix() {
                               <TooltipTrigger asChild>
                                 <div className="flex items-center gap-1 cursor-help group">
                                   <ArrowRight className={cn("w-3 h-3 transition-transform group-hover:translate-x-0.5", getCorrelationStyles(correlation.strength).text)} />
-                                  <div className={cn("w-2 h-2 rounded-full", getCorrelationStyles(correlation.strength).dot)} />
+                                  <motion.div
+                                    animate={{
+                                      scale: [1, 1.2, 1],
+                                      opacity: [0.5, 1, 0.5]
+                                    }}
+                                    transition={{
+                                      duration: 2,
+                                      repeat: Infinity
+                                    }}
+                                    className={cn("w-2 h-2 rounded-full", getCorrelationStyles(correlation.strength).dot)}
+                                  />
                                 </div>
                               </TooltipTrigger>
                               <TooltipContent className="text-[10px] p-2 bg-popover/95 font-medium border-border/40">
@@ -167,10 +190,22 @@ export function CorrelationMatrix() {
               <div
                 key={index}
                 className={cn(
-                  "p-3 rounded-xl border transition-all duration-200",
+                  "p-3 rounded-xl border transition-all duration-300 relative overflow-hidden",
                   styles.bg, styles.border
                 )}
               >
+                {/* Micro Pulse */}
+                <motion.div
+                  animate={{
+                    opacity: [0, 0.1, 0]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    delay: index * 0.5
+                  }}
+                  className={cn("absolute inset-0", styles.dot)}
+                />
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1.5">
                     <span className="text-[10px] font-bold text-foreground/80">{corr.event1}</span>

@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Alert {
   id: string;
@@ -99,8 +100,19 @@ export function AlertSystem() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
+          <div className="p-1.5 rounded-lg bg-primary/10 text-primary relative">
             <Bell className="w-4 h-4" />
+            <motion.div
+              animate={{
+                scale: [1, 1.5, 1],
+                opacity: [0.5, 0, 0.5]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity
+              }}
+              className="absolute inset-0 rounded-lg bg-primary/20"
+            />
           </div>
           <div>
             <h3 className="text-xs font-bold text-foreground tracking-tight">SMART ALERTS</h3>
@@ -173,55 +185,75 @@ export function AlertSystem() {
 
       {/* Alert Cards */}
       <div className="space-y-3">
-        {alerts.map((alert) => {
-          const AlertIcon = getAlertIcon(alert.type);
-          const styles = getAlertStyles(alert.type);
+        <AnimatePresence>
+          {alerts.map((alert, index) => {
+            const AlertIcon = getAlertIcon(alert.type);
+            const styles = getAlertStyles(alert.type);
 
-          return (
-            <div
-              key={alert.id}
-              className={cn(
-                "group relative p-3 rounded-xl border transition-all duration-200",
-                alert.enabled ? `${styles.bg} ${styles.border}` : "bg-muted/10 border-border/20 grayscale opacity-50"
-              )}
-            >
-              <div className="flex items-start gap-3">
-                <div className={cn("p-2 rounded-lg", styles.bg, styles.icon)}>
-                  <AlertIcon className="w-3.5 h-3.5" />
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-[11px] font-bold text-foreground truncate">{alert.eventName}</span>
-                    <Switch
-                      checked={alert.enabled}
-                      onCheckedChange={() => toggleAlert(alert.id)}
-                      className="scale-75 data-[state=checked]:bg-primary"
-                    />
+            return (
+              <motion.div
+                key={alert.id}
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className={cn(
+                  "group relative p-3 rounded-xl border transition-all duration-300 overflow-hidden",
+                  alert.enabled ? `${styles.bg} ${styles.border}` : "bg-muted/10 border-border/20 grayscale opacity-50"
+                )}
+              >
+                {/* Monitoring Aura */}
+                {alert.enabled && (
+                  <motion.div
+                    animate={{
+                      opacity: [0.05, 0.15, 0.05]
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      delay: index * 0.5
+                    }}
+                    className={cn("absolute inset-0", styles.dot)}
+                  />
+                )}
+                <div className="flex items-start gap-3">
+                  <div className={cn("p-2 rounded-lg", styles.bg, styles.icon)}>
+                    <AlertIcon className="w-3.5 h-3.5" />
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-muted-foreground font-medium">{alert.condition}</span>
-                    {alert.threshold && (
-                      <Badge variant="outline" className="h-4 text-[9px] px-1 font-mono border-transparent bg-background/40">
-                        {alert.threshold}%
-                      </Badge>
-                    )}
-                  </div>
-                </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="text-[11px] font-bold text-foreground truncate">{alert.eventName}</span>
+                      <Switch
+                        checked={alert.enabled}
+                        onCheckedChange={() => toggleAlert(alert.id)}
+                        className="scale-75 data-[state=checked]:bg-primary"
+                      />
+                    </div>
 
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="w-6 h-6 rounded-md opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
-                  onClick={() => deleteAlert(alert.id)}
-                >
-                  <X className="w-3 h-3" />
-                </Button>
-              </div>
-            </div>
-          );
-        })}
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-muted-foreground font-medium">{alert.condition}</span>
+                      {alert.threshold && (
+                        <Badge variant="outline" className="h-4 text-[9px] px-1 font-mono border-transparent bg-background/40">
+                          {alert.threshold}%
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-6 h-6 rounded-md opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
+                    onClick={() => deleteAlert(alert.id)}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
 
       {alerts.length === 0 && (

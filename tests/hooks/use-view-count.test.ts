@@ -20,7 +20,10 @@ describe('recordView', () => {
   });
 
   it('should call fetch and set localStorage on first call', async () => {
-    const fakeFetch = vi.fn(() => Promise.resolve({ ok: true })) as unknown as typeof fetch;
+    const fakeFetch = vi.fn(() => Promise.resolve({ 
+      ok: true,
+      json: () => Promise.resolve({ success: true })
+    })) as unknown as typeof fetch;
     // @ts-ignore
     global.fetch = fakeFetch;
 

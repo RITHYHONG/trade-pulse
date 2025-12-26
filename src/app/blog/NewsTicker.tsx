@@ -10,6 +10,15 @@ interface NewsTickerProps {
 
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
+const FALLBACK_MARKET_DATA: MarketItem[] = [
+  { symbol: 'BTC', name: 'Bitcoin', price: 64230.50, change: 125.20, changePercent: 0.19, type: 'crypto' },
+  { symbol: 'ETH', name: 'Ethereum', price: 3450.25, change: -12.40, changePercent: -0.36, type: 'crypto' },
+  { symbol: 'EUR/USD', name: 'Euro', price: 1.0854, change: 0.0012, changePercent: 0.11, type: 'currency' },
+  { symbol: 'GBP/USD', name: 'British Pound', price: 1.2642, change: -0.0008, changePercent: -0.06, type: 'currency' },
+  { symbol: 'AAPL', name: 'Apple Inc.', price: 189.45, change: 1.25, changePercent: 0.66, type: 'stock' },
+  { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 875.20, change: 14.30, changePercent: 1.66, type: 'stock' },
+];
+
 export function NewsTicker({ isLoading }: NewsTickerProps) {
   const [marketData, setMarketData] = useState<MarketItem[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
@@ -22,10 +31,18 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
         setDataLoading(true);
         setError(null);
         const data = await getAllMarketData();
-        setMarketData(data);
+        if (data && data.length > 0) {
+          setMarketData(data);
+        } else if (marketData.length === 0) {
+          // Only use fallback if we don't have any data yet
+          setMarketData(FALLBACK_MARKET_DATA);
+        }
       } catch (err) {
         console.error('Error fetching market data:', err);
-        setError('Failed to load market data');
+        setError('Failed to load live market data');
+        if (marketData.length === 0) {
+          setMarketData(FALLBACK_MARKET_DATA);
+        }
       } finally {
         setDataLoading(false);
       }
@@ -128,18 +145,16 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
                   </span>
 
                   {/* Change Indicator */}
-                  <span className={`text-sm font-medium px-2 py-0.5 rounded ${
-                    item.change >= 0
+                  <span className={`text-sm font-medium px-2 py-0.5 rounded ${item.change >= 0
                       ? 'text-green-600 bg-green-50 dark:bg-green-950/20'
                       : 'text-red-600 bg-red-50 dark:bg-red-950/20'
-                  }`}>
+                    }`}>
                     {formatChange(item.change, item.changePercent)}
                   </span>
 
                   {/* Dot separator */}
-                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                    item.change >= 0 ? 'bg-green-500' : 'bg-red-500'
-                  }`} />
+                  <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${item.change >= 0 ? 'bg-green-500' : 'bg-red-500'
+                    }`} />
                 </div>
               ))}
             </Marquee>

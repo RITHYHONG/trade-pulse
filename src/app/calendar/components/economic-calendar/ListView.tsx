@@ -262,7 +262,12 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
                               </div>
                               <div className="p-3 rounded-lg bg-background border border-border/50">
                                 <div className="text-[10px] text-muted-foreground mb-1">Direction Bias</div>
-                                <div className="flex items-center gap-1.5 text-sm font-medium">
+                                <div className={cn(
+                                  "flex items-center gap-1.5 text-sm font-bold capitalize",
+                                  event.historicalData.directionBias === 'bullish' ? 'text-emerald-500' :
+                                    event.historicalData.directionBias === 'bearish' ? 'text-rose-500' :
+                                      'text-muted-foreground'
+                                )}>
                                   <SentimentIcon className="w-3.5 h-3.5" />
                                   {event.historicalData.directionBias}
                                 </div>
@@ -278,12 +283,16 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
                             </div>
                             <div className="p-3 rounded-lg bg-background border border-border/50 space-y-2">
                               <div className="flex justify-between items-center text-sm">
-                                <span className="text-muted-foreground">Surprise Prob</span>
-                                <Badge variant="outline" className="font-mono text-[10px]">{event.consensusIntelligence.surpriseProbability}%</Badge>
+                                <span className="text-muted-foreground font-medium">Surprise Prob</span>
+                                <Badge variant="outline" className="font-mono text-[10px] bg-primary/5 text-primary border-primary/20">
+                                  {event.consensusIntelligence.surpriseProbability}%
+                                </Badge>
                               </div>
                               <div className="flex justify-between items-center text-sm">
-                                <span className="text-muted-foreground">Whisper Number</span>
-                                <span className="font-mono text-amber-500">{event.consensusIntelligence.whisperNumber || '--'}{event.unit}</span>
+                                <span className="text-muted-foreground font-medium">Whisper Number</span>
+                                <span className="font-mono font-bold text-amber-500">
+                                  {event.consensusIntelligence.whisperNumber ? `${event.consensusIntelligence.whisperNumber}${event.unit}` : '--'}
+                                </span>
                               </div>
                             </div>
                           </div>

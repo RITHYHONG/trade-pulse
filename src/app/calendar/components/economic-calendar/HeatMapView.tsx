@@ -4,6 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Flame } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface HeatMapViewProps {
   events: EconomicEvent[];
@@ -123,20 +124,36 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                     return (
                       <Tooltip key={hour} delayDuration={0}>
                         <TooltipTrigger asChild>
-                          <div
+                          <motion.div
+                            whileHover={{ scale: 1.15, zIndex: 10 }}
                             className={cn(
-                              "w-10 h-10 m-0.5 rounded-md transition-all duration-200 flex items-center justify-center border border-transparent",
+                              "w-10 h-10 m-0.5 rounded-md transition-all duration-300 flex items-center justify-center border border-transparent relative overflow-hidden group/cell",
                               color,
-                              hasEvents && "cursor-pointer hover:scale-110 hover:shadow-sm hover:z-10 hover:border-black/5 dark:hover:border-white/10"
+                              hasEvents ? "cursor-pointer" : "opacity-40"
                             )}
                             onClick={() => hasEvents && cellEvents.length === 1 && onEventClick(cellEvents[0])}
                           >
+                            {/* Shimmer Effect for High Intensity */}
+                            {intensity >= 2 && (
+                              <motion.div
+                                animate={{
+                                  x: ["-100%", "200%"]
+                                }}
+                                transition={{
+                                  duration: 3,
+                                  repeat: Infinity,
+                                  ease: "linear"
+                                }}
+                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
+                              />
+                            )}
+
                             {hasEvents && (
-                              <span className="text-[10px] text-white/90 font-medium">
+                              <span className="text-[10px] text-white/90 font-bold relative z-10">
                                 {cellEvents.length}
                               </span>
                             )}
-                          </div>
+                          </motion.div>
                         </TooltipTrigger>
                         {hasEvents && (
                           <TooltipContent

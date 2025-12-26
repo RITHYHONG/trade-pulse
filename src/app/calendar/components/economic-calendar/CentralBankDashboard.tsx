@@ -4,6 +4,7 @@ import { Progress } from '@/components/ui/progress';
 import { Building2, Calendar, User, TrendingUp, Clock, Target, ChefHat } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface CentralBankDashboardProps {
   events: CentralBankEvent[];
@@ -78,13 +79,24 @@ export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
           const hasProbabilities = event.rateProbabilities.cut + event.rateProbabilities.hold + event.rateProbabilities.hike > 0;
 
           return (
-            <div
+            <motion.div
               key={event.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               className={cn(
-                "p-4 rounded-xl border transition-all duration-200",
+                "p-4 rounded-xl border transition-all duration-300 relative overflow-hidden group",
                 typeStyles.bg, typeStyles.border
               )}
             >
+              {/* Dynamic Bias Glow */}
+              <div
+                className={cn(
+                  "absolute inset-0 opacity-10 transition-opacity duration-1000",
+                  event.type === 'meeting' ? "bg-rose-500" :
+                    event.type === 'speech' ? "bg-blue-500" :
+                      "bg-violet-500"
+                )}
+              />
               <div className="space-y-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1 min-w-0">
@@ -111,36 +123,39 @@ export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
                   </div>
                 </div>
 
-                {hasProbabilities && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Target className="w-3 h-3 text-primary/60" />
-                      <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Rate Odds</span>
-                    </div>
-                    <div className="flex gap-1 h-1.5 rounded-full overflow-hidden bg-background/30 border border-border/10">
-                      {event.rateProbabilities.cut > 0 && <div className={cn("h-full", getProbabilityBg('cut'))} style={{ width: `${event.rateProbabilities.cut}%` }} />}
-                      {event.rateProbabilities.hold > 0 && <div className={cn("h-full", getProbabilityBg('hold'))} style={{ width: `${event.rateProbabilities.hold}%` }} />}
-                      {event.rateProbabilities.hike > 0 && <div className={cn("h-full", getProbabilityBg('hike'))} style={{ width: `${event.rateProbabilities.hike}%` }} />}
-                    </div>
-                    <div className="flex justify-between items-center text-[9px] font-mono font-bold">
-                      {event.rateProbabilities.cut > 0 && <span className={getProbabilityColor('cut')}>CUT {event.rateProbabilities.cut}%</span>}
-                      {event.rateProbabilities.hold > 0 && <span className={getProbabilityColor('hold')}>HOLD {event.rateProbabilities.hold}%</span>}
-                      {event.rateProbabilities.hike > 0 && <span className={getProbabilityColor('hike')}>HIKE {event.rateProbabilities.hike}%</span>}
-                    </div>
-                  </div>
-                )}
+                <div className="relative z-10">
 
-                {event.keyTopics.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {event.keyTopics.slice(0, 3).map((topic, i) => (
-                      <Badge key={i} variant="secondary" className="h-4 text-[8px] border-border/20 bg-background/20 font-medium">
-                        {topic}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
+                  {hasProbabilities && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Target className="w-3 h-3 text-primary/60" />
+                        <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Rate Odds</span>
+                      </div>
+                      <div className="flex gap-1 h-1.5 rounded-full overflow-hidden bg-background/30 border border-border/10">
+                        {event.rateProbabilities.cut > 0 && <motion.div initial={{ width: 0 }} animate={{ width: `${event.rateProbabilities.cut}%` }} className={cn("h-full", getProbabilityBg('cut'))} />}
+                        {event.rateProbabilities.hold > 0 && <motion.div initial={{ width: 0 }} animate={{ width: `${event.rateProbabilities.hold}%` }} className={cn("h-full", getProbabilityBg('hold'))} />}
+                        {event.rateProbabilities.hike > 0 && <motion.div initial={{ width: 0 }} animate={{ width: `${event.rateProbabilities.hike}%` }} className={cn("h-full", getProbabilityBg('hike'))} />}
+                      </div>
+                      <div className="flex justify-between items-center text-[9px] font-mono font-bold">
+                        {event.rateProbabilities.cut > 0 && <span className={getProbabilityColor('cut')}>CUT {event.rateProbabilities.cut}%</span>}
+                        {event.rateProbabilities.hold > 0 && <span className={getProbabilityColor('hold')}>HOLD {event.rateProbabilities.hold}%</span>}
+                        {event.rateProbabilities.hike > 0 && <span className={getProbabilityColor('hike')}>HIKE {event.rateProbabilities.hike}%</span>}
+                      </div>
+                    </div>
+                  )}
+
+                  {event.keyTopics.length > 0 && (
+                    <div className="flex flex-wrap gap-1 pt-2">
+                      {event.keyTopics.slice(0, 3).map((topic, i) => (
+                        <Badge key={i} variant="secondary" className="h-4 text-[8px] border-border/20 bg-background/20 font-medium whitespace-nowrap">
+                          {topic}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>

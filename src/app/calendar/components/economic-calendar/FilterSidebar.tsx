@@ -8,6 +8,7 @@ import { FilterState, ImpactLevel, Region, EventCategory } from './types';
 import { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface FilterSidebarProps {
   filters: FilterState;
@@ -75,15 +76,28 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
               { label: 'Market Movers', icon: Target, count: 12 },
               { label: 'Volatility Focus', icon: TrendingUp, count: 8 },
             ].map((item, i) => (
-              <Button
+              <motion.div
                 key={i}
-                variant="ghost"
-                className="w-full justify-start h-9 px-2 hover:bg-secondary/50 font-normal text-sm group"
+                whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <item.icon className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors" />
-                <span className="flex-1 text-left">{item.label}</span>
-                <span className="text-xs text-muted-foreground group-hover:text-foreground">{item.count}</span>
-              </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start h-9 px-2 hover:bg-primary/5 font-normal text-sm group relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors" />
+                  <item.icon className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary transition-colors relative z-10" />
+                  <span className="flex-1 text-left relative z-10">{item.label}</span>
+                  <span className="text-xs text-muted-foreground group-hover:text-foreground relative z-10">{item.count}</span>
+
+                  {/* Subtle active indicator */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary"
+                  />
+                </Button>
+              </motion.div>
             ))}
           </div>
         </div>
