@@ -1,22 +1,18 @@
 import React, { useRef, useEffect } from 'react';
-import { X, TrendingUp, TrendingDown, Activity, Target, Bell, Brain, AlertCircle, ArrowRight, Sparkles, Clock, Zap } from 'lucide-react';
+import { X, TrendingUp, TrendingDown, Activity, Target, Bell, Brain, Sparkles, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { EconomicEvent } from './types';
 import {
   AreaChart,
   Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
   ReferenceLine
 } from 'recharts';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface EventIntelligencePanelProps {
   event: EconomicEvent | null;
@@ -94,9 +90,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
 
   const impactStyles = getImpactStyles(event.impact);
   const sentimentStyles = getSentimentStyles(event.historicalData.directionBias);
-  const SentimentIcon = sentimentStyles.icon;
 
-  // Smoothing out the mock data for an Area Chart to look like a probability curve
   const distributionData = event.consensusIntelligence.estimateDistribution.map((val, idx, arr) => ({
     name: val.toString(),
     value: idx === 0 || idx === arr.length - 1 ? 2 : Math.random() * 8 + 10,

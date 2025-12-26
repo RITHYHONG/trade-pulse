@@ -1,7 +1,7 @@
 import { EconomicEvent } from './types';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Clock, MapPin, TrendingUp } from 'lucide-react';
+import { Clock, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 

@@ -21,7 +21,6 @@ import {
   Bell,
   Star,
   BarChart2,
-  Clock,
   ArrowRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -153,7 +152,7 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="w-6 h-6 h-6 text-muted-foreground/60 group-hover:text-foreground transition-colors"
+                        className="w-6 h-6 text-muted-foreground/60 group-hover:text-foreground transition-colors"
                         aria-label={isExpanded ? "Collapse row" : "Expand row"}
                       >
                         {isExpanded ? (
