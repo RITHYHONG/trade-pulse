@@ -1,3 +1,4 @@
+import React, { useRef, useEffect } from 'react';
 import { X, TrendingUp, TrendingDown, Activity, Target, Bell, Brain, AlertCircle, ArrowRight, Sparkles, Clock, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +16,7 @@ import {
   ReferenceLine
 } from 'recharts';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface EventIntelligencePanelProps {
   event: EconomicEvent | null;
@@ -22,6 +24,24 @@ interface EventIntelligencePanelProps {
 }
 
 export function EventIntelligencePanel({ event, onClose }: EventIntelligencePanelProps) {
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = 'unset';
+    };
+  }, [onClose]);
+
   if (!event) return null;
 
   const getImpactStyles = (impact: string) => {
@@ -85,8 +105,11 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
 
   return (
     <>
-      <div className="fixed inset-0 bg-background/20 backdrop-blur-sm z-40 lg:hidden" onClick={onClose} />
-      <div className="fixed right-0 top-0 h-full w-[600px] bg-card border-l border-border shadow-xl z-50 overflow-y-auto">
+      <div className="fixed inset-0 bg-background/40 z-40 animate-in fade-in duration-300" onClick={onClose} />
+      <div
+        ref={panelRef}
+        className="fixed right-0 top-0 h-full w-[600px] bg-card border-l border-border shadow-2xl z-50 overflow-y-auto animate-in slide-in-from-right duration-300"
+      >
 
         {/* Header Section */}
         <div className="sticky top-0 bg-background/95 backdrop-blur-md border-b border-border/40 p-6 z-10">
@@ -153,63 +176,92 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               </Badge>
             </div>
 
-            <div className="h-48 w-full bg-secondary/5 rounded-2xl border border-border/40 p-4 relative group">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={distributionData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop
-                        offset="5%"
-                        stopColor={event.historicalData.directionBias === 'bullish' ? '#10b981' : event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))'}
-                        stopOpacity={0.3}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor={event.historicalData.directionBias === 'bullish' ? '#10b981' : event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))'}
-                        stopOpacity={0}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--popover))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '12px',
-                      fontSize: '11px',
-                      fontWeight: 'bold',
-                      boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
-                    }}
-                    cursor={{
-                      stroke: event.historicalData.directionBias === 'bullish' ? '#10b981' : event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))',
-                      strokeWidth: 1,
-                      strokeDasharray: '4 4'
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke={event.historicalData.directionBias === 'bullish' ? '#10b981' : event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))'}
-                    strokeWidth={3}
-                    fillOpacity={1}
-                    fill="url(#colorValue)"
-                    animationDuration={1500}
-                  />
-                  <ReferenceLine
-                    x={event.consensus.toString()}
-                    stroke="hsl(var(--foreground))"
-                    strokeWidth={1}
-                    strokeDasharray="3 3"
-                    label={{
-                      value: 'CONSENSUS',
-                      position: 'top',
-                      fill: 'hsl(var(--foreground))',
-                      fontSize: 8,
-                      fontWeight: 'bold',
-                      letterSpacing: 1
-                    }}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+            <div className="h-48 w-full rounded-2xl border border-border/40 p-4 relative group overflow-hidden">
+              {/* Shifting Gradient Background */}
+              <div
+                className={cn(
+                  "absolute inset-0 opacity-10 transition-colors duration-1000",
+                  event.historicalData.directionBias === 'bullish' ? "bg-emerald-500" :
+                    event.historicalData.directionBias === 'bearish' ? "bg-rose-500" :
+                      "bg-primary"
+                )}
+              />
+              <motion.div
+                animate={{
+                  x: [0, 20, 0],
+                  opacity: [0.05, 0.15, 0.05]
+                }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+                className={cn(
+                  "absolute inset-[-50%] blur-3xl opacity-10",
+                  event.historicalData.directionBias === 'bullish' ? "bg-gradient-to-r from-emerald-500 via-transparent to-emerald-500" :
+                    event.historicalData.directionBias === 'bearish' ? "bg-gradient-to-r from-rose-500 via-transparent to-rose-500" :
+                      "bg-gradient-to-r from-primary via-transparent to-primary"
+                )}
+              />
+
+              <div className="relative h-full w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={distributionData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                        <stop
+                          offset="5%"
+                          stopColor={event.historicalData.directionBias === 'bullish' ? '#10b981' : event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))'}
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor={event.historicalData.directionBias === 'bullish' ? '#10b981' : event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))'}
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--popover))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '12px',
+                        fontSize: '11px',
+                        fontWeight: 'bold',
+                        boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
+                      }}
+                      cursor={{
+                        stroke: event.historicalData.directionBias === 'bullish' ? '#10b981' : event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))',
+                        strokeWidth: 1,
+                        strokeDasharray: '4 4'
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke={event.historicalData.directionBias === 'bullish' ? '#10b981' : event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))'}
+                      strokeWidth={3}
+                      fillOpacity={1}
+                      fill="url(#colorValue)"
+                      animationDuration={1500}
+                    />
+                    <ReferenceLine
+                      x={event.consensus.toString()}
+                      stroke="hsl(var(--foreground))"
+                      strokeWidth={1}
+                      strokeDasharray="3 3"
+                      label={{
+                        value: 'CONSENSUS',
+                        position: 'top',
+                        fill: 'hsl(var(--foreground))',
+                        fontSize: 8,
+                        fontWeight: 'bold',
+                        letterSpacing: 1
+                      }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
               <div className="absolute bottom-2 left-6 right-6 flex justify-between text-[8px] font-bold text-muted-foreground uppercase tracking-widest opacity-50">
                 <span>{event.consensus - (event.tradingSetup.expectedMove || 1)}{event.unit}</span>
                 <span>{event.consensus + (event.tradingSetup.expectedMove || 1)}{event.unit}</span>
