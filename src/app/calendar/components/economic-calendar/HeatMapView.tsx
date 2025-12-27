@@ -16,6 +16,12 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const regions: Region[] = ['US', 'EU', 'UK', 'Asia', 'EM'];
 
+  const impactStyles = {
+    high: 'bg-rose-500 border-rose-500/30',
+    medium: 'bg-amber-500 border-amber-500/30',
+    low: 'bg-emerald-500 border-emerald-500/30'
+  };
+
   // Create heat map data structure
   const heatMapData: Record<string, EconomicEvent[]> = {};
 
@@ -66,25 +72,32 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
   return (
     <ScrollArea className="h-full">
       <div className="p-4 md:p-6 min-w-[800px]">
+        {/* Header */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-foreground mb-2">Economic Calendar Heatmap</h3>
+          <p className="text-sm text-muted-foreground">Visualize event density and impact across regions and time</p>
+        </div>
 
         {/* Legend */}
-        <div className="mb-6 flex items-center justify-end gap-3">
-          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Intensity</span>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 bg-emerald-500/50 rounded-sm" />
-            <span className="text-[10px] text-muted-foreground">Low</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 bg-amber-500/50 rounded-sm" />
-            <span className="text-[10px] text-muted-foreground">Medium</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 bg-rose-500/70 rounded-sm" />
-            <span className="text-[10px] text-muted-foreground">High</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 bg-rose-500/90 rounded-sm" />
-            <span className="text-[10px] text-muted-foreground">Extreme</span>
+        <div className="mb-6 flex items-center justify-center gap-6 bg-card/30 p-3 rounded-lg border border-border/40">
+          <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Intensity Levels</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 bg-emerald-500/50 rounded-sm border border-emerald-500/30" />
+              <span className="text-xs text-muted-foreground">Low</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 bg-amber-500/50 rounded-sm border border-amber-500/30" />
+              <span className="text-xs text-muted-foreground">Medium</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 bg-rose-500/70 rounded-sm border border-rose-500/30" />
+              <span className="text-xs text-muted-foreground">High</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 bg-rose-500/90 rounded-sm border border-rose-500/30 shadow-sm shadow-rose-500/20" />
+              <span className="text-xs text-muted-foreground">Extreme</span>
+            </div>
           </div>
         </div>
 
@@ -126,9 +139,9 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                           <motion.div
                             whileHover={{ scale: 1.15, zIndex: 10 }}
                             className={cn(
-                              "w-10 h-10 m-0.5 rounded-md transition-all duration-300 flex items-center justify-center border border-transparent relative overflow-hidden group/cell",
+                              "w-10 h-10 m-0.5 rounded-md transition-all duration-300 flex items-center justify-center border border-transparent hover:border-border/50 relative overflow-hidden group/cell",
                               color,
-                              hasEvents ? "cursor-pointer" : "opacity-40"
+                              hasEvents ? "cursor-pointer hover:shadow-lg hover:shadow-black/10" : "opacity-40"
                             )}
                             onClick={() => hasEvents && cellEvents.length === 1 && onEventClick(cellEvents[0])}
                           >
@@ -182,9 +195,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                                   <div className="flex items-start justify-between gap-2">
                                     <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">{event.name}</span>
                                     <div className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5",
-                                      event.impact === 'high' ? 'bg-rose-500' :
-                                        event.impact === 'medium' ? 'bg-amber-500' :
-                                          'bg-emerald-500'
+                                      impactStyles[event.impact].split(' ')[0]
                                     )} />
                                   </div>
                                   <div className="text-[10px] text-muted-foreground mt-1 flex justify-between">
@@ -221,7 +232,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
               .slice(0, 3);
 
             return hotspots.map((hotspot, index) => (
-              <div key={hotspot.key} className="bg-card/40 p-4 rounded-xl border border-border/40 hover:bg-card/60 transition-colors">
+              <div key={hotspot.key} className="bg-card/40 p-4 rounded-xl border border-border/40 hover:bg-card/60 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="p-1.5 rounded-md bg-primary/10 text-primary">
                     <Flame className="w-3.5 h-3.5" />

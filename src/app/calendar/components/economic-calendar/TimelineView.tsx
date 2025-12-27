@@ -99,16 +99,12 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
                       >
                         {/* Dynamic Background Glow */}
                         <div className={cn(
-                          "absolute inset-0 opacity-0 group-hover/card:opacity-10 transition-opacity duration-500",
-                          event.historicalData.directionBias === 'bullish' ? "bg-emerald-500" :
-                            event.historicalData.directionBias === 'bearish' ? "bg-rose-500" :
-                              "bg-primary"
+                          "absolute inset-0 opacity-10 transition-opacity duration-500",
+                          impactStyles[event.impact].split(' ')[0]
                         )} />
                         <div className={cn(
-                          "absolute left-0 top-0 bottom-0 w-1 rounded-l-xl opacity-0 group-hover/card:opacity-100 transition-opacity",
-                          event.historicalData.directionBias === 'bullish' ? "bg-emerald-500" :
-                            event.historicalData.directionBias === 'bearish' ? "bg-rose-500" :
-                              "bg-primary"
+                          "absolute left-0 top-0 bottom-0 w-1 rounded-l-xl opacity-100 transition-opacity",
+                          impactStyles[event.impact].split(' ')[0]
                         )} />
 
                         <div className="flex items-start justify-between gap-4">

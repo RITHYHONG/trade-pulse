@@ -73,9 +73,6 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
       <section className="py-3 bg-muted/50 border-y border-border overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-4">
-            <div className="flex-shrink-0 bg-foreground text-background px-4 py-1.5 rounded-full text-sm font-semibold">
-              Market Pulse
-            </div>
             <div className="flex-1 overflow-hidden relative">
               <div className="flex gap-8 animate-pulse">
                 <div className="h-4 bg-muted rounded w-32"></div>
@@ -96,9 +93,6 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
       <section className="py-3 bg-muted/50 border-y border-border overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-4">
-            <div className="flex-shrink-0 bg-foreground text-background px-4 py-1.5 rounded-full text-sm font-semibold">
-              Market Pulse
-            </div>
             <div className="flex-1 text-muted-foreground text-sm">
               {error} - Using cached data
             </div>
@@ -112,10 +106,6 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
     <section className="py-3 bg-muted/50 border-y border-border overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="flex items-center gap-4">
-          {/* Label */}
-          <div className="flex-shrink-0 bg-foreground text-background px-4 py-1.5 rounded-full text-sm font-semibold">
-            Market Pulse
-          </div>
 
           {/* Scrolling Content */}
           <div className="flex-1 overflow-hidden relative">

@@ -98,7 +98,7 @@ function SidebarPostCard({ post }: { post: BlogPost }) {
           <div className="flex items-center gap-2 mt-2">
             <div className="relative w-5 h-5 rounded-full overflow-hidden">
               <ImageWithFallback
-                src={post.author?.avatar || post.author?.avatarUrl || ''}
+                src={post.author?.avatarUrl || post.author?.avatar || ''}
                 alt={post.author?.name || 'Author'}
                 fill
                 className="object-cover"
@@ -168,7 +168,7 @@ export function HeroSection({ featuredPost, sidebarPosts, isLoading, onSearch }:
                     <div className="flex items-center gap-3">
                       <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-white/30">
                         <ImageWithFallback
-                          src={featuredPost.author?.avatar || featuredPost.author?.avatarUrl || ''}
+                          src={ featuredPost.author?.avatarUrl || featuredPost.author?.avatar || ''}
                           alt={featuredPost.author?.name || 'Author'}
                           fill
                           className="object-cover"

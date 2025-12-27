@@ -19,5 +19,14 @@
         "destination": "/index.html"
       }
     ]
+  },
+  "apphosting": {
+    "backends": {
+      "trade-pulse": {
+        "source": {
+          "root": "."
+        }
+      }
+    }
   }
 }

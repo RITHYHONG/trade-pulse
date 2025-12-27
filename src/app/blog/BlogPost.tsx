@@ -6,7 +6,6 @@ import { BlogPost as BlogPostType } from '../../types/blog';
 import { blogPosts } from '../../data/blogData';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
-import { CustomBreadcrumb } from '@/components/navigation/Breadcrumb';
 import DOMPurify from 'isomorphic-dompurify';
 import { useAuthorProfile } from '@/hooks/use-author-profile';
 import { useMemo } from 'react';
@@ -34,7 +33,6 @@ interface BlogPostProps {
 import useRecordView from '@/hooks/use-view-count';
 
 export function BlogPost({ post, relatedPosts }: BlogPostProps) {
-  // record a view on initial render (client-side only) - uses localStorage TTL to avoid duplicates
   useRecordView(post.id, { ttlHours: 1, requireConsent: false });
 
   const fallbackAuthor = useMemo(() => ({
@@ -46,8 +44,8 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
   }), [post.author.name, post.author.avatar, post.author.avatarUrl, post.author.bio, post.author.role]);
   
   const { authorProfile } = useAuthorProfile({
-    authorId: post.authorId,
-    fallbackAuthor
+    fallbackAuthor,
+    authorId: post.authorId
   });
 
   const defaultRelatedPosts = relatedPosts || blogPosts
