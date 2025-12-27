@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "start": "next start",
