@@ -3,11 +3,12 @@ import { Card } from "@/components/ui/card";
 import { getInstrumentDetail } from "@/lib/api/market-data";
 
 interface WatchlistSymbolPageProps {
-  params: { symbol: string };
+  params: Promise<{ symbol: string }>;
 }
 
 export default async function WatchlistSymbolPage({ params }: WatchlistSymbolPageProps) {
-  const detail = await getInstrumentDetail(params.symbol);
+  const { symbol } = await params;
+  const detail = await getInstrumentDetail(symbol);
 
   if (!detail) {
     notFound();

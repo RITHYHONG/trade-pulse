@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "start": "next start",
@@ -50,7 +50,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^12.3.0",
-    "firebase-admin": "^11.12.0",
+    "firebase-admin": "^11.11.1",
     "firebase-tools": "^14.17.0",
     "global": "^4.4.0",
     "isomorphic-dompurify": "^2.31.0",

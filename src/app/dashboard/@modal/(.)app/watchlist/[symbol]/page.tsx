@@ -4,11 +4,12 @@ import { getInstrumentDetail } from "@/lib/api/market-data";
 import { X } from "lucide-react";
 
 interface WatchlistSymbolModalProps {
-  params: { symbol: string };
+  params: Promise<{ symbol: string }>;
 }
 
 export default async function WatchlistSymbolModal({ params }: WatchlistSymbolModalProps) {
-  const detail = await getInstrumentDetail(params.symbol);
+  const { symbol } = await params;
+  const detail = await getInstrumentDetail(symbol);
 
   if (!detail) {
     notFound();

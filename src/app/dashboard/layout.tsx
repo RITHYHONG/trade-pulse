@@ -11,7 +11,8 @@ const navigation: Array<{ href: string; label: string }> = [
 
 interface AppLayoutProps {
   children: ReactNode;
-  modal?: ReactNode;
+  modal: ReactNode;
+  params: Promise<any>;
 }
 
 export default function AppLayout({ children, modal }: AppLayoutProps) {
