@@ -27,7 +27,7 @@ function PopularStorySkeleton() {
             <Skeleton className="w-full h-[500px] rounded-2xl" />
           </div>
           
-          <div className="lg:col-span-7  space-y-6 flex flex-col justify-between">
+          <div className="lg:col-span-7 space-y-6 flex flex-col justify-between">
             <Skeleton className="w-full h-64 rounded-2xl mb-6" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-3/5">
               {[1, 2, 3].map((i) => (

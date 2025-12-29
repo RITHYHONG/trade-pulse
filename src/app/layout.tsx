@@ -5,8 +5,7 @@ import "./globals.css";
 import "@/lib/firebase";
 import { Toaster } from "@/components/ui/sonner";
 import { ClientLayout } from "@/components/client-layout";
-import { HeaderMain } from "@/components/HeaderMain";
-import { Footer } from "./(marketing)/components/Footer";
+import { AppLayout } from "@/components/app-layout";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -30,13 +29,9 @@ export default function RootLayout({
 
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary text-white px-4 py-2 rounded-lg z-50">Skip to main content</a>
         <ClientLayout>
-          <div className="min-h-screen flex flex-col">
-            <HeaderMain />
-            <main className="flex-1" id="main-content">
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <AppLayout>
+            {children}
+          </AppLayout>
           <Toaster position="top-right" richColors />
         </ClientLayout>
 

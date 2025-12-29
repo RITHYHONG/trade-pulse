@@ -13,54 +13,60 @@ const COINGECKO_API_KEY = process.env.NEXT_PUBLIC_COINGECKO_API_KEY || '';
 const ALPHA_VANTAGE_API_KEY = process.env.NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY || '';
 const EXCHANGE_RATE_API_KEY = process.env.NEXT_PUBLIC_EXCHANGE_RATE_API_KEY || '';
 
+import { retryApi } from './retry';
+import { mapToAppError, logError } from './error';
+
 export async function getCryptoData(): Promise<MarketItem[]> {
   try {
-    const response = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,cardano&vs_currencies=usd&include_24hr_change=true`
-    );
+    const result = await retryApi(async () => {
+      const response = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,cardano&vs_currencies=usd&include_24hr_change=true`
+      );
 
-    if (!response.ok) {
-      throw new Error('CoinGecko API error');
-    }
+      if (!response.ok) {
+        throw new Error('CoinGecko API error');
+      }
 
-    const data = await response.json();
+      return await response.json();
+    });
 
     return [
       {
         symbol: 'BTC',
         name: 'Bitcoin',
-        price: data.bitcoin?.usd || 0,
-        change: data.bitcoin?.usd_24h_change || 0,
-        changePercent: data.bitcoin?.usd_24h_change || 0,
+        price: result.bitcoin?.usd || 0,
+        change: result.bitcoin?.usd_24h_change || 0,
+        changePercent: result.bitcoin?.usd_24h_change || 0,
         type: 'crypto'
       },
       {
         symbol: 'ETH',
         name: 'Ethereum',
-        price: data.ethereum?.usd || 0,
-        change: data.ethereum?.usd_24h_change || 0,
-        changePercent: data.ethereum?.usd_24h_change || 0,
+        price: result.ethereum?.usd || 0,
+        change: result.ethereum?.usd_24h_change || 0,
+        changePercent: result.ethereum?.usd_24h_change || 0,
         type: 'crypto'
       },
       {
         symbol: 'SOL',
         name: 'Solana',
-        price: data.solana?.usd || 0,
-        change: data.solana?.usd_24h_change || 0,
-        changePercent: data.solana?.usd_24h_change || 0,
+        price: result.solana?.usd || 0,
+        change: result.solana?.usd_24h_change || 0,
+        changePercent: result.solana?.usd_24h_change || 0,
         type: 'crypto'
       },
       {
         symbol: 'ADA',
         name: 'Cardano',
-        price: data.cardano?.usd || 0,
-        change: data.cardano?.usd_24h_change || 0,
-        changePercent: data.cardano?.usd_24h_change || 0,
+        price: result.cardano?.usd || 0,
+        change: result.cardano?.usd_24h_change || 0,
+        changePercent: result.cardano?.usd_24h_change || 0,
         type: 'crypto'
       }
     ];
   } catch (error) {
-    console.error('Error fetching crypto data:', error);
+    const appError = mapToAppError(error);
+    logError(appError, { operation: 'getCryptoData' });
     return [];
   }
 }

@@ -3,6 +3,7 @@ import { AuthUser, signUp, signIn, signOutUser, resetPassword, onAuthStateChange
 import { signInWithGoogle, signInWithGoogleRedirect, handleGoogleRedirectResult } from '../lib/google-auth';
 import { initializeUserProfile } from '../lib/firestore-service';
 import { clearAuthorProfileCache } from '../hooks/use-author-profile';
+import { mapToAppError, logError } from '../lib/error';
 
 interface AuthState {
   user: AuthUser | null;
@@ -36,10 +37,10 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     try {
       set({ loading: true, error: null });
       const user = await signUp({ email, password, displayName });
-      
+
       // Initialize user profile in Firestore
       await initializeUserProfile(user);
-      
+
       // Set auth cookies via API route (secure, HTTP-only)
       await fetch('/api/auth/set-cookies', {
         method: 'POST',
@@ -50,11 +51,12 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
           displayName: user.displayName,
         }),
       });
-      
+
       set({ user: toAuthUser(user), loading: false });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Sign up failed';
-      set({ error: message, loading: false });
+      const appError = mapToAppError(error);
+      logError(appError, { operation: 'signUp', email });
+      set({ error: appError.userMessage, loading: false });
       throw error;
     }
   },
@@ -63,7 +65,7 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     try {
       set({ loading: true, error: null });
       const user = await signIn({ email, password });
-      
+
       // Set auth cookies via API route (secure, HTTP-only)
       await fetch('/api/auth/set-cookies', {
         method: 'POST',
@@ -74,11 +76,12 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
           displayName: user.displayName,
         }),
       });
-      
+
       set({ user: toAuthUser(user), loading: false });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Sign in failed';
-      set({ error: message, loading: false });
+      const appError = mapToAppError(error);
+      logError(appError, { operation: 'signIn', email });
+      set({ error: appError.userMessage, loading: false });
       throw error;
     }
   },
@@ -87,15 +90,15 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     try {
       set({ loading: true, error: null });
       console.log('Starting Google sign-in...');
-      
+
       const user = await signInWithGoogle();
       console.log('Google sign-in completed, user:', user);
-      
+
       // Initialize user profile in Firestore for new Google users
       console.log('Initializing user profile...');
       await initializeUserProfile(user);
       console.log('User profile initialization completed');
-      
+
       // Set auth cookies via API route (secure, HTTP-only)
       console.log('Setting auth cookies...');
       await fetch('/api/auth/set-cookies', {
@@ -108,14 +111,14 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
         }),
       });
       console.log('Auth cookies set successfully');
-      
+
       const authUser = toAuthUser(user);
       console.log('Final auth user object:', authUser);
       set({ user: authUser, loading: false });
     } catch (error) {
-      console.error('Google sign-in error in store:', error);
-      const message = error instanceof Error ? error.message : 'Google sign in failed';
-      set({ error: message, loading: false });
+      const appError = mapToAppError(error);
+      logError(appError, { operation: 'signInWithGoogle' });
+      set({ error: appError.userMessage, loading: false });
       throw error;
     }
   },

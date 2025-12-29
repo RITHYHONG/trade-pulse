@@ -13,6 +13,7 @@ import { Loader2, Eye, EyeOff, Mail, Lock, User, UserPlus } from 'lucide-react';
 import { signUpSchema, SignUpFormData } from '../../../lib/validations';
 import { useAuth } from '../../../hooks/use-auth';
 import { toast } from 'sonner';
+import { mapToAppError } from '../../../lib/error';
 
 export function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,8 +36,9 @@ export function SignUpForm() {
       await signUp(data.email, data.password, data.displayName);
       toast.success('Account created successfully! Welcome to Trade Pulse.');
       router.push(redirect);
-    } catch {
-      toast.error('Failed to create account. Please try again.');
+    } catch (error) {
+      const appError = mapToAppError(error);
+      toast.error(appError.userMessage);
     }
   };
 
@@ -46,8 +48,8 @@ export function SignUpForm() {
       toast.success('Successfully signed up with Google! Welcome to Trade Pulse.');
       router.push(redirect);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Google sign up failed';
-      toast.error(message);
+      const appError = mapToAppError(error);
+      toast.error(appError.userMessage);
     }
   };
 

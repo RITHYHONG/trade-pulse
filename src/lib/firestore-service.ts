@@ -12,6 +12,8 @@ import {
 import { User as FirebaseUser, updateProfile, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
 import { ref, deleteObject } from 'firebase/storage';
 import { db, auth, storage } from './firebase';
+import { retryFirebase } from './retry';
+import { mapToAppError, logError } from './error';
 
 // User profile interface for Firestore
 export interface UserProfile {
@@ -43,23 +45,27 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   try {
     console.log('Attempting to get user profile for uid:', uid);
 
-    // Directly fetch the user document by UID. Do not rely on auth.currentUser here
-    // because callers (server API routes or clients) may pass a UID when the
-    // Firebase auth client hasn't fully populated auth.currentUser yet.
-    const userDocRef: DocumentReference = doc(db, 'users', uid);
-    const userDoc: DocumentSnapshot = await getDoc(userDocRef);
-    
-    if (userDoc.exists()) {
-      console.log('User profile found:', userDoc.data());
-      return userDoc.data() as UserProfile;
+    const result = await retryFirebase(async () => {
+      // Directly fetch the user document by UID. Do not rely on auth.currentUser here
+      // because callers (server API routes or clients) may pass a UID when the
+      // Firebase auth client hasn't fully populated auth.currentUser yet.
+      const userDocRef: DocumentReference = doc(db, 'users', uid);
+      const userDoc: DocumentSnapshot = await getDoc(userDocRef);
+      return userDoc;
+    });
+
+    if (result.exists()) {
+      console.log('User profile found:', result.data());
+      return result.data() as UserProfile;
     }
     console.log('User profile does not exist');
     return null;
   } catch (error) {
-    console.error('Error getting user profile:', error);
+    const appError = mapToAppError(error);
+    logError(appError, { operation: 'getUserProfile', uid });
 
     // Preserve permission-related error semantics so callers can detect auth issues.
-    if (error instanceof Error && error.message.includes('permission')) {
+    if (appError.code === 'FIRESTORE_PERMISSION_DENIED') {
       console.error('Firebase permission error - user may not be authenticated properly');
       throw new Error('Authentication required to access profile');
     }

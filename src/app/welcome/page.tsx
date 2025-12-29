@@ -1,7 +1,5 @@
-export default function Page() {
-  return (
-    <div>
-      <h1>Welcome</h1>
-    </div>
-  )
+import { AuthRedirect } from '@/components/auth-redirect';
+
+export default function WelcomePage() {
+  return <AuthRedirect authenticatedPath="/dashboard" fallbackPath="/login" />;
 }

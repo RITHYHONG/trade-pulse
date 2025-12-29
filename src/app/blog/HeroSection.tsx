@@ -36,8 +36,7 @@ function HeroSkeleton() {
       <div className="container mx-auto px-4">
         {/* Title and Search */}
         <div className="text-center mb-10">
-          <Skeleton className="h-12 w-96 mx-auto mb-6" />
-          <Skeleton className="h-12 w-full max-w-xl mx-auto rounded-full" />
+
         </div>
 
         {/* Hero Grid */}
@@ -48,10 +47,10 @@ function HeroSkeleton() {
           </div>
           
           {/* Sidebar */}
-          <div className="lg:col-span-4 space-y-4">
+          <div className="lg:col-span-4 flex flex-col gap-4 justify-between">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="flex gap-4 p-4 bg-card rounded-xl">
-                <Skeleton className="w-24 h-24 rounded-xl flex-shrink-0" />
+              <div key={i} className="flex gap-1 p-4 bg-card rounded-xl">
+                <Skeleton className="w-24 h-28 rounded-xl flex-shrink-0" />
                 <div className="flex-1 space-y-2">
                   <Skeleton className="h-4 w-32" />
                   <Skeleton className="h-5 w-full" />

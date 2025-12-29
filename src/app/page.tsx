@@ -1,39 +1,32 @@
-"use client";
+import { Features } from "./(marketing)/components/Features";
+import { Footer } from "./(marketing)/components/Footer";
+import { Hero } from "./(marketing)/components/Hero";
+import { Pricing } from "./(marketing)/components/Pricing";
+import { ProblemSolution } from "./(marketing)/components/ProblemSolution";
+import { SocialProof } from "./(marketing)/components/SocialProof";
+import { generateMetadata } from '@/lib/seo';
+import { AuthRedirect } from '@/components/auth-redirect';
+import type { Metadata } from 'next';
 
-import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/use-auth';
-
-export default function Page() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-  const redirected = useRef(false);
-
-  useEffect(() => {
-    if (redirected.current) return;
-
-    // Wait until auth initialization completes
-    if (loading) return;
-
-    if (user) {
-      // Logged in: try to restore last visited path, otherwise go to /blog
-      let last = undefined;
-      try {
-        last = localStorage.getItem('last_visited_path') || undefined;
-      } catch {
-        // ignore storage errors
-      }
-
-      const safeLast = last && !['/', '/login', '/signup', '/'].includes(last) ? last : undefined;
-      redirected.current = true;
-      router.replace(safeLast || '/blog');
-    } else {
-      // Not logged in: send to landing page
-      redirected.current = true;
-      router.replace('/');
-    }
-  }, [user, loading, router]);
-
-  return null; // nothing to render, we redirect immediately
+export default function HomePage() {
+  return (
+    <>
+      <AuthRedirect authenticatedPath="/blog" redirectAuthenticated={true} />
+      <div className="overflow-x-hidden min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <Hero />
+        <ProblemSolution />
+        <Features />
+        <SocialProof />
+        <Pricing />
+      </div>
+    </>
+  );
 }
+
+export const metadata: Metadata = generateMetadata({
+  title: 'Home',
+  description:
+    'AI-powered pre-market intelligence and real-time trading insights. Start every trading day ahead with Trader Pulse.',
+  path: '/',
+});
 
