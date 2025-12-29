@@ -36,7 +36,7 @@ function defaultRetryCondition(error: unknown): boolean {
   }
 
   // Retry on HTTP 5xx errors
-  if (err.status >= 500 && err.status < 600) {
+  if ('status' in err && typeof err.status === 'number' && err.status >= 500 && err.status < 600) {
     return true;
   }
 
@@ -160,7 +160,7 @@ export async function retryApi<T>(fn: () => Promise<T>): Promise<T> {
       }
 
       // Retry on HTTP 5xx (server errors)
-      if (err.status >= 500 && err.status < 600) {
+      if ('status' in err && typeof err.status === 'number' && err.status >= 500 && err.status < 600) {
         return true;
       }
 
