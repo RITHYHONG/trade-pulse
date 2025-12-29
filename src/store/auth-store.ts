@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { AuthUser, signUp, signIn, signInWithGoogle, signInWithGoogleRedirect, handleGoogleRedirectResult, signOutUser, resetPassword, onAuthStateChange, toAuthUser } from '../lib/auth';
+import { AuthUser, signUp, signIn, signOutUser, resetPassword, onAuthStateChange, toAuthUser } from '../lib/auth';
+import { signInWithGoogle, signInWithGoogleRedirect, handleGoogleRedirectResult } from '../lib/google-auth';
 import { initializeUserProfile } from '../lib/firestore-service';
 import { clearAuthorProfileCache } from '../hooks/use-author-profile';
 

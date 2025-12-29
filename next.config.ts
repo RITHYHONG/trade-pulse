@@ -4,10 +4,19 @@ const nextConfig: NextConfig = {
   eslint: { ignoreDuringBuilds: true },
   serverExternalPackages: ["@prisma/client"],
   images: {
-    domains: [
-      "images.unsplash.com", 
-      "example.com",
-      "firebasestorage.googleapis.com"
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'example.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+      },
     ],
   },
   async headers() {
