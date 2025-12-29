@@ -43,3 +43,22 @@ firebase-debug.log
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Next build artifacts
+.next/
+.next/*
+
+# Firebase build / deployment output
+.firebase/
+.firebase/*
+
+# functions build/output
+functions/.next/
+functions/node_modules/
+
+# Node/npm
+node_modules/
+
+# Env files
+.env
+.env.local
