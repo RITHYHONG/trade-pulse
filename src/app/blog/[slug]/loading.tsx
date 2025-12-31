@@ -3,16 +3,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function Loading() {
   return (
     <div className="min-h-screen text-white">
-      <article className="max-w-4xl mx-auto px-6 py-8">
+      <article className="max-w-4xl mx-auto px-6 py-8 mt-10">
         {/* Header Section */}
         <header className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <Skeleton className="h-12 w-12 rounded-full" />
             <div className="space-y-2">
               <Skeleton className="h-4 w-32" />
               <Skeleton className="h-3 w-24" />
             </div>
           </div>
+          <Skeleton className="h-12 w-12 rounded-full mb-3" />
           <Skeleton className="h-12 w-full mb-4" />
           <Skeleton className="h-6 w-3/4" />
         </header>

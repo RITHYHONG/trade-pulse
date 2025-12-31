@@ -78,7 +78,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent pointer-events-none" />
         
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-12 mt-10">
           <div className="max-w-4xl mx-auto">
             {/* Breadcrumb - Simplified */}
             {/* <CustomBreadcrumb 

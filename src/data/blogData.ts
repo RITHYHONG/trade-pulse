@@ -202,4 +202,4 @@ export const blogPosts: BlogPost[] = [
   // Add more posts as needed
 ];
 
-export const categories = ['All Posts', 'Analysis', 'News', 'Education', 'Tools'];
+export const categories = ['All Posts', 'Stocks', 'Forex', 'Crypto', 'Education', 'Tools', 'Analysis'];

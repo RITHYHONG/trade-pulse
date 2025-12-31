@@ -9,7 +9,7 @@ interface RootErrorProps {
 
 export default function RootError({ error, reset }: RootErrorProps) {
   return (
-    <div className="mx-auto max-w-xl rounded-3xl border border-rose-500/30 bg-rose-500/10 p-8 text-center text-rose-100 mt-24">
+    <div className="mx-auto max-w-xl rounded-3xl border border-rose-500/30 bg-rose-500/10 p-8 text-center text-rose-100 m-24">
       <h1 className="text-2xl font-semibold">Something went wrong</h1>
       <p className="mt-3 text-sm opacity-80">{error.message}</p>
       <div className="mt-6 flex items-center justify-center gap-3 text-sm">

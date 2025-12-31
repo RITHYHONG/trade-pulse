@@ -3,6 +3,7 @@ import { HeroSection } from './HeroSection';
 import { LatestNewsSection } from './LatestNewsSection';
 import { PopularStorySection } from './PopularStorySection';
 import { HighlightSection } from './HighlightSection';
+import { CategoryNewsSection } from './CategoryNewsSection';
 import { NewsTicker } from './NewsTicker';
 import { useState, useMemo, useEffect } from 'react';
 import { CategoryFilter } from './CategoryFilter';
@@ -13,10 +14,13 @@ import { PenSquare } from 'lucide-react';
 import { BlogPost } from '../../types/blog';
 import { getPublishedPosts, getFeaturedPosts, BlogPost as FirestoreBlogPost } from '@/lib/blog-firestore-service';
 import Link from 'next/link';
+import { categories } from '../../data/blogData';
 
 interface BlogIndexProps {
   initialPosts?: BlogPost[];
 }
+
+
 
 // Helper function to convert Firestore post to UI BlogPost
 function mapFirestorePostToUIPost(firestorePost: FirestoreBlogPost): BlogPost {
@@ -108,10 +112,28 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
   };
 
   // Get posts for different sections
-  const heroPost = useMemo(() => featuredPosts[0] || posts[0] || null, [featuredPosts, posts]);
-  const sidebarPosts = useMemo(() => posts.slice(1, 4), [posts]);
-  const popularPosts = useMemo(() => [...posts].sort(() => Math.random() - 0.5).slice(0, 5), [posts]);
-  const highlightPosts = useMemo(() => posts.slice(4, 9), [posts]);
+  // Get posts for different sections
+  const heroPost = useMemo(() => {
+    if (activeCategory === 'All Posts') {
+      return featuredPosts[0] || posts[0] || null;
+    }
+    return filteredPosts[0] || null;
+  }, [featuredPosts, posts, filteredPosts, activeCategory]);
+
+  const sidebarPosts = useMemo(() => {
+    const source = activeCategory === 'All Posts' ? posts : filteredPosts;
+    return source.slice(1, 4);
+  }, [posts, filteredPosts, activeCategory]);
+
+  const popularPosts = useMemo(() => {
+    const source = activeCategory === 'All Posts' ? posts : filteredPosts;
+    return [...source].sort(() => Math.random() - 0.5).slice(0, 5);
+  }, [posts, filteredPosts, activeCategory]);
+
+  const highlightPosts = useMemo(() => {
+    const source = activeCategory === 'All Posts' ? posts : filteredPosts;
+    return source.slice(4, 9);
+  }, [posts, filteredPosts, activeCategory]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -131,6 +153,19 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
         onCategoryChange={handleCategoryChange}
       />
 
+      {!isLoading && filteredPosts.length === 0 && (
+        <div className="container mx-auto px-4 py-20 text-center">
+          <p className="text-xl text-muted-foreground">No posts found in this category.</p>
+          <Button
+            variant="link"
+            onClick={() => setActiveCategory('All Posts')}
+            className="mt-4 text-primary"
+          >
+            View all posts
+          </Button>
+        </div>
+      )}
+
       {/* Latest News Section */}
       <LatestNewsSection
         posts={filteredPosts.slice(0, 6)}
@@ -148,6 +183,19 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
         posts={highlightPosts}
         isLoading={isLoading}
       />
+
+      {/* Dynamic Category Sections */}
+      {activeCategory === 'All Posts' && categories
+        .filter(category => category !== 'All Posts')
+        .map(category => (
+          <CategoryNewsSection
+            key={category}
+            posts={posts}
+            isLoading={isLoading}
+            category={category}
+          />
+        ))
+      }
 
       {/* More Posts Grid */}
       {filteredPosts.length > 9 && (
