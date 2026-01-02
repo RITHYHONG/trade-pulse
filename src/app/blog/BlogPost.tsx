@@ -364,7 +364,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   <h3 className="text-3xl font-bold text-foreground">Related Articles</h3>
                   <Link
                     href="/blog"
-                    className="text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors duration-300 flex items-center gap-1"
+                    className="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-300 flex items-center gap-1"
                   >
                     View all articles
                     <ArrowRight className="w-4 h-4" />

@@ -146,7 +146,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               <div key={i} className="p-3 bg-secondary/20 rounded-xl border border-border/20 text-center relative overflow-hidden group">
                 <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">{stat.label}</div>
                 <div className={cn("text-lg font-mono font-bold tracking-tighter", stat.muted ? "text-muted-foreground/60" : "text-foreground", stat.highlight)}>{stat.value}</div>
-                <div className="text-[8px] text-muted-foreground/40 font-medium uppercase mt-1">{stat.sub}</div>
+                <div className="text-muted-foreground/40 font-medium uppercase mt-1">{stat.sub}</div>
                 <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
             ))}
@@ -163,9 +163,9 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                   <Sparkles className="w-4 h-4 text-primary" />
                   Expectation Curve
                 </h3>
-                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tight opacity-70">Probability Distribution Density</p>
+                <p className="text-muted-foreground font-medium uppercase tracking-tight opacity-70">Probability Distribution Density</p>
               </div>
-              <Badge variant="secondary" className="text-[10px] font-mono bg-primary/20 text-primary border-primary/30 shadow-sm shadow-primary/10">
+              <Badge variant="secondary" className="font-mono bg-primary/20 text-primary border-primary/30 shadow-sm shadow-primary/10">
                 {event.consensusIntelligence.surpriseProbability}% Surprise Prob
               </Badge>
             </div>
@@ -257,7 +257,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
-              <div className="absolute bottom-2 left-6 right-6 flex justify-between text-[8px] font-bold text-muted-foreground uppercase tracking-widest opacity-50">
+              <div className="absolute bottom-2 left-6 right-6 flex justify-between font-bold text-muted-foreground uppercase tracking-widest opacity-50">
                 <span>{event.consensus - (event.tradingSetup.expectedMove || 1)}{event.unit}</span>
                 <span>{event.consensus + (event.tradingSetup.expectedMove || 1)}{event.unit}</span>
               </div>
@@ -308,10 +308,10 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               <div className="relative z-10 space-y-5">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
-                    <div className="text-[9px] text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-60">Strategic Bias</div>
+                    <div className="text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-60">Strategic Bias</div>
                     <div className="font-bold text-xl tracking-tight flex items-center gap-2">
                       {event.tradingSetup.strategyTag}
-                      <Badge variant="outline" className="text-[9px] h-5 bg-primary/10 text-primary border-primary/20">
+                      <Badge variant="outline" className="h-5 bg-primary/10 text-primary border-primary/20">
                         {event.tradingSetup.confidenceScore}% CONFIDENCE
                       </Badge>
                     </div>
@@ -328,21 +328,21 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
 
                 <div className="grid grid-cols-2 gap-6 pt-2">
                   <div className="space-y-2">
-                    <div className="text-[9px] text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-60">Cross Correlation</div>
+                    <div className="text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-60 text-[0.7rem]">Cross Correlation</div>
                     <div className="flex flex-wrap gap-1.5 min-h-[20px]">
                       {event.tradingSetup.correlatedAssets.length > 0 ? (
                         event.tradingSetup.correlatedAssets.map((asset) => (
-                          <Badge key={asset} variant="secondary" className="text-[9px] font-bold h-5 bg-background/50 border border-border/10 hover:bg-primary/5 hover:text-primary transition-all cursor-default">
+                          <Badge key={asset} variant="secondary" className="font-bold h-5 bg-background/50 border border-border/10 hover:bg-primary/5 hover:text-primary transition-all cursor-default">
                             {asset}
                           </Badge>
                         ))
                       ) : (
-                        <span className="text-[10px] text-muted-foreground/40 font-italic italic">No correlations identified</span>
+                        <span className="text-muted-foreground/40 font-italic italic">No correlations identified</span>
                       )}
                     </div>
                   </div>
                   <div className="text-right space-y-1">
-                    <div className="text-[9px] text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-60">Whisper Num</div>
+                    <div className="text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-60 text-[0.7rem]">Whisper Num</div>
                     <div className="font-mono font-bold text-lg text-amber-500 tracking-tighter">
                       {event.consensusIntelligence.whisperNumber ? `${event.consensusIntelligence.whisperNumber}${event.unit}` : 'N/A'}
                     </div>
@@ -359,7 +359,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               { icon: Clock, label: 'Mean Fade Time', value: `${event.historicalData.fadeTimeHours}h`, color: 'text-primary' },
             ].map((metric, i) => (
               <div key={metric.label} className="p-4 rounded-2xl border border-border/40 bg-card/40 space-y-2 group hover:bg-card/60 transition-colors">
-                <div className="flex items-center gap-2 text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">
+                <div className="flex items-center gap-2 font-bold text-muted-foreground uppercase tracking-widest opacity-60">
                   <metric.icon className={cn("w-3.5 h-3.5", metric.color)} />
                   {metric.label}
                 </div>

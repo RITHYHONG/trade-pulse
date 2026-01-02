@@ -14,7 +14,7 @@ export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFil
             <button
               key={category}
               onClick={() => onCategoryChange(category)}
-              className={`whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
+              className={`whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer ${
                 activeCategory === category
                   ? 'bg-foreground text-background shadow-lg'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
