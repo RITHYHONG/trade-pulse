@@ -81,9 +81,9 @@ export default function AboutPage() {
             Our approach is simple: listen closely, solve creatively, and build with purpose.&quot;
           </blockquote>
           <div className="flex items-center justify-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">SJ</div>
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">KK</div>
             <div className="text-left">
-              <div className="font-semibold text-sm">Sarah Johnson</div>
+              <div className="font-semibold text-sm">Kakapo</div>
               <div className="text-xs text-muted-foreground">Founder & CEO</div>
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { name: "Sarah Johnson", role: "CEO & Founder" },
+              { name: "Kakapo", role: "CEO & Founder" },
               { name: "Michael Chen", role: "CTO" },
               { name: "Emily Rodriguez", role: "Head of Research" },
               { name: "David Kim", role: "Senior Analyst" }
@@ -195,7 +195,7 @@ export default function AboutPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 container mx-auto px-4 md:px-6">
+      <section className="py-24 container mx-auto px-4 md:px-6 ">
         <div className="grid md:grid-cols-12 gap-12">
           <div className="md:col-span-5">
             <span className="text-primary text-sm font-semibold tracking-wider uppercase mb-2 block">Support</span>
@@ -213,7 +213,7 @@ export default function AboutPage() {
             </Link>
           </div>
           <div className="md:col-span-7">
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion type="single" collapsible className="w-full ">
               {[
                 { q: "How real-time is the data?", a: "Our data pipelines are directly connected to major exchanges with sub-millisecond latency." },
                 { q: "Can I upgrade my plan later?", a: "Absolutely. You can switch between plans at any time with prorated billing." },
@@ -221,7 +221,7 @@ export default function AboutPage() {
                 { q: "Do you offer API access?", a: "Enterprise plans include full REST and WebSocket API access for custom integrations." }
               ].map((faq, i) => (
                 <AccordionItem key={i} value={`item-${i}`}>
-                  <AccordionTrigger className="text-left text-lg font-medium">{faq.q}</AccordionTrigger>
+                  <AccordionTrigger className="text-left text-lg font-medium cursor-pointer">{faq.q}</AccordionTrigger>
                   <AccordionContent className="text-muted-foreground text-base">
                     {faq.a}
                   </AccordionContent>
