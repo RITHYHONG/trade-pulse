@@ -19,6 +19,12 @@ service cloud.firestore {
          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
     }
 
+    // Contact form submissions
+    match /contacts/{contactId} {
+      allow create: if true; // Allow anyone to submit a contact form
+      allow read, update, delete: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
     // Deny all other access by default
     match /{document=**} {
       allow read, write: if false;
