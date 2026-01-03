@@ -1,12 +1,12 @@
 import { Card } from "@/components/ui/card";
-import type { EconomicCalendarEvent } from "@/types";
+import type { EconomicEvent } from "@/app/calendar/components/economic-calendar/types";
 
 interface EconomicCalendarWidgetProps {
-  events: EconomicCalendarEvent[];
+  events: EconomicEvent[];
   isLoading?: boolean;
 }
 
-const impactStyles: Record<EconomicCalendarEvent["impact"], string> = {
+const impactStyles: Record<string, string> = {
   low: "bg-sky-500/10 text-sky-300",
   medium: "bg-amber-500/10 text-amber-300",
   high: "bg-rose-500/10 text-rose-300",
@@ -58,17 +58,17 @@ export function EconomicCalendarWidget({ events, isLoading = false }: EconomicCa
           >
             <div>
               <p className="text-xs uppercase tracking-wide text-slate-400">
-                {event.time} • {event.country}
+                {event.datetime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {event.country}
               </p>
-              <p className="mt-1 text-sm font-semibold text-white">{event.event}</p>
+              <p className="mt-1 text-sm font-semibold text-white">{event.name}</p>
               <div className="mt-2 flex flex-wrap gap-4 text-xs text-slate-300">
-                <span>Consensus: {event.consensus}</span>
-                <span>Previous: {event.previous}</span>
-                {event.actual && <span>Actual: {event.actual}</span>}
+                <span>Consensus: {event.consensus}{event.unit}</span>
+                <span>Previous: {event.previous}{event.unit}</span>
+                {event.actual !== undefined && <span>Actual: {event.actual}{event.unit}</span>}
               </div>
             </div>
             <span
-              className={`rounded-full px-3 py-1 text-xs font-semibold ${impactStyles[event.impact]}`}
+              className={`rounded-full px-3 py-1 text-xs font-semibold ${impactStyles[event.impact] || impactStyles.low}`}
             >
               {event.impact} impact
             </span>

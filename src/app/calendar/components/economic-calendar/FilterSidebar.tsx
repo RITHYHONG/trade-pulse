@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { FilterState, ImpactLevel, Region, EventCategory } from './types';
-import { useState } from 'react';
+import { FilterState, ImpactLevel, Region, EventCategory, EconomicEvent } from './types';
+import { useState, useMemo } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -12,15 +12,36 @@ import { motion } from 'framer-motion';
 interface FilterSidebarProps {
   filters: FilterState;
   onFiltersChange: (filters: Partial<FilterState>) => void;
+  events: EconomicEvent[];
 }
 
-export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) {
+export function FilterSidebar({ filters, onFiltersChange, events }: FilterSidebarProps) {
   const [openSections, setOpenSections] = useState({
     impact: true,
     regions: true,
     categories: true,
     sessions: false
   });
+
+  const stats = useMemo(() => {
+    const impactCounts = { high: 0, medium: 0, low: 0 };
+    const regionCounts: Record<Region, number> = { US: 0, EU: 0, UK: 0, Asia: 0, EM: 0 };
+    const categoryCounts: Record<string, number> = {};
+
+    events.forEach(event => {
+      if (impactCounts[event.impact] !== undefined) impactCounts[event.impact]++;
+      if (regionCounts[event.region] !== undefined) regionCounts[event.region]++;
+      categoryCounts[event.category] = (categoryCounts[event.category] || 0) + 1;
+    });
+
+    return {
+      impactCounts,
+      regionCounts,
+      categoryCounts,
+      marketMovers: impactCounts.high,
+      volatilityFocus: impactCounts.high + impactCounts.medium
+    };
+  }, [events]);
 
   const toggleImpact = (impact: ImpactLevel) => {
     const newImpacts = filters.impacts.includes(impact)
@@ -44,11 +65,16 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
   };
 
   const getImpactStyles = (impact: ImpactLevel) => {
-    return {
-      high: { dot: 'bg-rose-500', count: 7 },
-      medium: { dot: 'bg-amber-500', count: 12 },
-      low: { dot: 'bg-emerald-500', count: 18 }
+    const base = {
+      high: { dot: 'bg-rose-500' },
+      medium: { dot: 'bg-amber-500' },
+      low: { dot: 'bg-emerald-500' }
     }[impact];
+
+    return {
+      ...base,
+      count: stats.impactCounts[impact]
+    };
   };
 
   const regionLabels: Record<Region, string> = {
@@ -72,8 +98,8 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
 
           <div className="grid gap-2">
             {[
-              { label: 'Market Movers', icon: Target, count: 12 },
-              { label: 'Volatility Focus', icon: TrendingUp, count: 8 },
+              { label: 'Market Movers', icon: Target, count: stats.marketMovers },
+              { label: 'Volatility Focus', icon: TrendingUp, count: stats.volatilityFocus },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -167,9 +193,10 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
                 />
                 <Label
                   htmlFor={`region-${region}`}
-                  className="flex-1 cursor-pointer text-sm font-normal text-foreground/90"
+                  className="flex-1 cursor-pointer text-sm font-normal text-foreground/90 flex items-center justify-between"
                 >
-                  {regionLabels[region]}
+                  <span>{regionLabels[region]}</span>
+                  <span className="text-xs text-muted-foreground ml-auto">{stats.regionCounts[region] || 0}</span>
                 </Label>
               </div>
             ))}
@@ -201,9 +228,10 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
                 />
                 <Label
                   htmlFor={`category-${category}`}
-                  className="flex-1 cursor-pointer text-sm font-normal text-foreground/90 capitalize"
+                  className="flex-1 cursor-pointer text-sm font-normal text-foreground/90 capitalize flex items-center justify-between"
                 >
-                  {category === 'centralBank' ? 'Central Bank' : category}
+                  <span>{category === 'centralBank' ? 'Central Bank' : category}</span>
+                  <span className="text-xs text-muted-foreground ml-auto">{stats.categoryCounts[category] || 0}</span>
                 </Label>
               </div>
             ))}

@@ -1,5 +1,4 @@
-
-import { Fragment, useState } from 'react';
+import React, { Fragment, useState, useMemo } from 'react';
 import { EconomicEvent } from './types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -31,7 +30,7 @@ interface ListViewProps {
   isLoading?: boolean;
 }
 
-export function ListView({ events, onEventClick, isLoading = false }: ListViewProps) {
+export const ListView = React.memo(({ events, onEventClick, isLoading = false }: ListViewProps) => {
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'time' | 'impact' | 'name'>('time');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -42,19 +41,21 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
     low: 1
   };
 
-  const sortedEvents = [...events].sort((a, b) => {
-    let comparison = 0;
+  const sortedEvents = useMemo(() => {
+    return [...events].sort((a, b) => {
+      let comparison = 0;
 
-    if (sortBy === 'time') {
-      comparison = a.datetime.getTime() - b.datetime.getTime();
-    } else if (sortBy === 'impact') {
-      comparison = impactScore[b.impact] - impactScore[a.impact];
-    } else if (sortBy === 'name') {
-      comparison = a.name.localeCompare(b.name);
-    }
+      if (sortBy === 'time') {
+        comparison = a.datetime.getTime() - b.datetime.getTime();
+      } else if (sortBy === 'impact') {
+        comparison = impactScore[b.impact] - impactScore[a.impact];
+      } else if (sortBy === 'name') {
+        comparison = a.name.localeCompare(b.name);
+      }
 
-    return sortOrder === 'asc' ? comparison : -comparison;
-  });
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+  }, [events, sortBy, sortOrder]);
 
   const handleSort = (column: 'time' | 'impact' | 'name') => {
     if (sortBy === column) {
@@ -326,4 +327,6 @@ export function ListView({ events, onEventClick, isLoading = false }: ListViewPr
       </div>
     </ScrollArea>
   );
-}
+});
+
+ListView.displayName = 'ListView';

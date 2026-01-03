@@ -1,3 +1,4 @@
+import React, { useMemo } from 'react';
 import { EconomicEvent } from './types';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -11,31 +12,27 @@ interface TimelineViewProps {
   isLoading?: boolean;
 }
 
-export function TimelineView({ events, onEventClick, isLoading = false }: TimelineViewProps) {
-  // Group events by hour
-  const eventsByHour = events.reduce((acc, event) => {
-    const hour = event.datetime.getHours();
-    if (!acc[hour]) acc[hour] = [];
-    acc[hour].push(event);
-    return acc;
-  }, {} as Record<number, EconomicEvent[]>);
+export const TimelineView = React.memo(({ events, onEventClick, isLoading = false }: TimelineViewProps) => {
+  // Group events by hour - Memoized
+  const eventsByHour = useMemo(() => {
+    return events.reduce((acc, event) => {
+      const hour = event.datetime.getHours();
+      if (!acc[hour]) acc[hour] = [];
+      acc[hour].push(event);
+      return acc;
+    }, {} as Record<number, EconomicEvent[]>);
+  }, [events]);
 
-  // Create timeline hours (0-23)
-  const hours = Array.from({ length: 24 }, (_, i) => i);
+  // Create timeline hours (0-23) - Static
+  const hours = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []);
 
-  const impactStyles = {
+  const impactStyles: Record<string, string> = {
     high: 'bg-rose-500 border-rose-500/30',
     medium: 'bg-amber-500 border-amber-500/30',
     low: 'bg-emerald-500 border-emerald-500/30'
   };
 
-  const impactBorder = {
-    high: 'border-rose-500/30',
-    medium: 'border-amber-500/30',
-    low: 'border-emerald-500/30'
-  };
-
-  const sentimentGlow = {
+  const sentimentGlow: Record<string, string> = {
     bullish: 'group-hover/card:shadow-[0_0_15px_rgba(16,185,129,0.1)] group-hover/card:border-emerald-500/30',
     bearish: 'group-hover/card:shadow-[0_0_15px_rgba(244,63,94,0.1)] group-hover/card:border-rose-500/30',
     neutral: 'group-hover/card:shadow-[0_0_15px_rgba(229,87,63,0.1)] group-hover/card:border-primary/30'
@@ -89,28 +86,28 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
                         key={event.id}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: eventIdx * 0.1 }}
+                        transition={{ delay: eventIdx * 0.05 }}
                         onClick={() => onEventClick(event)}
                         className={cn(
                           "relative bg-card hover:bg-card/80 border border-border/40 rounded-xl p-4 cursor-pointer transition-all duration-300 group/card overflow-hidden",
-                          sentimentGlow[event.historicalData.directionBias],
+                          sentimentGlow[event.historicalData.directionBias] || sentimentGlow.neutral,
                           "hover:-translate-y-0.5"
                         )}
                       >
                         {/* Dynamic Background Glow */}
                         <div className={cn(
                           "absolute inset-0 opacity-10 transition-opacity duration-500",
-                          impactStyles[event.impact].split(' ')[0]
+                          (impactStyles[event.impact] || impactStyles.low).split(' ')[0]
                         )} />
                         <div className={cn(
                           "absolute left-0 top-0 bottom-0 w-1 rounded-l-xl opacity-100 transition-opacity",
-                          impactStyles[event.impact].split(' ')[0]
+                          (impactStyles[event.impact] || impactStyles.low).split(' ')[0]
                         )} />
 
                         <div className="flex items-start justify-between gap-4">
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <div className={cn("w-1.5 h-1.5 rounded-full shadow-sm", impactStyles[event.impact].split(' ')[0])} />
+                              <div className={cn("w-1.5 h-1.5 rounded-full shadow-sm", (impactStyles[event.impact] || impactStyles.low).split(' ')[0])} />
                               <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                                 {event.impact} Impact
                               </span>
@@ -158,4 +155,6 @@ export function TimelineView({ events, onEventClick, isLoading = false }: Timeli
       </div>
     </ScrollArea>
   );
-}
+});
+
+TimelineView.displayName = 'TimelineView';
