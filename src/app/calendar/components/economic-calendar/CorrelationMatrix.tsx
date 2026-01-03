@@ -130,8 +130,8 @@ export function CorrelationMatrix() {
 
                   return (
                     <div key={index} className="flex items-center">
-                      <div className="px-3 py-2 bg-background/80 backdrop-blur-sm rounded-lg border border-border/40 hover:border-primary/40 transition-colors relative z-10 shadow-sm">
-                        <div className="text-[11px] font-semibold text-foreground whitespace-nowrap">
+                      <div className="px-3 py-2 bg-background/80 backdrop-blur-sm rounded-lg border border-border/40 hover:border-primary/40 transition-colors relative z-10 shadow-sm flex items-center">
+                        <div className="text-[11px] font-semibold text-foreground whitespace-nowrap mx-auto">
                           {item}
                         </div>
                       </div>

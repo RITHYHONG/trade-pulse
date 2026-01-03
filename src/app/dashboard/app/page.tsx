@@ -4,7 +4,7 @@ import { AISummaryWidget } from "@/components/dashboard/widgets/ai-summary";
 import { EconomicCalendarWidget } from "@/components/dashboard/widgets/economic-calendar";
 import { WatchlistWidget } from "@/components/dashboard/widgets/watchlist";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getEconomicCalendar } from "@/lib/api/economic-calendar";
+import { EconomicCalendarService } from "@/services/economic-calendar.service";
 import { getMarketNews } from "@/lib/api/news-api";
 import { getWatchlist } from "@/lib/api/market-data";
 
@@ -14,7 +14,10 @@ async function AISummarySection() {
 }
 
 async function EconomicCalendarSection() {
-  const events = await getEconomicCalendar();
+  const today = new Date();
+  const end = new Date(today);
+  end.setDate(today.getDate() + 3);
+  const events = await EconomicCalendarService.getEvents(today, end);
   return <EconomicCalendarWidget events={events} />;
 }
 

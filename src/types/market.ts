@@ -10,16 +10,7 @@ export interface MarketNewsItem {
 	url: string;
 }
 
-export interface EconomicCalendarEvent {
-	id: string;
-	time: string;
-	event: string;
-	country: string;
-	consensus: string;
-	previous: string;
-	actual?: string | null;
-	impact: "low" | "medium" | "high";
-}
+
 
 export interface WatchlistInstrument {
 	symbol: string;

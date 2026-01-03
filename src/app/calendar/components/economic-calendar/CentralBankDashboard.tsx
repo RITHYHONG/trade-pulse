@@ -1,3 +1,4 @@
+import React, { useMemo } from 'react';
 import { CentralBankEvent } from './types';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -10,10 +11,12 @@ interface CentralBankDashboardProps {
   events: CentralBankEvent[];
 }
 
-export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
-  const upcomingEvents = events
-    .sort((a, b) => a.datetime.getTime() - b.datetime.getTime())
-    .slice(0, 3);
+export const CentralBankDashboard = React.memo(({ events }: CentralBankDashboardProps) => {
+  const upcomingEvents = useMemo(() => {
+    return [...events]
+      .sort((a, b) => a.datetime.getTime() - b.datetime.getTime())
+      .slice(0, 3);
+  }, [events]);
 
   const getTypeStyles = (type: string) => {
     return {
@@ -167,4 +170,6 @@ export function CentralBankDashboard({ events }: CentralBankDashboardProps) {
       )}
     </div>
   );
-}
+});
+
+CentralBankDashboard.displayName = 'CentralBankDashboard';
