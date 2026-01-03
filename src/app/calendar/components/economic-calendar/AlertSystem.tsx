@@ -116,7 +116,7 @@ export function AlertSystem() {
           </div>
           <div>
             <h3 className="text-xs font-bold text-foreground tracking-tight">SMART ALERTS</h3>
-            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Real-time monitor</p>
+            <p className="text-[0.7rem] text-muted-foreground font-medium uppercase tracking-wider">Real-time monitor</p>
           </div>
         </div>
         <Button
@@ -135,12 +135,12 @@ export function AlertSystem() {
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-3 h-3 text-primary" />
-              <span className="text-[10px] font-bold text-foreground/80 uppercase tracking-widest">New Config</span>
+              <span className="text-[0.7rem] font-bold text-foreground/80 uppercase tracking-widest">New Config</span>
             </div>
 
             <div className="space-y-3">
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-bold text-muted-foreground uppercase opacity-70">Event Source</Label>
+                <Label className="text-[0.7rem] font-bold text-muted-foreground uppercase opacity-70">Event Source</Label>
                 <Input
                   placeholder="e.g. US NFP"
                   className="h-8 text-xs bg-background/50 border-border/40"
@@ -149,7 +149,7 @@ export function AlertSystem() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-bold text-muted-foreground uppercase opacity-70">Alert Type</Label>
+                  <Label className="text-[0.7rem] font-bold text-muted-foreground uppercase opacity-70">Alert Type</Label>
                   <Select>
                     <SelectTrigger className="h-8 text-xs bg-background/50 border-border/40">
                       <SelectValue placeholder="Type" />
@@ -162,7 +162,7 @@ export function AlertSystem() {
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-bold text-muted-foreground uppercase opacity-70">Threshold</Label>
+                  <Label className="text-[0.7rem] font-bold text-muted-foreground uppercase opacity-70">Threshold</Label>
                   <Input
                     type="number"
                     placeholder="0.0"
@@ -232,7 +232,7 @@ export function AlertSystem() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-muted-foreground font-medium">{alert.condition}</span>
+                      <span className="text-[0.7rem] text-muted-foreground font-medium">{alert.condition}</span>
                       {alert.threshold && (
                         <Badge variant="outline" className="h-4 text-[9px] px-1 font-mono border-transparent bg-background/40">
                           {alert.threshold}%
@@ -258,7 +258,7 @@ export function AlertSystem() {
 
       {alerts.length === 0 && (
         <div className="text-center py-6 border-2 border-dashed border-border/20 rounded-xl">
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">No Alerts Set</span>
+          <span className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-widest">No Alerts Set</span>
         </div>
       )}
     </div>

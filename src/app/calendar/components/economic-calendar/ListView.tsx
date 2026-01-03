@@ -172,7 +172,7 @@ export const ListView = React.memo(({ events, onEventClick, isLoading = false }:
                             hour12: false
                           })}
                         </span>
-                        <span className="text-[10px] text-muted-foreground uppercase">
+                        <span className="text-[0.7rem] text-muted-foreground uppercase">
                           {event.datetime.toLocaleDateString('en-US', { weekday: 'short' })}
                         </span>
                       </div>
@@ -191,10 +191,10 @@ export const ListView = React.memo(({ events, onEventClick, isLoading = false }:
                           {event.name}
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono text-muted-foreground px-1.5 py-0.5 rounded-md bg-secondary/50 border border-border/50">
+                          <span className="text-[0.7rem] font-mono text-muted-foreground px-1.5 py-0.5 rounded-md bg-secondary/50 border border-border/50">
                             {event.country}
                           </span>
-                          <span className="text-[10px] text-muted-foreground">
+                          <span className="text-[0.7rem] text-muted-foreground">
                             {event.region}
                           </span>
                         </div>
@@ -257,11 +257,11 @@ export const ListView = React.memo(({ events, onEventClick, isLoading = false }:
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                               <div className="p-3 rounded-lg bg-background border border-border/50">
-                                <div className="text-[10px] text-muted-foreground mb-1">Avg Move</div>
+                                <div className="text-[0.7rem] text-muted-foreground mb-1">Avg Move</div>
                                 <div className="text-sm font-mono font-medium">±{event.historicalData.avgMove}%</div>
                               </div>
                               <div className="p-3 rounded-lg bg-background border border-border/50">
-                                <div className="text-[10px] text-muted-foreground mb-1">Direction Bias</div>
+                                <div className="text-[0.7rem] text-muted-foreground mb-1">Direction Bias</div>
                                 <div className={cn(
                                   "flex items-center gap-1.5 text-sm font-bold capitalize",
                                   event.historicalData.directionBias === 'bullish' ? 'text-emerald-500' :
@@ -284,7 +284,7 @@ export const ListView = React.memo(({ events, onEventClick, isLoading = false }:
                             <div className="p-3 rounded-lg bg-background border border-border/50 space-y-2">
                               <div className="flex justify-between items-center text-sm">
                                 <span className="text-muted-foreground font-medium">Surprise Prob</span>
-                                <Badge variant="outline" className="font-mono text-[10px] bg-primary/5 text-primary border-primary/20">
+                                <Badge variant="outline" className="font-mono text-[0.7rem] bg-primary/5 text-primary border-primary/20">
                                   {event.consensusIntelligence.surpriseProbability}%
                                 </Badge>
                               </div>
@@ -307,7 +307,7 @@ export const ListView = React.memo(({ events, onEventClick, isLoading = false }:
                               <div className="text-sm font-medium">{event.tradingSetup.strategyTag}</div>
                               <div className="flex items-center gap-2 mt-auto">
                                 {event.tradingSetup.correlatedAssets.slice(0, 3).map(asset => (
-                                  <Badge key={asset} variant="secondary" className="bg-secondary/50 text-[10px] font-normal border-transparent">
+                                  <Badge key={asset} variant="secondary" className="bg-secondary/50 text-[0.7rem] font-normal border-transparent">
                                     {asset}
                                   </Badge>
                                 ))}

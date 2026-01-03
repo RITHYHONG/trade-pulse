@@ -81,9 +81,9 @@ export function HeaderMain() {
     avatarUrl: user?.photoURL ?? undefined,
   }), [user?.displayName, user?.email, user?.photoURL]);
 
-  const { authorProfile: headerProfile } = useAuthorProfile({ 
-    authorId: user?.uid, 
-    fallbackAuthor 
+  const { authorProfile: headerProfile } = useAuthorProfile({
+    authorId: user?.uid,
+    fallbackAuthor
   });
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export function HeaderMain() {
   }, []);
 
   return (
-    <motion.header 
+    <motion.header
       className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border shadow-sm"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -139,16 +139,16 @@ export function HeaderMain() {
     >
       <div className="container mx-auto px-6 lg:px-8 py-3">
         <div className="flex items-center justify-between">
-          <motion.div 
+          <motion.div
             className="flex items-center gap-3"
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.15 }}
           >
             <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-90">
-              <Image 
-                src={mounted ? (theme === 'light' ? LogoLight : LogoDark) : LogoDark} 
-                width={64} 
-                height={64} 
+              <Image
+                src={mounted ? (theme === 'light' ? LogoLight : LogoDark) : LogoDark}
+                width={64}
+                height={64}
                 alt="Logo"
                 priority
               />
@@ -158,7 +158,7 @@ export function HeaderMain() {
           <nav className="hidden lg:flex items-center gap-1">
             {navItems.map((item, index) => {
               const isActive = pathname === item.href || (item.isAnchor && active === item.href);
-              
+
               if (item.isComingSoon) {
                 return (
                   <motion.a
@@ -213,11 +213,11 @@ export function HeaderMain() {
             >
               <Search className="w-4 h-4" />
               <span className="text-sm">Search</span>
-              <kbd className="pointer-events-none hidden sm:inline-flex h-5 select-none items-center gap-1 rounded-md border bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground ml-1">
+              <kbd className="pointer-events-none hidden sm:inline-flex h-5 select-none items-center gap-1 rounded-md border bg-background px-1.5 font-mono text-[0.7rem] font-medium text-muted-foreground ml-1">
                 <span className="text-xs">/</span>
               </kbd>
             </Button>
-            
+
             {user ? (
               <div className="flex items-center gap-3">
                 <DropdownMenu>
@@ -330,10 +330,10 @@ export function HeaderMain() {
                   <Search className="w-4 h-4" />
                   <span>Search</span>
                 </Button>
-                
+
                 {navItems.map((item, index) => {
                   const isActive = pathname === item.href || (item.isAnchor && active === item.href);
-                  
+
                   if (item.isComingSoon) {
                     return (
                       <motion.a
@@ -375,7 +375,7 @@ export function HeaderMain() {
                   }
                 })}
               </nav>
-              
+
               <div className="flex flex-col gap-3">
                 {user ? (
                   <div className="flex flex-col gap-3">
@@ -419,9 +419,9 @@ export function HeaderMain() {
       </AnimatePresence>
 
       {/* Search Modal */}
-      <SearchModal 
-        isOpen={isSearchOpen} 
-        onClose={() => setIsSearchOpen(false)} 
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
       />
     </motion.header>
   );

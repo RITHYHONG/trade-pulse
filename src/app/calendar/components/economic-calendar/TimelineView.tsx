@@ -108,11 +108,11 @@ export const TimelineView = React.memo(({ events, onEventClick, isLoading = fals
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
                               <div className={cn("w-1.5 h-1.5 rounded-full shadow-sm", (impactStyles[event.impact] || impactStyles.low).split(' ')[0])} />
-                              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                              <span className="text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground">
                                 {event.impact} Impact
                               </span>
-                              <span className="text-[10px] text-muted-foreground px-1">•</span>
-                              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                              <span className="text-[0.7rem] text-muted-foreground px-1">•</span>
+                              <span className="text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground">
                                 {event.country}
                               </span>
                             </div>
@@ -128,14 +128,14 @@ export const TimelineView = React.memo(({ events, onEventClick, isLoading = fals
                                   {event.datetime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                               </div>
-                              <Badge variant="secondary" className="text-[10px] h-5 bg-secondary/50 font-normal">
+                              <Badge variant="secondary" className="text-[0.7rem] h-5 bg-secondary/50 font-normal">
                                 {event.category}
                               </Badge>
                             </div>
                           </div>
 
                           <div className="text-right">
-                            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">Expected Move</div>
+                            <div className="text-[0.7rem] text-muted-foreground uppercase tracking-wider mb-0.5">Expected Move</div>
                             <div className="text-sm font-mono font-medium text-foreground">
                               ±{event.tradingSetup.expectedMove}%
                             </div>

@@ -110,7 +110,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                 <div className="w-32 flex-shrink-0" /> {/* Empty corner */}
                 {hours.map(hour => (
                   <div key={hour} className="w-10 text-center">
-                    <div className="text-[10px] font-mono text-muted-foreground">
+                    <div className="text-[0.7rem] font-mono text-muted-foreground">
                       {hour.toString().padStart(2, '0')}
                     </div>
                   </div>
@@ -161,7 +161,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                             )}
 
                             {hasEvents && (
-                              <span className="text-[10px] text-white/90 font-bold relative z-10">
+                              <span className="text-[0.7rem] text-white/90 font-bold relative z-10">
                                 {cellEvents.length}
                               </span>
                             )}
@@ -177,7 +177,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                                 <span className="text-xs font-semibold text-foreground">
                                   {regionLabels[region]}
                                 </span>
-                                <span className="text-[10px] font-mono text-muted-foreground">
+                                <span className="text-[0.7rem] font-mono text-muted-foreground">
                                   {hour.toString().padStart(2, '0')}:00
                                 </span>
                               </div>
@@ -198,7 +198,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                                       impactStyles[event.impact].split(' ')[0]
                                     )} />
                                   </div>
-                                  <div className="text-[10px] text-muted-foreground mt-1 flex justify-between">
+                                  <div className="text-[0.7rem] text-muted-foreground mt-1 flex justify-between">
                                     <span>{event.country}</span>
                                     <span className="font-mono">Exp: {event.consensus}{event.unit}</span>
                                   </div>
@@ -237,7 +237,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                   <div className="p-1.5 rounded-md bg-primary/10 text-primary">
                     <Flame className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">High Volatility Area</span>
+                  <span className="text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground">High Volatility Area</span>
                 </div>
                 <div className="flex items-baseline gap-2 mb-1">
                   <span className="text-xl font-mono font-medium text-foreground">{hotspot.hour.toString().padStart(2, '0')}:00</span>

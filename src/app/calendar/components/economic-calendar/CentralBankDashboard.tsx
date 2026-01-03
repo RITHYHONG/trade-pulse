@@ -68,7 +68,7 @@ export const CentralBankDashboard = React.memo(({ events }: CentralBankDashboard
           </div>
           <div>
             <h3 className="text-xs font-bold text-foreground tracking-tight">CENTRAL BANKS</h3>
-            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Policy Tracking</p>
+            <p className="text-[0.7rem] text-muted-foreground font-medium uppercase tracking-wider">Policy Tracking</p>
           </div>
         </div>
         <Badge variant="outline" className="h-5 text-[0.7rem] font-mono border-primary/20 text-primary bg-primary/5 px-1.5">
@@ -165,7 +165,7 @@ export const CentralBankDashboard = React.memo(({ events }: CentralBankDashboard
 
       {upcomingEvents.length === 0 && (
         <div className="text-center py-8">
-          <span className="text-[10px] font-medium text-muted-foreground">No upcoming events found</span>
+          <span className="text-[0.7rem] font-medium text-muted-foreground">No upcoming events found</span>
         </div>
       )}
     </div>

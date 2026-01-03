@@ -89,10 +89,10 @@ export function CorrelationMatrix() {
           </div>
           <div>
             <h3 className="text-xs font-bold text-foreground tracking-tight">CROSS-MARKET</h3>
-            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Live Analysis</p>
+            <p className="text-[0.7rem] text-muted-foreground font-medium uppercase tracking-wider">Live Analysis</p>
           </div>
         </div>
-        <Badge variant="outline" className="h-5 text-[9px] font-mono border-emerald-500/30 text-emerald-500 bg-emerald-500/5 px-1.5">
+        <Badge variant="outline" className="h-5 text-[0.8rem] font-mono border-emerald-500/30 text-emerald-500 bg-emerald-500/5 px-1.5">
           ACTIVE
         </Badge>
       </div>
@@ -101,7 +101,7 @@ export function CorrelationMatrix() {
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <BarChart3 className="w-3.5 h-3.5 text-primary" />
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+          <span className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-widest">
             Impact Chains
           </span>
         </div>
@@ -156,7 +156,7 @@ export function CorrelationMatrix() {
                                   />
                                 </div>
                               </TooltipTrigger>
-                              <TooltipContent className="text-[10px] p-2 bg-popover/95 font-medium border-border/40">
+                              <TooltipContent className="text-[0.7rem] p-2 bg-popover/95 font-medium border-border/40">
                                 <div>{correlation.strength > 0 ? '+' : ''}{correlation.strength.toFixed(2)} ({getStrengthLabel(correlation.strength)})</div>
                                 {correlation.lagMinutes && <div className="text-muted-foreground opacity-70">{correlation.lagMinutes}m lag</div>}
                               </TooltipContent>
@@ -178,7 +178,7 @@ export function CorrelationMatrix() {
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-3.5 h-3.5 text-primary" />
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+          <span className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-widest">
             Key Relationships
           </span>
         </div>
@@ -208,15 +208,15 @@ export function CorrelationMatrix() {
                 />
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-bold text-foreground/80">{corr.event1}</span>
+                    <span className="text-[0.7rem] font-bold text-foreground/80">{corr.event1}</span>
                     <ArrowRight className="w-2.5 h-2.5 text-muted-foreground" />
-                    <span className="text-[10px] font-bold text-foreground/80">{corr.event2}</span>
+                    <span className="text-[0.7rem] font-bold text-foreground/80">{corr.event2}</span>
                   </div>
-                  <span className={cn("text-[10px] font-mono font-bold", styles.text)}>
+                  <span className={cn("text-[0.7rem] font-mono font-bold", styles.text)}>
                     {corr.strength > 0 ? '+' : ''}{corr.strength.toFixed(2)}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 text-[9px] text-muted-foreground font-medium uppercase tracking-tight">
+                <div className="flex items-center gap-3 text-[0.8rem] text-muted-foreground font-medium uppercase tracking-tight">
                   <div className="flex items-center gap-1">
                     <Zap className="w-3 h-3 text-primary/60" />
                     {getStrengthLabel(corr.strength)}
@@ -238,11 +238,11 @@ export function CorrelationMatrix() {
       <div className="pt-4 border-t border-border/30 grid grid-cols-2 gap-2">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span className="text-[9px] font-medium text-muted-foreground">Pos Corr</span>
+          <span className="text-[0.8rem] font-medium text-muted-foreground">Pos Corr</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-rose-500" />
-          <span className="text-[9px] font-medium text-muted-foreground">Neg Corr</span>
+          <span className="text-[0.8rem] font-medium text-muted-foreground">Neg Corr</span>
         </div>
       </div>
     </div>

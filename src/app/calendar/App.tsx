@@ -42,7 +42,7 @@ const MarketIntelContent = React.memo(({ events }: { events: any[] }) => (
   <div className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-hide">
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Central Bank Watch</h4>
+        <h4 className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-[0.2em]">Central Bank Watch</h4>
         <Target className="w-3.5 h-3.5 text-primary/50" />
       </div>
       <CentralBankDashboard events={events} />
@@ -50,7 +50,7 @@ const MarketIntelContent = React.memo(({ events }: { events: any[] }) => (
 
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Live Alerts</h4>
+        <h4 className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-[0.2em]">Live Alerts</h4>
         <Bell className="w-3.5 h-3.5 text-primary/50" />
       </div>
       <AlertSystem />
@@ -58,7 +58,7 @@ const MarketIntelContent = React.memo(({ events }: { events: any[] }) => (
 
     <div className="space-y-4 pb-8">
       <div className="flex items-center justify-between">
-        <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Cross Correlations</h4>
+        <h4 className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-[0.2em]">Cross Correlations</h4>
         <Activity className="w-3.5 h-3.5 text-primary/50" />
       </div>
       <CorrelationMatrix />
@@ -167,7 +167,7 @@ export default function App() {
             </div>
             <div className="hidden sm:block">
               <h1 className="text-sm font-bold text-foreground leading-tight tracking-tight">TradePulse <span className="text-primary">Calendar</span></h1>
-              <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-widest opacity-60">Intelligence Hub</p>
+              <p className="text-[0.7rem] text-muted-foreground font-semibold uppercase tracking-widest opacity-60">Intelligence Hub</p>
             </div>
           </div>
 
@@ -175,7 +175,7 @@ export default function App() {
             <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-full border border-border/40">
               <Zap className="w-3.5 h-3.5 text-amber-500" />
               <span className="text-[11px] font-bold text-muted-foreground">CRITICAL EVENTS:</span>
-              <Badge variant="outline" className="h-5 bg-rose-500/10 text-rose-500 border-rose-500/20 px-2 font-mono text-[10px]">
+              <Badge variant="outline" className="h-5 bg-rose-500/10 text-rose-500 border-rose-500/20 px-2 font-mono text-[0.7rem]">
                 {highImpactCount} HIGH IMPACT
               </Badge>
             </div>
@@ -207,7 +207,7 @@ export default function App() {
 
             <div className="w-px h-6 bg-border/40 mx-1 hidden lg:block" />
 
-            <Badge variant="outline" className="hidden lg:flex font-mono text-[10px] font-bold px-2.5 py-1 text-muted-foreground border-border/60 bg-secondary/20">
+            <Badge variant="outline" className="hidden lg:flex font-mono text-[0.7rem] font-bold px-2.5 py-1 text-muted-foreground border-border/60 bg-secondary/20">
               {filteredEvents.length} LOADED
             </Badge>
           </div>
@@ -272,7 +272,7 @@ export default function App() {
                 size="sm"
                 onClick={() => setIntelPanelOpen(!intelPanelOpen)}
                 className={cn(
-                  "h-8 px-3 text-[10px] font-bold transition-all border border-transparent",
+                  "h-8 px-3 text-[0.7rem] font-bold transition-all border border-transparent",
                   intelPanelOpen ? "text-primary bg-primary/10 border-primary/20" : "text-muted-foreground hover:bg-muted"
                 )}
               >

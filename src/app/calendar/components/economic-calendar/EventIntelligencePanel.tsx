@@ -110,10 +110,10 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
           <div className="flex items-start justify-between mb-6">
             <div className="space-y-1.5 flex-1 mr-4">
               <div className="flex items-center gap-2 mb-2">
-                <Badge variant="outline" className={cn("text-[10px] font-mono uppercase tracking-wider h-5", impactStyles.bg, impactStyles.text, impactStyles.border)}>
+                <Badge variant="outline" className={cn("text-[0.7rem] font-mono uppercase tracking-wider h-5", impactStyles.bg, impactStyles.text, impactStyles.border)}>
                   {event.impact} Impact
                 </Badge>
-                <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] flex items-center gap-1.5">
+                <span className="text-[0.7rem] text-muted-foreground font-bold uppercase tracking-[0.2em] flex items-center gap-1.5">
                   <Activity className="w-3 h-3" />
                   {event.category}
                 </span>

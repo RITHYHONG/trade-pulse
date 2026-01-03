@@ -16,7 +16,7 @@ function formatRelativeTime(dateString: string): string {
   const date = new Date(dateString);
   const now = new Date();
   const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-  
+
   if (diffInHours < 1) return 'Just now';
   if (diffInHours < 24) return `${diffInHours} hours ago`;
   const diffInDays = Math.floor(diffInHours / 24);
@@ -29,7 +29,7 @@ export function BlogCard({ post }: BlogCardProps) {
 
   return (
     <Link href={`/blog/${post.slug}`}>
-      <article 
+      <article
         className="flex gap-4 p-4 rounded-xl bg-card border border-border cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/30 group h-full"
       >
         {/* Content */}
@@ -44,12 +44,12 @@ export function BlogCard({ post }: BlogCardProps) {
               {formatRelativeTime(post.publishedAt)}
             </span>
           </div>
-          
+
           {/* Title */}
           <h3 className="text-base font-semibold text-foreground leading-snug line-clamp-2 group-hover:text-primary transition-colors mb-2">
             {post.title}
           </h3>
-          
+
           {/* Excerpt - Optional for larger cards */}
           <p className="text-muted-foreground text-sm line-clamp-2 leading-relaxed hidden sm:block">
             {post.excerpt}
@@ -64,18 +64,18 @@ export function BlogCard({ post }: BlogCardProps) {
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
-          
+
           {/* Arrow Icon on hover */}
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <ArrowRight className="w-4 h-4 text-white" />
             </div>
           </div>
-          
+
           {/* Featured Badge */}
           {post.isFeatured && (
             <div className="absolute top-1.5 right-1.5">
-              <Badge className="bg-primary text-white text-[10px] px-1.5 py-0.5 border-0">
+              <Badge className="bg-primary text-white text-[0.7rem] px-1.5 py-0.5 border-0">
                 Featured
               </Badge>
             </div>

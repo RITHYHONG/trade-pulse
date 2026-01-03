@@ -36,27 +36,31 @@ export class EconomicCalendarService {
    * Prioritizes FMP, falls back to Finnhub, then mock data.
    */
   static async getEvents(startDate: Date, endDate: Date): Promise<EconomicEvent[]> {
+    const isPlaceholder = (key: string | undefined) => !key || key.includes('YOUR_') || key.includes('your_') || key === 'undefined';
+
     try {
-      if (this.FMP_API_KEY) {
+      if (this.FMP_API_KEY && !isPlaceholder(this.FMP_API_KEY)) {
         console.log('Fetching economic calendar from Financial Modeling Prep...');
         return await this.fetchFromFMP(startDate, endDate);
       } else {
-        console.warn('FMP API key not found, trying Finnhub...');
-        throw new Error('No FMP Key');
+        console.info('FMP API key not configured or placeholder detected, trying Finnhub...');
+        throw new Error('MISSING_FMP_KEY');
       }
     } catch (error) {
-      console.error('Economic calendar fetch failed. Falling back to mock data.', error);
+      if (error instanceof Error && error.message !== 'MISSING_FMP_KEY') {
+        console.warn('FMP API check failed, attempting Finnhub fallback...', error.message);
+      }
       
-      if (this.FINNHUB_API_KEY) {
+      if (this.FINNHUB_API_KEY && !isPlaceholder(this.FINNHUB_API_KEY)) {
         try {
-          console.log('Fetching economic calendar from Finnhub (Fallback)...');
+          console.log('Fetching economic calendar from Finnhub...');
           return await this.fetchFromFinnhub(startDate, endDate);
         } catch (fError) {
-          console.error('Finnhub Fetch also failed:', fError);
+          console.warn('Finnhub Fetch failed:', fError instanceof Error ? fError.message : fError);
         }
       }
 
-      console.warn('Using adjusted Mock Data for UI stability.');
+      console.info('Using high-fidelity Mock Data for economic calendar (API keys not available or failed).');
       // Adjust mock dates to be relative to today/startDate so they show up in filters
       return mockEconomicEvents.map((event, index) => ({
         ...event,
@@ -73,11 +77,19 @@ export class EconomicCalendarService {
     const to = endDate.toISOString().split('T')[0];
     const url = `${this.FMP_BASE_URL}/economic_calendar?from=${from}&to=${to}&apikey=${this.FMP_API_KEY}`;
 
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`FMP API Error: ${response.statusText}`);
-    
-    const data: FMPCalendarEvent[] = await response.json();
-    return data.map(this.mapFMPEventToDomain);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => '');
+        throw new Error(`FMP API Error ${response.status}: ${response.statusText || errorText.substring(0, 100)}`);
+      }
+      
+      const data: FMPCalendarEvent[] = await response.json();
+      return data.map(this.mapFMPEventToDomain);
+    } catch (error) {
+      if (error instanceof Error) throw error;
+      throw new Error('Unknown FMP API Error');
+    }
   }
 
   private static mapFMPEventToDomain(event: FMPCalendarEvent): EconomicEvent {
@@ -113,15 +125,20 @@ export class EconomicCalendarService {
     const to = endDate.toISOString().split('T')[0];
     const url = `${this.FINNHUB_BASE_URL}/calendar/economic?from=${from}&to=${to}&token=${this.FINNHUB_API_KEY}`;
 
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Finnhub API Error: ${response.statusText}`);
-    
-    const data = await response.json();
-    // Finnhub response structure might be { economicCalendar: [...] } or just [...] depending on endpoint version
-    // Docs say array for /calendar/economic
-    const events: FinnhubCalendarEvent[] = Array.isArray(data) ? data : data.economicCalendar || [];
-    
-    return events.map(this.mapFinnhubEventToDomain);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => '');
+        throw new Error(`Finnhub API Error ${response.status}: ${response.statusText || errorText.substring(0, 100)}`);
+      }
+      
+      const data = await response.json();
+      const events: FinnhubCalendarEvent[] = Array.isArray(data) ? data : data.economicCalendar || [];
+      return events.map(this.mapFinnhubEventToDomain);
+    } catch (error) {
+      if (error instanceof Error) throw error;
+      throw new Error('Unknown Finnhub API Error');
+    }
   }
 
   private static mapFinnhubEventToDomain(event: FinnhubCalendarEvent): EconomicEvent {

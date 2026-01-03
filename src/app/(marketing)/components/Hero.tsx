@@ -114,7 +114,7 @@ export function Hero() {
                 <div className="flex-1 text-center text-xs md:text-sm text-muted-foreground">
                   Trader Pulse Dashboard
                 </div>
-                <Badge variant="outline" className="text-[10px] md:text-xs bg-success/10 border-success/30 text-success">
+                <Badge variant="outline" className="text-[0.7rem] md:text-xs bg-success/10 border-success/30 text-success">
                   <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-success mr-1.5 md:mr-2 animate-pulse" />
                   Live Data
                 </Badge>
