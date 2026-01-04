@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 import { EconomicEvent, Region } from './types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Flame, Info, Clock, Globe, Zap, AlertTriangle } from 'lucide-react';
@@ -25,6 +25,8 @@ const regionMeta: Record<Region, { label: string; flag: string; color: string }>
 export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMapViewProps) {
   const [now, setNow] = useState(new Date());
   const [hoveredCell, setHoveredCell] = useState<{ hour: number; region: Region } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -32,6 +34,17 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useLayoutEffect(() => {
+    if (lineRef.current && containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const lineRect = lineRef.current.getBoundingClientRect();
+      const lineCenter = lineRect.left + lineRect.width / 2 - containerRect.left;
+      const containerWidth = containerRect.width;
+      const scrollLeft = containerRef.current.scrollLeft + (lineCenter - containerWidth / 2);
+      containerRef.current.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
+    }
+  }, []); // Run only on mount
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
@@ -133,7 +146,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
         </div>
 
         {/* Main Grid Container */}
-        <div className="bg-card/30 rounded-[3rem] border border-white/5 shadow-3xl backdrop-blur-2xl relative overflow-x-auto custom-scrollbar">
+        <div ref={containerRef} className="bg-card/30 rounded-[3rem] border border-white/5 shadow-3xl backdrop-blur-2xl relative overflow-x-auto custom-scrollbar">
           <div className="p-10 min-w-[1400px]">
             {/* Grid Header */}
             <div className="flex mb-10 items-center justify-between border-b border-white/5 pb-6">
@@ -325,6 +338,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
 
               {/* Real-time Time Indicator Line */}
               <motion.div
+                ref={lineRef}
                 className="absolute top-[-50px] bottom-[-20px] w-[4px] z-20 pointer-events-none"
                 style={{ left: `${linePosition + 176 + 16}px` }} // adjustment for label width and padding
               >
