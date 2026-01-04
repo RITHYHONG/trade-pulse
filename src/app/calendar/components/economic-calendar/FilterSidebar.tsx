@@ -1,8 +1,11 @@
-import { ChevronDown, Filter, Target, Globe, Layers, TrendingUp, Sparkles, RotateCcw } from 'lucide-react';
+import { ChevronDown, Filter, Target, Globe, Layers, TrendingUp, Sparkles, RotateCcw, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { FilterState, ImpactLevel, Region, EventCategory, EconomicEvent } from './types';
 import { useState, useMemo } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -17,6 +20,7 @@ interface FilterSidebarProps {
 
 export function FilterSidebar({ filters, onFiltersChange, events }: FilterSidebarProps) {
   const [openSections, setOpenSections] = useState({
+    date: true,
     impact: true,
     regions: true,
     categories: true,
@@ -126,6 +130,53 @@ export function FilterSidebar({ filters, onFiltersChange, events }: FilterSideba
             ))}
           </div>
         </div>
+
+        {/* Date Filters */}
+        <Collapsible
+          open={openSections.date}
+          onOpenChange={(open) => setOpenSections({ ...openSections, date: open })}
+          className="space-y-3"
+        >
+          <CollapsibleTrigger className="flex items-center justify-between w-full group py-1">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <Calendar className="w-3.5 h-3.5" />
+              Date Range
+            </h3>
+            <ChevronDown className={cn("w-3.5 h-3.5 text-muted-foreground transition-transform duration-200", openSections.date && "rotate-180")} />
+          </CollapsibleTrigger>
+
+          <CollapsibleContent className="space-y-3 pt-1">
+            <Select
+              value={filters.dateRange}
+              onValueChange={(value: FilterState['dateRange']) => onFiltersChange({ dateRange: value })}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select date range" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="week">This Week</SelectItem>
+                <SelectItem value="month">This Month</SelectItem>
+                <SelectItem value="custom">Custom Range</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {filters.dateRange === 'custom' && (
+              <div className="space-y-2">
+                <DateRangePicker
+                  value={filters.customRange ? { start: filters.customRange.start, end: filters.customRange.end } : undefined}
+                  onChange={(range) => {
+                    if (range.start && range.end) {
+                      onFiltersChange({ customRange: { start: range.start, end: range.end } });
+                    } else {
+                      onFiltersChange({ customRange: undefined });
+                    }
+                  }}
+                />
+              </div>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
 
         {/* Impact Filters */}
         <Collapsible
@@ -245,6 +296,8 @@ export function FilterSidebar({ filters, onFiltersChange, events }: FilterSideba
             size="sm"
             className="w-full text-xs border-dashed border-border text-muted-foreground hover:text-foreground"
             onClick={() => onFiltersChange({
+              dateRange: 'month',
+              customRange: undefined,
               impacts: ['high', 'medium', 'low'],
               regions: ['US', 'EU', 'UK', 'Asia', 'EM'],
               categories: [],

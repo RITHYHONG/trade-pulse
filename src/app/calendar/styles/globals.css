@@ -218,3 +218,48 @@
 html {
   font-size: var(--font-size);
 }
+
+/* Calendar range highlight fixes */
+/* Force visible highlight for selected and range days across themes */
+.rdp-day_selected,
+.rdp-day_range_start,
+.rdp-day_range_middle,
+.rdp-day_range_end,
+.day_selected,
+.day-range-start,
+.day-range-middle,
+.day-range-end,
+[aria-selected="true"] {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+
+/* Improve middle range visibility and rounded ends */
+.day-range-middle,
+.rdp-day_range_middle {
+  background-color: rgba(229,87,63,0.14) !important; /* subtle band for middle days */
+  color: var(--primary-foreground) !important;
+}
+
+.day-range-start,
+.rdp-day_range_start {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border-top-left-radius: 9999px !important;
+  border-bottom-left-radius: 9999px !important;
+}
+
+.day-range-end,
+.rdp-day_range_end {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border-top-right-radius: 9999px !important;
+  border-bottom-right-radius: 9999px !important;
+}
+
+/* Ensure the day cell gets a subtle background when it contains a selected day */
+.rdp-day + .rdp-day,
+.rdp-day_selected + .rdp-day,
+.cell:has([aria-selected="true"]) {
+  /* no-op; kept for debugging */
+}

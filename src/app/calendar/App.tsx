@@ -127,7 +127,42 @@ export default function App() {
   }, []);
 
   const filteredEvents = useMemo(() => {
+    // Calculate date range
+    const now = new Date();
+    let startDate: Date;
+    let endDate: Date;
+
+    switch (filters.dateRange) {
+      case 'today':
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+        break;
+      case 'week':
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - now.getDay());
+        startDate = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate());
+        endDate = new Date(weekStart);
+        endDate.setDate(weekStart.getDate() + 6);
+        endDate.setHours(23, 59, 59);
+        break;
+      case 'month':
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+        break;
+      case 'custom':
+        startDate = filters.customRange?.start || now;
+        endDate = filters.customRange?.end || now;
+        break;
+      default:
+        startDate = now;
+        endDate = now;
+    }
+
     return events.filter(event => {
+      // Date filter
+      const eventDate = new Date(event.datetime);
+      if (eventDate < startDate || eventDate > endDate) return false;
+
       if (filters.highImpactOnly && event.impact !== 'high') return false;
       if (!filters.impacts.includes(event.impact)) return false;
       if (!filters.regions.includes(event.region)) return false;
