@@ -194,7 +194,7 @@ export default function App() {
 
   return (
     <div className="h-screen flex flex-col bg-background selection:bg-primary/10 transition-colors duration-300">
-      <header className="flex-none border-b border-border/40 bg-background/80 backdrop-blur-md sticky top-0 z-50">
+      <div className="flex-none border-b border-border/40 bg-background/80 backdrop-blur-md">
         <div className="px-4 md:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-primary/10 text-primary">
@@ -247,7 +247,7 @@ export default function App() {
             </Badge>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="flex-1 flex overflow-hidden relative">
         <aside

@@ -147,7 +147,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                     "w-10 h-10 rounded-full border-2 border-background flex items-center justify-center text-[12px] font-black text-white shadow-lg",
                     item.color
                   )}>
-                    {item.label}
+                    {/* {item.label} */}
                   </div>
                 ))}
               </div>
