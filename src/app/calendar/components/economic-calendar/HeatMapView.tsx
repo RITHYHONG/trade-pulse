@@ -28,6 +28,14 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
   const containerRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
 
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+
+  const [lineLeft, setLineLeft] = useState<number | null>(null);
+  const hoursRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const didAutoScrollRef = useRef(false);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setNow(new Date());
@@ -36,15 +44,30 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
   }, []);
 
   useLayoutEffect(() => {
-    if (lineRef.current && containerRef.current) {
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const lineRect = lineRef.current.getBoundingClientRect();
-      const lineCenter = lineRect.left + lineRect.width / 2 - containerRect.left;
-      const containerWidth = containerRect.width;
-      const scrollLeft = containerRef.current.scrollLeft + (lineCenter - containerWidth / 2);
-      containerRef.current.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
-    }
-  }, []); // Run only on mount
+    const updatePosition = () => {
+      if (!containerRef.current || !contentRef.current || !hoursRef.current || !lineRef.current) return;
+      const hoursNodes = Array.from(hoursRef.current.children) as HTMLElement[];
+      const hourNode = hoursNodes[currentHour];
+      if (!hourNode) return;
+      const hourRect = hourNode.getBoundingClientRect();
+      const contentRect = contentRef.current.getBoundingClientRect();
+      const left = hourRect.left + hourRect.width / 2 - contentRect.left;
+      setLineLeft(left);
+    };
+
+    updatePosition();
+
+    window.addEventListener('resize', updatePosition);
+    return () => window.removeEventListener('resize', updatePosition);
+  }, [now, currentHour]);
+
+  useEffect(() => {
+    if (!containerRef.current || lineLeft === null || didAutoScrollRef.current) return;
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const scrollLeft = containerRef.current.scrollLeft + (lineLeft - containerRect.width / 2);
+    containerRef.current.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
+    didAutoScrollRef.current = true;
+  }, [lineLeft]);
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
@@ -77,12 +100,6 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
     if (intensity >= 1.0) return 'bg-emerald-500/60 border-emerald-500/30 text-white';
     return 'bg-emerald-500/40 border-emerald-500/20 text-white/90';
   };
-
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-  const timeOffset = 160; // Left sidebar width
-  const cellWidth = 48; // Width of each hour cell (44 + spacing)
-  const linePosition = timeOffset + (currentHour * cellWidth) + (currentMinute / 60 * cellWidth);
 
   if (isLoading) {
     return (
@@ -147,14 +164,14 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
 
         {/* Main Grid Container */}
         <div ref={containerRef} className="bg-card/30 rounded-[3rem] border border-white/5 shadow-3xl backdrop-blur-2xl relative overflow-x-auto custom-scrollbar">
-          <div className="p-10 min-w-[1400px]">
+          <div ref={contentRef} className="p-10 min-w-[1400px]">
             {/* Grid Header */}
             <div className="flex mb-10 items-center justify-between border-b border-white/5 pb-6">
               <div className="w-44 flex-shrink-0 flex items-center gap-3 text-muted-foreground">
                 <Clock className="w-5 h-5 text-primary" />
                 <span className="text-[11px] uppercase tracking-[0.3em] font-black">GMT Timeline</span>
               </div>
-              <div className="flex flex-1 justify-between px-4">
+              <div ref={hoursRef} className="flex flex-1 justify-between px-4">
                 {hours.map(hour => (
                   <div
                     key={hour}
@@ -339,8 +356,8 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
               {/* Real-time Time Indicator Line */}
               <motion.div
                 ref={lineRef}
-                className="absolute top-[-50px] bottom-[-20px] w-[4px] z-20 pointer-events-none"
-                style={{ left: `${linePosition + 176 + 16}px` }} // adjustment for label width and padding
+                className="absolute top-[-5rem] bottom-[-20px] w-[4px] z-20 pointer-events-none"
+                style={{ left: lineLeft !== null ? `${lineLeft}px` : undefined }}
               >
                 <div className="h-full w-full bg-gradient-to-b from-primary via-primary/50 to-transparent relative">
                   <div className="absolute inset-x-[-6px] top-0 bottom-0 bg-primary/20 blur-[8px] animate-pulse" />
