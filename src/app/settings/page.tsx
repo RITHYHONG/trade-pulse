@@ -30,22 +30,28 @@ import {
   Moon,
   Sun,
   Monitor,
-  X
+  X,
+  CreditCard,
+  Settings2,
+  Lock,
+  MessageSquare
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../hooks/use-auth';
 import Link from 'next/link';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { 
-  getUserProfile, 
-  updateUserProfile, 
+import { useTheme } from 'next-themes';
+import {
+  getUserProfile,
+  updateUserProfile,
   updateFirebaseProfile,
-  updateUserPassword, 
+  updateUserPassword,
   updateUserPreferences,
   uploadProfileImage,
   updateProfileImage,
   deleteProfileImage,
-  UserProfile 
+  UserProfile
 } from '../../lib/firestore-service';
 import { getCurrentUser } from '../../lib/auth';
 
@@ -78,6 +84,7 @@ type PasswordFormData = z.infer<typeof passwordSchema>;
 
 export default function SettingsPage() {
   const { user, loading } = useAuth();
+  const { setTheme } = useTheme();
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -118,17 +125,24 @@ export default function SettingsPage() {
     resolver: zodResolver(passwordSchema),
   });
 
+  // Sync theme when preferences are loaded
+  React.useEffect(() => {
+    if (preferences.theme) {
+      setTheme(preferences.theme);
+    }
+  }, [preferences.theme, setTheme]);
+
   // Load user profile from Firestore
   React.useEffect(() => {
     const loadUserProfile = async () => {
       if (user) {
         try {
           setIsLoadingProfile(true);
-          
+
           // Add retry logic for permission errors
           let profile = null;
           let retries = 3;
-          
+
           while (retries > 0 && !profile) {
             try {
               profile = await getUserProfile(user.uid);
@@ -136,21 +150,21 @@ export default function SettingsPage() {
             } catch (error) {
               console.log(`Profile load attempt ${4 - retries} failed:`, error);
               retries--;
-              
+
               if (retries > 0) {
                 // Wait before retrying
                 await new Promise(resolve => setTimeout(resolve, 2000));
               }
             }
           }
-          
+
           setUserProfile(profile);
-          
+
           // Update preferences
           if (profile?.preferences) {
             setPreferences(profile.preferences);
           }
-          
+
           // Update form with loaded data
           profileForm.reset({
             displayName: profile?.displayName || user.displayName || '',
@@ -165,7 +179,7 @@ export default function SettingsPage() {
             email: user.email || '',
             bio: '',
           });
-          
+
           // Show a helpful message to the user
           toast.error('Unable to load profile data. Using basic information from your account.');
         } finally {
@@ -184,13 +198,13 @@ export default function SettingsPage() {
 
     try {
       setIsUpdatingProfile(true);
-      
+
       // Get the Firebase user to update displayName in Firebase Auth
       const firebaseUser = getCurrentUser();
       if (firebaseUser) {
         await updateFirebaseProfile(firebaseUser, data.displayName);
       }
-      
+
       // Update user profile in Firestore
       await updateUserProfile(user.uid, {
         displayName: data.displayName,
@@ -219,16 +233,16 @@ export default function SettingsPage() {
 
     try {
       setIsUpdatingPassword(true);
-      
+
       // Get the Firebase user to update password
       const firebaseUser = getCurrentUser();
       if (!firebaseUser) {
         throw new Error('User not found. Please sign in again.');
       }
-      
+
       // Update password in Firebase Auth
       await updateUserPassword(firebaseUser, data.currentPassword, data.newPassword);
-      
+
       toast.success('Password updated successfully!');
       passwordForm.reset();
     } catch (error) {
@@ -245,7 +259,7 @@ export default function SettingsPage() {
     try {
       setIsUpdatingPreferences(true);
       const newPreferences = { ...preferences };
-      
+
       // Handle nested preferences (like notifications)
       if (key.includes('.')) {
         const [parentKey, childKey] = key.split('.');
@@ -257,7 +271,10 @@ export default function SettingsPage() {
         }
       } else {
         // Direct preference update
-        if (key === 'theme') newPreferences.theme = value as 'light' | 'dark' | 'system';
+        if (key === 'theme') {
+          newPreferences.theme = value as 'light' | 'dark' | 'system';
+          setTheme(value as string);
+        }
         else if (key === 'language') newPreferences.language = value as string;
         else if (key === 'timezone') newPreferences.timezone = value as string;
         else if (key === 'currency') newPreferences.currency = value as string;
@@ -283,7 +300,7 @@ export default function SettingsPage() {
 
     try {
       setIsUploadingImage(true);
-      
+
       // Create preview
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -293,13 +310,13 @@ export default function SettingsPage() {
 
       // Upload image and get URL
       const photoURL = await uploadProfileImage(user.uid, file);
-      
+
       // Update profile with new image URL
       await updateProfileImage(user.uid, photoURL);
-      
+
       // Update local state
       setUserProfile(prev => prev ? { ...prev, photoURL } : null);
-      
+
       toast.success('Profile picture updated successfully!');
       setImagePreview(null);
     } catch (error) {
@@ -316,16 +333,16 @@ export default function SettingsPage() {
 
     try {
       setIsUploadingImage(true);
-      
+
       // Delete from storage
       await deleteProfileImage(userProfile.photoURL);
-      
+
       // Update profile to remove image URL
       await updateProfileImage(user.uid, '');
-      
+
       // Update local state
       setUserProfile(prev => prev ? { ...prev, photoURL: '' } : null);
-      
+
       toast.success('Profile picture removed successfully!');
     } catch (error) {
       console.error('Error removing profile picture:', error);
@@ -337,10 +354,10 @@ export default function SettingsPage() {
 
   if (loading || isLoadingProfile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-500" />
-          <p className="text-slate-400">Loading settings...</p>
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
+          <p className="text-muted-foreground">Synchronizing data stream...</p>
         </div>
       </div>
     );
@@ -348,14 +365,14 @@ export default function SettingsPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-        <Card className="w-full max-w-md bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Card className="w-full max-w-md bg-secondary/50 border-border backdrop-blur-sm">
           <CardContent className="pt-6">
             <div className="text-center">
-              <AlertCircle className="w-12 h-12 mx-auto mb-4 text-amber-500" />
-              <p className="text-slate-300 mb-4">Please sign in to access your settings.</p>
+              <AlertCircle className="w-12 h-12 mx-auto mb-4 text-primary" />
+              <p className="text-muted-foreground mb-4 font-medium">Please sign in to access your settings.</p>
               <Link href="/auth/login">
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <Button className="bg-foreground text-background hover:opacity-90 font-bold px-8 h-12 rounded-xl transition-all">
                   Sign In
                 </Button>
               </Link>
@@ -367,661 +384,406 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-8 h-full">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white hover:bg-slate-800/50">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Dashboard
-                </Button>
-              </Link>
-            </div>
-            <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20">
-              <CheckCircle className="w-3 h-3 mr-1" />
-              Account Active
-            </Badge>
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 transition-colors duration-300">
+      <div className="container mx-auto px-6 py-12 max-w-6xl">
+        {/* Header Section */}
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 px-2">
+          <div className="space-y-2">
+            <Link href="/" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors group mb-4">
+              <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />
+              Back to Terminal
+            </Link>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">
+              Settings<span className="text-primary">.</span>
+            </h1>
+            <p className="text-muted-foreground max-w-md font-medium">
+              Manage your account, security, and market preferences for your trading ecosystem.
+            </p>
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Sidebar Navigation */}
-            <div className="lg:col-span-1">
-              <div className="lg:sticky lg:top-8">
-                <Card className="bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
-                  <CardContent className="p-6">
-                    <nav className="space-y-2">
-                    <Button
-                      variant="ghost"
-                      onClick={() => setActiveTab('profile')}
-                      className={`w-full justify-start gap-3 ${
-                        activeTab === 'profile'
-                          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                          : 'text-slate-300 hover:bg-slate-800/50 hover:text-white'
-                      }`}
-                    >
-                      <User className="w-4 h-4" />
-                      Profile
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => setActiveTab('security')}
-                      className={`w-full justify-start gap-3 ${
-                        activeTab === 'security'
-                          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                          : 'text-slate-300 hover:bg-slate-800/50 hover:text-white'
-                      }`}
-                    >
-                      <Shield className="w-4 h-4" />
-                      Security
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => setActiveTab('notifications')}
-                      className={`w-full justify-start gap-3 ${
-                        activeTab === 'notifications'
-                          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                          : 'text-slate-300 hover:bg-slate-800/50 hover:text-white'
-                      }`}
-                    >
-                      <Bell className="w-4 h-4" />
-                      Notifications
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => setActiveTab('preferences')}
-                      className={`w-full justify-start gap-3 ${
-                        activeTab === 'preferences'
-                          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                          : 'text-slate-300 hover:bg-slate-800/50 hover:text-white'
-                      }`}
-                    >
-                      <Palette className="w-4 h-4" />
-                      Preferences
-                    </Button>
-                  </nav>
-                </CardContent>
-              </Card>
-              </div>
+          
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-4 py-2 bg-secondary border border-border rounded-full shadow-sm">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+              <span className="text-xs font-bold text-foreground">Account Active</span>
             </div>
+          </div>
+        </header>
 
-            {/* Main Content */}
-            <div className="lg:col-span-3">
-              {/* Profile Tab */}
-              {activeTab === 'profile' && (
-                <div className="space-y-6">
-                  {/* Profile Header */}
-                  <Card className="bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
-                    <CardContent className="p-6">
-                      <div className="flex items-center gap-6">
-                        <div className="relative group">
-                          <Avatar className="w-20 h-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Sidebar Navigation */}
+          <aside className="lg:col-span-3">
+            <nav className="flex flex-row lg:flex-col gap-1 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 no-scrollbar sticky top-12">
+              {[
+                { id: 'profile', label: 'Profile', icon: User },
+                { id: 'security', label: 'Security', icon: Shield },
+                { id: 'notifications', label: 'Alerts', icon: Bell },
+                { id: 'preferences', label: 'Interface', icon: Palette },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 relative group shrink-0 ${
+                    activeTab === tab.id
+                      ? 'text-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                  }`}
+                >
+                  {activeTab === tab.id && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute inset-0 bg-primary/5 border border-primary/10 rounded-xl z-0"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                  <tab.icon className={`w-4 h-4 relative z-10 ${activeTab === tab.id ? 'text-primary' : ''}`} />
+                  <span className="relative z-10">{tab.label}</span>
+                </button>
+              ))}
+            </nav>
+          </aside>
+
+          {/* Main Content Area */}
+          <main className="lg:col-span-9">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="space-y-12"
+              >
+                {/* Profile Tab */}
+                {activeTab === 'profile' && (
+                  <div className="space-y-12">
+                    {/* Minimalist Profile Header */}
+                    <section className="flex flex-col md:flex-row items-center gap-8 pb-12 border-b border-border">
+                      <div className="relative group">
+                        <div className="absolute -inset-1 bg-gradient-to-tr from-primary to-purple-600 rounded-full blur opacity-15 transition duration-500" />
+                        <div className="relative">
+                          <Avatar className="w-24 h-24 border-4 border-background shadow-xl">
                             {(imagePreview || userProfile?.photoURL || user.photoURL) && (
                               <AvatarImage 
                                 src={imagePreview || userProfile?.photoURL || user.photoURL || ''} 
-                                alt="Profile picture"
+                                alt="Profile"
+                                className="object-cover"
                               />
                             )}
-                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xl">
+                            <AvatarFallback className="bg-secondary text-muted-foreground text-2xl font-bold">
                               {user.displayName?.charAt(0) || user.email?.charAt(0) || 'U'}
                             </AvatarFallback>
                           </Avatar>
                           
-                          {/* Image Upload Controls - Hidden by default, revealed on hover */}
-                          <div className="absolute -bottom-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <div className="absolute -bottom-1 -right-1 flex gap-1">
                             <input
                               type="file"
                               id="profile-image-upload"
                               accept="image/jpeg,image/png,image/webp"
                               onChange={handleImageUpload}
                               className="hidden"
-                              disabled={isUploadingImage}
-                              aria-label="Upload profile picture"
-                              title="Upload profile picture"
                             />
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              className="rounded-full w-8 h-8 p-0 bg-slate-800 hover:bg-slate-700 border border-slate-700 shadow-lg"
+                            <button
                               onClick={() => document.getElementById('profile-image-upload')?.click()}
                               disabled={isUploadingImage}
-                              title="Upload new profile picture"
+                              className="p-2 bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg transition-transform active:scale-90 disabled:opacity-50"
                             >
-                              {isUploadingImage ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : (
-                                <Camera className="w-4 h-4" />
-                              )}
-                            </Button>
-                            
-                            {(userProfile?.photoURL || user.photoURL) && (
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                className="rounded-full w-8 h-8 p-0 bg-red-800 hover:bg-red-700 border border-red-700 shadow-lg"
-                                onClick={handleRemoveImage}
-                                disabled={isUploadingImage}
-                                title="Remove profile picture"
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                            )}
+                              {isUploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+                            </button>
                           </div>
-                          
-                          {/* Loading overlay */}
-                          {isUploadingImage && (
-                            <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
-                              <Loader2 className="w-6 h-6 animate-spin text-white" />
-                            </div>
-                          )}
-                          
-                          {/* Hover indicator - subtle overlay to show interactivity */}
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-full transition-colors duration-200 pointer-events-none" />
-                        </div>
-                        <div>
-                          <h2 className="text-xl font-semibold text-white">
-                            {userProfile?.displayName || user.displayName || 'User'}
-                          </h2>
-                          <p className="text-slate-400">{userProfile?.email || user.email}</p>
-                          {/* {userProfile?.bio && (
-                            <p className="text-slate-300 text-sm mt-1">{userProfile.bio}</p>
-                          )} */}
-                          <div className="flex items-center gap-2 mt-2">
-                            <Badge variant="secondary" className="bg-green-500/10 text-green-400">
-                              <CheckCircle className="w-3 h-3 mr-1" />
-                              Verified
-                            </Badge>
-                           
-                          </div>
-                                                    
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
 
-                  {/* Profile Form */}
-                  <Card className="bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <User className="w-5 h-5" />
-                        Personal Information
-                      </CardTitle>
-                      <CardDescription>
-                        Update your personal details and profile information.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-2">
-                            <Label htmlFor="displayName">Display Name</Label>
-                            <Input
-                              id="displayName"
-                              {...profileForm.register('displayName')}
-                              className="bg-slate-800/50 border-slate-700/50 focus:border-blue-500/50"
-                              placeholder="Your display name"
-                            />
-                            {profileForm.formState.errors.displayName && (
-                              <p className="text-sm text-red-400 flex items-center gap-1">
-                                <AlertCircle className="w-3 h-3" />
-                                {profileForm.formState.errors.displayName.message}
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor="email">Email Address</Label>
-                            <Input
-                              id="email"
-                              type="email"
-                              {...profileForm.register('email')}
-                              className="bg-slate-800/50 border-slate-700/50 focus:border-blue-500/50"
-                              placeholder="your.email@example.com"
-                            />
-                            {profileForm.formState.errors.email && (
-                              <p className="text-sm text-red-400 flex items-center gap-1">
-                                <AlertCircle className="w-3 h-3" />
-                                {profileForm.formState.errors.email.message}
-                              </p>
-                            )}
-                            <p className="text-xs text-slate-500">
-                              Email changes require verification.
-                            </p>
-                          </div>
+                      <div className="text-center md:text-left space-y-1">
+                        <h2 className="text-2xl font-bold text-foreground tracking-tight">
+                          {userProfile?.displayName || user.displayName || 'Anonymous User'}
+                        </h2>
+                        <p className="text-muted-foreground font-semibold">{userProfile?.email || user.email}</p>
+                        <div className="flex items-center justify-center md:justify-start gap-4 pt-2">
+                          <span className="text-[10px] uppercase tracking-widest font-black text-primary bg-primary/10 px-2 py-0.5 rounded">Pro Tier</span>
+                          <span className="text-[10px] uppercase tracking-widest font-black text-muted-foreground border border-border px-2 py-0.5 rounded">Verified Account</span>
                         </div>
+                      </div>
+                    </section>
 
+                    {/* Information Form */}
+                    <section className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-2">
-                          <Label htmlFor="bio">Bio</Label>
-                          <textarea
-                            id="bio"
-                            {...profileForm.register('bio')}
-                            className="w-full px-3 py-2 bg-slate-800/50 border border-slate-700/50 rounded-md focus:border-blue-500/50 focus:outline-none resize-none"
-                            rows={3}
-                            placeholder="Tell us about yourself..."
+                          <Label className="text-xs uppercase tracking-widest text-muted-foreground font-black">Public Display Name</Label>
+                          <Input
+                            {...profileForm.register('displayName')}
+                            placeholder="Enter your name"
+                            className="bg-secondary border-border focus:border-primary/50 transition-colors h-12 text-foreground placeholder:text-muted-foreground/50 shadow-sm"
                           />
-                          {profileForm.formState.errors.bio && (
-                            <p className="text-sm text-red-400 flex items-center gap-1">
-                              <AlertCircle className="w-3 h-3" />
-                              {profileForm.formState.errors.bio.message}
-                            </p>
-                          )}
                         </div>
-
-                        <div className="flex justify-end">
-                          <Button
-                            type="submit"
-                            disabled={isUpdatingProfile || !profileForm.formState.isDirty}
-                            className="bg-blue-600 hover:bg-blue-700"
-                          >
-                            {isUpdatingProfile ? (
-                              <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Updating...
-                              </>
-                            ) : (
-                              <>
-                                <Save className="w-4 h-4 mr-2" />
-                                Save Changes
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      </form>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-
-              {/* Security Tab */}
-              {activeTab === 'security' && (
-                <div className="space-y-6">
-                  {/* Password Change */}
-                  <Card className="bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Key className="w-5 h-5" />
-                        Change Password
-                      </CardTitle>
-                      <CardDescription>
-                        Update your password to keep your account secure.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
                         <div className="space-y-2">
-                          <Label htmlFor="currentPassword">Current Password</Label>
+                          <Label className="text-xs uppercase tracking-widest text-muted-foreground font-black">Contact Email</Label>
+                          <Input
+                            {...profileForm.register('email')}
+                            placeholder="your@email.com"
+                            className="bg-secondary border-border focus:border-primary/50 transition-colors h-12 text-foreground placeholder:text-muted-foreground/50 shadow-sm"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-xs uppercase tracking-widest text-muted-foreground font-black">Biography</Label>
+                        <textarea
+                          {...profileForm.register('bio')}
+                          placeholder="Write a short summary about yourself or your trading style..."
+                          className="w-full min-h-[120px] bg-secondary border border-border rounded-md p-4 text-sm focus:outline-none focus:border-primary/50 transition-colors resize-none text-foreground placeholder:text-muted-foreground/50 shadow-sm"
+                        />
+                      </div>
+
+                      <div className="flex justify-end pt-4">
+                        <Button
+                          onClick={profileForm.handleSubmit(onProfileSubmit)}
+                          disabled={isUpdatingProfile || !profileForm.formState.isDirty}
+                          className="bg-foreground text-background hover:opacity-90 transition-all font-bold px-8 h-12 rounded-xl"
+                        >
+                          {isUpdatingProfile ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                          Sync Changes
+                        </Button>
+                      </div>
+                    </section>
+                  </div>
+                )}
+
+                {/* Security Tab */}
+                {activeTab === 'security' && (
+                  <div className="space-y-16">
+                    <section className="space-y-8">
+                      <div className="space-y-2">
+                        <h3 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-2">
+                          <Lock className="w-5 h-5 text-primary" /> Authority Control
+                        </h3>
+                        <p className="text-sm text-muted-foreground font-medium">Update your access credentials to maintain system security.</p>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-6">
+                        <div className="space-y-2">
+                          <Label className="text-xs uppercase tracking-widest text-muted-foreground font-black">Current Passkey</Label>
                           <div className="relative">
                             <Input
-                              id="currentPassword"
                               type={showCurrentPassword ? 'text' : 'password'}
                               {...passwordForm.register('currentPassword')}
-                              className="bg-slate-800/50 border-slate-700/50 focus:border-blue-500/50 pr-10"
-                              placeholder="Enter current password"
+                              className="bg-secondary border-border h-12 pr-12 focus:border-primary/50 text-foreground shadow-sm"
                             />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            <button
                               onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                             >
-                              {showCurrentPassword ? (
-                                <EyeOff className="w-4 h-4 text-slate-400" />
-                              ) : (
-                                <Eye className="w-4 h-4 text-slate-400" />
-                              )}
-                            </Button>
+                              {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
                           </div>
-                          {passwordForm.formState.errors.currentPassword && (
-                            <p className="text-sm text-red-400 flex items-center gap-1">
-                              <AlertCircle className="w-3 h-3" />
-                              {passwordForm.formState.errors.currentPassword.message}
-                            </p>
-                          )}
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="newPassword">New Password</Label>
-                          <div className="relative">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <Label className="text-xs uppercase tracking-widest text-muted-foreground font-black">New Passkey</Label>
                             <Input
-                              id="newPassword"
                               type={showNewPassword ? 'text' : 'password'}
                               {...passwordForm.register('newPassword')}
-                              className="bg-slate-800/50 border-slate-700/50 focus:border-blue-500/50 pr-10"
-                              placeholder="Enter new password"
+                              className="bg-secondary border-border h-12 focus:border-primary/50 text-foreground shadow-sm"
                             />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                              onClick={() => setShowNewPassword(!showNewPassword)}
-                            >
-                              {showNewPassword ? (
-                                <EyeOff className="w-4 h-4 text-slate-400" />
-                              ) : (
-                                <Eye className="w-4 h-4 text-slate-400" />
-                              )}
-                            </Button>
                           </div>
-                          {passwordForm.formState.errors.newPassword && (
-                            <p className="text-sm text-red-400 flex items-center gap-1">
-                              <AlertCircle className="w-3 h-3" />
-                              {passwordForm.formState.errors.newPassword.message}
-                            </p>
-                          )}
+                          <div className="space-y-2">
+                            <Label className="text-xs uppercase tracking-widest text-muted-foreground font-black">Confirm New Passkey</Label>
+                            <Input
+                              type="password"
+                              {...passwordForm.register('confirmPassword')}
+                              className="bg-secondary border-border h-12 focus:border-primary/50 text-foreground shadow-sm"
+                            />
+                          </div>
                         </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                          <Input
-                            id="confirmPassword"
-                            type="password"
-                            {...passwordForm.register('confirmPassword')}
-                            className="bg-slate-800/50 border-slate-700/50 focus:border-blue-500/50"
-                            placeholder="Confirm new password"
-                          />
-                          {passwordForm.formState.errors.confirmPassword && (
-                            <p className="text-sm text-red-400 flex items-center gap-1">
-                              <AlertCircle className="w-3 h-3" />
-                              {passwordForm.formState.errors.confirmPassword.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="flex justify-end">
+                        <div className="flex justify-end pt-4">
                           <Button
-                            type="submit"
+                            onClick={passwordForm.handleSubmit(onPasswordSubmit)}
                             disabled={isUpdatingPassword}
-                            className="bg-blue-600 hover:bg-blue-700"
+                            className="bg-primary text-white hover:bg-primary/90 transition-all font-bold px-8 h-12 rounded-xl border border-primary/20 shadow-lg"
                           >
-                            {isUpdatingPassword ? (
-                              <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Updating...
-                              </>
-                            ) : (
-                              <>
-                                <Key className="w-4 h-4 mr-2" />
-                                Update Password
-                              </>
-                            )}
+                            {isUpdatingPassword ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Key className="w-4 h-4 mr-2" />}
+                            Update Credentials
                           </Button>
                         </div>
-                      </form>
-                    </CardContent>
-                  </Card>
+                      </div>
+                    </section>
 
-                  {/* Two-Factor Authentication */}
-                  <Card className="bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Smartphone className="w-5 h-5" />
-                        Two-Factor Authentication
-                      </CardTitle>
-                      <CardDescription>
-                        Add an extra layer of security to your account.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-white">SMS Authentication</p>
-                          <p className="text-sm text-slate-400">Receive codes via SMS</p>
+                    <section className="p-8 bg-secondary border border-border rounded-[2rem] space-y-6 shadow-sm">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="space-y-1">
+                          <h4 className="font-bold text-foreground">Multi-Factor Authentication</h4>
+                          <p className="text-xs text-muted-foreground font-semibold tracking-tight">Add a hardware or software layer for enhanced protection.</p>
                         </div>
-                        <Button variant="outline" className="border-slate-700 hover:bg-slate-800/50">
-                          Enable
+                        <Button variant="outline" className="border-border hover:bg-background rounded-xl px-6 font-bold shadow-sm">
+                          Configure
                         </Button>
                       </div>
-                      <Separator className="my-4 bg-slate-800/50" />
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-white">Authenticator App</p>
-                          <p className="text-sm text-slate-400">Use an authenticator app</p>
-                        </div>
-                        <Button variant="outline" className="border-slate-700 hover:bg-slate-800/50">
-                          Set Up
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    </section>
+                  </div>
+                )}
 
-                  {/* Active Sessions */}
-                  <Card className="bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle>Active Sessions</CardTitle>
-                      <CardDescription>
-                        Manage your active sessions across devices.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between p-4 bg-slate-800/30 rounded-lg">
-                          <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <div>
-                              <p className="font-medium text-white">Current Session</p>
-                              <p className="text-sm text-slate-400">Chrome on Windows • Active now</p>
-                            </div>
+                {/* Notifications Tab */}
+                {activeTab === 'notifications' && (
+                  <div className="space-y-8 max-w-3xl">
+                    <div className="space-y-2 mb-8">
+                       <h3 className="text-xl font-bold text-foreground tracking-tight">Signal Relay Preferences</h3>
+                       <p className="text-sm text-muted-foreground font-medium">Configure how the system communicates critical market movements.</p>
+                    </div>
+
+                    {[
+                      { id: 'notifications.email', title: 'Transmission via Email', desc: 'Summary of market movement and daily reports.', checked: preferences?.notifications?.email },
+                      { id: 'notifications.tradeAlerts', title: 'Live Trade Signals', desc: 'Real-time execution alerts and high-volatility events.', checked: preferences?.notifications?.tradeAlerts },
+                      { id: 'notifications.weeklyUpdates', title: 'Intelligence Summaries', desc: 'A curated weekly analysis of your portfolio performance.', checked: preferences?.notifications?.weeklyUpdates },
+                      { id: 'notifications.securityAlerts', title: 'Protocol Security Alerts', desc: 'Critical alerts regarding account access and security.', checked: preferences?.notifications?.securityAlerts },
+                    ].map((item, idx) => (
+                      <div key={item.id} className="group">
+                        <div className="flex items-center justify-between p-6 bg-secondary/50 border border-transparent hover:border-border hover:bg-secondary transition-all rounded-2xl">
+                          <div className="space-y-1">
+                            <h4 className="font-bold text-foreground transition-colors">{item.title}</h4>
+                            <p className="text-xs text-muted-foreground font-semibold tracking-tight">{item.desc}</p>
                           </div>
-                          <Badge variant="secondary" className="bg-green-500/10 text-green-400">
-                            Current
-                          </Badge>
+                          <Switch 
+                            checked={item.checked}
+                            onCheckedChange={(checked) => updatePreference(item.id, checked)}
+                            className="data-[state=checked]:bg-primary"
+                          />
                         </div>
-                        <Button variant="outline" className="w-full border-slate-700 hover:bg-slate-800/50">
-                          View All Sessions
-                        </Button>
+                        {idx !== 3 && <div className="h-px bg-border/50 mx-6" />}
                       </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
 
-              {/* Notifications Tab */}
-              {activeTab === 'notifications' && (
-                <div className="space-y-6">
-                  <Card className="bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Bell className="w-5 h-5" />
-                        Notification Preferences
-                      </CardTitle>
-                      <CardDescription>
-                        Choose how you want to be notified about important updates.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-white">Email Notifications</p>
-                          <p className="text-sm text-slate-400">Receive updates via email</p>
-                        </div>
-                        <Switch 
-                          checked={preferences?.notifications?.email ?? true}
-                          onCheckedChange={(checked) => updatePreference('notifications.email', checked)}
-                        />
-                      </div>
-                      <Separator className="bg-slate-800/50" />
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-white">Trade Alerts</p>
-                          <p className="text-sm text-slate-400">Get notified about market movements</p>
-                        </div>
-                        <Switch 
-                          checked={preferences?.notifications?.tradeAlerts ?? true}
-                          onCheckedChange={(checked) => updatePreference('notifications.tradeAlerts', checked)}
-                        />
-                      </div>
-                      <Separator className="bg-slate-800/50" />
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-white">Weekly Summary</p>
-                          <p className="text-sm text-slate-400">Receive weekly market summaries</p>
-                        </div>
-                        <Switch 
-                          checked={preferences?.notifications?.weeklyUpdates ?? false}
-                          onCheckedChange={(checked) => updatePreference('notifications.weeklyUpdates', checked)}
-                        />
-                      </div>
-                      <Separator className="bg-slate-800/50" />
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-white">Security Alerts</p>
-                          <p className="text-sm text-slate-400">Important security notifications</p>
-                        </div>
-                        <Switch 
-                          checked={preferences?.notifications?.securityAlerts ?? true}
-                          onCheckedChange={(checked) => updatePreference('notifications.securityAlerts', checked)}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-
-              {/* Preferences Tab */}
-              {activeTab === 'preferences' && (
-                <div className="space-y-6">
-                  <Card className="bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Palette className="w-5 h-5" />
-                        Appearance
-                      </CardTitle>
-                      <CardDescription>
-                        Customize the look and feel of your dashboard.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
+                {/* Interface/Preferences Tab */}
+                {activeTab === 'preferences' && (
+                  <div className="space-y-12 max-w-3xl">
+                    <section className="space-y-8">
                       <div className="space-y-2">
-                        <Label>Theme</Label>
-                        <Select 
-                          value={preferences?.theme ?? 'dark'} 
-                          onValueChange={(value) => updatePreference('theme', value)}
-                        >
-                          <SelectTrigger className="bg-slate-800/50 border-slate-700/50">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="light">
-                              <div className="flex items-center gap-2">
-                                <Sun className="w-4 h-4" />
-                                Light
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="dark">
-                              <div className="flex items-center gap-2">
-                                <Moon className="w-4 h-4" />
-                                Dark
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="system">
-                              <div className="flex items-center gap-2">
-                                <Monitor className="w-4 h-4" />
-                                System
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
+                         <h3 className="text-xl font-bold text-foreground tracking-tight">Terminal Interface</h3>
+                         <p className="text-sm text-muted-foreground font-medium">Customize the visual response and data presentation of your dashboard.</p>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label>Language</Label>
-                        <Select 
-                          value={preferences?.language ?? 'en'} 
-                          onValueChange={(value) => updatePreference('language', value)}
-                        >
-                          <SelectTrigger className="bg-slate-800/50 border-slate-700/50">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="en">English</SelectItem>
-                            <SelectItem value="es">Español</SelectItem>
-                            <SelectItem value="fr">Français</SelectItem>
-                            <SelectItem value="de">Deutsch</SelectItem>
-                          </SelectContent>
-                        </Select>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                         <div className="space-y-3">
+                            <Label className="text-xs uppercase tracking-widest text-muted-foreground font-black">Environment Theme</Label>
+                            <Select 
+                              value={preferences?.theme ?? 'dark'} 
+                              onValueChange={(value) => updatePreference('theme', value)}
+                            >
+                              <SelectTrigger className="bg-secondary border-border h-12 rounded-xl focus:ring-primary/20 text-foreground shadow-sm">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-popover border-border text-foreground">
+                                <SelectItem value="light" className="focus:bg-secondary focus:text-foreground"><span className="flex items-center gap-2"><Sun className="w-4 h-4" /> Light Interface</span></SelectItem>
+                                <SelectItem value="dark" className="focus:bg-secondary focus:text-foreground"><span className="flex items-center gap-2"><Moon className="w-4 h-4" /> Dark Terminal</span></SelectItem>
+                                <SelectItem value="system" className="focus:bg-secondary focus:text-foreground"><span className="flex items-center gap-2"><Monitor className="w-4 h-4" /> System Match</span></SelectItem>
+                              </SelectContent>
+                            </Select>
+                         </div>
+
+                         <div className="space-y-3">
+                            <Label className="text-xs uppercase tracking-widest text-muted-foreground font-black">Native Language</Label>
+                            <Select 
+                              value={preferences?.language ?? 'en'} 
+                              onValueChange={(value) => updatePreference('language', value)}
+                            >
+                              <SelectTrigger className="bg-secondary border-border h-12 rounded-xl focus:ring-primary/20 text-foreground shadow-sm">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-popover border-border text-foreground">
+                                <SelectItem value="en">English (US)</SelectItem>
+                                <SelectItem value="es">Español</SelectItem>
+                                <SelectItem value="fr">Français</SelectItem>
+                                <SelectItem value="de">Deutsch</SelectItem>
+                              </SelectContent>
+                            </Select>
+                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-white">Compact Mode</p>
-                          <p className="text-sm text-slate-400">Use smaller spacing and components</p>
+                      <div className="space-y-6 pt-4">
+                        <div className="flex items-center justify-between p-6 bg-secondary/50 border border-border/50 rounded-2xl">
+                          <div className="space-y-1">
+                            <h4 className="font-bold text-foreground">Compact Visualization</h4>
+                            <p className="text-xs text-muted-foreground font-semibold">Reduce whitespace for maximum information density.</p>
+                          </div>
+                          <Switch 
+                            checked={preferences?.compactMode ?? false}
+                            onCheckedChange={(checked) => updatePreference('compactMode', checked)}
+                            className="data-[state=checked]:bg-primary"
+                          />
                         </div>
-                        <Switch 
-                          checked={preferences?.compactMode ?? false}
-                          onCheckedChange={(checked) => updatePreference('compactMode', checked)}
-                        />
-                      </div>
 
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-white">Animations</p>
-                          <p className="text-sm text-slate-400">Enable smooth transitions and animations</p>
+                        <div className="flex items-center justify-between p-6 bg-secondary/50 border border-border/50 rounded-2xl">
+                          <div className="space-y-1">
+                            <h4 className="font-bold text-foreground">Kinetic Animations</h4>
+                            <p className="text-xs text-muted-foreground font-semibold">Enable smooth transitions and interface micro-responses.</p>
+                          </div>
+                          <Switch 
+                            checked={preferences?.animations ?? true}
+                            onCheckedChange={(checked) => updatePreference('animations', checked)}
+                            className="data-[state=checked]:bg-primary"
+                          />
                         </div>
-                        <Switch 
-                          checked={preferences?.animations ?? true}
-                          onCheckedChange={(checked) => updatePreference('animations', checked)}
-                        />
                       </div>
-                    </CardContent>
-                  </Card>
+                    </section>
 
-                  <Card className="bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Globe className="w-5 h-5" />
-                        Regional Settings
-                      </CardTitle>
-                      <CardDescription>
-                        Configure your location and regional preferences.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
+                    <section className="space-y-8 pt-8 border-t border-border">
                       <div className="space-y-2">
-                        <Label>Timezone</Label>
-                        <Select 
-                          value={preferences?.timezone ?? 'utc'} 
-                          onValueChange={(value) => updatePreference('timezone', value)}
-                        >
-                          <SelectTrigger className="bg-slate-800/50 border-slate-700/50">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="utc">UTC</SelectItem>
-                            <SelectItem value="est">Eastern Time</SelectItem>
-                            <SelectItem value="pst">Pacific Time</SelectItem>
-                            <SelectItem value="gmt">GMT</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <h3 className="text-xl font-bold text-foreground tracking-tight">Regional Protocol</h3>
+                        <p className="text-sm text-muted-foreground font-medium">Configure timezones and liquidity units for accurate tracking.</p>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label>Currency</Label>
-                        <Select 
-                          value={preferences?.currency ?? 'usd'} 
-                          onValueChange={(value) => updatePreference('currency', value)}
-                        >
-                          <SelectTrigger className="bg-slate-800/50 border-slate-700/50">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="usd">USD ($)</SelectItem>
-                            <SelectItem value="eur">EUR (€)</SelectItem>
-                            <SelectItem value="gbp">GBP (£)</SelectItem>
-                            <SelectItem value="jpy">JPY (¥)</SelectItem>
-                          </SelectContent>
-                        </Select>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                         <div className="space-y-3">
+                            <Label className="text-xs uppercase tracking-widest text-muted-foreground font-black">Base Timezone</Label>
+                            <Select value={preferences?.timezone ?? 'utc'} onValueChange={(value) => updatePreference('timezone', value)}>
+                              <SelectTrigger className="bg-secondary border-border h-12 rounded-xl text-foreground shadow-sm">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-popover border-border text-foreground">
+                                <SelectItem value="utc">UTC (Coordinated Universal Time)</SelectItem>
+                                <SelectItem value="est">EST (Eastern Standard Time)</SelectItem>
+                                <SelectItem value="pst">PST (Pacific Standard Time)</SelectItem>
+                                <SelectItem value="gmt">GMT (Greenwich Mean Time)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                         </div>
+                         <div className="space-y-3">
+                            <Label className="text-xs uppercase tracking-widest text-muted-foreground font-black">Base Currency</Label>
+                            <Select value={preferences?.currency ?? 'usd'} onValueChange={(value) => updatePreference('currency', value)}>
+                              <SelectTrigger className="bg-secondary border-border h-12 rounded-xl text-foreground shadow-sm">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent className="bg-popover border-border text-foreground">
+                                <SelectItem value="usd">USD ($)</SelectItem>
+                                <SelectItem value="eur">EUR (€)</SelectItem>
+                                <SelectItem value="gbp">GBP (£)</SelectItem>
+                                <SelectItem value="jpy">JPY (¥)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-            </div>
-          </div>
+                    </section>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </main>
         </div>
+
+        {/* Footer Minimalist Legend */}
+        <footer className="mt-24 pt-12 border-t border-border flex flex-col md:flex-row items-center justify-between gap-8 opacity-40 hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-6">
+             <div className="text-[10px] uppercase tracking-widest font-black text-muted-foreground">System Ver 2.4.0</div>
+             <div className="w-1 h-1 bg-border rounded-full" />
+             <div className="text-[10px] uppercase tracking-widest font-black text-muted-foreground">Encrypted AES-256</div>
+          </div>
+          <p className="text-[10px] uppercase tracking-widest font-black text-muted-foreground text-center md:text-right">
+            © 2026 Trade Pulse Neural Ecosystem. All rights reserved.
+          </p>
+        </footer>
       </div>
     </div>
   );
