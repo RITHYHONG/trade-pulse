@@ -36,8 +36,8 @@ import { mockEconomicEvents, mockCentralBankEvents } from './components/economic
 import { FilterState, EconomicEvent, ViewMode } from './components/economic-calendar/types';
 import { EconomicCalendarService } from '@/services/economic-calendar.service';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-
 const MarketIntelContent = React.memo(({ events }: { events: any[] }) => (
   <div className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-hide">
     <div className="space-y-4">
@@ -191,6 +191,87 @@ export default function App() {
   const handleEventClick = (event: EconomicEvent) => {
     setSelectedEvent(event);
   };
+
+  if (isLoading) {
+    return (
+      <div className="h-screen flex flex-col bg-background">
+        {/* Header Skeleton */}
+        <div className="flex-none border-b border-border/40 bg-background/80 backdrop-blur-md">
+          <div className="px-4 md:px-6 h-16 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Skeleton className="w-10 h-10 rounded-xl" />
+              <div className="hidden sm:block">
+                <Skeleton className="h-4 w-32 mb-1" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+            </div>
+            <div className="flex-1 max-w-md mx-auto hidden md:block">
+              <Skeleton className="h-6 w-48 rounded-full" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="w-8 h-8 rounded-full" />
+              <Skeleton className="w-8 h-8 rounded-full" />
+              <Skeleton className="hidden lg:block w-16 h-6 rounded" />
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content Skeleton */}
+        <main className="flex-1 flex overflow-hidden relative">
+          {/* Sidebar Skeleton */}
+          {!isMobile && (
+            <aside className="flex-none w-72 border-r border-border/40 bg-background/50 backdrop-blur-sm">
+              <div className="h-full p-4 space-y-4">
+                <Skeleton className="h-6 w-24" />
+                <Skeleton className="h-32 w-full rounded-lg" />
+                <Skeleton className="h-24 w-full rounded-lg" />
+                <Skeleton className="h-40 w-full rounded-lg" />
+              </div>
+            </aside>
+          )}
+
+          {/* Main View Skeleton */}
+          <div className="flex-1 flex flex-col min-w-0 bg-secondary/10">
+            <div className="flex-none px-4 md:px-6 py-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Skeleton className="w-8 h-8 rounded-lg" />
+                <Skeleton className="h-8 w-48 rounded-xl" />
+              </div>
+              <div className="hidden lg:flex items-center gap-2">
+                <Skeleton className="h-8 w-24 rounded" />
+              </div>
+            </div>
+            <div className="flex-1 overflow-hidden px-4 md:px-6 pb-6">
+              <div className="h-full bg-background/20 rounded-2xl border border-border/40 overflow-hidden shadow-inner flex flex-col">
+                <div className="flex-1 p-6 space-y-6">
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <div key={i} className="flex gap-4">
+                      <Skeleton className="w-16 h-4" />
+                      <Skeleton className="flex-1 h-20 rounded-xl" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Intelligence Panel Skeleton */}
+          {!isMobile && (
+            <aside className="flex-none w-[320px] border-l border-border/40 bg-background/30">
+              <div className="flex-none p-5 border-b border-border/40 bg-background/40 backdrop-blur-sm">
+                <Skeleton className="h-4 w-32" />
+              </div>
+              <div className="p-4 space-y-6">
+                <Skeleton className="h-24 w-full rounded-lg" />
+                <Skeleton className="h-32 w-full rounded-lg" />
+                <Skeleton className="h-40 w-full rounded-lg" />
+              </div>
+            </aside>
+          )}
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col bg-background selection:bg-primary/10 transition-colors duration-300">
