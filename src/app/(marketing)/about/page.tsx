@@ -32,7 +32,7 @@ export default function AboutPage() {
         {/* Hero Section */}
         <section className="pt-32 pb-20 container mx-auto px-4 md:px-6">
           <div className="max-w-4xl mx-auto text-center mb-16 space-y-6">
-            <div className="inline-flex items-center justify-center p-1 rounded-full bg-secondary mb-4 animate-in fade-in zoom-in duration-500">
+            <div className="inline-flex items-center justify-center p-1 rounded-full bg-secondary mb-4">
               <span className="w-2 h-2 rounded-full bg-primary mx-2"></span>
               <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground pr-2">Who we are</span>
             </div>
@@ -57,7 +57,7 @@ export default function AboutPage() {
                 className="object-cover"
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/40 to-transparent p-8 flex flex-col justify-end group-hover:bg-background/60 transition-colors duration-500">
+              <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-transparent dark:from-background/80 dark:via-background/40 p-8 flex flex-col justify-end group-hover:bg-black/70 dark:group-hover:bg-background/60 transition-colors duration-500">
                 <Target className="w-16 h-16 text-primary/80 mb-4 group-hover:scale-110 transition-transform duration-500 drop-shadow-lg" />
                 <p className="text-sm font-medium text-foreground drop-shadow">Strategic Vision</p>
               </div>
@@ -72,8 +72,9 @@ export default function AboutPage() {
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-tr from-background/70 to-transparent group-hover:bg-background/50 transition-colors duration-500">
-                  <LineChart className="w-12 h-12 text-primary group-hover:scale-110 transition-transform duration-500 drop-shadow-lg" />
+                <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-transparent dark:from-background/80 dark:via-background/40 p-8 flex flex-col justify-end group-hover:bg-black/70 dark:group-hover:bg-background/60 transition-colors duration-500">
+                  <LineChart className="w-12 h-12 text-primary/80 mb-4 group-hover:scale-110 transition-transform duration-500 drop-shadow-lg" />
+                  <p className="text-sm font-medium text-foreground drop-shadow">Analytics</p>
                 </div>
               </div>
               <div className="h-1/2 rounded-3xl bg-secondary/30 border border-border/50 relative overflow-hidden group hover:shadow-lg transition-all duration-500">
@@ -83,8 +84,9 @@ export default function AboutPage() {
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-bl from-background/70 to-transparent group-hover:bg-background/50 transition-colors duration-500">
-                  <Users className="w-12 h-12 text-primary group-hover:scale-110 transition-transform duration-500 drop-shadow-lg" />
+                <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-transparent dark:from-background/80 dark:via-background/40 p-8 flex flex-col justify-end group-hover:bg-black/70 dark:group-hover:bg-background/60 transition-colors duration-500">
+                  <Users className="w-12 h-12 text-primary/80 mb-4 group-hover:scale-110 transition-transform duration-500 drop-shadow-lg" />
+                  <p className="text-sm font-medium text-foreground drop-shadow">Analytics</p>
                 </div>
               </div>
             </div>
@@ -94,7 +96,7 @@ export default function AboutPage() {
         {/* Quote Section */}
         <section className="py-16 container mx-auto px-4 md:px-6">
           <div className="max-w-4xl mx-auto text-center relative">
-            <Quote className="w-12 h-12 text-primary/20 absolute -top-8 left-0 md:-left-12 -z-10 animate-in fade-in duration-1000 delay-300" />
+            <Quote className="w-12 h-12 text-primary/30 dark:text-primary/20 absolute -top-8 left-0 md:-left-12 -z-10 animate-in fade-in duration-1000 delay-300" />
             <blockquote className="text-2xl md:text-3xl font-medium leading-relaxed mb-8 relative z-10">
               &quot;We believe great trading starts with empathy and ends with impact.
               Our approach is simple: listen closely, solve creatively, and build with purpose.&quot;
@@ -110,7 +112,7 @@ export default function AboutPage() {
         </section>
 
         {/* Team Section */}
-        <section className="py-24 bg-card/50">
+        {/* <section className="py-24 bg-card/50">
           <div className="container mx-auto px-4 md:px-6">
             <div className="mb-12">
               <span className="text-primary text-sm font-semibold tracking-wider uppercase mb-2 block">Our Talent</span>
@@ -126,7 +128,7 @@ export default function AboutPage() {
               ].map((member, i) => (
                 <div key={i} className="group rounded-2xl bg-background border border-border/50 p-4 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
                   <div className="aspect-[4/5] bg-secondary/50 rounded-xl mb-4 overflow-hidden relative">
-                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/20 group-hover:scale-105 transition-transform duration-500 bg-gradient-to-b from-transparent to-black/5 dark:to-white/5">
+                    <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/30 dark:text-muted-foreground/20 group-hover:scale-105 transition-transform duration-500 bg-gradient-to-b from-transparent to-black/5 dark:to-white/5">
                       <Users className="w-16 h-16" />
                     </div>
                   </div>
@@ -136,7 +138,7 @@ export default function AboutPage() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Awards Section */}
         <section className="py-24 container mx-auto px-4 md:px-6">
@@ -178,14 +180,14 @@ export default function AboutPage() {
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
             <div className="grid md:grid-cols-2 gap-8">
               {/* Others */}
-              <div className="rounded-3xl p-8 border border-border bg-background/50 opacity-70 hover:opacity-100 transition-opacity">
+              <div className="rounded-3xl p-8 border border-border bg-background/70 dark:bg-background/50 opacity-80 dark:opacity-70 hover:opacity-100 transition-opacity">
                 <h3 className="text-xl font-bold mb-8 text-muted-foreground flex items-center gap-2">
                   <XCircle className="w-5 h-5" /> Other Platforms
                 </h3>
                 <ul className="space-y-6">
                   {['Generalized Market Data', 'Delayed Signals (15m+)', 'Manual Formatting', 'Hidden Fees', 'Generic Support'].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-muted-foreground">
-                      <XCircle className="w-5 h-5 text-muted-foreground/50 shrink-0" />
+                      <XCircle className="w-5 h-5 text-muted-foreground/60 shrink-0" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -225,11 +227,11 @@ export default function AboutPage() {
               <p className="text-muted-foreground mb-8">
                 Can&apos;t find what you&apos;re looking for? Chat with our team directly.
               </p>
-              <Link href="/contact">
-                <Button variant="outline" className="gap-2 group">
+              <Button asChild variant="outline" className="gap-2 group">
+                <Link href="/contact">
                   Contact Support <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
             <div className="md:col-span-7">
               <Accordion type="single" collapsible className="w-full ">
@@ -254,7 +256,7 @@ export default function AboutPage() {
         {/* CTA Section */}
         <section className="py-32 container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto space-y-8">
-            <div className="inline-flex items-center gap-2 p-1 px-3 rounded-full bg-primary/10 text-primary text-sm font-medium">
+            <div className="inline-flex items-center gap-2 p-1 px-3 rounded-full dark:bg-primary/10 bg-primary/40 text-primary text-sm font-medium ">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -269,11 +271,11 @@ export default function AboutPage() {
               Start your 14-day free trial today. No credit card required.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-              <Link href="/signup">
-                <Button size="lg" className="rounded-full px-8 h-14 text-base shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:scale-105">
+              <Button asChild size="lg" className="rounded-full px-8 h-14 text-base shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:scale-105">
+                <Link href="/signup">
                   Get Started Now
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </div>
         </section>

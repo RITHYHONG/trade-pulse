@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { submitContactForm, ContactSubmission } from "@/lib/contact-service";
+import { useFormErrorToasts, handleFormErrors } from "@/hooks/useFormErrorToasts";
 import { CheckCircle2, Mail, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
@@ -37,6 +38,8 @@ export default function ContactPage() {
 
   const form = useForm<z.infer<typeof contactFormSchema>>({
     resolver: zodResolver(contactFormSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       name: "",
       email: "",
@@ -44,6 +47,8 @@ export default function ContactPage() {
       terms: false,
     },
   });
+
+  useFormErrorToasts(form.formState.errors);
 
   const onSubmit = async (data: z.infer<typeof contactFormSchema>) => {
     setIsSubmitting(true);
@@ -89,7 +94,7 @@ export default function ContactPage() {
           {/* Left Column: Form */}
           <div className="space-y-12">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <form onSubmit={form.handleSubmit(onSubmit, handleFormErrors)} noValidate className="space-y-8">
 
                 <FormField
                   control={form.control}
@@ -98,9 +103,8 @@ export default function ContactPage() {
                     <FormItem>
                       <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Your name" {...field} className="bg-background border-input h-12" />
+                        <Input placeholder="Your name" {...field} className="border-border h-12" />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -112,9 +116,8 @@ export default function ContactPage() {
                     <FormItem>
                       <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Email</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="Enter Your Email" {...field} className="bg-background border-input h-12" />
-                      </FormControl>
-                      <FormMessage />
+                        <Input type="email" placeholder="Enter Your Email" {...field} className="border-border h-12" />
+                      </FormControl> 
                     </FormItem>
                   )}
                 />
@@ -129,19 +132,18 @@ export default function ContactPage() {
                         <Textarea
                           placeholder="Enter Your Message"
                           {...field}
-                          className="bg-background border-input min-h-[150px] resize-none"
+                          className="border-border min-h-[9.3rem] resize-none"
                         />
-                      </FormControl>
-                      <FormMessage />
+                      </FormControl> 
                     </FormItem>
                   )}
                 />
 
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="terms"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4 border rounded-md">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4 border rounded-md bg-card/50">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
@@ -152,17 +154,16 @@ export default function ContactPage() {
                         <FormLabel>
                           I agree to the <Link href="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
                         </FormLabel>
-                        <FormMessage />
                       </div>
                     </FormItem>
                   )}
-                />
+                /> */}
 
                 <Button
                   type="submit"
                   size="lg"
                   disabled={isSubmitting}
-                  className="w-full bg-foreground text-background hover:bg-foreground/90 h-12 text-base font-semibold"
+                  className="w-full h-12 text-base font-semibold"
                 >
                   {isSubmitting ? "Sending..." : "Send Your Request"}
                 </Button>
@@ -173,20 +174,20 @@ export default function ContactPage() {
               <h3 className="font-semibold text-lg">You can also Contact Us via</h3>
               <div className="flex flex-col sm:flex-row gap-8">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center bg-card">
-                    <Mail className="w-4 h-4" />
+                  <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <Mail className="w-4 h-4 text-foreground" />
                   </div>
                   <span className="text-sm text-muted-foreground">contact@traderpulse.com</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center bg-card">
-                    <Phone className="w-4 h-4" />
+                  <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <Phone className="w-4 h-4 text-foreground" />
                   </div>
                   <span className="text-sm text-muted-foreground">(+855)96 435 0654</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center bg-card">
-                    <Phone className="w-4 h-4" />
+                  <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <Phone className="w-4 h-4 text-foreground" />
                   </div>
                   <span className="text-sm text-muted-foreground">@Rithyhong</span>
                 </div>
@@ -207,7 +208,7 @@ export default function ContactPage() {
                   "Balance risk and reward with professional position sizing tools"
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-foreground shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
                     <span className="text-muted-foreground leading-relaxed">{item}</span>
                   </li>
                 ))}
@@ -217,7 +218,7 @@ export default function ContactPage() {
             <div className="grid sm:grid-cols-2 gap-8 pt-12 mt-12 border-t border-border">
               <div className="space-y-3">
                 <div className="flex items-center gap-2 font-bold mb-2">
-                  <MapPin className="w-4 h-4" /> Cambodia
+                  <MapPin className="w-4 h-4 text-foreground" /> Cambodia
                 </div>
                 <address className="text-sm text-muted-foreground not-italic leading-relaxed">
                   Toul Kork, Street 123<br />
@@ -227,7 +228,7 @@ export default function ContactPage() {
 
               <div className="space-y-3">
                 <div className="flex items-center gap-2 font-bold mb-2">
-                  <MapPin className="w-4 h-4" /> UK
+                  <MapPin className="w-4 h-4 text-foreground" /> UK
                 </div>
                 <address className="text-sm text-muted-foreground not-italic leading-relaxed">
                   1 Canada Square<br />
