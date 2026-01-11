@@ -51,39 +51,52 @@ const ChatbotModal: React.FC = () => {
     setAlert('');
 
     try {
-      // Use Ollama for local AI inference (completely free)
-      const response = await fetch('http://localhost:11434/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'llama2', // Change this to any model you have installed (llama2, mistral, etc.)
-          prompt: `You are a world-class financial market analyst. Provide a concise, three-paragraph summary of ${trimmedTicker}'s latest quarterly performance, recent stock movements, and general market outlook. Use professional but clear language. Include some recent market data and analysis.`,
-          stream: false
-        })
-      });
+      // 1. Try local Ollama first (privacy-first, free)
+      try {
+        const response = await fetch('http://localhost:11434/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'llama2',
+            prompt: `You are a world-class financial market analyst. Provide a concise, three-paragraph summary of ${trimmedTicker}'s latest quarterly performance, recent stock movements, and general market outlook. Use professional but clear language. Include some recent market data and analysis.`,
+            stream: false
+          })
+        });
 
-      if (!response.ok) {
-        throw new Error('Failed to connect to Ollama. Make sure Ollama is running and you have a model installed.');
+        if (response.ok) {
+          const result = await response.json();
+          const text = result.response;
+          setResults({
+            title: `Local Market Outlook: ${trimmedTicker}`,
+            summary: text,
+            sources: [
+              { uri: 'https://finance.yahoo.com', title: 'Yahoo Finance' },
+              { uri: 'https://www.marketwatch.com', title: 'MarketWatch' }
+            ]
+          });
+          return;
+        }
+      } catch (ollamaError) {
+        console.log('Ollama not available, falling back to Gemini server...');
       }
 
-      const result = await response.json();
-      const text = result.response;
+      // 2. Fallback to server-side Gemini
+      const geminiResponse = await fetch('/api/dashboard/ai-summary?ticker=' + trimmedTicker);
+      if (!geminiResponse.ok) throw new Error('AI analysis service unavailable');
 
-      // Mock sources for demo purposes (since Ollama doesn't provide real-time data)
-      const sources: Source[] = [
-        { uri: 'https://finance.yahoo.com', title: 'Yahoo Finance' },
-        { uri: 'https://www.marketwatch.com', title: 'MarketWatch' },
-        { uri: 'https://www.bloomberg.com', title: 'Bloomberg' }
-      ];
-
+      const data = await geminiResponse.json();
       setResults({
-        title: `Market Outlook for ${trimmedTicker}`,
-        summary: text,
-        sources
+        title: `AI Market Outlook: ${trimmedTicker}`,
+        summary: data.summary,
+        sources: [
+          { uri: 'https://www.bloomberg.com', title: 'Bloomberg Intelligence' },
+          { uri: 'https://www.reuters.com', title: 'Reuters Markets' }
+        ]
       });
+
     } catch (error) {
       console.error('Analysis failed:', error);
-      showAlert(`Failed to analyze market for ${trimmedTicker}. Make sure Ollama is running with a model installed. Error: ${(error as Error).message}`);
+      showAlert(`Analysis failed. Please check your connection.`);
     } finally {
       setLoading(false);
     }

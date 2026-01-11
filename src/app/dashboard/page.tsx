@@ -11,8 +11,12 @@ import { getMarketNews } from "@/lib/api/news-api";
 import { getWatchlist } from "@/lib/api/market-data";
 
 async function AISummarySection() {
-  const news = await getMarketNews();
-  return <AISummaryWidget news={news} />;
+  const [news, aiResponse] = await Promise.all([
+    getMarketNews(),
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/dashboard/ai-summary`).then(res => res.json()).catch(() => ({ summary: '' }))
+  ]);
+
+  return <AISummaryWidget news={news} summary={aiResponse.summary} />;
 }
 
 async function EconomicCalendarSection() {

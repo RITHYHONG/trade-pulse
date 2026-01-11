@@ -1,9 +1,10 @@
-import { Network, TrendingUp, ArrowRight, Activity, Zap, BarChart3 } from 'lucide-react';
+import { Network, TrendingUp, ArrowRight, Activity, Zap, BarChart3, RefreshCcw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 interface Correlation {
   event1: string;
@@ -13,18 +14,31 @@ interface Correlation {
   lagMinutes?: number;
 }
 
-const mockCorrelations: Correlation[] = [
-  { event1: 'US NFP', event2: 'USD/JPY', strength: 0.85, leadLag: 'simultaneous' },
-  { event1: 'USD/JPY', event2: 'Nikkei 225', strength: 0.72, leadLag: 'leads', lagMinutes: 5 },
-  { event1: 'Nikkei 225', event2: 'Gold', strength: -0.65, leadLag: 'simultaneous' },
-  { event1: 'US CPI', event2: 'DXY', strength: 0.78, leadLag: 'simultaneous' },
-  { event1: 'DXY', event2: 'Gold', strength: -0.82, leadLag: 'simultaneous' },
-  { event1: 'Gold', event2: 'Treasury Yields', strength: -0.68, leadLag: 'lags', lagMinutes: 15 },
-  { event1: 'ECB Rate', event2: 'EUR/USD', strength: 0.88, leadLag: 'simultaneous' },
-  { event1: 'EUR/USD', event2: 'DAX', strength: 0.71, leadLag: 'leads', lagMinutes: 10 },
-];
-
 export function CorrelationMatrix() {
+  const [correlations, setCorrelations] = useState<Correlation[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchCorrelations = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/dashboard/correlations');
+      const data = await res.json();
+      if (data.correlations) {
+        setCorrelations(data.correlations);
+      }
+    } catch (err) {
+      console.error('Failed to fetch correlations:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCorrelations();
+    const interval = setInterval(fetchCorrelations, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
+
   const getCorrelationStyles = (strength: number) => {
     const abs = Math.abs(strength);
     if (abs >= 0.8) {
@@ -92,9 +106,12 @@ export function CorrelationMatrix() {
             <p className="text-[0.7rem] text-muted-foreground font-medium uppercase tracking-wider">Live Analysis</p>
           </div>
         </div>
-        <Badge variant="outline" className="h-5 text-[0.8rem] font-mono border-emerald-500/30 text-emerald-500 bg-emerald-500/5 px-1.5">
-          ACTIVE
-        </Badge>
+        <div className="flex items-center gap-2">
+          {loading && <RefreshCcw className="w-3 h-3 animate-spin text-muted-foreground" />}
+          <Badge variant="outline" className="h-5 text-[0.8rem] font-mono border-emerald-500/30 text-emerald-500 bg-emerald-500/5 px-1.5">
+            ACTIVE
+          </Badge>
+        </div>
       </div>
 
       {/* Correlation Chains with Horizontal Scroll */}
@@ -123,7 +140,7 @@ export function CorrelationMatrix() {
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent pointer-events-none"
                 />
                 {chain.map((item, index) => {
-                  const correlation = mockCorrelations.find(
+                  const correlation = correlations.find(
                     c => (c.event1 === chain[index] && c.event2 === chain[index + 1]) ||
                       (c.event2 === chain[index] && c.event1 === chain[index + 1])
                   );
@@ -184,7 +201,7 @@ export function CorrelationMatrix() {
         </div>
 
         <div className="space-y-2">
-          {mockCorrelations.slice(0, 5).map((corr, index) => {
+          {correlations.length > 0 ? correlations.slice(0, 5).map((corr, index) => {
             const styles = getCorrelationStyles(corr.strength);
             return (
               <div
@@ -230,7 +247,11 @@ export function CorrelationMatrix() {
                 </div>
               </div>
             );
-          })}
+          }) : (
+            <div className="text-center py-8 text-muted-foreground text-xs italic">
+              Analyzing correlations...
+            </div>
+          )}
         </div>
       </div>
 

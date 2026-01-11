@@ -1,5 +1,6 @@
 import { EconomicEvent, ImpactLevel, Region, EventCategory } from '../app/calendar/components/economic-calendar/types';
 import { mockEconomicEvents } from '../app/calendar/components/economic-calendar/mockData';
+import { generateContent } from '@/lib/gemini';
 
 // Types for API Responses
 interface FMPCalendarEvent {
@@ -85,17 +86,22 @@ export class EconomicCalendarService {
       }
       
       const data: FMPCalendarEvent[] = await response.json();
-      return data.map(this.mapFMPEventToDomain);
+      return Promise.all(data.map(event => this.mapFMPEventToDomain(event)));
     } catch (error) {
       if (error instanceof Error) throw error;
       throw new Error('Unknown FMP API Error');
     }
   }
 
-  private static mapFMPEventToDomain(event: FMPCalendarEvent): EconomicEvent {
+  private static async mapFMPEventToDomain(event: FMPCalendarEvent): Promise<EconomicEvent> {
     // Generate an ID (FMP doesn't provide one)
     const id = `${event.event}-${event.date}-${event.country}`.replace(/\s+/g, '-').toLowerCase();
     const affectedAssets = EconomicCalendarService.deduceAffectedAssets(event.country, event.event);
+
+    const [historicalData, tradingSetup] = await Promise.all([
+      EconomicCalendarService.generateHistoricalDataReal(event.event, event.country),
+      EconomicCalendarService.generateTradingSetupReal(event.event, event.impact, affectedAssets)
+    ]);
 
     return {
       id,
@@ -110,11 +116,10 @@ export class EconomicCalendarService {
       previous: event.previous ?? 0,
       unit: event.unit || '',
       
-      // Mock/Calculated fields for UI richness
-      historicalData: EconomicCalendarService.generateHistoricalData(event.event, event.impact),
+      historicalData,
       consensusIntelligence: EconomicCalendarService.generateConsensusIntelligence(event.estimate, event.previous),
-      tradingSetup: EconomicCalendarService.generateTradingSetup(event.event, event.impact, affectedAssets),
-      affectedAssets: affectedAssets,
+      tradingSetup,
+      affectedAssets,
     };
   }
 
@@ -134,16 +139,21 @@ export class EconomicCalendarService {
       
       const data = await response.json();
       const events: FinnhubCalendarEvent[] = Array.isArray(data) ? data : data.economicCalendar || [];
-      return events.map(this.mapFinnhubEventToDomain);
+      return Promise.all(events.map(event => this.mapFinnhubEventToDomain(event)));
     } catch (error) {
       if (error instanceof Error) throw error;
       throw new Error('Unknown Finnhub API Error');
     }
   }
 
-  private static mapFinnhubEventToDomain(event: FinnhubCalendarEvent): EconomicEvent {
+  private static async mapFinnhubEventToDomain(event: FinnhubCalendarEvent): Promise<EconomicEvent> {
     const id = `${event.event}-${event.time}-${event.country}`.replace(/\s+/g, '-').toLowerCase();
     const affectedAssets = EconomicCalendarService.deduceAffectedAssets(event.country, event.event);
+
+    const [historicalData, tradingSetup] = await Promise.all([
+      EconomicCalendarService.generateHistoricalDataReal(event.event, event.country),
+      EconomicCalendarService.generateTradingSetupReal(event.event, event.impact, affectedAssets)
+    ]);
 
     return {
       id,
@@ -158,11 +168,10 @@ export class EconomicCalendarService {
       previous: event.previous ?? 0,
       unit: event.unit || '',
 
-      // Mock/Calculated fields for UI richness
-      historicalData: EconomicCalendarService.generateHistoricalData(event.event, event.impact),
+      historicalData,
       consensusIntelligence: EconomicCalendarService.generateConsensusIntelligence(event.estimate, event.previous),
-      tradingSetup: EconomicCalendarService.generateTradingSetup(event.event, event.impact, affectedAssets),
-      affectedAssets: affectedAssets,
+      tradingSetup,
+      affectedAssets,
     };
   }
 
@@ -222,6 +231,44 @@ export class EconomicCalendarService {
     }
 
     return assets.slice(0, 4);
+  }
+
+  // --- Real AI Data Generators (replacing mocks) ---
+  
+  static async generateHistoricalDataReal(eventName: string, country: string): Promise<EconomicEvent['historicalData']> {
+    try {
+      const prompt = `Provide a historical volatility analysis for the economic event "${eventName}" in ${country}. 
+      Return ONLY a JSON object with: 
+      avgMove (number, e.g. 0.45), 
+      directionBias (string: 'bullish'|'bearish'|'neutral'), 
+      biasSuccessRate (number, e.g. 65), 
+      peakImpactMinutes (number), 
+      fadeTimeHours (number).`;
+      
+      const response = await generateContent(prompt);
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      return jsonMatch ? JSON.parse(jsonMatch[0]) : this.generateHistoricalData(eventName, 'low');
+    } catch (e) {
+      return this.generateHistoricalData(eventName, 'low');
+    }
+  }
+
+  static async generateTradingSetupReal(eventName: string, impact: string, assets: string[]): Promise<EconomicEvent['tradingSetup']> {
+    try {
+      const prompt = `Create a trading setup for "${eventName}" (Impact: ${impact}). 
+      Affected assets: ${assets.join(', ')}.
+      Return ONLY a JSON object with: 
+      strategyTag (string), 
+      expectedMove (number), 
+      confidenceScore (number).`;
+      
+      const response = await generateContent(prompt);
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      const setup = jsonMatch ? JSON.parse(jsonMatch[0]) : { strategyTag: 'Wait for confirmation', expectedMove: 0.1, confidenceScore: 50 };
+      return { ...setup, correlatedAssets: assets };
+    } catch (e) {
+      return this.generateTradingSetup(eventName, impact, assets);
+    }
   }
 
   // --- Mock Data Generators (to fill rich UI requirements) ---
