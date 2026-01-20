@@ -22,6 +22,7 @@ const FALLBACK_MARKET_DATA: MarketItem[] = [
 export function NewsTicker({ isLoading }: NewsTickerProps) {
   const [marketData, setMarketData] = useState<MarketItem[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
+  const [tickerSentiments, setTickerSentiments] = useState<Record<string, { score: number, sentiment: string }>>({});
   const [error, setError] = useState<string | null>(null);
 
   // Fetch market data
@@ -33,6 +34,22 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
         const data = await getAllMarketData();
         if (data && data.length > 0) {
           setMarketData(data);
+
+          // Fetch sentiment for displayed tickers
+          const tickers = data.map(item => item.symbol);
+          try {
+            const sentResponse = await fetch('/api/market/ticker-sentiment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ tickers })
+            });
+            const sentData = await sentResponse.json();
+            if (sentData.sentiment) {
+              setTickerSentiments(sentData.sentiment);
+            }
+          } catch (e) {
+            console.error('Failed to fetch individual sentiments', e);
+          }
         } else if (marketData.length === 0) {
           // Only use fallback if we don't have any data yet
           setMarketData(FALLBACK_MARKET_DATA);
@@ -135,12 +152,25 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
                   </span>
 
                   {/* Change Indicator */}
-                  <span className={`text-sm font-medium px-2 py-0.5 rounded ${item.change >= 0
+                  <div className="flex items-center gap-1.5">
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-sm tabular-nums ${item.change >= 0
                       ? 'text-green-600 bg-green-50 dark:bg-green-950/20'
                       : 'text-red-600 bg-red-50 dark:bg-red-950/20'
-                    }`}>
-                    {formatChange(item.change, item.changePercent)}
-                  </span>
+                      }`}>
+                      {formatChange(item.change, item.changePercent)}
+                    </span>
+
+                    {tickerSentiments[item.symbol] && (
+                      <span className={`text-[9px] font-bold uppercase px-1 py-0.5 rounded-sm border ${tickerSentiments[item.symbol].sentiment === 'Bullish'
+                          ? 'text-primary border-primary/20 bg-primary/5'
+                          : tickerSentiments[item.symbol].sentiment === 'Bearish'
+                            ? 'text-rose-500 border-rose-500/20 bg-rose-500/5'
+                            : 'text-muted-foreground border-border/40 bg-muted/5'
+                        }`}>
+                        {tickerSentiments[item.symbol].sentiment} {tickerSentiments[item.symbol].score}%
+                      </span>
+                    )}
+                  </div>
 
                   {/* Dot separator */}
                   <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${item.change >= 0 ? 'bg-green-500' : 'bg-red-500'

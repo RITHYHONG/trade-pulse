@@ -14,22 +14,22 @@ import { useTheme } from 'next-themes';
 
 const footerLinks = {
   Product: [
-    { label: 'Features', href: '#features' },
-    { label: 'Pricing', href: '#pricing' },
-    { label: 'Demo', href: '#demo' },
-    { label: 'API Access', href: '#api' }
+    { label: 'Features', href: '/#features' },
+    { label: 'Pricing', href: '/pricing' },
+    { label: 'Demo', href: '/#demo' },
+    { label: 'API Access', href: '/#api' }
   ],
   Company: [
-    { label: 'About Us', href: '#about' },
-    { label: 'Blog', href: '#blog' },
-    { label: 'Careers', href: '#careers' },
-    { label: 'Press', href: '#press' }
+    { label: 'About Us', href: '/#about' },
+    { label: 'Blog', href: '/blog' },
+    { label: 'Careers', href: '/#careers' },
+    { label: 'Press', href: '/#press' }
   ],
   Support: [
-    { label: 'Help Center', href: '#help' },
-    { label: 'Contact Us', href: '#contact' },
-    { label: 'System Status', href: '#status' },
-    { label: 'Security', href: '#security' }
+    { label: 'Help Center', href: '/#help' },
+    { label: 'Contact Us', href: '/contact' },
+    { label: 'System Status', href: '/#status' },
+    { label: 'Security', href: '/#security' }
   ],
   Legal: [
     { label: 'Privacy Policy', href: '/privacy' },
@@ -56,11 +56,23 @@ export function Footer() {
     }
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Thank you for subscribing! Check your inbox for confirmation.');
-      setEmail('');
-    } catch {
+      const res = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.toLowerCase(), source: 'footer' }),
+      });
+
+      if (res.ok) {
+        toast.success('Thank you for subscribing! Check your inbox for confirmation.');
+        setEmail('');
+      } else if (res.status === 409) {
+        toast('You are already subscribed.');
+      } else {
+        const body = await res.json().catch(() => ({}));
+        toast.error(body?.error || 'Failed to subscribe. Please try again.');
+      }
+    } catch (err) {
+      console.error('Subscription error', err);
       toast.error('Failed to subscribe. Please try again.');
     } finally {
       setIsLoading(false);

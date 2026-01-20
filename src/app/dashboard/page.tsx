@@ -32,13 +32,13 @@ export default async function DashboardPage() {
   return (
     <main id="main-content">
       <WidgetGrid className="pb-12">
-        <Suspense fallback={<Skeleton className="h-[360px]" />}>
+        <Suspense fallback={<AISummaryWidget news={[]} isLoading />}>
           <AISummarySection />
         </Suspense>
-        <Suspense fallback={<Skeleton className="h-[360px]" />}>
+        <Suspense fallback={<EconomicCalendarWidget events={[]} isLoading />}>
           <EconomicCalendarSection />
         </Suspense>
-        <Suspense fallback={<Skeleton className="h-[360px]" />}>
+        <Suspense fallback={<WatchlistWidget instruments={[]} isLoading />}>
           <WatchlistSection />
         </Suspense>
       </WidgetGrid>

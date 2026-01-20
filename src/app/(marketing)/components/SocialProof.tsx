@@ -9,34 +9,31 @@ const testimonials = [
   {
     name: "Sarah Chen",
     role: "Day Trader",
-    avatar: "https://images.unsplash.com/photo-1701463387028-3947648f1337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjB0cmFkZXIlMjBwb3J0cmFpdHxlbnwxfHx8fDE3NTkyMzIxNTR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    content: "This platform completely transformed my morning routine. I went from spending 2 hours researching to getting everything I need in 5 minutes. My win rate improved by 40%.",
+    avatar: "https://images.unsplash.com/photo-1701463387028-3947648f1337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    content: "Trader Pulse helped me streamline my morning prep—now I spend under 20 minutes reviewing key opportunities before the open.",
     rating: 5,
-    pnl: "+$127K this year"
   },
   {
     name: "Marcus Rodriguez",
     role: "Swing Trader",
-    avatar: "https://images.unsplash.com/photo-1701463387028-3947648f1337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjB0cmFkZXIlMjBwb3J0cmFpdHxlbnwxfHx8fDE3NTkyMzIxNTR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    content: "The AI alerts are incredibly accurate. I caught three major breakouts last month that I would have completely missed. The precision entry points are spot on.",
+    avatar: "https://images.unsplash.com/photo-1701463387028-3947648f1337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    content: "The alerts and curated news help me identify high-probability setups faster. The tools are practical and easy to act on.",
     rating: 5,
-    pnl: "+$89K this quarter"
   },
   {
     name: "Jennifer Park",
     role: "Crypto Trader",
-    avatar: "https://images.unsplash.com/photo-1701463387028-3947648f1337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjB0cmFkZXIlMjBwb3J0cmFpdHxlbnwxfHx8fDE3NTkyMzIxNTR8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    content: "Finally, a tool that understands crypto volatility. The risk management features saved me from several bad trades. Worth every penny of the premium subscription.",
+    avatar: "https://images.unsplash.com/photo-1701463387028-3947648f1337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    content: "The platform's risk-management signals are useful for volatile markets—I can react quickly and preserve capital.",
     rating: 5,
-    pnl: "+245% portfolio return"
   }
 ];
 
 const stats = [
-  { value: "50,000+", label: "Active Traders" },
-  { value: "94%", label: "Win Rate Improvement" },
-  { value: "$2.3B+", label: "Total Profits Generated" },
-  { value: "4.9/5", label: "Average Rating" }
+  { value: "25,000+", label: "Subscribers" },
+  { value: "20+", label: "Markets Covered" },
+  { value: "4.8/5", label: "Average Rating" },
+  { value: "1,200+", label: "Daily Signals Delivered" }
 ];
 
 const logos = [

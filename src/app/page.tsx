@@ -4,6 +4,7 @@ import { Hero } from "./(marketing)/components/Hero";
 import { Pricing } from "./(marketing)/components/Pricing";
 import { ProblemSolution } from "./(marketing)/components/ProblemSolution";
 import { SocialProof } from "./(marketing)/components/SocialProof";
+import { ScrollToTop } from '@/components/ScrollToTop';
 import { generateMetadata } from '@/lib/seo';
 import { AuthRedirect } from '@/components/auth-redirect';
 import type { Metadata } from 'next';
@@ -18,6 +19,7 @@ export default function HomePage() {
         <Features />
         <SocialProof />
         <Pricing />
+        <ScrollToTop />
       </div>
     </>
   );

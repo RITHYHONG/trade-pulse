@@ -33,6 +33,8 @@ const contactFormSchema = z.object({
   }),
 });
 
+import { ContactConcierge } from "./ContactConcierge";
+
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -90,6 +92,10 @@ export default function ContactPage() {
           </p>
         </div>
 
+        <div className="max-w-3xl mx-auto mb-20">
+          <ContactConcierge />
+        </div>
+
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
           {/* Left Column: Form */}
           <div className="space-y-12">
@@ -117,7 +123,7 @@ export default function ContactPage() {
                       <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Email</FormLabel>
                       <FormControl>
                         <Input type="email" placeholder="Enter Your Email" {...field} className="border-border h-12" />
-                      </FormControl> 
+                      </FormControl>
                     </FormItem>
                   )}
                 />
@@ -134,7 +140,7 @@ export default function ContactPage() {
                           {...field}
                           className="border-border min-h-[9.3rem] resize-none"
                         />
-                      </FormControl> 
+                      </FormControl>
                     </FormItem>
                   )}
                 />

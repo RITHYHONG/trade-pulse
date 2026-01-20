@@ -13,18 +13,7 @@ interface Correlation {
   lagMinutes?: number;
 }
 
-const mockCorrelations: Correlation[] = [
-  { event1: 'US NFP', event2: 'USD/JPY', strength: 0.85, leadLag: 'simultaneous' },
-  { event1: 'USD/JPY', event2: 'Nikkei 225', strength: 0.72, leadLag: 'leads', lagMinutes: 5 },
-  { event1: 'Nikkei 225', event2: 'Gold', strength: -0.65, leadLag: 'simultaneous' },
-  { event1: 'US CPI', event2: 'DXY', strength: 0.78, leadLag: 'simultaneous' },
-  { event1: 'DXY', event2: 'Gold', strength: -0.82, leadLag: 'simultaneous' },
-  { event1: 'Gold', event2: 'Treasury Yields', strength: -0.68, leadLag: 'lags', lagMinutes: 15 },
-  { event1: 'ECB Rate', event2: 'EUR/USD', strength: 0.88, leadLag: 'simultaneous' },
-  { event1: 'EUR/USD', event2: 'DAX', strength: 0.71, leadLag: 'leads', lagMinutes: 10 },
-];
-
-export function CorrelationMatrix() {
+export function CorrelationMatrix({ correlations = [] }: { correlations?: Correlation[] }) {
   const getCorrelationStyles = (strength: number) => {
     const abs = Math.abs(strength);
     if (abs >= 0.8) {
@@ -123,8 +112,8 @@ export function CorrelationMatrix() {
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent pointer-events-none"
                 />
                 {chain.map((item, index) => {
-                  const correlation = mockCorrelations.find(
-                    c => (c.event1 === chain[index] && c.event2 === chain[index + 1]) ||
+                  const correlation = correlations.find(
+                    (c: Correlation) => (c.event1 === chain[index] && c.event2 === chain[index + 1]) ||
                       (c.event2 === chain[index] && c.event1 === chain[index + 1])
                   );
 
@@ -184,7 +173,7 @@ export function CorrelationMatrix() {
         </div>
 
         <div className="space-y-2">
-          {mockCorrelations.slice(0, 5).map((corr, index) => {
+          {correlations.slice(0, 5).map((corr: Correlation, index: number) => {
             const styles = getCorrelationStyles(corr.strength);
             return (
               <div

@@ -11,6 +11,8 @@ import {
   ScrollVelocityRow,
 } from '@/components/ui/scroll-based-velocity';
 
+import { MarketSentimentWidget } from './MarketSentimentWidget';
+
 export function Hero() {
   return (
     <section id="demo" className="scroll-mt-24 relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-card">
@@ -26,6 +28,15 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="flex justify-center md:justify-start"
+            >
+              <MarketSentimentWidget />
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

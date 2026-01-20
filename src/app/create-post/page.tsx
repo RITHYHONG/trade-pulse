@@ -265,6 +265,8 @@ export default function CreatePostPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [assetInput, setAssetInput] = useState('');
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [headlineSuggestions, setHeadlineSuggestions] = useState<string[]>([]);
 
   // Check auth state and load draft if editing
   useEffect(() => {
@@ -659,21 +661,92 @@ export default function CreatePostPage() {
     }
   };
 
-  const generateAIDescription = () => {
-    // Simulate AI generation
-    const description = `${post.title.slice(0, 100)}... Analysis covering ${post.primaryAsset} with ${post.sentiment.toLowerCase()} outlook for ${post.timeHorizon.toLowerCase()} traders.`;
-    setPost(prev => ({ ...prev, metaDescription: description.slice(0, 160) }));
+  const generateAIDescription = async () => {
+    if (!post.title) {
+      toast.error('Please enter a title first');
+      return;
+    }
+    setIsAiGenerating(true);
+    try {
+      const response = await fetch('/api/blog/co-author', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'generate-description',
+          payload: {
+            title: post.title,
+            primaryAsset: post.primaryAsset,
+            sentiment: post.sentiment
+          }
+        })
+      });
+      const data = await response.json();
+      if (data.data) {
+        setPost(prev => ({ ...prev, metaDescription: data.data }));
+        toast.success('Meta description generated!');
+      }
+    } catch (error) {
+      console.error('AI Description Error:', error);
+      toast.error('Failed to generate AI description');
+    } finally {
+      setIsAiGenerating(false);
+    }
   };
 
-  const optimizeHeadline = () => {
-    // Simulate headline optimization
-    const suggestions = [
-      `Breaking: ${post.title}`,
-      `${post.title} - What Traders Need to Know`,
-      `${post.title}: Complete Analysis & Trade Ideas`
-    ];
-    // In real implementation, show modal with suggestions
-    console.log('Headline suggestions:', suggestions);
+  const optimizeHeadline = async () => {
+    if (!post.title) {
+      toast.error('Please enter a title first');
+      return;
+    }
+    setIsAiGenerating(true);
+    try {
+      const response = await fetch('/api/blog/co-author', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'optimize-headline', payload: { title: post.title } })
+      });
+      const data = await response.json();
+      if (data.data) {
+        setHeadlineSuggestions(data.data);
+        toast.success('Found 3 headline optimizations!');
+      }
+    } catch (error) {
+      console.error('AI Headline Error:', error);
+      toast.error('Failed to optimize headline');
+    } finally {
+      setIsAiGenerating(false);
+    }
+  };
+
+  const generateAIOutline = async () => {
+    if (!post.title) {
+      toast.error('Please enter a title/topic first');
+      return;
+    }
+    setIsAiGenerating(true);
+    try {
+      const response = await fetch('/api/blog/co-author', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'generate-outline', payload: { title: post.title } })
+      });
+      const data = await response.json();
+      if (data.data) {
+        const newBlocks: ContentBlock[] = data.data.map((b: any, i: number) => ({
+          id: (Date.now() + i).toString(),
+          type: b.type,
+          content: b.content,
+          metadata: {}
+        }));
+        setPost(prev => ({ ...prev, blocks: [...prev.blocks, ...newBlocks] }));
+        toast.success(`Generated a ${newBlocks.length}-block outline!`);
+      }
+    } catch (error) {
+      console.error('AI Outline Error:', error);
+      toast.error('Failed to generate AI outline');
+    } finally {
+      setIsAiGenerating(false);
+    }
   };
 
   return (
@@ -882,7 +955,7 @@ export default function CreatePostPage() {
                     })}
                   </div>
                 )}
- 
+
                 {/* Article Footer */}
                 <footer className="border-t border-gray-800/50 pt-12">
                   {/* Tags */}
@@ -1039,11 +1112,12 @@ export default function CreatePostPage() {
                   <Button
                     variant="ghost"
                     size="sm"
+                    disabled={isAiGenerating}
                     onClick={generateAIDescription}
-                    className="text-xs text-[#00F5FF] hover:bg-[#00F5FF]/10"
+                    className="text-xs text-[#00F5FF] hover:bg-[#00F5FF]/10 disabled:opacity-50"
                   >
                     <Sparkles size={12} className="mr-1" />
-                    AI Generate
+                    {isAiGenerating ? 'Generating...' : 'AI Generate'}
                   </Button>
                 </div>
                 <Textarea
@@ -1319,11 +1393,10 @@ export default function CreatePostPage() {
                     <button
                       key={category}
                       onClick={() => setPost(prev => ({ ...prev, category }))}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                        post.category === category
-                          ? 'bg-[#00F5FF] text-black'
-                          : 'bg-[#2D3246] text-gray-400 hover:bg-[#3D4256] hover:text-white'
-                      }`}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${post.category === category
+                        ? 'bg-[#00F5FF] text-black'
+                        : 'bg-[#2D3246] text-gray-400 hover:bg-[#3D4256] hover:text-white'
+                        }`}
                     >
                       {category}
                     </button>
@@ -1441,8 +1514,8 @@ export default function CreatePostPage() {
                       ))}
                     </select>
                   </div>
-                  </div>
-                </div> 
+                </div>
+              </div>
               {/* SEO Optimization */}
               <div className="bg-[#1A1D28] rounded-xl border border-gray-800/50 p-6">
                 <div className="flex items-center gap-3 mb-4">
@@ -1516,36 +1589,62 @@ export default function CreatePostPage() {
                 )}
               </div>
 
-              {/* AI Assistant */}
-              <div className="bg-[#1A1D28] rounded-xl border border-gray-800/50 p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Zap size={18} className="text-[#00F5FF]" />
-                  <h4 className="font-semibold text-white">AI Assistant</h4>
+              {/* AI Co-Author Assistant */}
+              <div className="bg-[#1A1D28] rounded-xl border border-primary/20 p-6 shadow-xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Sparkles size={40} className="text-[#00F5FF]" />
                 </div>
 
-                <div className="space-y-2">
+                <div className="flex items-center gap-3 mb-4">
+                  <Zap size={18} className="text-[#00F5FF]" />
+                  <h4 className="font-semibold text-white">AI Co-Author</h4>
+                </div>
+
+                <div className="space-y-3">
                   <Button
                     variant="outline"
+                    disabled={isAiGenerating}
+                    onClick={generateAIOutline}
+                    className="w-full justify-start bg-[#00F5FF]/5 border-primary/20 text-[#00F5FF] hover:bg-[#00F5FF]/10"
+                  >
+                    <ClipboardList size={16} className="mr-2" />
+                    {isAiGenerating ? 'Generating Outline...' : 'Generate AI Outline'}
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    disabled={isAiGenerating}
+                    onClick={optimizeHeadline}
                     className="w-full justify-start bg-[#2D3246] border-gray-700 text-gray-300 hover:bg-[#3D4256] hover:border-[#00F5FF] hover:text-[#00F5FF]"
                   >
                     <Target size={16} className="mr-2" />
-                    Analyze Content Gaps
+                    Optimize Headline
                   </Button>
+
+                  {headlineSuggestions.length > 0 && (
+                    <div className="mt-4 p-3 bg-[#0F1116] rounded-lg border border-gray-800 space-y-2">
+                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Headline Suggestions</p>
+                      {headlineSuggestions.map((s, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            setPost(prev => ({ ...prev, title: s }));
+                            setHeadlineSuggestions([]);
+                          }}
+                          className="w-full text-left text-xs p-2 rounded bg-gray-800/50 hover:bg-[#00F5FF]/10 hover:text-[#00F5FF] transition-colors border border-transparent hover:border-[#00F5FF]/30"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
 
                   <Button
                     variant="outline"
                     className="w-full justify-start bg-[#2D3246] border-gray-700 text-gray-300 hover:bg-[#3D4256] hover:border-[#00F5FF] hover:text-[#00F5FF]"
                   >
                     <TrendingUp size={16} className="mr-2" />
-                    Check Market Trends
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start bg-[#2D3246] border-gray-700 text-gray-300 hover:bg-[#3D4256] hover:border-[#00F5FF] hover:text-[#00F5FF]"
-                  >
-                    <Users size={16} className="mr-2" />
-                    Competitor Analysis
+                    Tone Adjustment
                   </Button>
                 </div>
               </div>

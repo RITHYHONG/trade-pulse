@@ -18,6 +18,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { AboutInteractiveVision } from './AboutInteractiveVision';
 // import Right from "../"
 
 export const metadata: Metadata = {
@@ -30,67 +31,23 @@ export default function AboutPage() {
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/10">
       <div className='container mx-auto px-4 md:px-6 max-w-7xl'>
         {/* Hero Section */}
-        <section className="pt-32 pb-20 container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto text-center mb-16 space-y-6">
+        <section className="pt-32 pb-20 container mx-auto px-4 md:px-6 text-center">
+          <div className="max-w-4xl mx-auto space-y-6 mb-24">
             <div className="inline-flex items-center justify-center p-1 rounded-full bg-secondary mb-4">
               <span className="w-2 h-2 rounded-full bg-primary mx-2"></span>
               <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground pr-2">Who we are</span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight animate-in slide-in-from-bottom-4 fade-in duration-700">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
               We take pride in delivering <br />
               <span className="text-primary/90">Exceptional results</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-in slide-in-from-bottom-5 fade-in duration-700 delay-100">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Our specialized team provides bespoke high-performance
               market analysis and technological trading intelligence.
             </p>
           </div>
 
-          {/* Hero Image Grid Placeholder */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 h-[500px] animate-in slide-in-from-bottom-8 fade-in duration-1000 delay-200">
-            {/* Large Left Image */}
-            <div className="md:col-span-7 h-full rounded-3xl bg-secondary/50 border border-border/50 relative overflow-hidden group hover:shadow-xl transition-all duration-500">
-              <Image
-                src="/images/about/strategic-vision.png"
-                alt="Strategic Vision - Market Analysis Dashboard"
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-transparent dark:from-background/80 dark:via-background/40 p-8 flex flex-col justify-end group-hover:bg-black/70 dark:group-hover:bg-background/60 transition-colors duration-500">
-                <Target className="w-16 h-16 text-primary/80 mb-4 group-hover:scale-110 transition-transform duration-500 drop-shadow-lg" />
-                <p className="text-sm font-medium text-foreground drop-shadow">Strategic Vision</p>
-              </div>
-            </div>
-
-            {/* Right Column Images */}
-            <div className="md:col-span-5 h-full flex flex-col gap-4">
-              <div className="h-1/2 rounded-3xl bg-secondary/30 border border-border/50 relative overflow-hidden group hover:shadow-lg transition-all duration-500">
-                <Image
-                  src="/images/about/analytics.png"
-                  alt="Analytics Dashboard"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-transparent dark:from-background/80 dark:via-background/40 p-8 flex flex-col justify-end group-hover:bg-black/70 dark:group-hover:bg-background/60 transition-colors duration-500">
-                  <LineChart className="w-12 h-12 text-primary/80 mb-4 group-hover:scale-110 transition-transform duration-500 drop-shadow-lg" />
-                  <p className="text-sm font-medium text-foreground drop-shadow">Analytics</p>
-                </div>
-              </div>
-              <div className="h-1/2 rounded-3xl bg-secondary/30 border border-border/50 relative overflow-hidden group hover:shadow-lg transition-all duration-500">
-                <Image
-                  src="/images/about/network.png"
-                  alt="Global Network"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-transparent dark:from-background/80 dark:via-background/40 p-8 flex flex-col justify-end group-hover:bg-black/70 dark:group-hover:bg-background/60 transition-colors duration-500">
-                  <Users className="w-12 h-12 text-primary/80 mb-4 group-hover:scale-110 transition-transform duration-500 drop-shadow-lg" />
-                  <p className="text-sm font-medium text-foreground drop-shadow">Analytics</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <AboutInteractiveVision />
         </section>
 
         {/* Quote Section */}

@@ -9,6 +9,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { CategoryFilter } from './CategoryFilter';
 import { NewsletterCTA } from './NewsletterCTA';
 import { BlogCard } from './BlogCard';
+import { BlogMarketWrap } from './BlogMarketWrap';
 import { Button } from '@/components/ui/button';
 import { PenSquare } from 'lucide-react';
 import { BlogPost } from '../../types/blog';
@@ -146,6 +147,9 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
 
       {/* News Ticker */}
       <NewsTicker isLoading={isLoading} />
+
+      {/* AI Market Wrap Section */}
+      <BlogMarketWrap />
 
       {/* Category Filter / Navigation */}
       <CategoryFilter

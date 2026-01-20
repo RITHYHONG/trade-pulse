@@ -49,9 +49,9 @@ const additionalFeatures = [
 
 export function Features() {
   return (
-  <section id="features" className="scroll-mt-24 pb-24 bg-gradient-to-b from-card/30 to-background">
+    <section id="features" className="scroll-mt-24 pb-24 bg-gradient-to-b from-card/30 to-background">
       <div className="container mx-auto px-8">
-        <motion.div 
+        <motion.div
           className="text-center mb-20"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -72,7 +72,7 @@ export function Features() {
         {/* Main Features */}
         <div className="space-y-32 mb-24">
           {features.map((feature, index) => (
-            <motion.div 
+            <motion.div
               key={index}
               className={`grid lg:grid-cols-2 gap-16 items-center ${feature.reverse ? 'lg:grid-flow-col-dense' : ''}`}
               initial={{ opacity: 0, y: 50 }}
@@ -85,7 +85,7 @@ export function Features() {
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20">
                   <feature.icon className="w-8 h-8 text-primary" />
                 </div>
-                
+
                 <div>
                   <h3 className="text-3xl lg:text-4xl mb-6 font-bold">
                     {feature.title}
@@ -112,21 +112,59 @@ export function Features() {
                       className="object-cover"
                     />
                   </div>
-                  
+
                   {/* Overlay badge */}
-                  <div className="absolute top-8 right-8 bg-primary/90 text-primary-foreground px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                  <div className="absolute top-8 right-8 bg-primary/90 text-primary-foreground px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm z-20 shadow-lg flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                     AI Powered
                   </div>
+
+                  {/* Dynamic Status Indicator */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="absolute bottom-10 left-10 right-10 bg-black/60 backdrop-blur-xl border border-white/10 rounded-xl p-3 z-20"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-primary animate-ping" />
+                        <span className="text-[10px] font-bold text-white uppercase tracking-widest">
+                          {index === 0 && "Intelligence Engine"}
+                          {index === 1 && "Alert Pipeline"}
+                          {index === 2 && "Precision Engine"}
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-mono text-primary/80">LIVE</span>
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full bg-primary"
+                          animate={{ width: ["20%", "70%", "40%", "90%", "60%"] }}
+                          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-[9px] font-medium text-white/40">
+                        <span>{index === 0 ? "Analyzing Datapoints" : index === 1 ? "Scan In Progress" : "Calculating Risk"}</span>
+                        <span className="font-mono">
+                          {index === 0 && "18.4k/sec"}
+                          {index === 1 && "12ms delay"}
+                          {index === 2 && "99.4% Acc"}
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
                 </div>
 
                 {/* Floating decoration */}
-                <motion.div 
+                <motion.div
                   className="absolute -z-10 -top-8 -right-8 w-32 h-32 bg-primary/10 rounded-full blur-2xl"
-                  animate={{ 
+                  animate={{
                     scale: [1, 1.1, 1],
                     opacity: [0.3, 0.5, 0.3]
                   }}
-                  transition={{ 
+                  transition={{
                     duration: 4,
                     repeat: Infinity,
                     ease: "easeInOut"
@@ -147,7 +185,7 @@ export function Features() {
           <h3 className="text-3xl text-center mb-12 font-bold">
             Plus Everything Else You Need
           </h3>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {additionalFeatures.map((feature, index) => (
               <motion.div

@@ -38,8 +38,51 @@ import { EconomicCalendarService } from '@/services/economic-calendar.service';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-const MarketIntelContent = React.memo(({ events }: { events: any[] }) => (
+const MarketIntelContent = React.memo(({ events, aiIntelligence, isAiLoading, correlations }: { events: any[], aiIntelligence: any, isAiLoading: boolean, correlations: any[] }) => (
   <div className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-hide">
+    {/* AI Verdict Section */}
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h4 className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-1.5">
+          <BrainCircuit className="w-3.5 h-3.5 text-primary" />
+          AI Market Pulse
+        </h4>
+        {aiIntelligence?.marketVerdict && (
+          <Badge variant="outline" className="h-5 bg-primary/10 text-primary border-primary/20 font-mono text-[0.65rem]">
+            {aiIntelligence.marketVerdict}
+          </Badge>
+        )}
+      </div>
+
+      <div className="p-4 rounded-xl bg-card/60 border border-primary/20 relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:scale-110 transition-transform">
+          <BrainCircuit className="w-8 h-8" />
+        </div>
+        {isAiLoading ? (
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-4/5" />
+            <Skeleton className="h-3 w-1/2" />
+          </div>
+        ) : (
+          <div className="space-y-3 relative z-10">
+            <p className="text-[0.75rem] font-medium text-foreground leading-relaxed italic">
+              "{aiIntelligence?.overallSummary || 'Analyzing market events...'}"
+            </p>
+            {aiIntelligence?.keyRisks && (
+              <div className="flex flex-wrap gap-1.5">
+                {aiIntelligence.keyRisks.map((risk: string, i: number) => (
+                  <Badge key={i} variant="secondary" className="h-4 text-[0.6rem] bg-background/50 border-border/20 font-bold uppercase">
+                    • {risk}
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-[0.2em]">Central Bank Watch</h4>
@@ -61,7 +104,7 @@ const MarketIntelContent = React.memo(({ events }: { events: any[] }) => (
         <h4 className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-[0.2em]">Cross Correlations</h4>
         <Activity className="w-3.5 h-3.5 text-primary/50" />
       </div>
-      <CorrelationMatrix />
+      <CorrelationMatrix correlations={correlations} />
     </div>
   </div>
 ));
@@ -76,6 +119,9 @@ export default function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('timeline');
   const [events, setEvents] = useState<EconomicEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [aiIntelligence, setAiIntelligence] = useState<any>(null);
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [correlations, setCorrelations] = useState<any[]>([]);
   const [filters, setFilters] = useState<FilterState>({
     dateRange: 'week',
     impacts: ['high', 'medium', 'low'],
@@ -116,6 +162,36 @@ export default function App() {
 
         const calendarEvents = await EconomicCalendarService.getEvents(start, end);
         setEvents(calendarEvents);
+
+        // Fetch AI Intelligence for high impact events
+        const highImpactEvents = calendarEvents.filter(e => e.impact === 'high');
+        if (highImpactEvents.length > 0) {
+          setIsAiLoading(true);
+          try {
+            const aiResponse = await fetch('/api/calendar/intelligence', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ events: calendarEvents })
+            });
+            const intelligence = await aiResponse.json();
+            setAiIntelligence(intelligence);
+          } catch (error) {
+            console.error('Failed to fetch AI intelligence', error);
+          } finally {
+            setIsAiLoading(false);
+          }
+        }
+
+        // Fetch Correlations
+        try {
+          const corrResponse = await fetch('/api/calendar/correlations');
+          const corrData = await corrResponse.json();
+          if (corrData.correlations) {
+            setCorrelations(corrData.correlations);
+          }
+        } catch (error) {
+          console.error('Failed to fetch correlations', error);
+        }
       } catch (error) {
         console.error('Failed to fetch events', error);
         setEvents(mockEconomicEvents);
@@ -312,7 +388,12 @@ export default function App() {
                       MARKET INTELLIGENCE
                     </SheetTitle>
                   </SheetHeader>
-                  <MarketIntelContent events={mockCentralBankEvents} />
+                  <MarketIntelContent
+                    events={mockCentralBankEvents}
+                    aiIntelligence={aiIntelligence}
+                    isAiLoading={isAiLoading}
+                    correlations={correlations}
+                  />
                 </SheetContent>
               </Sheet>
             </div>
@@ -424,7 +505,12 @@ export default function App() {
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
-          <MarketIntelContent events={mockCentralBankEvents} />
+          <MarketIntelContent
+            events={mockCentralBankEvents}
+            aiIntelligence={aiIntelligence}
+            isAiLoading={isAiLoading}
+            correlations={correlations}
+          />
         </aside>
 
         {selectedEvent && (
