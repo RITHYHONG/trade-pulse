@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo, memo } from 'react';
 import { X, TrendingUp, TrendingDown, Activity, Target, Bell, Brain, Sparkles, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +12,83 @@ import {
   ReferenceLine
 } from 'recharts';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { timeFormatter } from '@/lib/formatters';
+
+// --- Pure Helper Functions (Moved Outside Component) ---
+const getImpactStyles = (impact: string) => {
+  switch (impact) {
+    case 'high': return { bg: 'bg-rose-500/10', text: 'text-rose-500', border: 'border-rose-500/20' };
+    case 'medium': return { bg: 'bg-amber-500/10', text: 'text-amber-500', border: 'border-amber-500/20' };
+    case 'low': return { bg: 'bg-emerald-500/10', text: 'text-emerald-500', border: 'border-emerald-500/20' };
+    default: return { bg: 'bg-muted/50', text: 'text-muted-foreground', border: 'border-border' };
+  }
+};
+
+const getSentimentStyles = (sentiment: string) => {
+  switch (sentiment) {
+    case 'bullish': return { icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10' };
+    case 'bearish': return { icon: TrendingDown, color: 'text-rose-500', bg: 'bg-rose-500/10' };
+    default: return { icon: Activity, color: 'text-muted-foreground', bg: 'bg-muted/50' };
+  }
+};
+
+// --- Memoized Chart Component ---
+const ProbabilityChart = memo(({ data, directionBias, consensus }: {
+  data: any[],
+  directionBias: string,
+  consensus: number
+}) => {
+  const color = directionBias === 'bullish' ? '#10b981' : directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))';
+
+  return (
+    <ResponsiveContainer width="100%" height="100%">
+      <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+        <defs>
+          <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor={color} stopOpacity={0.3} />
+            <stop offset="95%" stopColor={color} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <Tooltip
+          contentStyle={{
+            backgroundColor: 'hsl(var(--popover))',
+            borderColor: 'hsl(var(--border))',
+            borderRadius: '12px',
+            fontSize: '11px',
+            fontWeight: 'bold',
+            boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
+          }}
+          cursor={{ stroke: color, strokeWidth: 1, strokeDasharray: '4 4' }}
+        />
+        <Area
+          type="monotone"
+          dataKey="value"
+          stroke={color}
+          strokeWidth={3}
+          fillOpacity={1}
+          fill="url(#colorValue)"
+          animationDuration={1500}
+        />
+        <ReferenceLine
+          x={consensus.toString()}
+          stroke="hsl(var(--foreground))"
+          strokeWidth={1}
+          strokeDasharray="3 3"
+          label={{
+            value: 'CONSENSUS',
+            position: 'top',
+            fill: 'hsl(var(--foreground))',
+            fontSize: 8,
+            fontWeight: 'bold',
+            letterSpacing: 1
+          }}
+        />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+});
+
+ProbabilityChart.displayName = 'ProbabilityChart';
 
 interface EventIntelligencePanelProps {
   event: EconomicEvent | null;
@@ -22,89 +98,61 @@ interface EventIntelligencePanelProps {
 export function EventIntelligencePanel({ event, onClose }: EventIntelligencePanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
+  // Close on click outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      // Only close if we have a current ref and the click was outside
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
         onClose();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    document.body.style.overflow = 'hidden';
+    // Only add listener if event exists (panel is open)
+    if (event) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = 'hidden';
+    }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.body.style.overflow = 'unset';
     };
-  }, [onClose]);
+  }, [onClose, event]);
+
+  // Optimized Data Calculation
+  const optimizedData = useMemo(() => {
+    if (!event) return [];
+
+    return event.consensusIntelligence.estimateDistribution.map((val, idx, arr) => {
+      // Deterministic pseudo-random generation based on value and index
+      // This ensures the chart shape is consistent for the same event data
+      const seed = val * (idx + 137);
+      const pseudoRandom = (Math.abs(Math.sin(seed)) * 8) + 10;
+
+      return {
+        name: val.toString(),
+        value: idx === 0 || idx === arr.length - 1 ? 2 : pseudoRandom,
+        isConsensus: val === event.consensus
+      };
+    }).sort((a, b) => parseFloat(a.name) - parseFloat(b.name));
+  }, [event]);
 
   if (!event) return null;
-
-  const getImpactStyles = (impact: string) => {
-    return {
-      high: {
-        bg: 'bg-rose-500/10',
-        text: 'text-rose-500',
-        border: 'border-rose-500/20'
-      },
-      medium: {
-        bg: 'bg-amber-500/10',
-        text: 'text-amber-500',
-        border: 'border-amber-500/20'
-      },
-      low: {
-        bg: 'bg-emerald-500/10',
-        text: 'text-emerald-500',
-        border: 'border-emerald-500/20'
-      }
-    }[impact] || {
-      bg: 'bg-muted/50',
-      text: 'text-muted-foreground',
-      border: 'border-border'
-    };
-  };
-
-  const getSentimentStyles = (sentiment: string) => {
-    return {
-      bullish: {
-        icon: TrendingUp,
-        color: 'text-emerald-500',
-        bg: 'bg-emerald-500/10',
-      },
-      bearish: {
-        icon: TrendingDown,
-        color: 'text-rose-500',
-        bg: 'bg-rose-500/10',
-      },
-      neutral: {
-        icon: Activity,
-        color: 'text-muted-foreground',
-        bg: 'bg-muted/50',
-      }
-    }[sentiment] || {
-      icon: Activity,
-      color: 'text-muted-foreground',
-      bg: 'bg-muted/50',
-    };
-  };
 
   const impactStyles = getImpactStyles(event.impact);
   const sentimentStyles = getSentimentStyles(event.historicalData.directionBias);
 
-  const distributionData = event.consensusIntelligence.estimateDistribution.map((val, idx, arr) => ({
-    name: val.toString(),
-    value: idx === 0 || idx === arr.length - 1 ? 2 : Math.random() * 8 + 10,
-    isConsensus: val === event.consensus
-  })).sort((a, b) => parseFloat(a.name) - parseFloat(b.name));
-
   return (
     <>
-      <div className="fixed inset-0 bg-background/40 z-40 animate-in fade-in duration-300" onClick={onClose} />
+      <div
+        className="fixed inset-0 bg-background/40 z-40 animate-in fade-in duration-300 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
       <div
         ref={panelRef}
         className="fixed right-0 top-0 h-full w-[600px] bg-card border-l border-border shadow-2xl z-50 overflow-y-auto animate-in slide-in-from-right duration-300"
       >
-
         {/* Header Section */}
         <div className="sticky top-0 bg-background/95 backdrop-blur-md border-b border-border/40 p-6 z-10">
           <div className="flex items-start justify-between mb-6">
@@ -123,7 +171,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                 <span className="font-semibold text-foreground/80">{event.country}</span>
                 <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
                 <Clock className="w-3.5 h-3.5" />
-                <span>{event.datetime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <span>{timeFormatter.format(event.datetime)}</span>
               </div>
             </div>
 
@@ -171,7 +219,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
             </div>
 
             <div className="h-48 w-full rounded-2xl border border-border/40 p-4 relative group overflow-hidden">
-              {/* Shifting Gradient Background */}
+              {/* Shifting Gradient Background - Optimized with CSS */}
               <div
                 className={cn(
                   "absolute inset-0 opacity-10 transition-colors duration-1000",
@@ -180,18 +228,10 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                       "bg-primary"
                 )}
               />
-              <motion.div
-                animate={{
-                  x: [0, 20, 0],
-                  opacity: [0.05, 0.15, 0.05]
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
+              {/* CSS Animation Replacement for Motion */}
+              <div
                 className={cn(
-                  "absolute inset-[-50%] blur-3xl opacity-10",
+                  "absolute inset-[-50%] blur-3xl opacity-10 animate-pulse",
                   event.historicalData.directionBias === 'bullish' ? "bg-gradient-to-r from-emerald-500 via-transparent to-emerald-500" :
                     event.historicalData.directionBias === 'bearish' ? "bg-gradient-to-r from-rose-500 via-transparent to-rose-500" :
                       "bg-gradient-to-r from-primary via-transparent to-primary"
@@ -199,63 +239,11 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               />
 
               <div className="relative h-full w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={distributionData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                        <stop
-                          offset="5%"
-                          stopColor={event.historicalData.directionBias === 'bullish' ? '#10b981' : event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))'}
-                          stopOpacity={0.3}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor={event.historicalData.directionBias === 'bullish' ? '#10b981' : event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))'}
-                          stopOpacity={0}
-                        />
-                      </linearGradient>
-                    </defs>
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: 'hsl(var(--popover))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '12px',
-                        fontSize: '11px',
-                        fontWeight: 'bold',
-                        boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
-                      }}
-                      cursor={{
-                        stroke: event.historicalData.directionBias === 'bullish' ? '#10b981' : event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))',
-                        strokeWidth: 1,
-                        strokeDasharray: '4 4'
-                      }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="value"
-                      stroke={event.historicalData.directionBias === 'bullish' ? '#10b981' : event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))'}
-                      strokeWidth={3}
-                      fillOpacity={1}
-                      fill="url(#colorValue)"
-                      animationDuration={2000}
-                      className="drop-shadow-[0_0_8px_rgba(16,185,129,0.3)] dark:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                    />
-                    <ReferenceLine
-                      x={event.consensus.toString()}
-                      stroke="hsl(var(--foreground))"
-                      strokeWidth={1}
-                      strokeDasharray="3 3"
-                      label={{
-                        value: 'CONSENSUS',
-                        position: 'top',
-                        fill: 'hsl(var(--foreground))',
-                        fontSize: 8,
-                        fontWeight: 'bold',
-                        letterSpacing: 1
-                      }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+                <ProbabilityChart
+                  data={optimizedData}
+                  directionBias={event.historicalData.directionBias}
+                  consensus={event.consensus}
+                />
               </div>
               <div className="absolute bottom-2 left-6 right-6 flex justify-between font-bold text-muted-foreground uppercase tracking-widest opacity-50">
                 <span>{event.consensus - (event.tradingSetup.expectedMove || 1)}{event.unit}</span>
@@ -274,7 +262,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
             </div>
 
             <div className="relative border border-primary/20 rounded-2xl p-6 overflow-hidden group">
-              {/* Strategic Background Shimmer */}
+              {/* Strategic Background Shimmer - Optimized with CSS */}
               <div
                 className={cn(
                   "absolute inset-0 opacity-10 transition-colors duration-1000",
@@ -283,18 +271,9 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                       "bg-primary"
                 )}
               />
-              <motion.div
-                animate={{
-                  x: ["-20%", "20%", "-20%"],
-                  opacity: [0.03, 0.08, 0.03]
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
+              <div
                 className={cn(
-                  "absolute inset-0 blur-3xl",
+                  "absolute inset-0 blur-3xl opacity-5 animate-pulse",
                   event.historicalData.directionBias === 'bullish' ? "bg-emerald-500" :
                     event.historicalData.directionBias === 'bearish' ? "bg-rose-500" :
                       "bg-primary"
@@ -311,7 +290,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                     <div className="text-muted-foreground font-bold uppercase tracking-[0.2em] opacity-60">Strategic Bias</div>
                     <div className="font-bold text-xl tracking-tight flex items-center gap-2">
                       {event.tradingSetup.strategyTag}
-                      <Badge variant="outline" className="h-5 bg-primary/10 text-primary border-primary/20">
+                      <Badge variant="outline" className="h-auto bg-primary/10 text-primary border-primary/20">
                         {event.tradingSetup.confidenceScore}% CONFIDENCE
                       </Badge>
                     </div>
@@ -376,7 +355,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               Watchlist
               <Activity className="w-3.5 h-3.5 ml-2 opacity-40 group-hover:opacity-100 group-hover:text-primary transition-all" />
             </Button>
-            <Button className="w-full h-11 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:scale-[1.01] active:scale-[0.98]">
+            <Button className="w-full h-11 bg-primary hover:bg-primary/90 text-xs font-bold text-foreground">
               <Bell className="w-3.5 h-3.5 mr-2" />
               Set Intelligence Alert
             </Button>

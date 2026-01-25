@@ -1,10 +1,98 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo, useCallback } from 'react';
 import { EconomicEvent } from './types';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Clock, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { timeFormatter } from '@/lib/formatters';
+
+// --- Static Data & Helpers ---
+const HOURS = Array.from({ length: 24 }, (_, i) => i);
+
+const IMPACT_STYLES: Record<string, { bg: string, border: string, glow: string }> = {
+  high: { bg: 'bg-rose-500', border: 'border-rose-500/30', glow: 'shadow-rose-500/20' },
+  medium: { bg: 'bg-amber-500', border: 'border-amber-500/30', glow: 'shadow-amber-500/20' },
+  low: { bg: 'bg-emerald-500', border: 'border-emerald-500/30', glow: 'shadow-emerald-500/20' }
+};
+
+const SENTIMENT_GLOW: Record<string, string> = {
+  bullish: 'group-hover/card:shadow-[0_0_15px_rgba(16,185,129,0.1)] group-hover/card:border-emerald-500/30',
+  bearish: 'group-hover/card:shadow-[0_0_15px_rgba(244,63,94,0.1)] group-hover/card:border-rose-500/30',
+  neutral: 'group-hover/card:shadow-[0_0_15px_rgba(229,87,63,0.1)] group-hover/card:border-primary/30'
+};
+
+// --- Child Component: TimelineEventCard ---
+const TimelineEventCard = memo(({ event, onClick }: { event: EconomicEvent, onClick: (e: EconomicEvent) => void }) => {
+  const styles = IMPACT_STYLES[event.impact] || IMPACT_STYLES.low;
+
+  const handleClick = useCallback(() => {
+    onClick(event);
+  }, [onClick, event]);
+
+  return (
+    <div
+      onClick={handleClick}
+      className={cn(
+        "relative bg-card hover:bg-card/80 border border-border/40 rounded-xl p-4 cursor-pointer transition-all duration-300 group/card overflow-hidden",
+        SENTIMENT_GLOW[event.historicalData.directionBias] || SENTIMENT_GLOW.neutral,
+        "hover:-translate-y-0.5 animate-in fade-in slide-in-from-left-4 duration-500"
+      )}
+    >
+      {/* Dynamic Background Glow */}
+      <div className={cn(
+        "absolute inset-0 opacity-10 transition-opacity duration-500",
+        styles.bg
+      )} />
+      <div className={cn(
+        "absolute left-0 top-0 bottom-0 w-1 rounded-l-xl opacity-100 transition-opacity",
+        styles.bg
+      )} />
+
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <div className={cn("w-1.5 h-1.5 rounded-full shadow-sm", styles.bg)} />
+            <span className="text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground">
+              {event.impact} Impact
+            </span>
+            <span className="text-[0.7rem] text-muted-foreground px-1">•</span>
+            <span className="text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground">
+              {event.country}
+            </span>
+          </div>
+
+          <h4 className="font-semibold text-foreground group-hover/card:text-primary transition-colors">
+            {event.name}
+          </h4>
+
+          <div className="flex items-center gap-3 pt-1">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Clock className="w-3.5 h-3.5" />
+              <span className="font-mono">
+                {timeFormatter.format(event.datetime)}
+              </span>
+            </div>
+            <Badge variant="secondary" className="text-[0.7rem] h-5 bg-secondary/50 font-normal">
+              {event.category}
+            </Badge>
+          </div>
+        </div>
+
+        <div className="text-right">
+          <div className="text-[0.7rem] text-muted-foreground uppercase tracking-wider mb-0.5">Expected Move</div>
+          <div className="text-sm font-mono font-medium text-foreground">
+            ±{event.tradingSetup.expectedMove}%
+          </div>
+          <div className="mt-2 flex justify-end">
+            <TrendingUp className="w-3.5 h-3.5 text-muted-foreground/50 group-hover/card:text-primary transition-colors" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+TimelineEventCard.displayName = 'TimelineEventCard';
 
 interface TimelineViewProps {
   events: EconomicEvent[];
@@ -12,7 +100,7 @@ interface TimelineViewProps {
   isLoading?: boolean;
 }
 
-export const TimelineView = React.memo(({ events, onEventClick, isLoading = false }: TimelineViewProps) => {
+export const TimelineView = memo(({ events, onEventClick, isLoading = false }: TimelineViewProps) => {
   // Group events by hour - Memoized
   const eventsByHour = useMemo(() => {
     return events.reduce((acc, event) => {
@@ -22,21 +110,6 @@ export const TimelineView = React.memo(({ events, onEventClick, isLoading = fals
       return acc;
     }, {} as Record<number, EconomicEvent[]>);
   }, [events]);
-
-  // Create timeline hours (0-23) - Static
-  const hours = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []);
-
-  const impactStyles: Record<string, string> = {
-    high: 'bg-rose-500 border-rose-500/30',
-    medium: 'bg-amber-500 border-amber-500/30',
-    low: 'bg-emerald-500 border-emerald-500/30'
-  };
-
-  const sentimentGlow: Record<string, string> = {
-    bullish: 'group-hover/card:shadow-[0_0_15px_rgba(16,185,129,0.1)] group-hover/card:border-emerald-500/30',
-    bearish: 'group-hover/card:shadow-[0_0_15px_rgba(244,63,94,0.1)] group-hover/card:border-rose-500/30',
-    neutral: 'group-hover/card:shadow-[0_0_15px_rgba(229,87,63,0.1)] group-hover/card:border-primary/30'
-  };
 
   if (isLoading) {
     return (
@@ -59,11 +132,11 @@ export const TimelineView = React.memo(({ events, onEventClick, isLoading = fals
 
         {/* Timeline Grid */}
         <div className="space-y-1 relative z-10">
-          {hours.map(hour => {
+          {HOURS.map(hour => {
             const hourEvents = eventsByHour[hour] || [];
-            const hasEvents = hourEvents.length > 0;
 
-            if (!hasEvents) return null; // Skip empty hours for minimal look
+            // Optimization: Skip empty hours without rendering a container
+            if (hourEvents.length === 0) return null;
 
             return (
               <div key={hour} className="flex items-start gap-4 md:gap-6 group">
@@ -81,70 +154,12 @@ export const TimelineView = React.memo(({ events, onEventClick, isLoading = fals
 
                   {/* Events */}
                   <div className="space-y-3">
-                    {hourEvents.map((event, eventIdx) => (
-                      <motion.div
+                    {hourEvents.map((event) => (
+                      <TimelineEventCard
                         key={event.id}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: eventIdx * 0.05 }}
-                        onClick={() => onEventClick(event)}
-                        className={cn(
-                          "relative bg-card hover:bg-card/80 border border-border/40 rounded-xl p-4 cursor-pointer transition-all duration-300 group/card overflow-hidden",
-                          sentimentGlow[event.historicalData.directionBias] || sentimentGlow.neutral,
-                          "hover:-translate-y-0.5"
-                        )}
-                      >
-                        {/* Dynamic Background Glow */}
-                        <div className={cn(
-                          "absolute inset-0 opacity-10 transition-opacity duration-500",
-                          (impactStyles[event.impact] || impactStyles.low).split(' ')[0]
-                        )} />
-                        <div className={cn(
-                          "absolute left-0 top-0 bottom-0 w-1 rounded-l-xl opacity-100 transition-opacity",
-                          (impactStyles[event.impact] || impactStyles.low).split(' ')[0]
-                        )} />
-
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <div className={cn("w-1.5 h-1.5 rounded-full shadow-sm", (impactStyles[event.impact] || impactStyles.low).split(' ')[0])} />
-                              <span className="text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground">
-                                {event.impact} Impact
-                              </span>
-                              <span className="text-[0.7rem] text-muted-foreground px-1">•</span>
-                              <span className="text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground">
-                                {event.country}
-                              </span>
-                            </div>
-
-                            <h4 className="font-semibold text-foreground group-hover/card:text-primary transition-colors">
-                              {event.name}
-                            </h4>
-
-                            <div className="flex items-center gap-3 pt-1">
-                              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                <Clock className="w-3.5 h-3.5" />
-                                <span className="font-mono">
-                                  {event.datetime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                                </span>
-                              </div>
-                              <Badge variant="secondary" className="text-[0.7rem] h-5 bg-secondary/50 font-normal">
-                                {event.category}
-                              </Badge>
-                            </div>
-                          </div>
-
-                          <div className="text-right">
-                            <div className="text-[0.7rem] text-muted-foreground uppercase tracking-wider mb-0.5">Expected Move</div>
-                            <div className="text-sm font-mono font-medium text-foreground">
-                              ±{event.tradingSetup.expectedMove}%
-                            </div>
-                            <div className="mt-2 flex justify-end">
-                              <TrendingUp className="w-3.5 h-3.5 text-muted-foreground/50 group-hover/card:text-primary transition-colors" />
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
+                        event={event}
+                        onClick={onEventClick}
+                      />
                     ))}
                   </div>
                 </div>

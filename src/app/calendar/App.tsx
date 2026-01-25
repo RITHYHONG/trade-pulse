@@ -440,7 +440,7 @@ export default function App() {
 
               <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)} className="w-auto">
                 <TabsList className="h-9 bg-muted/40 p-1 gap-1 border border-border/20 rounded-xl">
-                  <TabsTrigger value="timeline" className="text-[11px] font-bold px-4 h-7 data-[state=active]:bg-background data-[state=active]:text-primary transition-all">
+                  <TabsTrigger value="timeline" className="text-[11px] font-bold px-4 h-7 data-[state=active]:bg-primary/50 data-[state=active]:text-primary transition-all">
                     <BarChart3 className="w-3.5 h-3.5 mr-2" />
                     TIMELINE
                   </TabsTrigger>

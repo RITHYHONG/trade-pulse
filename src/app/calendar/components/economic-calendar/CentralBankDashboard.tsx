@@ -6,6 +6,7 @@ import { Building2, Calendar, User, TrendingUp, Clock, Target, ChefHat } from 'l
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { timeFormatter, dayMonthFormatter } from '@/lib/formatters';
 
 interface CentralBankDashboardProps {
   events: CentralBankEvent[];
@@ -118,10 +119,10 @@ export const CentralBankDashboard = React.memo(({ events }: CentralBankDashboard
                   </div>
                   <div className="text-right shrink-0">
                     <div className="text-[0.7rem] font-bold text-foreground leading-tight">
-                      {event.datetime.toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                      {dayMonthFormatter.format(event.datetime)}
                     </div>
                     <div className="text-[0.8rem] text-muted-foreground font-mono">
-                      {event.datetime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {timeFormatter.format(event.datetime)}
                     </div>
                   </div>
                 </div>
