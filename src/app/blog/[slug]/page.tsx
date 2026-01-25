@@ -9,6 +9,9 @@ interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const revalidate = 3600; // Revalidate every hour
+
+
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
   // Try Firestore first
@@ -16,7 +19,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const post = fsPost
     ? mapFirestoreToUI(fsPost)
     : blogPosts.find(p => p.slug === slug);
-  
+
   if (!post) {
     return {
       title: 'Post Not Found | Trader Pulse',
@@ -82,8 +85,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <div className="min-h-screen text-white">
-      <BlogPostComponent 
-        post={post} 
+      <BlogPostComponent
+        post={post}
         relatedPosts={relatedPosts}
       />
     </div>

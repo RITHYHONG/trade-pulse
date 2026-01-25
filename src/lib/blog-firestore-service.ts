@@ -11,7 +11,9 @@ import {
   limit,
   serverTimestamp,
   Timestamp,
+  startAfter,
 } from "firebase/firestore";
+import { cache } from "react";
 import {
   ref,
   uploadBytes,
@@ -288,6 +290,7 @@ export function dataURLtoFile(dataUrl: string, filename: string): File {
 */
 export async function getPublishedPosts(
   limitCount?: number,
+  lastVisible?: unknown,
 ): Promise<BlogPost[]> {
   try {
     const postsRef = collection(db, "posts");
@@ -296,6 +299,10 @@ export async function getPublishedPosts(
       where("isDraft", "==", false),
       orderBy("publishedAt", "desc"),
     );
+
+    if (lastVisible) {
+      q = query(q, startAfter(lastVisible));
+    }
 
     if (limitCount) {
       q = query(q, limit(limitCount));
@@ -391,38 +398,40 @@ export async function getPostsByCategory(
  * @param slug - The post slug
  * @returns The blog post or null if not found/not published
  */
-export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  try {
-    const postsRef = collection(db, "posts");
-    const q = query(
-      postsRef,
-      where("slug", "==", slug),
-      where("isDraft", "==", false),
-      limit(1),
-    );
+export const getPostBySlug = cache(
+  async (slug: string): Promise<BlogPost | null> => {
+    try {
+      const postsRef = collection(db, "posts");
+      const q = query(
+        postsRef,
+        where("slug", "==", slug),
+        where("isDraft", "==", false),
+        limit(1),
+      );
 
-    const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(q);
 
-    if (querySnapshot.empty) {
+      if (querySnapshot.empty) {
+        return null;
+      }
+
+      const doc = querySnapshot.docs[0];
+      const data = doc.data();
+
+      return {
+        ...data,
+        id: doc.id,
+        createdAt: data.createdAt?.toDate?.() || data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
+        publishedAt: data.publishedAt?.toDate?.() || data.publishedAt,
+        views: typeof data.views === "number" ? data.views : 0,
+      } as BlogPost;
+    } catch (error) {
+      console.error("Error getting post by slug:", error);
       return null;
     }
-
-    const doc = querySnapshot.docs[0];
-    const data = doc.data();
-
-    return {
-      ...data,
-      id: doc.id,
-      createdAt: data.createdAt?.toDate?.() || data.createdAt,
-      updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
-      publishedAt: data.publishedAt?.toDate?.() || data.publishedAt,
-      views: typeof data.views === "number" ? data.views : 0,
-    } as BlogPost;
-  } catch (error) {
-    console.error("Error getting post by slug:", error);
-    return null;
-  }
-}
+  },
+);
 /**
  * Get draft posts for a specific user
  * @param userId - The ID of the user

@@ -13,12 +13,13 @@ import { BlogMarketWrap } from './BlogMarketWrap';
 import { Button } from '@/components/ui/button';
 import { PenSquare } from 'lucide-react';
 import { BlogPost } from '../../types/blog';
-import { getPublishedPosts, getFeaturedPosts, BlogPost as FirestoreBlogPost } from '@/lib/blog-firestore-service';
+import { BlogPost as FirestoreBlogPost } from '@/lib/blog-firestore-service';
 import Link from 'next/link';
 import { categories } from '../../data/blogData';
 
 interface BlogIndexProps {
   initialPosts?: BlogPost[];
+  featuredPosts?: BlogPost[];
 }
 
 
@@ -69,47 +70,33 @@ function mapFirestorePostToUIPost(firestorePost: FirestoreBlogPost): BlogPost {
 import { getCurrentUser } from '@/lib/auth';
 import { getUserDrafts } from '@/lib/blog-firestore-service';
 
-export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
+export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = [] }: BlogIndexProps) {
   const [activeCategory, setActiveCategory] = useState('All Posts');
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
-  const [featuredPosts, setFeaturedPosts] = useState<BlogPost[]>([]);
+  const [featuredPosts, setFeaturedPosts] = useState<BlogPost[]>(initialFeatured);
   const [drafts, setDrafts] = useState<BlogPost[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // If we have initial posts, we aren't loading the main content
+  const [isLoading, setIsLoading] = useState(initialPosts.length === 0);
 
-  // Fetch posts from Firestore on mount
+  // Fetch only drafts if user is logged in
   useEffect(() => {
-    async function fetchPosts() {
-      setIsLoading(true);
+    async function fetchDrafts() {
       try {
         const currentUser = getCurrentUser();
-        const [allPosts, featured, userDrafts] = await Promise.all([
-          getPublishedPosts(),
-          getFeaturedPosts(5),
-          currentUser ? getUserDrafts(currentUser.uid) : Promise.resolve([])
-        ]);
-
-        if (allPosts && allPosts.length > 0) {
-          const mappedPosts = allPosts.map(mapFirestorePostToUIPost);
-          setPosts(mappedPosts);
-        }
-
-        if (featured && featured.length > 0) {
-          const mappedFeatured = featured.map(mapFirestorePostToUIPost);
-          setFeaturedPosts(mappedFeatured);
-        }
-
-        if (userDrafts && userDrafts.length > 0) {
-          const mappedDrafts = userDrafts.map(mapFirestorePostToUIPost);
-          setDrafts(mappedDrafts);
+        if (currentUser) {
+          const userDrafts = await getUserDrafts(currentUser.uid);
+          if (userDrafts && userDrafts.length > 0) {
+            const mappedDrafts = userDrafts.map(mapFirestorePostToUIPost);
+            setDrafts(mappedDrafts);
+          }
         }
       } catch (error) {
-        console.error('Error fetching posts:', error);
-      } finally {
-        setIsLoading(false);
+        console.error('Error fetching drafts:', error);
       }
     }
 
-    fetchPosts();
+    // Only run if we haven't loaded drafts yet/on mount
+    fetchDrafts();
   }, []);
 
   // Filter posts based on active category
