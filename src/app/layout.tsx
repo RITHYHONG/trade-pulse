@@ -6,6 +6,7 @@ import "@/lib/firebase";
 import { Toaster } from "@/components/ui/sonner";
 import { ClientLayout } from "@/components/client-layout";
 import { AppLayout } from "@/components/app-layout";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -33,6 +34,7 @@ export default function RootLayout({
             {children}
           </AppLayout>
           <Toaster position="top-right" richColors />
+          <ScrollToTop />
         </ClientLayout>
 
       </body>

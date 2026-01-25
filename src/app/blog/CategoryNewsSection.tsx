@@ -256,7 +256,7 @@ export function CategoryNewsSection({ posts, isLoading, category = 'News' }: Cat
             {/* Bottom Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-3/5">
               {gridPosts.map((post) => (
-                <SmallNewsCard key={post.slug} post={post} />
+                <SmallNewsCard key={post.id || post.slug} post={post} />
               ))}
             </div>
           </div>

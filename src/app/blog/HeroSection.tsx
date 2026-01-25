@@ -1,9 +1,5 @@
 "use client";
 
-import { useState } from 'react';
-import { Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
@@ -21,7 +17,7 @@ function formatRelativeTime(dateString: string): string {
   const date = new Date(dateString);
   const now = new Date();
   const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-  
+
   if (diffInHours < 1) return 'Just now';
   if (diffInHours < 24) return `${diffInHours} hours ago`;
   const diffInDays = Math.floor(diffInHours / 24);
@@ -45,7 +41,7 @@ function HeroSkeleton() {
           <div className="lg:col-span-8">
             <Skeleton className="w-full h-[400px] md:h-[480px] rounded-2xl" />
           </div>
-          
+
           {/* Sidebar */}
           <div className="lg:col-span-4 flex flex-col gap-4 justify-between">
             {[1, 2, 3].map((i) => (
@@ -79,7 +75,7 @@ function SidebarPostCard({ post }: { post: BlogPost }) {
             className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
         </div>
-        
+
         {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
           <div>
@@ -92,7 +88,7 @@ function SidebarPostCard({ post }: { post: BlogPost }) {
               {post.title}
             </h3>
           </div>
-          
+
           {/* Author */}
           <div className="flex items-center gap-2 mt-2">
             <div className="relative w-5 h-5 rounded-full overflow-hidden">
@@ -112,13 +108,6 @@ function SidebarPostCard({ post }: { post: BlogPost }) {
 }
 
 export function HeroSection({ featuredPost, sidebarPosts, isLoading, onSearch }: HeroSectionProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch?.(searchQuery);
-  };
-
   if (isLoading) {
     return <HeroSkeleton />;
   }
@@ -142,32 +131,32 @@ export function HeroSection({ featuredPost, sidebarPosts, isLoading, onSearch }:
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     priority
                   />
-                  
+
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  
+
                   {/* Arrow Icon */}
                   <div className="absolute bottom-6 right-6 w-12 h-12 bg-primary rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-12">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                   </div>
-                  
+
                   {/* Content */}
                   <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
                     <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight group-hover:text-primary/90 transition-colors">
                       {featuredPost.title}
                     </h2>
-                    
+
                     <p className="text-white/80 text-base md:text-lg mb-4 line-clamp-2 max-w-2xl">
                       {featuredPost.excerpt}
                     </p>
-                    
+
                     {/* Author */}
                     <div className="flex items-center gap-3">
                       <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-white/30">
                         <ImageWithFallback
-                          src={ featuredPost.author?.avatarUrl || featuredPost.author?.avatar || ''}
+                          src={featuredPost.author?.avatarUrl || featuredPost.author?.avatar || ''}
                           alt={featuredPost.author?.name || 'Author'}
                           fill
                           className="object-cover"
@@ -183,11 +172,11 @@ export function HeroSection({ featuredPost, sidebarPosts, isLoading, onSearch }:
               </Link>
             </div>
           )}
-          
+
           {/* Sidebar Posts */}
           <div className="lg:col-span-4 flex flex-col gap-4 justify-between">
             {sidebarPosts.slice(0, 3).map((post) => (
-              <SidebarPostCard key={post.slug} post={post} />
+              <SidebarPostCard key={post.id || post.slug} post={post} />
             ))}
           </div>
         </div>

@@ -1,31 +1,44 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { ChevronUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ArrowUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { motion, AnimatePresence } from 'motion/react';
 
 export function ScrollToTop() {
-  const [visible, setVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 300);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
+    const toggleVisibility = () => {
+      setIsVisible(window.scrollY > 500);
+    };
+
+    window.addEventListener('scroll', toggleVisibility);
+    return () => window.removeEventListener('scroll', toggleVisibility);
   }, []);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  if (!visible) return null;
-
   return (
-    <button
-      aria-label="Scroll to top"
-      onClick={scrollToTop}
-      className="fixed bottom-6 right-6 z-50 inline-flex items-center justify-center rounded-full bg-primary p-3 text-white shadow-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-    >
-      <ChevronUp className="w-4 h-4" />
-    </button>
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.5, y: 20 }}
+          className="fixed bottom-8 right-8 z-50"
+        >
+          <Button
+            onClick={scrollToTop}
+            size="icon"
+            className="rounded-full shadow-2xl bg-primary hover:bg-primary/90 text-primary-foreground w-12 h-12 border border-primary/20 backdrop-blur-sm"
+          >
+            <ArrowUp className="w-6 h-6" />
+          </Button>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

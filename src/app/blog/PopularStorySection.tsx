@@ -21,12 +21,12 @@ function PopularStorySkeleton() {
           <Skeleton className="h-8 w-40" />
           <Skeleton className="h-10 w-32 rounded-full" />
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-5">
             <Skeleton className="w-full h-[500px] rounded-2xl" />
           </div>
-          
+
           <div className="lg:col-span-7 space-y-6 flex flex-col justify-between">
             <Skeleton className="w-full h-64 rounded-2xl mb-6" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-3/5">
@@ -54,19 +54,19 @@ function SmallStoryCard({ post }: { post: BlogPost }) {
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
-          
+
           {/* Arrow Icon */}
           <div className="absolute top-3 right-3 w-8 h-8 bg-primary rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <ArrowRight className="w-4 h-4 text-white" />
           </div>
         </div>
-        
+
         {/* Content */}
         <div className="p-4">
           <h4 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-3 group-hover:text-primary transition-colors">
             {post.title}
           </h4>
-          
+
           {/* Author */}
           <div className="flex items-center gap-2">
             <div className="relative w-5 h-5 rounded-full overflow-hidden">
@@ -97,32 +97,32 @@ function FeaturedStoryCard({ post }: { post: BlogPost }) {
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        
+
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-        
+
         {/* Arrow Icon */}
         <div className="absolute bottom-6 right-6 w-12 h-12 bg-primary rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-12">
           <ArrowRight className="w-5 h-5 text-white" />
         </div>
-        
+
         {/* Content */}
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
           {/* Category */}
           <Badge className="bg-primary text-white border-0 mb-4">
             {post.category}
           </Badge>
-          
+
           {/* Title */}
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight group-hover:text-primary/90 transition-colors">
             {post.title}
           </h2>
-          
+
           {/* Excerpt */}
           <p className="text-white/70 text-sm mb-4 line-clamp-2 max-w-md">
             {post.excerpt}
           </p>
-          
+
           {/* Author */}
           <div className="flex items-center gap-3">
             <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-white/30">
@@ -155,13 +155,13 @@ function MainStoryCard({ post }: { post: BlogPost }) {
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-110"
             />
-            
+
             {/* Arrow Icon */}
             <div className="absolute bottom-4 right-4 w-10 h-10 bg-primary rounded-xl flex items-center justify-center transition-transform group-hover:scale-110">
               <ArrowRight className="w-5 h-5 text-white" />
             </div>
           </div>
-          
+
           {/* Content */}
           <div className="p-6 flex flex-col justify-between">
             {/* Category Badge */}
@@ -180,7 +180,7 @@ function MainStoryCard({ post }: { post: BlogPost }) {
                 {post.excerpt}
               </p>
             </div>
-            
+
             {/* Author */}
             <div className="flex items-center gap-3">
               <div className="relative w-8 h-8 rounded-full overflow-hidden">
@@ -221,16 +221,16 @@ export function PopularStorySection({ posts, isLoading }: PopularStorySectionPro
           <h2 className="text-2xl md:text-3xl font-bold text-foreground">
             Popular Story
           </h2>
-          
-          <Link 
-            href="/blog" 
+
+          <Link
+            href="/blog"
             className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-full text-sm font-medium transition-colors"
           >
             See more news
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
-        
+
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left - Large Featured Card */}
@@ -239,18 +239,18 @@ export function PopularStorySection({ posts, isLoading }: PopularStorySectionPro
               <FeaturedStoryCard post={featuredPost} />
             </div>
           )}
-          
+
           {/* Right - Main + Grid */}
           <div className="lg:col-span-7 space-y-6 flex flex-col justify-between">
             {/* Main Story Card */}
             {mainPost && (
               <MainStoryCard post={mainPost} />
             )}
-            
+
             {/* Bottom Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-3/5">
               {gridPosts.map((post) => (
-                <SmallStoryCard key={post.slug} post={post} />
+                <SmallStoryCard key={post.id || post.slug} post={post} />
               ))}
             </div>
           </div>

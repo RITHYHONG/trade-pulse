@@ -21,7 +21,7 @@ function formatRelativeTime(dateString: string): string {
   const date = new Date(dateString);
   const now = new Date();
   const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-  
+
   if (diffInHours < 1) return 'Just now';
   if (diffInHours < 24) return `${diffInHours} hours ago`;
   const diffInDays = Math.floor(diffInHours / 24);
@@ -79,7 +79,7 @@ function SmallPostCard({ post }: { post: BlogPost }) {
     bio: post.author.bio,
     role: post.author.role
   }), [post.author.name, post.author.avatar, post.author.avatarUrl, post.author.bio, post.author.role]);
-  
+
   const { authorProfile } = useAuthorProfile({
     authorId: post.authorId,
     fallbackAuthor
@@ -100,13 +100,13 @@ function SmallPostCard({ post }: { post: BlogPost }) {
                 {formatRelativeTime(post.publishedAt)}
               </span>
             </div>
-            
+
             {/* Title */}
             <h3 className="text-foreground text-sm font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">
               {post.title}
             </h3>
           </div>
-          
+
           {/* Thumbnail */}
           <div className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
             <ImageWithFallback
@@ -117,7 +117,7 @@ function SmallPostCard({ post }: { post: BlogPost }) {
             />
           </div>
         </div>
-        
+
         {/* Author and Views */}
         <div className="flex items-center justify-between gap-4 pt-4 border-t border-border mt-auto">
           <div className="flex items-center gap-2">
@@ -149,28 +149,28 @@ function LargeFeaturedCard({ post }: { post: BlogPost }) {
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-        
+
         {/* Arrow Icon */}
         <div className="absolute bottom-6 right-6 w-12 h-12 bg-primary rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-12">
           <ArrowRight className="w-5 h-5 text-white" />
         </div>
-        
+
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
           <Badge className="bg-primary text-white border-0 mb-4">
             {post.category}
           </Badge>
-          
+
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 leading-tight group-hover:text-primary/90 transition-colors">
             {post.title}
           </h2>
-          
+
           {post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {post.tags.slice(0, 3).map((tag) => (
-                <span 
-                  key={tag} 
+                <span
+                  key={tag}
                   className="text-white/70 text-sm bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full"
                 >
                   #{tag}
@@ -204,9 +204,9 @@ export function CategorySection({ category, posts, isLeft, isLoading }: Category
           <h2 className="text-2xl md:text-3xl font-bold text-foreground">
             {category}
           </h2>
-          
-          <Link 
-            href={`/blog?category=${encodeURIComponent(category)}`} 
+
+          <Link
+            href={`/blog?category=${encodeURIComponent(category)}`}
             className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors group"
           >
             <span className="text-sm font-medium">View more</span>
@@ -223,7 +223,7 @@ export function CategorySection({ category, posts, isLeft, isLoading }: Category
 
           <div className={`lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-4 content-start ${isLeft ? '' : 'lg:col-start-1 lg:col-span-7'}`}>
             {gridPosts.map((post) => (
-              <SmallPostCard key={post.slug} post={post} />
+              <SmallPostCard key={post.id || post.slug} post={post} />
             ))}
           </div>
         </div>

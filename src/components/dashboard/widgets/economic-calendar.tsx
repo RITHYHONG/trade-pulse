@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import type { EconomicEvent } from "@/app/calendar/components/economic-calendar/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface EconomicCalendarWidgetProps {
   events: EconomicEvent[];
@@ -26,12 +27,12 @@ export function EconomicCalendarWidget({ events, isLoading = false }: EconomicCa
         <ul className="mt-5 space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <li key={i} className="flex items-start justify-between rounded-xl border border-slate-800/70 bg-slate-900/60 p-4">
-              <div>
-                <div className="h-4 w-28 bg-slate-700 rounded-md animate-pulse mb-2" />
-                <div className="h-4 w-40 bg-slate-700 rounded-md animate-pulse mb-2" />
-                <div className="h-3 w-56 bg-slate-700 rounded-md animate-pulse" />
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-28" />
+                <Skeleton className="h-4 w-48" />
+                <Skeleton className="h-3 w-64" />
               </div>
-              <div className="h-6 w-20 bg-slate-700 rounded-full animate-pulse" />
+              <Skeleton className="h-6 w-20 rounded-full" />
             </li>
           ))}
         </ul>

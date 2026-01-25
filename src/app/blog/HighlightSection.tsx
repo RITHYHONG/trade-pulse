@@ -20,10 +20,10 @@ function HighlightSkeleton() {
           <Skeleton className="h-8 w-32" />
           <Skeleton className="h-10 w-36 rounded-full" />
         </div>
-        
+
         {/* Main Highlight */}
         <Skeleton className="w-full h-[400px] rounded-2xl mb-6" />
-        
+
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
@@ -47,19 +47,19 @@ function HighlightGridCard({ post }: { post: BlogPost }) {
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
-          
+
           {/* Arrow Icon */}
           <div className="absolute top-3 right-3 w-8 h-8 bg-primary rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <ArrowRight className="w-4 h-4 text-white" />
           </div>
         </div>
-        
+
         {/* Content */}
         <div className="p-4">
           <h4 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-3 group-hover:text-primary transition-colors">
             {post.title}
           </h4>
-          
+
           {/* Author */}
           <div className="flex items-center gap-2">
             <div className="relative w-5 h-5 rounded-full overflow-hidden">
@@ -98,16 +98,16 @@ export function HighlightSection({ posts, isLoading }: HighlightSectionProps) {
           <h2 className="text-2xl md:text-3xl font-bold text-foreground">
             Highlight
           </h2>
-          
-          <Link 
-            href="/blog" 
+
+          <Link
+            href="/blog"
             className="inline-flex items-center gap-2 border border-primary text-primary hover:bg-primary hover:text-white px-5 py-2.5 rounded-full text-sm font-medium transition-colors"
           >
             Grab it for free
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
-        
+
         {/* Main Highlight */}
         {mainPost && (
           <Link href={`/blog/${mainPost.slug}`}>
@@ -119,27 +119,27 @@ export function HighlightSection({ posts, isLoading }: HighlightSectionProps) {
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              
+
               {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-              
+
               {/* Arrow Icon */}
               <div className="absolute bottom-6 right-6 w-14 h-14 bg-primary rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-12">
                 <ArrowRight className="w-6 h-6 text-white" />
               </div>
-              
+
               {/* Content */}
               <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 max-w-3xl">
                 {/* Title */}
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4 leading-tight group-hover:text-primary/90 transition-colors">
                   {mainPost.title}
                 </h2>
-                
+
                 {/* Excerpt */}
                 <p className="text-white/70 text-sm md:text-base line-clamp-3 mb-4 max-w-2xl">
                   {mainPost.excerpt}
                 </p>
-                
+
                 {/* Author */}
                 <div className="flex items-center gap-3">
                   <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-white/30">
@@ -156,11 +156,11 @@ export function HighlightSection({ posts, isLoading }: HighlightSectionProps) {
             </article>
           </Link>
         )}
-        
+
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {gridPosts.map((post) => (
-            <HighlightGridCard key={post.slug} post={post} />
+            <HighlightGridCard key={post.id || post.slug} post={post} />
           ))}
         </div>
       </div>

@@ -18,7 +18,7 @@ function formatRelativeTime(dateString: string): string {
   const date = new Date(dateString);
   const now = new Date();
   const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-  
+
   if (diffInHours < 1) return 'Just now';
   if (diffInHours < 24) return `${diffInHours} hours ago`;
   const diffInDays = Math.floor(diffInHours / 24);
@@ -38,7 +38,7 @@ function LatestNewsSkeleton() {
             <Skeleton className="w-10 h-10 rounded-full" />
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[1, 2].map((i) => (
             <div key={i} className="bg-card rounded-2xl p-6 border border-border">
@@ -67,13 +67,13 @@ function LatestNewsCard({ post }: { post: BlogPost }) {
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
-          
+
           {/* Arrow Icon */}
           <div className="absolute bottom-4 right-4 w-10 h-10 bg-primary rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
             <ArrowRight className="w-5 h-5 text-white" />
           </div>
         </div>
-        
+
         {/* Content */}
         <div className="p-5 md:p-6">
           {/* Category and Date */}
@@ -86,17 +86,17 @@ function LatestNewsCard({ post }: { post: BlogPost }) {
               {formatRelativeTime(post.publishedAt)}
             </span>
           </div>
-          
+
           {/* Title */}
           <h3 className="text-lg font-bold text-foreground leading-snug mb-3 line-clamp-2 group-hover:text-primary transition-colors">
             {post.title}
           </h3>
-          
+
           {/* Excerpt */}
           <p className="text-muted-foreground text-sm line-clamp-2 mb-4">
             {post.excerpt}
           </p>
-          
+
           {/* Author */}
           <div className="flex items-center gap-3">
             <div className="relative w-8 h-8 rounded-full overflow-hidden">
@@ -118,13 +118,13 @@ function LatestNewsCard({ post }: { post: BlogPost }) {
 export function LatestNewsSection({ posts, isLoading }: LatestNewsSectionProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const postsPerPage = 2;
-  
+
   // Group posts into pages
   const pages = [];
   for (let i = 0; i < posts.length; i += postsPerPage) {
     pages.push(posts.slice(i, i + postsPerPage));
   }
-  
+
   const totalPages = pages.length;
 
   const nextPage = () => {
@@ -151,7 +151,7 @@ export function LatestNewsSection({ posts, isLoading }: LatestNewsSectionProps) 
           <h2 className="text-2xl md:text-3xl font-bold text-foreground">
             Latest News
           </h2>
-          
+
           {/* Navigation Arrows */}
           {totalPages > 1 && (
             <div className="flex gap-2">
@@ -174,10 +174,10 @@ export function LatestNewsSection({ posts, isLoading }: LatestNewsSectionProps) 
             </div>
           )}
         </div>
-        
+
         {/* News Grid with Smooth Slide */}
         <div className="overflow-hidden">
-          <div 
+          <div
             className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentPage * 100}%)` }}
           >
@@ -185,7 +185,7 @@ export function LatestNewsSection({ posts, isLoading }: LatestNewsSectionProps) 
               <div key={pageIndex} className="flex-shrink-0 w-full">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {pagePosts.map((post) => (
-                    <LatestNewsCard key={post.slug} post={post} />
+                    <LatestNewsCard key={post.id || post.slug} post={post} />
                   ))}
                 </div>
               </div>

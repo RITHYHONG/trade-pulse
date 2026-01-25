@@ -133,13 +133,14 @@ export function Hero() {
 
               {/* Dashboard content */}
               <div className="space-y-4 md:space-y-6">
-                <div className="w-full h-40 sm:h-48 md:h-56 lg:h-64 relative rounded-lg border border-border overflow-hidden">
+                <div className="w-full h-40 sm:h-48 md:h-56 lg:h-64 relative rounded-lg border border-border overflow-hidden shadow-inner bg-slate-900/50">
                   <ImageWithFallback
-                    src="https://images.unsplash.com/photo-1711637397406-0c5fe8165dc6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaW5hbmNpYWwlMjBjaGFydHMlMjBkYXRhfGVufDF8fHx8MTc1OTIzMjE1MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-                    alt="Trading Dashboard"
+                    src="https://images.unsplash.com/photo-1611974717483-9b664a069e2a?auto=format&fit=crop&q=80&w=1200"
+                    alt="Institutional Trading Dashboard Mockup"
                     fill
-                    className="object-cover"
+                    className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-1000"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent pointer-events-none" />
                 </div>
 
                 {/* Live data indicators */}

@@ -49,6 +49,22 @@ export function Footer() {
     setMounted(true);
   }, []);
 
+  const handleComingSoon = (e: React.MouseEvent, label: string) => {
+    const href = e.currentTarget.getAttribute('href');
+    if (href?.startsWith('#')) {
+      const targetId = href.substring(1);
+      const element = document.getElementById(targetId);
+      if (!element) {
+        e.preventDefault();
+        toast.info(`${label} is coming soon! Stay tuned.`);
+      }
+    } else if (href === '/careers' || href === '/press' || href === '/help' || href === '/status' || href === '/security') {
+      // Add more placeholder routes here if needed
+      e.preventDefault();
+      toast.info(`${label} is coming soon! Stay tuned.`);
+    }
+  };
+
   const handleSubscribe = async () => {
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
       toast.error('Please enter a valid email address.');
@@ -84,7 +100,7 @@ export function Footer() {
       {/* Newsletter Section */}
       <div className="border-b border-border">
         <div className="container mx-auto px-8 py-16">
-          <motion.div 
+          <motion.div
             className="max-w-4xl mx-auto text-center"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -97,16 +113,16 @@ export function Footer() {
             <p className="text-muted-foreground mb-8 text-lg">
               Get weekly market insights and trading tips delivered to your inbox
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <Input 
-                placeholder="Enter your email" 
+              <Input
+                placeholder="Enter your email"
                 className="flex-1 bg-card border-border h-10"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
               />
-              <Button 
+              <Button
                 className="bg-primary hover:bg-primary/90 px-8"
                 onClick={handleSubscribe}
                 disabled={isLoading}
@@ -114,7 +130,7 @@ export function Footer() {
                 {isLoading ? 'Subscribing...' : 'Subscribe'}
               </Button>
             </div>
-            
+
             <p className="text-sm text-muted-foreground mt-4">
               Join 50,000+ traders getting our weekly newsletter. Unsubscribe anytime.
             </p>
@@ -126,7 +142,7 @@ export function Footer() {
       <div className="container mx-auto px-8 py-16">
         <div className="grid lg:grid-cols-6 gap-12">
           {/* Brand Column */}
-          <motion.div 
+          <motion.div
             className="lg:col-span-2"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -134,31 +150,31 @@ export function Footer() {
             transition={{ duration: 0.6 }}
           >
             <div className="flex items-center gap-3 mb-6">
-            <motion.div 
-            className="flex items-center gap-3"
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <Image 
-                src={mounted ? (theme === 'light' ? LogoLight : LogoDark) : LogoDark} 
-                width={65} 
-                  height={65} 
-                alt="Logo"
-                priority
-              />
-            </Link>
-          </motion.div>
+              <motion.div
+                className="flex items-center gap-3"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                  <Image
+                    src={mounted ? (theme === 'light' ? LogoLight : LogoDark) : LogoDark}
+                    width={65}
+                    height={65}
+                    alt="Logo"
+                    priority
+                  />
+                </Link>
+              </motion.div>
               <div>
                 <div className="font-bold text-xl">Trader Pulse</div>
                 <div className="text-sm text-muted-foreground">Pre-Market Intelligence</div>
               </div>
             </div>
-            
+
             <p className="text-muted-foreground mb-8 leading-relaxed">
               Professional-grade pre-market intelligence platform designed for serious traders who demand an edge in today&apos;s competitive markets.
             </p>
-            
+
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/10">
                 <Image src="https://upload.wikimedia.org/wikipedia/commons/5/53/X_logo_2023_original.svg" width={20} height={20} alt="X" className="filter invert" />
@@ -174,7 +190,7 @@ export function Footer() {
 
           {/* Links Columns */}
           {Object.entries(footerLinks).map(([category, links], categoryIndex) => (
-            <motion.div 
+            <motion.div
               key={category}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -188,6 +204,7 @@ export function Footer() {
                     <Link
                       href={link.href}
                       className="text-muted-foreground hover:text-primary transition-colors"
+                      onClick={(e) => handleComingSoon(e, link.label)}
                     >
                       {link.label}
                     </Link>
@@ -203,7 +220,7 @@ export function Footer() {
       <div className="border-t border-border">
         <div className="container mx-auto px-8 py-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-            <motion.div 
+            <motion.div
               className="text-sm text-muted-foreground"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -212,8 +229,8 @@ export function Footer() {
             >
               © 2025 Trader Pulse. All rights reserved.
             </motion.div>
-            
-            <motion.div 
+
+            <motion.div
               className="flex items-center gap-8 text-sm text-muted-foreground"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
@@ -236,15 +253,15 @@ export function Footer() {
       {/* Disclaimer */}
       <div className="bg-card/30 border-t border-border">
         <div className="container mx-auto px-8 py-6">
-          <motion.p 
+          <motion.p
             className="text-xs text-muted-foreground text-center leading-relaxed"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <strong>Risk Disclaimer:</strong> Trading involves substantial risk and may not be suitable for all investors. 
-            Past performance is not indicative of future results. All trading decisions should be made based on your own analysis and risk tolerance. 
+            <strong>Risk Disclaimer:</strong> Trading involves substantial risk and may not be suitable for all investors.
+            Past performance is not indicative of future results. All trading decisions should be made based on your own analysis and risk tolerance.
             Trader Pulse is for informational purposes only and does not constitute investment advice.
           </motion.p>
         </div>

@@ -1,25 +1,25 @@
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  getDoc, 
+import {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
   getDocs,
-  updateDoc, 
+  updateDoc,
   query,
   where,
   orderBy,
   limit,
   serverTimestamp,
-  Timestamp 
-} from 'firebase/firestore';
-import { 
-  ref, 
-  uploadBytes, 
+  Timestamp,
+} from "firebase/firestore";
+import {
+  ref,
+  uploadBytes,
   getDownloadURL,
-  deleteObject 
-} from 'firebase/storage';
-import { db, storage } from './firebase';
-import { getUserProfile } from './firestore-service';
+  deleteObject,
+} from "firebase/storage";
+import { db, storage } from "./firebase";
+import { getUserProfile } from "./firestore-service";
 
 export interface BlogPost {
   id?: string;
@@ -64,17 +64,17 @@ export interface BlogPost {
 export async function uploadFeaturedImage(
   file: File,
   postId: string,
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
 ): Promise<string> {
   try {
     // Create a unique filename
     const timestamp = Date.now();
-    const filename = `${postId}_${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    const filename = `${postId}_${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
     const storageRef = ref(storage, `blog-images/${filename}`);
 
     // Upload the file
     const uploadTask = uploadBytes(storageRef, file);
-    
+
     if (onProgress) {
       // Note: uploadBytes doesn't support progress tracking directly
       // For progress, we'd need to use uploadBytesResumable
@@ -82,7 +82,7 @@ export async function uploadFeaturedImage(
     }
 
     const snapshot = await uploadTask;
-    
+
     if (onProgress) {
       onProgress(100);
     }
@@ -91,8 +91,8 @@ export async function uploadFeaturedImage(
     const downloadURL = await getDownloadURL(snapshot.ref);
     return downloadURL;
   } catch (error) {
-    console.error('Error uploading featured image:', error);
-    throw new Error('Failed to upload featured image');
+    console.error("Error uploading featured image:", error);
+    throw new Error("Failed to upload featured image");
   }
 }
 
@@ -103,16 +103,16 @@ export async function uploadFeaturedImage(
 export async function deleteFeaturedImage(imageUrl: string): Promise<void> {
   try {
     // Extract the path from the URL
-    const urlParts = imageUrl.split('/o/');
+    const urlParts = imageUrl.split("/o/");
     if (urlParts.length < 2) return;
-    
-    const pathPart = urlParts[1].split('?')[0];
+
+    const pathPart = urlParts[1].split("?")[0];
     const path = decodeURIComponent(pathPart);
-    
+
     const imageRef = ref(storage, path);
     await deleteObject(imageRef);
   } catch (error) {
-    console.error('Error deleting featured image:', error);
+    console.error("Error deleting featured image:", error);
     // Don't throw - we don't want to block the post save if image deletion fails
   }
 }
@@ -129,7 +129,7 @@ export async function createBlogPost(
   post: BlogPost,
   userId: string,
   userEmail: string,
-  userDisplayName?: string
+  userDisplayName?: string,
 ): Promise<string> {
   try {
     // Get user profile for additional author information
@@ -137,11 +137,11 @@ export async function createBlogPost(
     try {
       userProfile = await getUserProfile(userId);
     } catch (error) {
-      console.warn('Could not fetch user profile:', error);
+      console.warn("Could not fetch user profile:", error);
     }
 
     // Generate a new post ID
-    const postsRef = collection(db, 'posts');
+    const postsRef = collection(db, "posts");
     const newPostRef = doc(postsRef);
     const postId = newPostRef.id;
 
@@ -151,12 +151,16 @@ export async function createBlogPost(
       id: postId,
       authorId: userId,
       authorEmail: userEmail,
-      authorName: userDisplayName || userProfile?.displayName || userEmail?.split('@')[0] || 'Anonymous',
+      authorName:
+        userDisplayName ||
+        userProfile?.displayName ||
+        userEmail?.split("@")[0] ||
+        "Anonymous",
       featuredImage: post.featuredImage || userProfile?.photoURL || null,
       authorAvatar: userProfile?.photoURL || null,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-      ...(post.isDraft ? {} : { publishedAt: serverTimestamp() })
+      ...(post.isDraft ? {} : { publishedAt: serverTimestamp() }),
     };
 
     // Save to Firestore
@@ -164,8 +168,8 @@ export async function createBlogPost(
 
     return postId;
   } catch (error) {
-    console.error('Error creating blog post:', error);
-    throw new Error('Failed to create blog post');
+    console.error("Error creating blog post:", error);
+    throw new Error("Failed to create blog post");
   }
 }
 
@@ -177,20 +181,20 @@ export async function createBlogPost(
  */
 export async function updateBlogPost(
   postId: string,
-  post: Partial<BlogPost>
+  post: Partial<BlogPost>,
 ): Promise<void> {
   try {
-    const postRef = doc(db, 'posts', postId);
-    
+    const postRef = doc(db, "posts", postId);
+
     const updateData = {
       ...post,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     await updateDoc(postRef, updateData);
   } catch (error) {
-    console.error('Error updating blog post:', error);
-    throw new Error('Failed to update blog post');
+    console.error("Error updating blog post:", error);
+    throw new Error("Failed to update blog post");
   }
 }
 
@@ -201,7 +205,7 @@ export async function updateBlogPost(
  */
 export async function getBlogPost(postId: string): Promise<BlogPost | null> {
   try {
-    const postRef = doc(db, 'posts', postId);
+    const postRef = doc(db, "posts", postId);
     const postSnap = await getDoc(postRef);
 
     if (postSnap.exists()) {
@@ -217,8 +221,8 @@ export async function getBlogPost(postId: string): Promise<BlogPost | null> {
 
     return null;
   } catch (error) {
-    console.error('Error getting blog post:', error);
-    throw new Error('Failed to retrieve blog post');
+    console.error("Error getting blog post:", error);
+    throw new Error("Failed to retrieve blog post");
   }
 }
 
@@ -229,16 +233,16 @@ export async function getBlogPost(postId: string): Promise<BlogPost | null> {
  */
 export async function publishBlogPost(postId: string): Promise<void> {
   try {
-    const postRef = doc(db, 'posts', postId);
-    
+    const postRef = doc(db, "posts", postId);
+
     await updateDoc(postRef, {
       isDraft: false,
       publishedAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error publishing blog post:', error);
-    throw new Error('Failed to publish blog post');
+    console.error("Error publishing blog post:", error);
+    throw new Error("Failed to publish blog post");
   }
 }
 
@@ -249,16 +253,16 @@ export async function publishBlogPost(postId: string): Promise<void> {
  * @returns A File object
  */
 export function dataURLtoFile(dataUrl: string, filename: string): File {
-  const arr = dataUrl.split(',');
-  const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/png';
+  const arr = dataUrl.split(",");
+  const mime = arr[0].match(/:(.*?);/)?.[1] || "image/png";
   const bstr = atob(arr[1]);
   let n = bstr.length;
   const u8arr = new Uint8Array(n);
-  
+
   while (n--) {
     u8arr[n] = bstr.charCodeAt(n);
   }
-  
+
   return new File([u8arr], filename, { type: mime });
 }
 
@@ -282,13 +286,15 @@ export function dataURLtoFile(dataUrl: string, filename: string): File {
   `firebase deploy --only firestore:indexes` or from the Firebase Console link
   provided in any runtime error.
 */
-export async function getPublishedPosts(limitCount?: number): Promise<BlogPost[]> {
+export async function getPublishedPosts(
+  limitCount?: number,
+): Promise<BlogPost[]> {
   try {
-    const postsRef = collection(db, 'posts');
+    const postsRef = collection(db, "posts");
     let q = query(
       postsRef,
-      where('isDraft', '==', false),
-      orderBy('publishedAt', 'desc')
+      where("isDraft", "==", false),
+      orderBy("publishedAt", "desc"),
     );
 
     if (limitCount) {
@@ -306,13 +312,13 @@ export async function getPublishedPosts(limitCount?: number): Promise<BlogPost[]
         createdAt: data.createdAt?.toDate?.() || data.createdAt,
         updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
         publishedAt: data.publishedAt?.toDate?.() || data.publishedAt,
-        views: typeof data.views === 'number' ? data.views : 0,
+        views: typeof data.views === "number" ? data.views : 0,
       } as BlogPost);
     });
 
     return posts;
   } catch (error) {
-    console.error('Error getting published posts:', error);
+    console.error("Error getting published posts:", error);
     return [];
   }
 }
@@ -322,13 +328,15 @@ export async function getPublishedPosts(limitCount?: number): Promise<BlogPost[]
  * @param limitCount - Optional limit on number of featured posts
  * @returns Array of featured published blog posts
  */
-export async function getFeaturedPosts(limitCount: number = 5): Promise<BlogPost[]> {
+export async function getFeaturedPosts(
+  limitCount: number = 5,
+): Promise<BlogPost[]> {
   try {
     // For now, we'll just get the most recent published posts
     // You can add an 'isFeatured' field to posts if you want manual curation
     return await getPublishedPosts(limitCount);
   } catch (error) {
-    console.error('Error getting featured posts:', error);
+    console.error("Error getting featured posts:", error);
     return [];
   }
 }
@@ -339,14 +347,17 @@ export async function getFeaturedPosts(limitCount: number = 5): Promise<BlogPost
  * @param limitCount - Optional limit on number of posts
  * @returns Array of published blog posts in the category
  */
-export async function getPostsByCategory(category: string, limitCount?: number): Promise<BlogPost[]> {
+export async function getPostsByCategory(
+  category: string,
+  limitCount?: number,
+): Promise<BlogPost[]> {
   try {
-    const postsRef = collection(db, 'posts');
+    const postsRef = collection(db, "posts");
     let q = query(
       postsRef,
-      where('isDraft', '==', false),
-      where('category', '==', category),
-      orderBy('publishedAt', 'desc')
+      where("isDraft", "==", false),
+      where("category", "==", category),
+      orderBy("publishedAt", "desc"),
     );
 
     if (limitCount) {
@@ -364,13 +375,13 @@ export async function getPostsByCategory(category: string, limitCount?: number):
         createdAt: data.createdAt?.toDate?.() || data.createdAt,
         updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
         publishedAt: data.publishedAt?.toDate?.() || data.publishedAt,
-        views: typeof data.views === 'number' ? data.views : 0,
+        views: typeof data.views === "number" ? data.views : 0,
       } as BlogPost);
     });
 
     return posts;
   } catch (error) {
-    console.error('Error getting posts by category:', error);
+    console.error("Error getting posts by category:", error);
     return [];
   }
 }
@@ -382,33 +393,69 @@ export async function getPostsByCategory(category: string, limitCount?: number):
  */
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   try {
-    const postsRef = collection(db, 'posts');
+    const postsRef = collection(db, "posts");
     const q = query(
       postsRef,
-      where('slug', '==', slug),
-      where('isDraft', '==', false),
-      limit(1)
+      where("slug", "==", slug),
+      where("isDraft", "==", false),
+      limit(1),
     );
 
     const querySnapshot = await getDocs(q);
-    
+
     if (querySnapshot.empty) {
       return null;
     }
 
     const doc = querySnapshot.docs[0];
     const data = doc.data();
-    
+
     return {
       ...data,
       id: doc.id,
       createdAt: data.createdAt?.toDate?.() || data.createdAt,
       updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
       publishedAt: data.publishedAt?.toDate?.() || data.publishedAt,
-      views: typeof data.views === 'number' ? data.views : 0,
+      views: typeof data.views === "number" ? data.views : 0,
     } as BlogPost;
   } catch (error) {
-    console.error('Error getting post by slug:', error);
+    console.error("Error getting post by slug:", error);
     return null;
+  }
+}
+/**
+ * Get draft posts for a specific user
+ * @param userId - The ID of the user
+ * @returns Array of draft blog posts, sorted by updatedAt descending
+ */
+export async function getUserDrafts(userId: string): Promise<BlogPost[]> {
+  try {
+    const postsRef = collection(db, "posts");
+    const q = query(
+      postsRef,
+      where("authorId", "==", userId),
+      where("isDraft", "==", true),
+      orderBy("updatedAt", "desc"),
+    );
+
+    const querySnapshot = await getDocs(q);
+    const posts: BlogPost[] = [];
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      posts.push({
+        ...data,
+        id: doc.id,
+        createdAt: data.createdAt?.toDate?.() || data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
+        publishedAt: data.publishedAt?.toDate?.() || data.publishedAt,
+        views: typeof data.views === "number" ? data.views : 0,
+      } as BlogPost);
+    });
+
+    return posts;
+  } catch (error) {
+    console.error("Error getting user drafts:", error);
+    return [];
   }
 }

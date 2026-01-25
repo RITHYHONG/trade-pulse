@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import type { WatchlistInstrument } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface WatchlistWidgetProps {
   instruments: WatchlistInstrument[];
@@ -35,19 +36,19 @@ export function WatchlistWidget({ instruments, isLoading = false }: WatchlistWid
               {Array.from({ length: 6 }).map((_, idx) => (
                 <tr key={idx} className="bg-slate-900/40">
                   <td className="px-4 py-3 font-semibold text-white">
-                    <div className="w-12 h-4 bg-slate-700 rounded animate-pulse" />
+                    <Skeleton className="w-12 h-4" />
                   </td>
                   <td className="px-4 py-3 text-slate-300">
-                    <div className="w-32 h-4 bg-slate-700 rounded animate-pulse" />
+                    <Skeleton className="w-32 h-4" />
                   </td>
                   <td className="px-4 py-3 text-slate-200">
-                    <div className="w-16 h-4 bg-slate-700 rounded animate-pulse" />
+                    <Skeleton className="w-16 h-4" />
                   </td>
                   <td className="px-4 py-3">
-                    <div className="w-16 h-4 bg-slate-700 rounded animate-pulse" />
+                    <Skeleton className="w-16 h-4" />
                   </td>
                   <td className="px-4 py-3 text-slate-300">
-                    <div className="w-20 h-4 bg-slate-700 rounded animate-pulse" />
+                    <Skeleton className="w-20 h-4" />
                   </td>
                 </tr>
               ))}

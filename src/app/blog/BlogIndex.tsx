@@ -58,17 +58,22 @@ function mapFirestorePostToUIPost(firestorePost: FirestoreBlogPost): BlogPost {
     },
     authorId: firestorePost.authorId,
     category: firestorePost.category,
-    isFeatured: false // You can add this field to Firestore if needed
+    isFeatured: false,
+    isDraft: firestorePost.isDraft || false
   };
 
   console.log('Mapped post:', mappedPost);
   return mappedPost;
 }
 
+import { getCurrentUser } from '@/lib/auth';
+import { getUserDrafts } from '@/lib/blog-firestore-service';
+
 export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
   const [activeCategory, setActiveCategory] = useState('All Posts');
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
   const [featuredPosts, setFeaturedPosts] = useState<BlogPost[]>([]);
+  const [drafts, setDrafts] = useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch posts from Firestore on mount
@@ -76,9 +81,11 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
     async function fetchPosts() {
       setIsLoading(true);
       try {
-        const [allPosts, featured] = await Promise.all([
+        const currentUser = getCurrentUser();
+        const [allPosts, featured, userDrafts] = await Promise.all([
           getPublishedPosts(),
-          getFeaturedPosts(5)
+          getFeaturedPosts(5),
+          currentUser ? getUserDrafts(currentUser.uid) : Promise.resolve([])
         ]);
 
         if (allPosts && allPosts.length > 0) {
@@ -89,6 +96,11 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
         if (featured && featured.length > 0) {
           const mappedFeatured = featured.map(mapFirestorePostToUIPost);
           setFeaturedPosts(mappedFeatured);
+        }
+
+        if (userDrafts && userDrafts.length > 0) {
+          const mappedDrafts = userDrafts.map(mapFirestorePostToUIPost);
+          setDrafts(mappedDrafts);
         }
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -103,10 +115,12 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
   // Filter posts based on active category
   const filteredPosts = useMemo(() => {
     if (activeCategory === 'All Posts') {
-      return posts;
+      // Include drafts at the beginning for the author if they are in "All Posts" or "Drafts"
+      // or we can just show drafts in a separate section. Let's mix them for now with a badge handled in BlogCard
+      return [...drafts, ...posts];
     }
     return posts.filter(post => post.category === activeCategory);
-  }, [activeCategory, posts]);
+  }, [activeCategory, posts, drafts]);
 
   const handleCategoryChange = (category: string) => {
     setActiveCategory(category);
@@ -219,7 +233,7 @@ export function BlogIndex({ initialPosts = [] }: BlogIndexProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPosts.slice(9).map((post) => (
-                <BlogCard key={post.slug} post={post} />
+                <BlogCard key={post.id || post.slug} post={post} />
               ))}
             </div>
           </div>
