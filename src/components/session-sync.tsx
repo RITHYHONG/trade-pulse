@@ -15,7 +15,22 @@ export function SessionSync() {
 
   useEffect(() => {
     const reason = searchParams.get('reason');
-    
+    const pathname = window.location.pathname;
+    const isProtectedRoute = pathname.startsWith('/dashboard') ||
+      pathname.startsWith('/app') ||
+      pathname.startsWith('/settings') ||
+      pathname.startsWith('/create-post');
+
+    // Handle session mismatch on protected routes
+    if (isProtectedRoute && !user && !loading) {
+      console.log('[SessionSync] Protected route access without user, clearing cookies...');
+      fetch('/api/auth/clear-cookies', { method: 'POST' })
+        .finally(() => {
+          router.replace(`/login?redirect=${encodeURIComponent(pathname)}&reason=session_mismatch`);
+        });
+      return;
+    }
+
     // Handle session expiration
     if (reason === 'session_expired' && !loading) {
       if (user) {
@@ -29,19 +44,19 @@ export function SessionSync() {
             displayName: user.displayName,
           }),
         })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success && data.valid) {
-            // Session refreshed, redirect to original destination
-            const redirect = searchParams.get('redirect');
-            router.replace(redirect || '/dashboard');
-          }
-        })
-        .catch(error => {
-          console.error('Session refresh failed:', error);
-          // Force sign out and redirect to login
-          router.replace('/login');
-        });
+          .then(response => response.json())
+          .then(data => {
+            if (data.success && data.valid) {
+              // Session refreshed, redirect to original destination
+              const redirect = searchParams.get('redirect');
+              router.replace(redirect || '/dashboard');
+            }
+          })
+          .catch(error => {
+            console.error('Session refresh failed:', error);
+            // Force sign out and redirect to login
+            router.replace('/login');
+          });
       }
     }
   }, [user, loading, searchParams, router]);

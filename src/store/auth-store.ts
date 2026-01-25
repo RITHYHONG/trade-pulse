@@ -290,6 +290,12 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
           } else {
             // Clear cache when signed out
             localStorage.removeItem("auth_state");
+
+            // Proactively clear cookies to prevent middleware redirect loops
+            // only if we're not already on a public page or if we've recently been "logged in"
+            fetch("/api/auth/clear-cookies", { method: "POST" }).catch(
+              console.error,
+            );
           }
 
           set({ user: authUser, loading: false });

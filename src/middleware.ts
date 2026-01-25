@@ -46,7 +46,8 @@ export function middleware(request: NextRequest) {
   }
 
   // Redirect authenticated users away from auth pages
-  if (token && (pathname === "/login" || pathname === "/signup")) {
+  const force = request.nextUrl.searchParams.get("force") === "true";
+  if (token && !force && (pathname === "/login" || pathname === "/signup")) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
