@@ -7,7 +7,7 @@ import { EventIntelligencePanel } from './components/economic-calendar/EventInte
 import { CentralBankDashboard } from './components/economic-calendar/CentralBankDashboard';
 import { AlertSystem } from './components/economic-calendar/AlertSystem';
 import { CorrelationMatrix } from './components/economic-calendar/CorrelationMatrix';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -33,12 +33,12 @@ import {
   SheetTrigger
 } from '@/components/ui/sheet';
 import { mockEconomicEvents, mockCentralBankEvents } from './components/economic-calendar/mockData';
-import { FilterState, EconomicEvent, ViewMode } from './components/economic-calendar/types';
-import { EconomicCalendarService } from '@/services/economic-calendar.service';
+import { FilterState, EconomicEvent, ViewMode, CentralBankEvent } from './components/economic-calendar/types';
+// EconomicCalendarService removed from client-side imports for security
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-const MarketIntelContent = React.memo(({ events, aiIntelligence, isAiLoading, correlations }: { events: any[], aiIntelligence: any, isAiLoading: boolean, correlations: any[] }) => (
+const MarketIntelContent = React.memo(({ events, aiIntelligence, isAiLoading, correlations }: { events: CentralBankEvent[], aiIntelligence: Record<string, any> | null, isAiLoading: boolean, correlations: any[] }) => (
   <div className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-hide">
     {/* AI Verdict Section */}
     <div className="space-y-4">
@@ -67,7 +67,7 @@ const MarketIntelContent = React.memo(({ events, aiIntelligence, isAiLoading, co
         ) : (
           <div className="space-y-3 relative z-10">
             <p className="text-[0.75rem] font-medium text-foreground leading-relaxed italic">
-              "{aiIntelligence?.overallSummary || 'Analyzing market events...'}"
+              &quot;{aiIntelligence?.overallSummary || 'Analyzing market events...'}&quot;
             </p>
             {aiIntelligence?.keyRisks && (
               <div className="flex flex-wrap gap-1.5">
@@ -160,7 +160,9 @@ export default function App() {
         const end = new Date(today);
         end.setDate(today.getDate() + 14);
 
-        const calendarEvents = await EconomicCalendarService.getEvents(start, end);
+        const response = await fetch(`/api/calendar/events?start=${start.toISOString()}&end=${end.toISOString()}`);
+        if (!response.ok) throw new Error('Failed to fetch events from proxy');
+        const calendarEvents = await response.json();
         setEvents(calendarEvents);
 
         // Fetch AI Intelligence for high impact events

@@ -4,10 +4,12 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Users collection rules
     match /users/{userId} {
-      // Allow reading basic profile info for all users (for blog author profiles)
+      // Allow reading basic profile info for all users
       allow read: if true;
-      // Only allow write access to own profile
-      allow write: if request.auth != null && request.auth.uid == userId;
+      // Only allow write access to own profile, but prevent role escalation
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId 
+                    && (request.resource.data.role == resource.data.role);
     }
 
     // Blog posts - public read, authenticated write

@@ -8,8 +8,7 @@ export interface MarketItem {
   type: "crypto" | "stock" | "currency";
 }
 
-const ALPHA_VANTAGE_API_KEY =
-  process.env.NEXT_PUBLIC_ALPHA_VANTAGE_API_KEY || "";
+const ALPHA_VANTAGE_API_KEY = process.env.ALPHA_VANTAGE_API_KEY || "";
 
 import { retryApi } from "./retry";
 

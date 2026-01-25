@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { getAllMarketData, type MarketItem } from '@/lib/market-data-service';
+import { type MarketItem } from '@/lib/market-data-service';
 import { Marquee } from '@/components/ui/marquee';
 
 interface NewsTickerProps {
@@ -31,12 +31,14 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
       try {
         setDataLoading(true);
         setError(null);
-        const data = await getAllMarketData();
+        const response = await fetch('/api/market/all-data');
+        if (!response.ok) throw new Error('Failed to fetch market data from proxy');
+        const data = await response.json();
         if (data && data.length > 0) {
           setMarketData(data);
 
           // Fetch sentiment for displayed tickers
-          const tickers = data.map(item => item.symbol);
+          const tickers = data.map((item: MarketItem) => item.symbol);
           try {
             const sentResponse = await fetch('/api/market/ticker-sentiment', {
               method: 'POST',
@@ -69,7 +71,7 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
     const interval = setInterval(fetchMarketData, REFRESH_INTERVAL);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [marketData.length]);
 
   // Format helper functions
   const formatPrice = useCallback((price: number, type: string) => {
@@ -162,10 +164,10 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
 
                     {tickerSentiments[item.symbol] && (
                       <span className={`text-[9px] font-bold uppercase px-1 py-0.5 rounded-sm border ${tickerSentiments[item.symbol].sentiment === 'Bullish'
-                          ? 'text-primary border-primary/20 bg-primary/5'
-                          : tickerSentiments[item.symbol].sentiment === 'Bearish'
-                            ? 'text-rose-500 border-rose-500/20 bg-rose-500/5'
-                            : 'text-muted-foreground border-border/40 bg-muted/5'
+                        ? 'text-primary border-primary/20 bg-primary/5'
+                        : tickerSentiments[item.symbol].sentiment === 'Bearish'
+                          ? 'text-rose-500 border-rose-500/20 bg-rose-500/5'
+                          : 'text-muted-foreground border-border/40 bg-muted/5'
                         }`}>
                         {tickerSentiments[item.symbol].sentiment} {tickerSentiments[item.symbol].score}%
                       </span>
