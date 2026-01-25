@@ -1,6 +1,3 @@
-"use client";
-
-import { useMemo } from 'react';
 import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
@@ -79,9 +76,6 @@ function HighlightGridCard({ post }: { post: BlogPost }) {
 }
 
 export function HighlightSection({ posts, isLoading }: HighlightSectionProps) {
-  const mainPost = useMemo(() => posts[0] || null, [posts]);
-  const gridPosts = useMemo(() => posts.slice(1, 5), [posts]);
-
   if (isLoading) {
     return <HighlightSkeleton />;
   }
@@ -89,6 +83,9 @@ export function HighlightSection({ posts, isLoading }: HighlightSectionProps) {
   if (posts.length === 0) {
     return null;
   }
+
+  const mainPost = posts[0] || null;
+  const gridPosts = posts.slice(1, 5);
 
   return (
     <section className="py-12 bg-background">

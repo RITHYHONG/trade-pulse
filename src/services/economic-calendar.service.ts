@@ -151,6 +151,7 @@ export class EconomicCalendarService {
       ),
       consensusIntelligence:
         EconomicCalendarService.generateConsensusIntelligence(
+          id,
           event.estimate,
           event.previous,
         ),
@@ -224,6 +225,7 @@ export class EconomicCalendarService {
       ),
       consensusIntelligence:
         EconomicCalendarService.generateConsensusIntelligence(
+          id,
           event.estimate,
           event.previous,
         ),
@@ -357,10 +359,20 @@ export class EconomicCalendarService {
   }
 
   private static generateConsensusIntelligence(
+    eventId: string,
     estimate: number | null,
     previous: number | null,
   ): EconomicEvent["consensusIntelligence"] {
     const base = estimate || previous || 100;
+
+    // Use eventId as a seed for deterministic "randomness" to avoid hydration mismatches
+    const seed = eventId
+      .split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const pseudoRandom = (offset: number) => {
+      const x = Math.sin(seed + offset) * 10000;
+      return x - Math.floor(x);
+    };
 
     return {
       estimateDistribution: [
@@ -370,9 +382,9 @@ export class EconomicCalendarService {
         base * 1.01,
         base * 1.02,
       ],
-      revisionMomentum: Math.random() > 0.5 ? "up" : "down",
-      surpriseProbability: 30 + Math.floor(Math.random() * 40),
-      whisperNumber: base * (1 + (Math.random() - 0.5) * 0.05),
+      revisionMomentum: pseudoRandom(1) > 0.5 ? "up" : "down",
+      surpriseProbability: 30 + Math.floor(pseudoRandom(2) * 40),
+      whisperNumber: base * (1 + (pseudoRandom(3) - 0.5) * 0.05),
     };
   }
 
