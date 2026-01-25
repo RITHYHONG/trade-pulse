@@ -33,12 +33,12 @@ import {
   SheetTrigger
 } from '@/components/ui/sheet';
 import { mockEconomicEvents, mockCentralBankEvents } from './components/economic-calendar/mockData';
-import { FilterState, EconomicEvent, ViewMode, CentralBankEvent } from './components/economic-calendar/types';
+import { FilterState, EconomicEvent, ViewMode, CentralBankEvent, AiIntelligence } from './components/economic-calendar/types';
 // EconomicCalendarService removed from client-side imports for security
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-const MarketIntelContent = React.memo(({ events, aiIntelligence, isAiLoading, correlations }: { events: CentralBankEvent[], aiIntelligence: Record<string, any> | null, isAiLoading: boolean, correlations: any[] }) => (
+const MarketIntelContent = React.memo(({ events, aiIntelligence, isAiLoading, correlations }: { events: CentralBankEvent[], aiIntelligence: AiIntelligence | null, isAiLoading: boolean, correlations: unknown[] }) => (
   <div className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-hide">
     {/* AI Verdict Section */}
     <div className="space-y-4">
@@ -118,10 +118,11 @@ export default function App() {
   const [selectedEvent, setSelectedEvent] = useState<EconomicEvent | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('timeline');
   const [events, setEvents] = useState<EconomicEvent[]>([]);
+  const [centralBankEvents, setCentralBankEvents] = useState<CentralBankEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [aiIntelligence, setAiIntelligence] = useState<any>(null);
+  const [aiIntelligence, setAiIntelligence] = useState<AiIntelligence | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [correlations, setCorrelations] = useState<any[]>([]);
+  const [correlations, setCorrelations] = useState<unknown[]>([]);
   const [filters, setFilters] = useState<FilterState>({
     dateRange: 'week',
     impacts: ['high', 'medium', 'low'],
@@ -154,49 +155,39 @@ export default function App() {
     const fetchEvents = async () => {
       try {
         setIsLoading(true);
+        setIsAiLoading(true); // Set AI loading true at the start of the bulk fetch
         const today = new Date();
         const start = new Date(today);
         start.setDate(today.getDate() - 2);
         const end = new Date(today);
         end.setDate(today.getDate() + 14);
 
-        const response = await fetch(`/api/calendar/events?start=${start.toISOString()}&end=${end.toISOString()}`);
-        if (!response.ok) throw new Error('Failed to fetch events from proxy');
-        const calendarEvents = await response.json();
-        setEvents(calendarEvents);
+        const response = await fetch(`/api/calendar/bulk?start=${start.toISOString()}&end=${end.toISOString()}`);
+        if (!response.ok) throw new Error('Failed to fetch bulk calendar data');
 
-        // Fetch AI Intelligence for high impact events
-        const highImpactEvents = calendarEvents.filter(e => e.impact === 'high');
-        if (highImpactEvents.length > 0) {
-          setIsAiLoading(true);
-          try {
-            const aiResponse = await fetch('/api/calendar/intelligence', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ events: calendarEvents })
-            });
-            const intelligence = await aiResponse.json();
-            setAiIntelligence(intelligence);
-          } catch (error) {
-            console.error('Failed to fetch AI intelligence', error);
-          } finally {
-            setIsAiLoading(false);
-          }
-        }
+        const data = await response.json();
 
-        // Fetch Correlations
-        try {
-          const corrResponse = await fetch('/api/calendar/correlations');
-          const corrData = await corrResponse.json();
-          if (corrData.correlations) {
-            setCorrelations(corrData.correlations);
-          }
-        } catch (error) {
-          console.error('Failed to fetch correlations', error);
-        }
-      } catch (error) {
-        console.error('Failed to fetch events', error);
+        // Parse dates which come as strings from JSON API
+        const parsedEvents = (data.events || []).map((event: EconomicEvent) => ({
+          ...event,
+          datetime: new Date(event.datetime)
+        }));
+
+        const parsedCBEvents = (data.centralBankEvents || []).map((event: CentralBankEvent) => ({
+          ...event,
+          datetime: new Date(event.datetime)
+        }));
+
+        setEvents(parsedEvents);
+        setCentralBankEvents(parsedCBEvents);
+        setAiIntelligence(data.intelligence);
+        setCorrelations(data.correlations);
+
+        setIsAiLoading(false);
+      } catch (err) {
+        console.error('Failed to fetch events', err);
         setEvents(mockEconomicEvents);
+        setCentralBankEvents(mockCentralBankEvents);
       } finally {
         setIsLoading(false);
       }
@@ -508,7 +499,7 @@ export default function App() {
             </Button>
           </div>
           <MarketIntelContent
-            events={mockCentralBankEvents}
+            events={centralBankEvents}
             aiIntelligence={aiIntelligence}
             isAiLoading={isAiLoading}
             correlations={correlations}

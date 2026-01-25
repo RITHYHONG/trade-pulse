@@ -1,7 +1,6 @@
-import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 import { EconomicEvent, Region } from './types';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Flame, Info, Clock, Globe, Zap, AlertTriangle } from 'lucide-react';
+import { Flame, Info, Clock, Globe, Zap } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,44 +21,216 @@ const regionMeta: Record<Region, { label: string; flag: string; color: string }>
   EM: { label: 'Emerging Markets', flag: '🏳️', color: 'from-purple-500/20 to-purple-600/20' }
 };
 
-export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMapViewProps) {
+// --- Optimized Sub-components ---
+
+const HourHeaderItem = React.memo(({ hour, isActive, isCurrent }: { hour: number; isActive: boolean; isCurrent: boolean }) => (
+  <div
+    className={cn(
+      "w-11 text-center transition-all duration-500",
+      isActive ? "scale-125 opacity-100" : "opacity-30"
+    )}
+  >
+    <div className={cn(
+      "text-[13px] font-mono transition-colors",
+      isCurrent ? "text-primary font-black drop-shadow-[0_0_8px_rgba(var(--primary),0.4)]" : "text-white",
+      isActive && !isCurrent && "text-white font-black"
+    )}>
+      {hour.toString().padStart(2, '0')}
+    </div>
+  </div>
+));
+
+HourHeaderItem.displayName = 'HourHeaderItem';
+
+const HeatMapCell = React.memo(({
+  hour,
+  region,
+  intensity,
+  cellEvents,
+  isCurrentHour,
+  onMouseEnter,
+  onMouseLeave,
+  onEventClick
+}: {
+  hour: number;
+  region: Region;
+  intensity: number;
+  cellEvents: EconomicEvent[];
+  isCurrentHour: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  onEventClick: (e: EconomicEvent) => void;
+}) => {
+  const getIntensityStyle = (intensity: number) => {
+    if (intensity === 0) return 'bg-muted/5 border-transparent';
+    if (intensity >= 2.5) return 'bg-rose-500 shadow-[0_0_15px_-3px_rgba(244,63,94,0.5)] border-rose-400/50 text-white';
+    if (intensity > 2.0) return 'bg-rose-500/80 border-rose-500/30 text-white';
+    if (intensity >= 1.5) return 'bg-amber-500/70 border-amber-500/30 text-white';
+    if (intensity >= 1.0) return 'bg-emerald-500/60 border-emerald-500/30 text-white';
+    return 'bg-emerald-500/40 border-emerald-500/20 text-white/90';
+  };
+
+  const hasEvents = cellEvents.length > 0;
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <motion.div
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+            whileHover={{ scale: 1.2, zIndex: 10, y: -6 }}
+            className={cn(
+              "w-11 h-11 rounded-xl transition-all duration-300 flex items-center justify-center border relative overflow-hidden",
+              getIntensityStyle(intensity),
+              !hasEvents && "bg-white/5 border-white/5 opacity-10 hover:opacity-100",
+              hasEvents ? "cursor-pointer shadow-xl ring-offset-background" : "cursor-default",
+              isCurrentHour && "ring-2 ring-primary/40 ring-offset-4 ring-offset-background/50"
+            )}
+            onClick={() => hasEvents && (cellEvents.length === 1 ? onEventClick(cellEvents[0]) : null)}
+          >
+            {intensity >= 2.5 && (
+              <motion.div
+                animate={{
+                  opacity: [0.3, 0.7, 0.3],
+                  scale: [1, 1.4, 1]
+                }}
+                transition={{ duration: 1.2, repeat: Infinity }}
+                className="absolute inset-0 bg-white/40 blur-lg pointer-events-none"
+              />
+            )}
+
+            {hasEvents && (
+              <span className="text-sm font-black font-mono tracking-tighter relative z-10 drop-shadow-2xl text-white">
+                {cellEvents.length}
+              </span>
+            )}
+          </motion.div>
+        </TooltipTrigger>
+
+        {hasEvents && (
+          <TooltipContent side="top" className="p-0 border-0 bg-transparent shadow-[0_32px_128px_-12px_rgba(0,0,0,0.8)]">
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.85 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className="w-80 bg-background/90 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] overflow-hidden"
+            >
+              <div className={cn("p-6 bg-gradient-to-br border-b border-white/5", regionMeta[region].color)}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <span className="text-4xl drop-shadow-2xl">{regionMeta[region].flag}</span>
+                    <div>
+                      <div className="text-md font-black text-white leading-tight">
+                        {regionMeta[region].label}
+                      </div>
+                      <div className="text-[11px] text-white/60 font-mono font-black mt-0.5">
+                        {hour.toString().padStart(2, '0')}:00 Global Session
+                      </div>
+                    </div>
+                  </div>
+                  <div className="px-3.5 py-2 rounded-2xl bg-black/30 backdrop-blur-md text-xs font-mono font-black text-white border border-white/10 shadow-inner">
+                    {cellEvents.length} Events
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 max-h-[400px] overflow-y-auto custom-scrollbar space-y-3">
+                {cellEvents.map(event => (
+                  <div
+                    key={event.id}
+                    className="p-5 rounded-3xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-all cursor-pointer group/item flex flex-col gap-4 shadow-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEventClick(event);
+                    }}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="text-sm font-bold text-white group-hover/item:text-primary transition-colors leading-relaxed">
+                          {event.name}
+                        </div>
+                        <div className="flex items-center gap-2.5 mt-2.5">
+                          <span className="text-[10px] uppercase font-black text-white/30 tracking-widest">{event.country}</span>
+                        </div>
+                      </div>
+                      <div className={cn(
+                        "px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest shrink-0 shadow-lg",
+                        event.impact === 'high' ? "bg-rose-500 text-white" :
+                          event.impact === 'medium' ? "bg-amber-500 text-white" :
+                            "bg-emerald-500 text-white"
+                      )}>
+                        {event.impact}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 mt-1">
+                      <div className="p-3 bg-white/5 rounded-2xl border border-white/5 flex flex-col">
+                        <span className="text-[9px] uppercase text-white/30 font-black tracking-widest">Est/Consensus</span>
+                        <span className="text-xs font-mono font-black text-white mt-1">{event.consensus}{event.unit}</span>
+                      </div>
+                      <div className="p-3 bg-white/5 rounded-2xl border border-white/5 flex flex-col items-end">
+                        <span className="text-[9px] uppercase text-white/30 font-black tracking-widest">Bias Strength</span>
+                        <span className={cn(
+                          "text-xs font-mono font-black mt-1",
+                          event.historicalData.directionBias === 'bullish' ? 'text-emerald-400' : 'text-rose-400'
+                        )}>{event.historicalData.biasSuccessRate}%</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
+  );
+});
+
+HeatMapCell.displayName = 'HeatMapCell';
+
+const TimeIndicatorLine = React.memo(({
+  containerRef,
+  contentRef,
+  hoursRef
+}: {
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  contentRef: React.RefObject<HTMLDivElement | null>;
+  hoursRef: React.RefObject<HTMLDivElement | null>;
+}) => {
   const [now, setNow] = useState(new Date());
-  const [hoveredCell, setHoveredCell] = useState<{ hour: number; region: Region } | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
-
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-
   const [lineLeft, setLineLeft] = useState<number | null>(null);
-  const hoursRef = useRef<HTMLDivElement | null>(null);
-  const contentRef = useRef<HTMLDivElement | null>(null);
   const didAutoScrollRef = useRef(false);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setNow(new Date());
-    }, 1000);
+    const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
   useLayoutEffect(() => {
     const updatePosition = () => {
-      if (!containerRef.current || !contentRef.current || !hoursRef.current || !lineRef.current) return;
+      if (!containerRef.current || !contentRef.current || !hoursRef.current) return;
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+
       const hoursNodes = Array.from(hoursRef.current.children) as HTMLElement[];
       const hourNode = hoursNodes[currentHour];
       if (!hourNode) return;
+
       const hourRect = hourNode.getBoundingClientRect();
       const contentRect = contentRef.current.getBoundingClientRect();
-      const left = hourRect.left + hourRect.width / 2 - contentRect.left;
+
+      // Calculate position within the current hour (interpolate for minutes)
+      const minuteOffset = (currentMinute / 60) * hourRect.width;
+      const left = (hourRect.left - contentRect.left) + (hourRect.width / 2) + (minuteOffset - hourRect.width / 2);
+
       setLineLeft(left);
     };
 
     updatePosition();
-
     window.addEventListener('resize', updatePosition);
     return () => window.removeEventListener('resize', updatePosition);
-  }, [now, currentHour]);
+  }, [now, containerRef, contentRef, hoursRef]);
 
   useEffect(() => {
     if (!containerRef.current || lineLeft === null || didAutoScrollRef.current) return;
@@ -67,7 +238,47 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
     const scrollLeft = containerRef.current.scrollLeft + (lineLeft - containerRect.width / 2);
     containerRef.current.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
     didAutoScrollRef.current = true;
-  }, [lineLeft]);
+  }, [lineLeft, containerRef]);
+
+  if (lineLeft === null) return null;
+
+  return (
+    <motion.div
+      className="absolute top-[-5rem] bottom-[-20px] w-[4px] z-20 pointer-events-none"
+      style={{ left: `${lineLeft}px` }}
+    >
+      <div className="h-full w-full bg-gradient-to-b from-primary via-primary/50 to-transparent relative">
+        <div className="absolute inset-x-[-6px] top-0 bottom-0 bg-primary/20 blur-[8px] animate-pulse" />
+        <div className="absolute -top-2 left-1/2 -track-x-1/2 -translate-y-full">
+          <div className="bg-primary text-white text-[11px] font-black px-4 py-2 rounded-2xl shadow-3xl flex items-center gap-2 transform -translate-x-1/2 border border-white/20 whitespace-nowrap">
+            <span className="w-2.5 h-2.5 bg-white rounded-full animate-ping shadow-[0_0_8px_white]" />
+            LIVE {now.getHours().toString().padStart(2, '0')}:{now.getMinutes().toString().padStart(2, '0')} GMT
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
+TimeIndicatorLine.displayName = 'TimeIndicatorLine';
+
+export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMapViewProps) {
+  const [hoveredCell, setHoveredCell] = useState<{ hour: number; region: Region } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const hoursRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const [currentHour, setCurrentHour] = useState(new Date().getHours());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const hour = new Date().getHours();
+      if (hour !== currentHour) {
+        setCurrentHour(hour);
+      }
+    }, 60000); // Check every minute for hour change
+    return () => clearInterval(timer);
+  }, [currentHour]);
+
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
@@ -90,15 +301,6 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
       return sum + impactScore;
     }, 0);
     return totalImpact / eventsInCell.length;
-  };
-
-  const getIntensityStyle = (intensity: number) => {
-    if (intensity === 0) return 'bg-muted/5 border-transparent';
-    if (intensity >= 2.5) return 'bg-rose-500 shadow-[0_0_15px_-3px_rgba(244,63,94,0.5)] border-rose-400/50 text-white';
-    if (intensity > 2.0) return 'bg-rose-500/80 border-rose-500/30 text-white';
-    if (intensity >= 1.5) return 'bg-amber-500/70 border-amber-500/30 text-white';
-    if (intensity >= 1.0) return 'bg-emerald-500/60 border-emerald-500/30 text-white';
-    return 'bg-emerald-500/40 border-emerald-500/20 text-white/90';
   };
 
   if (isLoading) {
@@ -139,16 +341,14 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
             <div className="bg-card/40 backdrop-blur-xl border border-white/10 p-5 rounded-[2rem] flex items-center gap-6 shadow-2xl">
               <div className="flex -space-x-3">
                 {[
-                  { color: 'bg-rose-500', label: 'H' },
-                  { color: 'bg-amber-500', label: 'M' },
-                  { color: 'bg-emerald-500', label: 'L' }
+                  { color: 'bg-rose-500' },
+                  { color: 'bg-amber-500' },
+                  { color: 'bg-emerald-500' }
                 ].map((item, i) => (
                   <div key={i} className={cn(
                     "w-10 h-10 rounded-full border-2 border-background flex items-center justify-center text-[12px] font-black text-white shadow-lg",
                     item.color
-                  )}>
-                    {/* {item.label} */}
-                  </div>
+                  )} />
                 ))}
               </div>
               <div>
@@ -162,6 +362,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
           </div>
         </div>
 
+
         {/* Main Grid Container */}
         <div ref={containerRef} className="bg-card/30 rounded-[3rem] border border-white/5 shadow-3xl backdrop-blur-2xl relative overflow-x-auto custom-scrollbar">
           <div ref={contentRef} className="p-10 min-w-[1400px]">
@@ -173,24 +374,16 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
               </div>
               <div ref={hoursRef} className="flex flex-1 justify-between px-4">
                 {hours.map(hour => (
-                  <div
+                  <HourHeaderItem
                     key={hour}
-                    className={cn(
-                      "w-11 text-center transition-all duration-500",
-                      (hoveredCell?.hour === hour || now.getHours() === hour) ? "scale-125 opacity-100" : "opacity-30"
-                    )}
-                  >
-                    <div className={cn(
-                      "text-[13px] font-mono transition-colors",
-                      now.getHours() === hour ? "text-primary font-black drop-shadow-[0_0_8px_rgba(var(--primary),0.4)]" : "text-white",
-                      hoveredCell?.hour === hour && "text-white font-black"
-                    )}>
-                      {hour.toString().padStart(2, '0')}
-                    </div>
-                  </div>
+                    hour={hour}
+                    isActive={hoveredCell?.hour === hour || currentHour === hour}
+                    isCurrent={currentHour === hour}
+                  />
                 ))}
               </div>
             </div>
+
 
             {/* Grid Rows */}
             <div className="space-y-4 relative">
@@ -232,144 +425,33 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                       const key = `${hour}-${region}`;
                       const cellEvents = heatMapData[key] || [];
                       const intensity = getIntensity(cellEvents);
-                      const hasEvents = cellEvents.length > 0;
-                      const isCurrentHour = now.getHours() === hour;
+                      const isCurrentHour = currentHour === hour;
 
                       return (
-                        <TooltipProvider key={hour} delayDuration={0}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <motion.div
-                                onMouseEnter={() => setHoveredCell({ hour, region })}
-                                onMouseLeave={() => setHoveredCell(null)}
-                                whileHover={{ scale: 1.2, zIndex: 10, y: -6 }}
-                                className={cn(
-                                  "w-11 h-11 rounded-xl transition-all duration-300 flex items-center justify-center border relative overflow-hidden",
-                                  getIntensityStyle(intensity),
-                                  !hasEvents && "bg-white/5 border-white/5 opacity-10 hover:opacity-100",
-                                  hasEvents ? "cursor-pointer shadow-xl ring-offset-background" : "cursor-default",
-                                  isCurrentHour && "ring-2 ring-primary/40 ring-offset-4 ring-offset-background/50"
-                                )}
-                                onClick={() => hasEvents && (cellEvents.length === 1 ? onEventClick(cellEvents[0]) : null)}
-                              >
-                                {intensity >= 2.5 && (
-                                  <motion.div
-                                    animate={{
-                                      opacity: [0.3, 0.7, 0.3],
-                                      scale: [1, 1.4, 1]
-                                    }}
-                                    transition={{ duration: 1.2, repeat: Infinity }}
-                                    className="absolute inset-0 bg-white/40 blur-lg pointer-events-none"
-                                  />
-                                )}
-
-                                {hasEvents && (
-                                  <span className="text-sm font-black font-mono tracking-tighter relative z-10 drop-shadow-2xl text-white">
-                                    {cellEvents.length}
-                                  </span>
-                                )}
-                              </motion.div>
-                            </TooltipTrigger>
-
-                            {hasEvents && (
-                              <TooltipContent side="top" className="p-0 border-0 bg-transparent shadow-[0_32px_128px_-12px_rgba(0,0,0,0.8)]">
-                                <motion.div
-                                  initial={{ opacity: 0, y: 20, scale: 0.85 }}
-                                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                                  className="w-80 bg-background/90 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] overflow-hidden"
-                                >
-                                  <div className={cn("p-6 bg-gradient-to-br border-b border-white/5", regionMeta[region].color)}>
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-4">
-                                        <span className="text-4xl drop-shadow-2xl">{regionMeta[region].flag}</span>
-                                        <div>
-                                          <div className="text-md font-black text-white leading-tight">
-                                            {regionMeta[region].label}
-                                          </div>
-                                          <div className="text-[11px] text-white/60 font-mono font-black mt-0.5">
-                                            {hour.toString().padStart(2, '0')}:00 Global Session
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div className="px-3.5 py-2 rounded-2xl bg-black/30 backdrop-blur-md text-xs font-mono font-black text-white border border-white/10 shadow-inner">
-                                        {cellEvents.length} Events
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="p-4 max-h-[400px] overflow-y-auto custom-scrollbar space-y-3">
-                                    {cellEvents.map(event => (
-                                      <div
-                                        key={event.id}
-                                        className="p-5 rounded-3xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-all cursor-pointer group/item flex flex-col gap-4 shadow-sm"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          onEventClick(event);
-                                        }}
-                                      >
-                                        <div className="flex items-start justify-between gap-4">
-                                          <div className="flex-1">
-                                            <div className="text-sm font-bold text-white group-hover/item:text-primary transition-colors leading-relaxed">
-                                              {event.name}
-                                            </div>
-                                            <div className="flex items-center gap-2.5 mt-2.5">
-                                              <span className="text-[10px] uppercase font-black text-white/30 tracking-widest">{event.country}</span>
-                                            </div>
-                                          </div>
-                                          <div className={cn(
-                                            "px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest shrink-0 shadow-lg",
-                                            event.impact === 'high' ? "bg-rose-500 text-white" :
-                                              event.impact === 'medium' ? "bg-amber-500 text-white" :
-                                                "bg-emerald-500 text-white"
-                                          )}>
-                                            {event.impact}
-                                          </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-2 gap-3 mt-1">
-                                          <div className="p-3 bg-white/5 rounded-2xl border border-white/5 flex flex-col">
-                                            <span className="text-[9px] uppercase text-white/30 font-black tracking-widest">Est/Consensus</span>
-                                            <span className="text-xs font-mono font-black text-white mt-1">{event.consensus}{event.unit}</span>
-                                          </div>
-                                          <div className="p-3 bg-white/5 rounded-2xl border border-white/5 flex flex-col items-end">
-                                            <span className="text-[9px] uppercase text-white/30 font-black tracking-widest">Bias Strength</span>
-                                            <span className={cn(
-                                              "text-xs font-mono font-black mt-1",
-                                              event.historicalData.directionBias === 'bullish' ? 'text-emerald-400' : 'text-rose-400'
-                                            )}>{event.historicalData.biasSuccessRate}%</span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </motion.div>
-                              </TooltipContent>
-                            )}
-                          </Tooltip>
-                        </TooltipProvider>
+                        <HeatMapCell
+                          key={hour}
+                          hour={hour}
+                          region={region}
+                          intensity={intensity}
+                          cellEvents={cellEvents}
+                          isCurrentHour={isCurrentHour}
+                          onMouseEnter={() => setHoveredCell({ hour, region })}
+                          onMouseLeave={() => setHoveredCell(null)}
+                          onEventClick={onEventClick}
+                        />
                       );
                     })}
                   </div>
                 </div>
               ))}
 
-              {/* Real-time Time Indicator Line */}
-              <motion.div
-                ref={lineRef}
-                className="absolute top-[-5rem] bottom-[-20px] w-[4px] z-20 pointer-events-none"
-                style={{ left: lineLeft !== null ? `${lineLeft}px` : undefined }}
-              >
-                <div className="h-full w-full bg-gradient-to-b from-primary via-primary/50 to-transparent relative">
-                  <div className="absolute inset-x-[-6px] top-0 bottom-0 bg-primary/20 blur-[8px] animate-pulse" />
-                  <div className="absolute -top-2 left-1/2 -track-x-1/2 -translate-y-full">
-                    <div className="bg-primary text-white text-[11px] font-black px-4 py-2 rounded-2xl shadow-3xl flex items-center gap-2 transform -translate-x-1/2 border border-white/20 whitespace-nowrap">
-                      <span className="w-2.5 h-2.5 bg-white rounded-full animate-ping shadow-[0_0_8px_white]" />
-                      LIVE {now.getHours().toString().padStart(2, '0')}:{now.getMinutes().toString().padStart(2, '0')} GMT
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+              <TimeIndicatorLine
+                containerRef={containerRef}
+                contentRef={contentRef}
+                hoursRef={hoursRef}
+              />
             </div>
+
           </div>
         </div>
 
@@ -450,7 +532,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                       </div>
 
                       <p className="text-sm text-muted-foreground mb-10 line-clamp-2 leading-relaxed font-bold italic tracking-tight">
-                        "{hotspot.events.length} market-moving signals are consolidating into a single volatility spike."
+                        &quot;{hotspot.events.length} market-moving signals are consolidating into a single volatility spike.&quot;
                       </p>
 
                       <div className="flex flex-wrap gap-3 mt-auto">

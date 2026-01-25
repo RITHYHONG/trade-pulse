@@ -31,26 +31,14 @@ export function NewsTicker({ isLoading }: NewsTickerProps) {
       try {
         setDataLoading(true);
         setError(null);
-        const response = await fetch('/api/market/all-data');
+        const response = await fetch('/api/market/all-data?sentiment=true');
         if (!response.ok) throw new Error('Failed to fetch market data from proxy');
-        const data = await response.json();
-        if (data && data.length > 0) {
-          setMarketData(data);
+        const bulkData = await response.json();
 
-          // Fetch sentiment for displayed tickers
-          const tickers = data.map((item: MarketItem) => item.symbol);
-          try {
-            const sentResponse = await fetch('/api/market/ticker-sentiment', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ tickers })
-            });
-            const sentData = await sentResponse.json();
-            if (sentData.sentiment) {
-              setTickerSentiments(sentData.sentiment);
-            }
-          } catch (e) {
-            console.error('Failed to fetch individual sentiments', e);
+        if (bulkData.data && bulkData.data.length > 0) {
+          setMarketData(bulkData.data);
+          if (bulkData.sentiment) {
+            setTickerSentiments(bulkData.sentiment);
           }
         } else if (marketData.length === 0) {
           // Only use fallback if we don't have any data yet
