@@ -4,10 +4,15 @@ import { getAllMarketData } from "@/lib/market-data-service";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const ticker = searchParams.get('ticker');
-    
+    const ticker = searchParams.get("ticker");
+
     const marketData = await getAllMarketData();
-    const marketContext = marketData.map(item => `${item.name} (${item.symbol}): $${item.price} (${item.changePercent.toFixed(2)}%)`).join('\n');
+    const marketContext = marketData
+      .map(
+        (item) =>
+          `${item.name} (${item.symbol}): $${item.price} (${item.changePercent.toFixed(2)}%)`,
+      )
+      .join("\n");
 
     let prompt = "";
     if (ticker) {
@@ -32,21 +37,28 @@ export async function GET(request: Request) {
     }
 
     const summaryAndTimestamp = await generateContent(prompt);
-    
-    if (summaryAndTimestamp.includes("MISSING_API_KEY")) {
-      return Response.json({ 
-        summary: "Demo Mode: Trade Pulse is currently monitoring historical price action and sentiment drivers. To enable live AI institutional summaries, please configure your GOOGLE_GENERATIVE_AI_API_KEY in the environment settings.",
+
+    return Response.json({
+      summary: summaryAndTimestamp,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    if (error instanceof Error && error.message === "MISSING_API_KEY") {
+      return Response.json({
+        summary:
+          "Demo Mode: Trade Pulse is currently monitoring historical price action and sentiment drivers. To enable live AI institutional summaries, please configure your GOOGLE_GENERATIVE_AI_API_KEY in the environment settings.",
         timestamp: new Date().toISOString(),
-        isDemo: true
+        isDemo: true,
       });
     }
-
-    return Response.json({ summary: summaryAndTimestamp, timestamp: new Date().toISOString() });
-  } catch (error) {
     console.error("AI Summary Error:", error);
-    return Response.json({ 
-      summary: "Market summary engine is currently refining its data. Please check back shortly for institutional insights.",
-      error: error instanceof Error ? error.message : "Internal Error"
-    }, { status: 500 });
+    return Response.json(
+      {
+        summary:
+          "Market summary engine is currently refining its data. Please check back shortly for institutional insights.",
+        error: error instanceof Error ? error.message : "Internal Error",
+      },
+      { status: 500 },
+    );
   }
 }
