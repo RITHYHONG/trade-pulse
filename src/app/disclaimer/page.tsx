@@ -118,7 +118,6 @@ export default function DisclaimerPage() {
         readTime: readTime,
         userAgent: navigator.userAgent,
       };
-      console.log('Disclaimer acknowledged:', acknowledgmentData);
 
       // In production, this would send to backend
       alert('Disclaimer acknowledged! In production, this would be logged and you would be redirected to the dashboard.');

@@ -148,7 +148,6 @@ export default function SettingsPage() {
               profile = await getUserProfile(user.uid);
               break;
             } catch (error) {
-              console.log(`Profile load attempt ${4 - retries} failed:`, error);
               retries--;
 
               if (retries > 0) {

@@ -34,13 +34,6 @@ function mapFirestorePostToUIPost(firestorePost: FirestoreBlogPost): BlogPost {
     return new Date(String(dateField)).toISOString();
   };
 
-  console.log('Mapping Firestore post:', {
-    id: firestorePost.id,
-    authorId: firestorePost.authorId,
-    authorName: firestorePost.authorName,
-    authorAvatar: firestorePost.authorAvatar
-  });
-
   const mappedPost = {
     id: firestorePost.id,
     slug: firestorePost.slug,
@@ -63,7 +56,6 @@ function mapFirestorePostToUIPost(firestorePost: FirestoreBlogPost): BlogPost {
     isDraft: firestorePost.isDraft || false
   };
 
-  console.log('Mapped post:', mappedPost);
   return mappedPost;
 }
 

@@ -23,7 +23,9 @@ export function SessionSync() {
 
     // Handle session mismatch on protected routes
     if (isProtectedRoute && !user && !loading) {
-      console.log('[SessionSync] Protected route access without user, clearing cookies...');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[SessionSync] Protected route access without user, clearing cookies...');
+      }
       fetch('/api/auth/clear-cookies', { method: 'POST' })
         .finally(() => {
           router.replace(`/login?redirect=${encodeURIComponent(pathname)}&reason=session_mismatch`);

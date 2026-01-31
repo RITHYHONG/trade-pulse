@@ -35,7 +35,6 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     try {
       // TODO: Implement password reset logic with data.email
-      console.log('Sending reset email to:', data.email);
       await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
       setEmailSent(true);
       toast.success('Password reset email sent!');

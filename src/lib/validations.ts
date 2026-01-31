@@ -94,6 +94,82 @@ export const pressMediaSchema = z.object({
   details: z.string().min(20, 'Please provide details'),
 });
 
+// Calendar API response validation
+export const economicEventSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  country: z.string(),
+  region: z.enum(["US", "EU", "UK", "Asia", "EM"]),
+  datetime: z.string(), // Will be parsed to Date
+  impact: z.enum(["high", "medium", "low"]),
+  category: z.enum(["inflation", "employment", "gdp", "centralBank", "trade", "retail", "manufacturing", "housing"]),
+  actual: z.number().optional(),
+  consensus: z.number(),
+  previous: z.number(),
+  unit: z.string(),
+  historicalData: z.object({
+    avgMove: z.number(),
+    directionBias: z.enum(["bullish", "bearish", "neutral"]),
+    biasSuccessRate: z.number(),
+    peakImpactMinutes: z.number(),
+    fadeTimeHours: z.number(),
+  }),
+  consensusIntelligence: z.object({
+    estimateDistribution: z.array(z.number()),
+    revisionMomentum: z.enum(["up", "down", "stable"]),
+    surpriseProbability: z.number(),
+    whisperNumber: z.number().optional(),
+  }),
+  tradingSetup: z.object({
+    strategyTag: z.string(),
+    correlatedAssets: z.array(z.string()),
+    expectedMove: z.number(),
+    confidenceScore: z.number(),
+  }),
+  affectedAssets: z.array(z.string()),
+});
+
+export const centralBankEventSchema = z.object({
+  id: z.string(),
+  bank: z.string(),
+  type: z.enum(["meeting", "speech", "minutes"]),
+  datetime: z.string(), // Will be parsed to Date
+  speaker: z.string().optional(),
+  rateProbabilities: z.object({
+    cut: z.number(),
+    hold: z.number(),
+    hike: z.number(),
+  }),
+  keyTopics: z.array(z.string()),
+});
+
+export const calendarApiResponseSchema = z.object({
+  events: z.array(economicEventSchema),
+  centralBankEvents: z.array(centralBankEventSchema),
+  intelligence: z.object({
+    overallSummary: z.string(),
+    keyRisks: z.array(z.string()),
+    marketVerdict: z.string(),
+  }).optional(),
+  correlations: z.array(z.object({
+    event1: z.string(),
+    event2: z.string(),
+    strength: z.number(),
+    leadLag: z.string(),
+    lagMinutes: z.number().optional(),
+    category: z.string(),
+  })).optional(),
+});
+
+// Auth validation
+export const sessionValidateResponseSchema = z.object({
+  valid: z.boolean(),
+  success: z.boolean().optional(),
+  refreshed: z.boolean().optional(),
+  message: z.string().optional(),
+  error: z.string().optional(),
+});
+
 // Type exports
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type SignInFormData = z.infer<typeof signInSchema>;
@@ -103,3 +179,4 @@ export type SupportFormData = z.infer<typeof supportFormSchema>;
 export type PartnershipsFormData = z.infer<typeof partnershipsSchema>;
 export type GeneralInquiriesFormData = z.infer<typeof generalInquiriesSchema>;
 export type PressMediaFormData = z.infer<typeof pressMediaSchema>;
+export type CalendarApiResponse = z.infer<typeof calendarApiResponseSchema>;

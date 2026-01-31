@@ -97,7 +97,6 @@ export function NewsletterCTA() {
       });
       
       // Here you would typically integrate with your email service
-      console.log('Newsletter signup:', email);
     } catch {
       showError('Subscription Failed', {
         description: 'Unable to subscribe at the moment. Please try again later.',

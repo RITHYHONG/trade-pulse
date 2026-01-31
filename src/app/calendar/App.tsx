@@ -37,6 +37,8 @@ import { FilterState, EconomicEvent, ViewMode, CentralBankEvent, AiIntelligence 
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { calendarApiResponseSchema } from '@/lib/validations';
+import { toast } from 'sonner';
 
 // Dynamically import heavy components with SSR disabled
 const EventIntelligencePanel = dynamic(
@@ -185,7 +187,6 @@ export default function App() {
       end.setDate(today.getDate() + 14);
       
       const url = `/api/calendar/bulk?start=${start.toISOString()}&end=${end.toISOString()}`;
-      console.log('Fetching calendar data from:', url);
       
       try {
         setIsLoading(true);
@@ -194,51 +195,40 @@ export default function App() {
         const response = await fetch(url, {
           signal: abortController.signal
         });
-
-        console.log('Calendar API response status:', response.status);
         
         if (!response.ok) {
           throw new Error(`Failed to fetch bulk calendar data: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
-        console.log('Calendar data received, events count:', data.events?.length || 0);
 
-        // Validate payload shape
-        if (!data || typeof data !== 'object') {
-          throw new Error('Invalid response format: expected object');
-        }
+        // Validate response with zod schema
+        const validatedData = calendarApiResponseSchema.parse(data);
 
         // Parse dates which come as strings from JSON API
-        const parsedEvents = (data.events || []).map((event: EconomicEvent) => ({
+        const parsedEvents = validatedData.events.map((event: EconomicEvent) => ({
           ...event,
           datetime: new Date(event.datetime)
         }));
 
-        const parsedCBEvents = (data.centralBankEvents || []).map((event: CentralBankEvent) => ({
+        const parsedCBEvents = validatedData.centralBankEvents.map((event: CentralBankEvent) => ({
           ...event,
           datetime: new Date(event.datetime)
         }));
 
         setEvents(parsedEvents);
         setCentralBankEvents(parsedCBEvents);
-        setAiIntelligence(data.intelligence);
-        setCorrelations(data.correlations);
+        setAiIntelligence(validatedData.intelligence || null);
+        setCorrelations(validatedData.correlations || []);
 
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') {
           // Request was cancelled, this is expected behavior
-          console.log('Calendar fetch was aborted (component unmounted or new request started)');
           return;
         }
         
-        // Log the actual error for debugging
-        console.error('Failed to fetch calendar events:', {
-          error: err,
-          message: err instanceof Error ? err.message : 'Unknown error',
-          name: err instanceof Error ? err.name : 'Unknown',
-          stack: err instanceof Error ? err.stack : undefined
-        });
+        // Show user-friendly error toast
+        toast.error('Failed to load calendar data. Using cached data instead.');
         
         // Fallback to mock data
         setEvents(mockEconomicEvents);

@@ -381,7 +381,6 @@ export default function CookiePolicyPage() {
             setLastUpdated(new Date());
 
             // In production, this would save to backend
-            console.log('Saving consent preferences:', consentPreferences);
             alert('Your cookie preferences have been saved successfully!');
       };
 

@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useAuth } from '../hooks/use-auth';
+import { sessionValidateResponseSchema } from '@/lib/validations';
 
 /**
  * Global session manager that ensures auth state consistency
@@ -29,13 +30,18 @@ export function SessionManager() {
           });
           
           const data = await response.json();
+          const validatedData = sessionValidateResponseSchema.parse(data);
           
-          if (!data.valid) {
+          if (!validatedData.valid) {
             // Session is invalid, force a page reload to trigger middleware
             window.location.reload();
           }
         } catch (error) {
-          console.error('Session validation error:', error);
+          // Session validation failed, but don't log sensitive error details
+          // In development, you might want to log for debugging
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Session validation error:', error);
+          }
         }
       };
 
