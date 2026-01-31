@@ -12,6 +12,20 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
+// --- Pure Helper Functions (Moved Outside Component) ---
+const getImpactStyles = (impact: ImpactLevel, stats: { impactCounts: Record<ImpactLevel, number> }) => {
+  const base = {
+    high: { dot: 'bg-rose-500' },
+    medium: { dot: 'bg-amber-500' },
+    low: { dot: 'bg-emerald-500' }
+  }[impact];
+
+  return {
+    ...base,
+    count: stats.impactCounts[impact]
+  };
+};
+
 interface FilterSidebarProps {
   filters: FilterState;
   onFiltersChange: (filters: Partial<FilterState>) => void;
@@ -66,19 +80,6 @@ export function FilterSidebar({ filters, onFiltersChange, events }: FilterSideba
       ? filters.categories.filter(c => c !== category)
       : [...filters.categories, category];
     onFiltersChange({ categories: newCategories });
-  };
-
-  const getImpactStyles = (impact: ImpactLevel) => {
-    const base = {
-      high: { dot: 'bg-rose-500' },
-      medium: { dot: 'bg-amber-500' },
-      low: { dot: 'bg-emerald-500' }
-    }[impact];
-
-    return {
-      ...base,
-      count: stats.impactCounts[impact]
-    };
   };
 
   const regionLabels: Record<Region, string> = {
@@ -194,7 +195,7 @@ export function FilterSidebar({ filters, onFiltersChange, events }: FilterSideba
 
           <CollapsibleContent className="space-y-1 pt-1">
             {(['high', 'medium', 'low'] as ImpactLevel[]).map((impact) => {
-              const styles = getImpactStyles(impact);
+              const styles = getImpactStyles(impact, stats);
               return (
                 <div key={impact} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-secondary/40 transition-colors group">
                   <Checkbox

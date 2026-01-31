@@ -3,8 +3,7 @@ import { FilterSidebar } from './components/economic-calendar/FilterSidebar';
 import { TimelineView } from './components/economic-calendar/TimelineView';
 import { HeatMapView } from './components/economic-calendar/HeatMapView';
 import { ListView } from './components/economic-calendar/ListView';
-import { EventIntelligencePanel } from './components/economic-calendar/EventIntelligencePanel';
-import { CentralBankDashboard } from './components/economic-calendar/CentralBankDashboard';
+import dynamic from 'next/dynamic';
 import { AlertSystem } from './components/economic-calendar/AlertSystem';
 import { CorrelationMatrix } from './components/economic-calendar/CorrelationMatrix';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -38,6 +37,30 @@ import { FilterState, EconomicEvent, ViewMode, CentralBankEvent, AiIntelligence 
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+
+// Dynamically import heavy components with SSR disabled
+const EventIntelligencePanel = dynamic(
+  () => import('./components/economic-calendar/EventIntelligencePanel').then(mod => ({ default: mod.EventIntelligencePanel })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center">
+        <div className="bg-card border border-border rounded-xl p-6 shadow-xl">
+          <Skeleton className="h-8 w-48 mb-4" />
+          <Skeleton className="h-64 w-96" />
+        </div>
+      </div>
+    )
+  }
+);
+
+const CentralBankDashboard = dynamic(
+  () => import('./components/economic-calendar/CentralBankDashboard').then(mod => ({ default: mod.CentralBankDashboard })),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-32 w-full rounded-lg" />
+  }
+);
 const MarketIntelContent = React.memo(({ events, aiIntelligence, isAiLoading, correlations }: { events: CentralBankEvent[], aiIntelligence: AiIntelligence | null, isAiLoading: boolean, correlations: unknown[] }) => (
   <div className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-hide">
     {/* AI Verdict Section */}
@@ -152,28 +175,35 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const abortController = new AbortController();
+
     const fetchEvents = async () => {
-      const abortController = new AbortController();
+      const today = new Date();
+      const start = new Date(today);
+      start.setDate(today.getDate() - 2);
+      const end = new Date(today);
+      end.setDate(today.getDate() + 14);
+      
+      const url = `/api/calendar/bulk?start=${start.toISOString()}&end=${end.toISOString()}`;
+      console.log('Fetching calendar data from:', url);
       
       try {
         setIsLoading(true);
         setIsAiLoading(true); // Set AI loading true at the start of the bulk fetch
-        const today = new Date();
-        const start = new Date(today);
-        start.setDate(today.getDate() - 2);
-        const end = new Date(today);
-        end.setDate(today.getDate() + 14);
 
-        const response = await fetch(`/api/calendar/bulk?start=${start.toISOString()}&end=${end.toISOString()}`, {
+        const response = await fetch(url, {
           signal: abortController.signal
         });
+
+        console.log('Calendar API response status:', response.status);
         
         if (!response.ok) {
           throw new Error(`Failed to fetch bulk calendar data: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
-        
+        console.log('Calendar data received, events count:', data.events?.length || 0);
+
         // Validate payload shape
         if (!data || typeof data !== 'object') {
           throw new Error('Invalid response format: expected object');
@@ -197,24 +227,33 @@ export default function App() {
 
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') {
-          // Request was cancelled, don't update state
+          // Request was cancelled, this is expected behavior
+          console.log('Calendar fetch was aborted (component unmounted or new request started)');
           return;
         }
-        console.error('Failed to fetch events', err);
+        
+        // Log the actual error for debugging
+        console.error('Failed to fetch calendar events:', {
+          error: err,
+          message: err instanceof Error ? err.message : 'Unknown error',
+          name: err instanceof Error ? err.name : 'Unknown',
+          stack: err instanceof Error ? err.stack : undefined
+        });
+        
+        // Fallback to mock data
         setEvents(mockEconomicEvents);
         setCentralBankEvents(mockCentralBankEvents);
+        setAiIntelligence(null);
+        setCorrelations([]);
       } finally {
         setIsLoading(false);
         setIsAiLoading(false);
       }
-      
-      return () => abortController.abort();
     };
-    
-    const cleanup = fetchEvents();
-    return () => {
-      if (cleanup) cleanup();
-    };
+
+    fetchEvents();
+
+    return () => abortController.abort();
   }, []);
 
   const filteredEvents = useMemo(() => {

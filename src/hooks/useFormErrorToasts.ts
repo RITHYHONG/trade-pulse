@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 // Small module-level guard to prevent duplicate toasts in quick succession.
 // Keeps the last shown message and timestamp; suppresses identical messages within 2s.
-let _lastToast: { msg: string | null; t: number } = { msg: null, t: 0 };
+const _lastToast: { msg: string | null; t: number } = { msg: null, t: 0 };
 function showUniqueError(message: string) {
   const now = Date.now();
   if (_lastToast.msg === message && now - _lastToast.t < 2000) return;

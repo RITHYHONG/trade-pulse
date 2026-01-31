@@ -246,7 +246,6 @@ const EventRow = memo(({
 
 EventRow.displayName = 'EventRow';
 
-
 interface ListViewProps {
   events: EconomicEvent[];
   onEventClick: (event: EconomicEvent) => void;
