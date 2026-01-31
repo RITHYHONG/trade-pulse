@@ -100,6 +100,8 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
 
   // Close on click outside
   useEffect(() => {
+    let previousOverflow: string | undefined;
+    
     const handleClickOutside = (e: MouseEvent) => {
       // Only close if we have a current ref and the click was outside
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
@@ -110,12 +112,17 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
     // Only add listener if event exists (panel is open)
     if (event) {
       document.addEventListener('mousedown', handleClickOutside);
+      previousOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      document.body.style.overflow = 'unset';
+      if (previousOverflow !== undefined) {
+        document.body.style.overflow = previousOverflow;
+      } else {
+        document.body.style.overflow = '';
+      }
     };
   }, [onClose, event]);
 

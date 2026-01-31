@@ -153,6 +153,8 @@ export default function App() {
 
   useEffect(() => {
     const fetchEvents = async () => {
+      const abortController = new AbortController();
+      
       try {
         setIsLoading(true);
         setIsAiLoading(true); // Set AI loading true at the start of the bulk fetch
@@ -162,10 +164,20 @@ export default function App() {
         const end = new Date(today);
         end.setDate(today.getDate() + 14);
 
-        const response = await fetch(`/api/calendar/bulk?start=${start.toISOString()}&end=${end.toISOString()}`);
-        if (!response.ok) throw new Error('Failed to fetch bulk calendar data');
+        const response = await fetch(`/api/calendar/bulk?start=${start.toISOString()}&end=${end.toISOString()}`, {
+          signal: abortController.signal
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch bulk calendar data: ${response.status} ${response.statusText}`);
+        }
 
         const data = await response.json();
+        
+        // Validate payload shape
+        if (!data || typeof data !== 'object') {
+          throw new Error('Invalid response format: expected object');
+        }
 
         // Parse dates which come as strings from JSON API
         const parsedEvents = (data.events || []).map((event: EconomicEvent) => ({
@@ -183,16 +195,26 @@ export default function App() {
         setAiIntelligence(data.intelligence);
         setCorrelations(data.correlations);
 
-        setIsAiLoading(false);
       } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          // Request was cancelled, don't update state
+          return;
+        }
         console.error('Failed to fetch events', err);
         setEvents(mockEconomicEvents);
         setCentralBankEvents(mockCentralBankEvents);
       } finally {
         setIsLoading(false);
+        setIsAiLoading(false);
       }
+      
+      return () => abortController.abort();
     };
-    fetchEvents();
+    
+    const cleanup = fetchEvents();
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, []);
 
   const filteredEvents = useMemo(() => {

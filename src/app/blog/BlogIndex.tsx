@@ -8,7 +8,7 @@ import { NewsTicker } from './NewsTicker';
 import { useState, useMemo, useEffect } from 'react';
 import { CategoryFilter } from './CategoryFilter';
 import { NewsletterCTA } from './NewsletterCTA';
-import { BlogCard } from './BlogCard';
+import { BlogCard, BlogCardSkeleton } from './BlogCard';
 import { BlogMarketWrap } from './BlogMarketWrap';
 import { Button } from '@/components/ui/button';
 import { PenSquare } from 'lucide-react';
@@ -129,7 +129,14 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
 
   const popularPosts = useMemo(() => {
     const source = activeCategory === 'All Posts' ? posts : filteredPosts;
-    return [...source].sort(() => Math.random() - 0.5).slice(0, 5);
+
+    return [...source]
+      .sort((a, b) => {
+        const ta = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const tb = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        return tb - ta;
+      })
+      .slice(0, 5);
   }, [posts, filteredPosts, activeCategory]);
 
   const highlightPosts = useMemo(() => {
@@ -203,7 +210,7 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
       }
 
       {/* More Posts Grid */}
-      {filteredPosts.length > 9 && (
+      {(isLoading || filteredPosts.length > 9) && (
         <section className="py-12 bg-muted/20">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-8">
@@ -219,9 +226,15 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredPosts.slice(9).map((post) => (
-                <BlogCard key={post.id || post.slug} post={post} />
-              ))}
+              {isLoading ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <BlogCardSkeleton key={i} />
+                ))
+              ) : (
+                filteredPosts.slice(9).map((post) => (
+                  <BlogCard key={post.id || post.slug} post={post} />
+                ))
+              )}
             </div>
           </div>
         </section>

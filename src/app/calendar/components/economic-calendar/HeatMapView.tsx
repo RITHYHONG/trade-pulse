@@ -198,8 +198,8 @@ const TimeIndicatorLine = memo(({
   const [lineLeft, setLineLeft] = useState<number | null>(null);
   const [currentTimeStr, setCurrentTimeStr] = useState("");
 
-  // Update loop: Runs every second but strictly calculates position
   useEffect(() => {
+    let timeoutId: number;
     let animationFrameId: number;
 
     const updatePosition = () => {
@@ -234,18 +234,17 @@ const TimeIndicatorLine = memo(({
         setLineLeft(calculatedLeft);
       }
 
-      // Throttle to every second or keep smooth?
-      // For "HeatMap" per minute is enough usually, but "LIVE" label implies seconds?
-      // The label shows HH:MM only. So we can throttle.
-
-      // Sync to next minute?
-      // For smooth movement we keep rAF or interval. Let's use 1s interval to save battery.
+      // Schedule next update at the start of the next minute for minute-level precision
+      const secondsUntilNextMinute = 60 - now.getSeconds();
+      timeoutId = window.setTimeout(updatePosition, secondsUntilNextMinute * 1000);
     };
 
-    const interval = setInterval(updatePosition, 1000);
     updatePosition(); // Initial
 
-    return () => clearInterval(interval);
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
   }, [hoursRef]);
 
   if (lineLeft === null) return null;
@@ -279,10 +278,10 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
   useEffect(() => {
     const timer = setInterval(() => {
       const hour = new Date().getHours();
-      if (hour !== currentHour) setCurrentHour(hour);
-    }, 60000);
+      setCurrentHour(prevHour => hour !== prevHour ? hour : prevHour);
+    }, 60000); // Update every minute
     return () => clearInterval(timer);
-  }, [currentHour]);
+  }, []); // Remove currentHour dependency to prevent re-creation
 
   const hours = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []);
 
