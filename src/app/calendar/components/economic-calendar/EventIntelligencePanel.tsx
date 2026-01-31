@@ -12,6 +12,7 @@ import {
   ReferenceLine
 } from 'recharts';
 import { cn } from '@/lib/utils';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import { timeFormatter } from '@/lib/formatters';
 
 // --- Pure Helper Functions (Moved Outside Component) ---
@@ -33,10 +34,17 @@ const getSentimentStyles = (sentiment: string) => {
 };
 
 // --- Memoized Chart Component ---
-const ProbabilityChart = memo(({ data, directionBias, consensus }: {
-  data: any[],
+interface ChartDataPoint {
+  name: string;
+  value: number;
+  isConsensus?: boolean;
+}
+
+const ProbabilityChart = memo(({ data, directionBias, consensus, prefersReducedMotion }: {
+  data: ChartDataPoint[],
   directionBias: string,
-  consensus: number
+  consensus: number,
+  prefersReducedMotion: boolean
 }) => {
   const color = directionBias === 'bullish' ? '#10b981' : directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))';
 
@@ -67,7 +75,7 @@ const ProbabilityChart = memo(({ data, directionBias, consensus }: {
           strokeWidth={3}
           fillOpacity={1}
           fill="url(#colorValue)"
-          animationDuration={1500}
+          animationDuration={prefersReducedMotion ? 0 : 1500}
         />
         <ReferenceLine
           x={consensus.toString()}
@@ -97,8 +105,66 @@ interface EventIntelligencePanelProps {
 
 export function EventIntelligencePanel({ event, onClose }: EventIntelligencePanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  // Close on click outside
+  useEffect(() => {
+    if (!event) return;
+
+    const panel = panelRef.current;
+    if (!panel) return;
+
+    const getFocusableElements = () => {
+      const focusableSelectors = [
+        'a[href]',
+        'button:not([disabled])',
+        'textarea:not([disabled])',
+        'input:not([disabled])',
+        'select:not([disabled])',
+        '[tabindex]:not([tabindex="-1"])'
+      ];
+      return Array.from(panel.querySelectorAll(focusableSelectors.join(','))) as HTMLElement[];
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        const focusableElements = getFocusableElements();
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
+      }
+    };
+
+    if (closeButtonRef.current) {
+      closeButtonRef.current.focus();
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [event, onClose]);
+
   useEffect(() => {
     let previousOverflow: string | undefined;
     
@@ -152,13 +218,24 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
   return (
     <>
       <div
-        className="fixed inset-0 bg-background/40 z-40 animate-in fade-in duration-300 backdrop-blur-sm"
+        className={cn(
+          "fixed inset-0 bg-background/40 z-40 backdrop-blur-sm",
+          !prefersReducedMotion && "animate-in fade-in duration-300"
+        )}
         onClick={onClose}
+        aria-hidden="true"
       />
 
       <div
         ref={panelRef}
-        className="fixed right-0 top-0 h-full w-[600px] bg-card border-l border-border shadow-2xl z-50 overflow-y-auto animate-in slide-in-from-right duration-300"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="event-title"
+        aria-describedby="event-description"
+        className={cn(
+          "fixed right-0 top-0 h-full w-[600px] bg-card border-l border-border shadow-2xl z-50 overflow-y-auto",
+          !prefersReducedMotion && "animate-in slide-in-from-right duration-300"
+        )}
       >
         {/* Header Section */}
         <div className="sticky top-0 bg-background/95 backdrop-blur-md border-b border-border/40 p-6 z-10">
@@ -169,24 +246,29 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                   {event.impact} Impact
                 </Badge>
                 <span className="text-[0.7rem] text-muted-foreground font-bold uppercase tracking-[0.2em] flex items-center gap-1.5">
-                  <Activity className="w-3 h-3" />
+                  <Activity className="w-3 h-3" aria-hidden="true" />
                   {event.category}
                 </span>
               </div>
-              <h2 className="text-xl md:text-2xl font-bold text-foreground leading-tight tracking-tight">{event.name}</h2>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <h2 id="event-title" className="text-xl md:text-2xl font-bold text-foreground leading-tight tracking-tight">{event.name}</h2>
+              <div id="event-description" className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span className="font-semibold text-foreground/80">{event.country}</span>
                 <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-                <Clock className="w-3.5 h-3.5" />
+                <Clock className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>{timeFormatter.format(event.datetime)}</span>
               </div>
             </div>
 
             <Button
+              ref={closeButtonRef}
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="h-9 w-9 rounded-full hover:bg-muted/50 -mt-1 -mr-2 transition-colors"
+              className={cn(
+                "h-9 w-9 rounded-full hover:bg-muted/50 -mt-1 -mr-2",
+                !prefersReducedMotion && "transition-colors"
+              )}
+              aria-label="Close event intelligence panel"
             >
               <X className="w-4 h-4" />
             </Button>
@@ -198,11 +280,11 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               { label: 'Previous', value: `${event.previous}${event.unit}`, sub: 'Last Record', muted: true },
               { label: 'Vol. Exp', value: `±${event.tradingSetup.expectedMove}%`, sub: 'Expected Move', highlight: 'text-amber-500' },
             ].map((stat, i) => (
-              <div key={i} className="p-3 bg-secondary/20 rounded-xl border border-border/20 text-center relative overflow-hidden group">
+              <div key={i} className={cn("p-3 bg-secondary/20 rounded-xl border border-border/20 text-center relative overflow-hidden group", !prefersReducedMotion && "transition-opacity")}>
                 <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">{stat.label}</div>
                 <div className={cn("text-lg font-mono font-bold tracking-tighter", stat.muted ? "text-muted-foreground/60" : "text-foreground", stat.highlight)}>{stat.value}</div>
                 <div className="text-muted-foreground/40 font-medium uppercase mt-1">{stat.sub}</div>
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className={cn("absolute inset-0 bg-primary/5 opacity-0", !prefersReducedMotion && "group-hover:opacity-100 transition-opacity")} />
               </div>
             ))}
           </div>
@@ -215,7 +297,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <h3 className="text-xs font-bold flex items-center gap-2 uppercase tracking-widest">
-                  <Sparkles className="w-4 h-4 text-primary" />
+                  <Sparkles className="w-4 h-4 text-primary" aria-hidden="true" />
                   Expectation Curve
                 </h3>
                 <p className="text-muted-foreground font-medium uppercase tracking-tight opacity-70">Probability Distribution Density</p>
@@ -229,20 +311,25 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               {/* Shifting Gradient Background - Optimized with CSS */}
               <div
                 className={cn(
-                  "absolute inset-0 opacity-10 transition-colors duration-1000",
-                  event.historicalData.directionBias === 'bullish' ? "bg-emerald-500" :
-                    event.historicalData.directionBias === 'bearish' ? "bg-rose-500" :
-                      "bg-primary"
+                  "absolute inset-0 opacity-10",
+                  !prefersReducedMotion && "transition-colors duration-1000"
                 )}
+                style={{ backgroundColor: event.historicalData.directionBias === 'bullish' ? '#10b981' :
+                  event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))' }}
               />
               {/* CSS Animation Replacement for Motion */}
               <div
                 className={cn(
-                  "absolute inset-[-50%] blur-3xl opacity-10 animate-pulse",
-                  event.historicalData.directionBias === 'bullish' ? "bg-gradient-to-r from-emerald-500 via-transparent to-emerald-500" :
-                    event.historicalData.directionBias === 'bearish' ? "bg-gradient-to-r from-rose-500 via-transparent to-rose-500" :
-                      "bg-gradient-to-r from-primary via-transparent to-primary"
+                  "absolute inset-[-50%] blur-3xl opacity-10",
+                  !prefersReducedMotion && "animate-pulse"
                 )}
+                style={{
+                  background: event.historicalData.directionBias === 'bullish' ?
+                    'linear-gradient(to right, #10b981, transparent, #10b981)' :
+                    event.historicalData.directionBias === 'bearish' ?
+                      'linear-gradient(to right, #f43f5e, transparent, #f43f5e)' :
+                      'linear-gradient(to right, hsl(var(--primary)), transparent, hsl(var(--primary)))'
+                }}
               />
 
               <div className="relative h-full w-full">
@@ -250,6 +337,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                   data={optimizedData}
                   directionBias={event.historicalData.directionBias}
                   consensus={event.consensus}
+                  prefersReducedMotion={prefersReducedMotion}
                 />
               </div>
               <div className="absolute bottom-2 left-6 right-6 flex justify-between font-bold text-muted-foreground uppercase tracking-widest opacity-50">
@@ -264,7 +352,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
           {/* AI Strategy & Confidence */}
           <section className="space-y-4">
             <div className="flex items-center gap-2">
-              <Brain className="w-4 h-4 text-primary" />
+              <Brain className="w-4 h-4 text-primary" aria-hidden="true" />
               <h3 className="text-xs font-bold uppercase tracking-widest">AI Intelligence Insight</h3>
             </div>
 
@@ -272,22 +360,24 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               {/* Strategic Background Shimmer - Optimized with CSS */}
               <div
                 className={cn(
-                  "absolute inset-0 opacity-10 transition-colors duration-1000",
-                  event.historicalData.directionBias === 'bullish' ? "bg-emerald-500" :
-                    event.historicalData.directionBias === 'bearish' ? "bg-rose-500" :
-                      "bg-primary"
+                  "absolute inset-0 opacity-10",
+                  !prefersReducedMotion && "transition-colors duration-1000"
                 )}
+                style={{ backgroundColor: event.historicalData.directionBias === 'bullish' ? '#10b981' :
+                  event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))' }}
               />
               <div
                 className={cn(
-                  "absolute inset-0 blur-3xl opacity-5 animate-pulse",
-                  event.historicalData.directionBias === 'bullish' ? "bg-emerald-500" :
-                    event.historicalData.directionBias === 'bearish' ? "bg-rose-500" :
-                      "bg-primary"
+                  "absolute inset-0 blur-3xl opacity-5",
+                  !prefersReducedMotion && "animate-pulse"
                 )}
+                style={{
+                  backgroundColor: event.historicalData.directionBias === 'bullish' ? '#10b981' :
+                    event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))'
+                }}
               />
 
-              <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+              <div className={cn("absolute top-0 right-0 p-6 opacity-5 pointer-events-none", !prefersReducedMotion && "group-hover:scale-110 transition-transform duration-700")}>
                 <Brain className="w-32 h-32" />
               </div>
 
@@ -303,7 +393,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                     </div>
                   </div>
                   <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                    <TrendingUp className="w-5 h-5" />
+                    <TrendingUp className="w-5 h-5" aria-hidden="true" />
                   </div>
                 </div>
 
@@ -343,10 +433,10 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
             {[
               { icon: Target, label: 'Avg Absolute Move', value: `±${event.historicalData.avgMove}%`, color: 'text-primary' },
               { icon: Clock, label: 'Mean Fade Time', value: `${event.historicalData.fadeTimeHours}h`, color: 'text-primary' },
-            ].map((metric, i) => (
-              <div key={metric.label} className="p-4 rounded-2xl border border-border/40 bg-card/40 space-y-2 group hover:bg-card/60 transition-colors">
+            ].map((metric) => (
+              <div key={metric.label} className={cn("p-4 rounded-2xl border border-border/40 bg-card/40 space-y-2 group hover:bg-card/60", !prefersReducedMotion && "transition-colors")}>
                 <div className="flex items-center gap-2 font-bold text-muted-foreground uppercase tracking-widest opacity-60">
-                  <metric.icon className={cn("w-3.5 h-3.5", metric.color)} />
+                  <metric.icon className={cn("w-3.5 h-3.5", metric.color)} aria-hidden="true" />
                   {metric.label}
                 </div>
                 <div className="text-xl font-mono font-bold tracking-tighter">{metric.value}</div>
@@ -358,12 +448,12 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
         {/* Action Tray */}
         <div className="p-6 border-t border-border/40 bg-background/50 backdrop-blur-md mt-auto">
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" className="w-full h-11 rounded-xl font-bold text-xs uppercase tracking-widest border-border/60 hover:bg-secondary/20 group transition-all">
+            <Button variant="outline" className={cn("w-full h-11 rounded-xl font-bold text-xs uppercase tracking-widest border-border/60 hover:bg-secondary/20 group", !prefersReducedMotion && "transition-all")} aria-label="Add event to watchlist">
               Watchlist
-              <Activity className="w-3.5 h-3.5 ml-2 opacity-40 group-hover:opacity-100 group-hover:text-primary transition-all" />
+              <Activity className="w-3.5 h-3.5 ml-2 opacity-40 group-hover:opacity-100 group-hover:text-primary transition-all" aria-hidden="true" />
             </Button>
-            <Button className="w-full h-11 bg-primary hover:bg-primary/90 text-xs font-bold text-foreground">
-              <Bell className="w-3.5 h-3.5 mr-2" />
+            <Button className="w-full h-11 bg-primary hover:bg-primary/90 text-xs font-bold text-foreground" aria-label="Set intelligence alert for this event">
+              <Bell className="w-3.5 h-3.5 mr-2" aria-hidden="true" />
               Set Intelligence Alert
             </Button>
           </div>
