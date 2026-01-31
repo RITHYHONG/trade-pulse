@@ -39,6 +39,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { calendarApiResponseSchema } from '@/lib/validations';
 import { toast } from 'sonner';
+import { useCalendarState } from './hooks/use-calendar-state';
+import { useIsMobileBreakpoint } from '@/hooks/use-media-query';
 
 // Dynamically import heavy components with SSR disabled
 const EventIntelligencePanel = dynamic(
@@ -137,44 +139,18 @@ const MarketIntelContent = React.memo(({ events, aiIntelligence, isAiLoading, co
 MarketIntelContent.displayName = 'MarketIntelContent';
 
 export default function App() {
+  const { filters, updateFilters, selectedEventId, updateSelectedEvent } = useCalendarState();
+  const isMobile = useIsMobileBreakpoint();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [intelPanelOpen, setIntelPanelOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EconomicEvent | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('timeline');
   const [events, setEvents] = useState<EconomicEvent[]>([]);
   const [centralBankEvents, setCentralBankEvents] = useState<CentralBankEvent[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isEventsLoading, setIsEventsLoading] = useState(true);
   const [aiIntelligence, setAiIntelligence] = useState<AiIntelligence | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [correlations, setCorrelations] = useState<unknown[]>([]);
-  const [filters, setFilters] = useState<FilterState>({
-    dateRange: 'week',
-    impacts: ['high', 'medium', 'low'],
-    regions: ['US', 'EU', 'UK', 'Asia', 'EM'],
-    categories: [],
-    searchQuery: '',
-    highImpactOnly: false,
-    viewPreset: 'custom'
-  });
-
-  useEffect(() => {
-    function updateIsMobile() {
-      const width = window.innerWidth || 0;
-      const mobile = width < 1024;
-      setIsMobile(mobile);
-      if (mobile) {
-        setSidebarOpen(false);
-        setIntelPanelOpen(false);
-      } else {
-        setSidebarOpen(true);
-        setIntelPanelOpen(width >= 1536); // Auto open on 2xl+
-      }
-    }
-    updateIsMobile();
-    window.addEventListener('resize', updateIsMobile);
-    return () => window.removeEventListener('resize', updateIsMobile);
-  }, []);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -189,7 +165,7 @@ export default function App() {
       const url = `/api/calendar/bulk?start=${start.toISOString()}&end=${end.toISOString()}`;
       
       try {
-        setIsLoading(true);
+        setIsEventsLoading(true);
         setIsAiLoading(true); // Set AI loading true at the start of the bulk fetch
 
         const response = await fetch(url, {
@@ -236,7 +212,7 @@ export default function App() {
         setAiIntelligence(null);
         setCorrelations([]);
       } finally {
-        setIsLoading(false);
+        setIsEventsLoading(false);
         setIsAiLoading(false);
       }
     };
@@ -245,6 +221,27 @@ export default function App() {
 
     return () => abortController.abort();
   }, []);
+
+  // Handle mobile layout changes
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarOpen(false);
+      setIntelPanelOpen(false);
+    } else {
+      setSidebarOpen(true);
+      setIntelPanelOpen(window.innerWidth >= 1536); // Auto open on 2xl+
+    }
+  }, [isMobile]);
+
+  // Handle deep linking to events
+  useEffect(() => {
+    if (selectedEventId && events.length > 0) {
+      const event = events.find(e => e.id === selectedEventId);
+      if (event) {
+        setSelectedEvent(event);
+      }
+    }
+  }, [selectedEventId, events]);
 
   const filteredEvents = useMemo(() => {
     // Calculate date range
@@ -305,14 +302,20 @@ export default function App() {
   );
 
   const handleFiltersChange = (newFilters: Partial<FilterState>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
+    updateFilters(newFilters);
   };
 
   const handleEventClick = (event: EconomicEvent) => {
     setSelectedEvent(event);
+    updateSelectedEvent(event.id);
   };
 
-  if (isLoading) {
+  const handleEventClose = () => {
+    setSelectedEvent(null);
+    updateSelectedEvent(null);
+  };
+
+  if (isEventsLoading) {
     return (
       <div className="h-screen flex flex-col bg-background">
         {/* Header Skeleton */}
@@ -526,9 +529,9 @@ export default function App() {
           <div className="flex-1 overflow-hidden px-4 md:px-6 pb-6">
             <div className="h-full bg-background/20 rounded-2xl border border-border/40 overflow-hidden shadow-inner flex flex-col">
               <div className="flex-1 overflow-auto scrollbar-hide [will-change:transform]">
-                {viewMode === 'timeline' && <TimelineView events={filteredEvents} onEventClick={handleEventClick} isLoading={isLoading} />}
-                {viewMode === 'heatmap' && <HeatMapView events={filteredEvents} onEventClick={handleEventClick} isLoading={isLoading} />}
-                {viewMode === 'list' && <ListView events={filteredEvents} onEventClick={handleEventClick} isLoading={isLoading} />}
+                {viewMode === 'timeline' && <TimelineView events={filteredEvents} onEventClick={handleEventClick} />}
+                {viewMode === 'heatmap' && <HeatMapView events={filteredEvents} onEventClick={handleEventClick} />}
+                {viewMode === 'list' && <ListView events={filteredEvents} onEventClick={handleEventClick} />}
               </div>
             </div>
           </div>
@@ -560,7 +563,7 @@ export default function App() {
         {selectedEvent && (
           <EventIntelligencePanel
             event={selectedEvent}
-            onClose={() => setSelectedEvent(null)}
+            onClose={handleEventClose}
           />
         )}
       </main>
