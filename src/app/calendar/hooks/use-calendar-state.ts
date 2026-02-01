@@ -66,6 +66,9 @@ export function useCalendarState() {
 
   // Effect to update URL when filters change
   useEffect(() => {
+    // Don't update filters in URL if an event is selected
+    if (selectedEventId) return;
+
     const params = new URLSearchParams(searchParams.toString());
     serializeFiltersToURL(filters, params);
     const newUrl = `?${params.toString()}`;
@@ -74,7 +77,7 @@ export function useCalendarState() {
     if (newUrl !== `?${searchParams.toString()}`) {
       router.replace(newUrl, { scroll: false });
     }
-  }, [filters, router, searchParams]);
+  }, [filters, router, searchParams, selectedEventId]);
 
   // Effect to update URL when selected event changes
   useEffect(() => {
@@ -149,7 +152,7 @@ function serializeFiltersToURL(filters: FilterState, params: URLSearchParams) {
 
     const defaultValue = defaults[key as keyof typeof defaults];
     const isDefault = Array.isArray(value)
-      ? value.length === defaultValue.length && value.every((v, i) => v === defaultValue[i])
+      ? value.length === defaultValue.length && [...value].sort().every((v, i) => v === [...defaultValue].sort()[i])
       : value === defaultValue;
 
     if (!isDefault) {
