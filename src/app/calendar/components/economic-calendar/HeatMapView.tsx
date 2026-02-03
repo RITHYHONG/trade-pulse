@@ -200,12 +200,15 @@ const TimeIndicatorLine = memo(({
   containerRef?: React.RefObject<HTMLElement | null>;
 }) => {
   const lineRef = useRef<HTMLDivElement | null>(null);
+  const hasAutoScrolledRef = useRef(false);
+  const lastUserInteractionRef = useRef<number>(0);
   const [isPositioned, setIsPositioned] = useState(false);
   const [currentTimeStr, setCurrentTimeStr] = useState("");
 
   useEffect(() => {
     let timeoutId: number | undefined;
     let rafId: number | undefined;
+    let removeUserListeners: (() => void) | null = null;
 
     const updatePosition = () => {
       const now = new Date();
@@ -237,23 +240,36 @@ const TimeIndicatorLine = memo(({
           lineRef.current.style.left = `${calculatedLeft}px`;
         }
 
-        // Auto-scroll the container to center the LIVE line on first positioning
-        // or when it's currently off-screen. This prevents unexpected, repeated
-        // scrolling by only performing a one-time smooth scroll when needed.
         try {
           const container = containerRef?.current;
           if (container) {
+            if (!removeUserListeners) {
+              const onUserInteract = () => { lastUserInteractionRef.current = Date.now(); };
+              container.addEventListener('wheel', onUserInteract, { passive: true });
+              container.addEventListener('touchstart', onUserInteract, { passive: true });
+              removeUserListeners = () => {
+                container.removeEventListener('wheel', onUserInteract);
+                container.removeEventListener('touchstart', onUserInteract);
+              };
+            }
+
             const containerRect = container.getBoundingClientRect();
             const lineXInContainer = (hourRect.left - containerRect.left) + minuteOffset;
             const padding = 80; // pixels margin from edges
 
             const isOutOfView = lineXInContainer < padding || lineXInContainer > (containerRect.width - padding);
 
-            if (isOutOfView) {
+            const timeSinceUser = Date.now() - (lastUserInteractionRef.current || 0);
+            const userRecentlyInteracted = timeSinceUser < 1500;
+
+            const shouldAutoScroll = !hasAutoScrolledRef.current && isOutOfView && !userRecentlyInteracted;
+
+            if (shouldAutoScroll) {
               const target = calculatedLeft - (container.clientWidth / 2) + (hourRect.width / 2);
               const maxScrollLeft = Math.max(0, (contentRef.current?.scrollWidth || 0) - container.clientWidth);
               const scrollLeft = Math.max(0, Math.min(target, maxScrollLeft));
               container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+              hasAutoScrolledRef.current = true;
             }
           }
         } catch {
@@ -290,6 +306,7 @@ const TimeIndicatorLine = memo(({
       if (isScrollable(scrollEl)) {
         scrollEl.removeEventListener('scroll', updatePosition);
       }
+      if (typeof removeUserListeners === 'function') removeUserListeners();
     };
   }, [hoursRef, contentRef, containerRef]);
 
