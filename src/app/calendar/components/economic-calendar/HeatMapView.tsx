@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, memo, useCallback } from 'react';
 import { EconomicEvent, Region } from './types';
-import { Flame, Info, Clock, Globe, Zap } from 'lucide-react';
+import { Info, Clock, Zap } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -191,23 +191,28 @@ const HeatMapCell = memo(({
 HeatMapCell.displayName = 'HeatMapCell';
 
 const TimeIndicatorLine = memo(({
-  hoursRef
+  hoursRef,
+  contentRef,
+  containerRef
 }: {
   hoursRef: React.RefObject<HTMLDivElement | null>;
+  contentRef: React.RefObject<HTMLDivElement | null>;
+  containerRef?: React.RefObject<HTMLElement | null>;
 }) => {
-  const [lineLeft, setLineLeft] = useState<number | null>(null);
+  const lineRef = useRef<HTMLDivElement | null>(null);
+  const [isPositioned, setIsPositioned] = useState(false);
   const [currentTimeStr, setCurrentTimeStr] = useState("");
 
   useEffect(() => {
-    let timeoutId: number;
-    let animationFrameId: number;
+    let timeoutId: number | undefined;
+    let rafId: number | undefined;
 
     const updatePosition = () => {
       const now = new Date();
       setCurrentTimeStr(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`);
 
-      if (!hoursRef.current) {
-        animationFrameId = requestAnimationFrame(updatePosition);
+      if (!hoursRef.current || !contentRef.current) {
+        rafId = requestAnimationFrame(updatePosition);
         return;
       }
 
@@ -215,23 +220,48 @@ const TimeIndicatorLine = memo(({
       const currentMinute = now.getMinutes();
       const hoursNodes = hoursRef.current.children;
 
-      const hourNode = hoursNodes[currentHour] as HTMLElement;
+      const hourNode = hoursNodes[currentHour] as HTMLElement | undefined;
 
       if (hourNode) {
-        // Optimized: Use offsetLeft which is cheaper than getBoundingClientRect
-        // We assume the line is positioned relative to the same container context or similar
-        // Adjusting calculation based on DOM structure
-        const hourWidth = hourNode.offsetWidth;
-        const hourOffset = hourNode.offsetLeft;
-        const minuteOffset = (currentMinute / 60) * hourWidth;
+        // Use getBoundingClientRect for robust measurement (accounts for transforms, scroll, padding)
+        const hourRect = hourNode.getBoundingClientRect();
+        const contentRect = contentRef.current.getBoundingClientRect();
 
-        // This '40' represents the left padding of the content area if line is absolute
-        // It should be tuned to match exact layout. 
-        // Assuming hoursRef is the direct parent or parallel container.
-        // If line is absolute in a container that starts at hoursRef start:
-        const calculatedLeft = hoursRef.current.offsetLeft + hourOffset + (hourWidth / 2) + (minuteOffset - hourWidth / 2);
+        const minuteOffset = (currentMinute / 60) * hourRect.width;
 
-        setLineLeft(calculatedLeft);
+        // Position relative to the content container (this component is rendered inside the same content)
+        const calculatedLeft = (hourRect.left - contentRect.left) + minuteOffset;
+
+        // Apply style directly to element to avoid inline style prop
+        if (lineRef.current) {
+          lineRef.current.style.left = `${calculatedLeft}px`;
+        }
+
+        // Auto-scroll the container to center the LIVE line on first positioning
+        // or when it's currently off-screen. This prevents unexpected, repeated
+        // scrolling by only performing a one-time smooth scroll when needed.
+        try {
+          const container = containerRef?.current;
+          if (container) {
+            const containerRect = container.getBoundingClientRect();
+            const lineXInContainer = (hourRect.left - containerRect.left) + minuteOffset;
+            const padding = 80; // pixels margin from edges
+
+            const isOutOfView = lineXInContainer < padding || lineXInContainer > (containerRect.width - padding);
+
+            if (isOutOfView) {
+              const target = calculatedLeft - (container.clientWidth / 2) + (hourRect.width / 2);
+              const maxScrollLeft = Math.max(0, (contentRef.current?.scrollWidth || 0) - container.clientWidth);
+              const scrollLeft = Math.max(0, Math.min(target, maxScrollLeft));
+              container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+            }
+          }
+        } catch {
+          // Defensive: if DOM measurement fails, don't block the render
+          // (no-op)
+        }
+
+        setIsPositioned(true);
       }
 
       // Schedule next update at the start of the next minute for minute-level precision
@@ -241,18 +271,35 @@ const TimeIndicatorLine = memo(({
 
     updatePosition(); // Initial
 
+    const handleResize = () => updatePosition();
+    window.addEventListener('resize', handleResize);
+
+    const scrollEl = containerRef?.current || window;
+    const isScrollable = (el: unknown): el is EventTarget & { addEventListener: (type: string, listener: EventListenerOrEventListenerObject, opts?: AddEventListenerOptions | boolean) => void } => {
+      return !!el && typeof (el as Record<string, unknown>)['addEventListener'] === 'function';
+    };
+
+    if (isScrollable(scrollEl)) {
+      scrollEl.addEventListener('scroll', updatePosition, { passive: true });
+    }
+
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', handleResize);
+      if (isScrollable(scrollEl)) {
+        scrollEl.removeEventListener('scroll', updatePosition);
+      }
     };
-  }, [hoursRef]);
-
-  if (lineLeft === null) return null;
+  }, [hoursRef, contentRef, containerRef]);
 
   return (
     <div
-      className="absolute top-[-5rem] bottom-[-20px] w-[4px] z-20 pointer-events-none transition-all duration-1000 ease-linear"
-      style={{ left: `${lineLeft}px` }}
+      ref={lineRef}
+      className={cn(
+        "absolute top-[-5rem] bottom-[-20px] w-[4px] z-20 pointer-events-none transition-all duration-200 ease-linear",
+        !isPositioned && 'opacity-0'
+      )}
     >
       <div className="h-full w-full bg-gradient-to-b from-primary via-primary/50 to-transparent relative">
         <div className="absolute inset-x-[-6px] top-0 bottom-0 bg-primary/20 blur-[8px] animate-pulse" />
@@ -459,6 +506,8 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
 
               <TimeIndicatorLine
                 hoursRef={hoursRef}
+                contentRef={contentRef}
+                containerRef={containerRef}
               />
             </div>
           </div>
