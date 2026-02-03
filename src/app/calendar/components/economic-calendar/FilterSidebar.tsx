@@ -202,7 +202,7 @@ export function FilterSidebar({ filters, onFiltersChange, events }: FilterSideba
                     id={`impact-${impact}`}
                     checked={filters.impacts.includes(impact)}
                     onCheckedChange={() => toggleImpact(impact)}
-                    className="w-4 h-4 border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    className="w-4 h-4 border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary cursor-pointer"
                   />
                   <Label
                     htmlFor={`impact-${impact}`}
@@ -241,7 +241,7 @@ export function FilterSidebar({ filters, onFiltersChange, events }: FilterSideba
                   id={`region-${region}`}
                   checked={filters.regions.includes(region)}
                   onCheckedChange={() => toggleRegion(region)}
-                  className="w-4 h-4 border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  className="w-4 h-4 border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary cursor-pointer"
                 />
                 <Label
                   htmlFor={`region-${region}`}
@@ -276,7 +276,7 @@ export function FilterSidebar({ filters, onFiltersChange, events }: FilterSideba
                   id={`category-${category}`}
                   checked={filters.categories.includes(category)}
                   onCheckedChange={() => toggleCategory(category)}
-                  className="w-4 h-4 border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  className="w-4 h-4 border-muted-foreground/40 data-[state=checked]:bg-primary data-[state=checked]:border-primary *:cursor-pointer"
                 />
                 <Label
                   htmlFor={`category-${category}`}

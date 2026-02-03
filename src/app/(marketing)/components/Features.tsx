@@ -120,7 +120,7 @@ export function Features() {
                   </div>
 
                   {/* Dynamic Status Indicator */}
-                  <motion.div
+                  {/* <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.5 }}
@@ -154,7 +154,7 @@ export function Features() {
                         </span>
                       </div>
                     </div>
-                  </motion.div>
+                  </motion.div> */}
                 </div>
 
                 {/* Floating decoration */}

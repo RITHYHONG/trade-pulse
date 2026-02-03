@@ -46,7 +46,8 @@ const ProbabilityChart = memo(({ data, directionBias, consensus, prefersReducedM
   consensus: number,
   prefersReducedMotion: boolean
 }) => {
-  const color = directionBias === 'bullish' ? '#10b981' : directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))';
+  // Use cyan (#22d3ee) for neutral to ensure visibility on dark backgrounds
+  const color = directionBias === 'bullish' ? '#10b981' : directionBias === 'bearish' ? '#f43f5e' : '#22d3ee';
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -328,7 +329,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                     'linear-gradient(to right, #10b981, transparent, #10b981)' :
                     event.historicalData.directionBias === 'bearish' ?
                       'linear-gradient(to right, #f43f5e, transparent, #f43f5e)' :
-                      'linear-gradient(to right, hsl(var(--primary)), transparent, hsl(var(--primary)))'
+                      'linear-gradient(to right, #22d3ee, transparent, #22d3ee)'
                 }}
               />
 
@@ -364,7 +365,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                   !prefersReducedMotion && "transition-colors duration-1000"
                 )}
                 style={{ backgroundColor: event.historicalData.directionBias === 'bullish' ? '#10b981' :
-                  event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))' }}
+                  event.historicalData.directionBias === 'bearish' ? '#f43f5e' : '#22d3ee' }}
               />
               <div
                 className={cn(
@@ -373,7 +374,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
                 )}
                 style={{
                   backgroundColor: event.historicalData.directionBias === 'bullish' ? '#10b981' :
-                    event.historicalData.directionBias === 'bearish' ? '#f43f5e' : 'hsl(var(--primary))'
+                    event.historicalData.directionBias === 'bearish' ? '#f43f5e' : '#22d3ee'
                 }}
               />
 
