@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useAuth } from '../hooks/use-auth';
 import { sessionValidateResponseSchema } from '@/lib/validations';
+import { auth } from '@/lib/firebase';
 
 /**
  * Global session manager that ensures auth state consistency
@@ -19,19 +20,28 @@ export function SessionManager() {
     if (user) {
       const validateSession = async () => {
         try {
+          // Get fresh ID token
+          const idToken = await auth.currentUser?.getIdToken();
+
+          if (!idToken) {
+            console.warn('Session validation skipped: No ID token available');
+            return;
+          }
+
           const response = await fetch('/api/auth/validate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+              idToken,
               uid: user.uid,
               email: user.email,
               displayName: user.displayName,
             }),
           });
-          
+
           const data = await response.json();
           const validatedData = sessionValidateResponseSchema.parse(data);
-          
+
           if (!validatedData.valid) {
             // Session is invalid, force a page reload to trigger middleware
             window.location.reload();

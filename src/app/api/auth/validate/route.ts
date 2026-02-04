@@ -7,7 +7,16 @@ import { adminApp } from "@/lib/firebase-admin";
  */
 export async function POST(request: NextRequest) {
   try {
-    const { idToken, email, displayName } = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid request body", valid: false },
+        { status: 400 },
+      );
+    }
+    const { idToken, email, displayName } = body || {};
 
     if (!idToken) {
       return NextResponse.json(

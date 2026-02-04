@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '../hooks/use-auth';
+import { auth } from '@/lib/firebase';
 
 /**
  * Session sync component that handles authentication state mismatches
@@ -35,16 +36,21 @@ export function SessionSync() {
 
     // Handle session expiration
     if (reason === 'session_expired' && !loading) {
-      if (user) {
+      if (user && auth.currentUser) {
         // Firebase auth is still valid, refresh the session
-        fetch('/api/auth/validate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-          }),
+        auth.currentUser.getIdToken().then(idToken => {
+          if (!idToken) throw new Error('No ID token available');
+
+          return fetch('/api/auth/validate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              idToken,
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+            }),
+          });
         })
           .then(response => response.json())
           .then(data => {
