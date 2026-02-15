@@ -18,7 +18,7 @@ export function ClientLayout({ children }: ClientLayoutProps) {
       <SessionManager />
       <LastVisitedTracker />
       {children}
-      <ChatbotModal />
+      {/* <ChatbotModal /> */}
     </ThemeProvider>
   );
 }

@@ -1,81 +1,82 @@
-import { Card } from "@/components/ui/card";
-import type { EconomicEvent } from "@/app/calendar/components/economic-calendar/types";
-import { Skeleton } from "@/components/ui/skeleton";
+"use client";
 
-interface EconomicCalendarWidgetProps {
-  events: EconomicEvent[];
-  isLoading?: boolean;
+import { Card } from "@/components/ui/card";
+import { CalendarDays, MapPin } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+
+// Minimal interface for display
+interface EconomicEvent {
+      id: string;
+      name: string;
+      country: string;
+      datetime: Date;
+      impact: "low" | "medium" | "high";
+      actual?: number;
+      consensus?: number;
+      previous?: number;
+      unit: string;
 }
 
-const impactStyles: Record<string, string> = {
-  low: "bg-sky-500/10 text-sky-300",
-  medium: "bg-amber-500/10 text-amber-300",
-  high: "bg-rose-500/10 text-rose-300",
-};
+interface EconomicCalendarWidgetProps {
+      events: EconomicEvent[];
+      isLoading?: boolean;
+}
 
-export function EconomicCalendarWidget({ events, isLoading = false }: EconomicCalendarWidgetProps) {
-  if (isLoading) {
-    return (
-      <Card>
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-white">Economic Calendar</h2>
-            <p className="mt-1 text-sm text-slate-300/80">Track high-impact economic releases and plan your trading day.</p>
-          </div>
-          <span className="text-xs text-slate-400">Eastern Time</span>
-        </div>
-        <ul className="mt-5 space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <li key={i} className="flex items-start justify-between rounded-xl border border-slate-800/70 bg-slate-900/60 p-4">
-              <div className="space-y-2">
-                <Skeleton className="h-3 w-28" />
-                <Skeleton className="h-4 w-48" />
-                <Skeleton className="h-3 w-64" />
-              </div>
-              <Skeleton className="h-6 w-20 rounded-full" />
-            </li>
-          ))}
-        </ul>
-      </Card>
-    );
-  }
-  return (
-    <Card>
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-white">Economic Calendar</h2>
-          <p className="mt-1 text-sm text-slate-300/80">
-            Track high-impact economic releases and plan your trading day.
-          </p>
-        </div>
-        <span className="text-xs text-slate-400">Eastern Time</span>
-      </div>
+export function EconomicCalendarWidget({ events, isLoading }: EconomicCalendarWidgetProps) {
+      if (isLoading) return <div className="h-64 rounded-xl bg-muted/20 animate-pulse" />;
 
-      <ul className="mt-5 space-y-3">
-        {events.map((event) => (
-          <li
-            key={event.id}
-            className="flex items-start justify-between rounded-xl border border-slate-800/70 bg-slate-900/60 p-4"
-          >
-            <div>
-              <p className="text-xs uppercase tracking-wide text-slate-400">
-                {event.datetime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {event.country}
-              </p>
-              <p className="mt-1 text-sm font-semibold text-white">{event.name}</p>
-              <div className="mt-2 flex flex-wrap gap-4 text-xs text-slate-300">
-                <span>Consensus: {event.consensus}{event.unit}</span>
-                <span>Previous: {event.previous}{event.unit}</span>
-                {event.actual !== undefined && <span>Actual: {event.actual}{event.unit}</span>}
-              </div>
-            </div>
-            <span
-              className={`rounded-full px-3 py-1 text-xs font-semibold ${impactStyles[event.impact] || impactStyles.low}`}
-            >
-              {event.impact} impact
-            </span>
-          </li>
-        ))}
-      </ul>
-    </Card>
-  );
+      const highImpactEvents = events
+            .filter(e => e.impact === 'high' || e.impact === 'medium')
+            .slice(0, 5);
+
+      return (
+            <Card className="h-full border-border bg-card shadow-sm overflow-hidden flex flex-col">
+                  <div className="p-4 border-b border-border flex items-center gap-2">
+                        <div className="p-1.5 rounded bg-primary/10 text-primary">
+                              <CalendarDays className="h-4 w-4" />
+                        </div>
+                        <h3 className="font-semibold text-sm">Economic Calendar</h3>
+                  </div>
+
+                  <div className="flex-1 overflow-auto">
+                        {highImpactEvents.length === 0 ? (
+                              <div className="p-6 text-center text-muted-foreground text-sm">
+                                    No high impact events soon.
+                              </div>
+                        ) : (
+                              <div className="divide-y divide-border">
+                                    {highImpactEvents.map((event) => (
+                                          <div key={event.id} className="p-3 hover:bg-muted/30 transition-colors flex items-center gap-3">
+                                                <div className="flex flex-col items-center justify-center h-10 w-10 rounded bg-muted text-xs font-medium shrink-0">
+                                                      <span className="text-muted-foreground">{format(new Date(event.datetime), "HH:mm")}</span>
+                                                </div>
+
+                                                <div className="flex-1 min-w-0">
+                                                      <div className="flex items-center gap-2 mb-0.5">
+                                                            <span className={cn("text-[10px] uppercase font-bold px-1.5 py-0.5 rounded",
+                                                                  event.impact === 'high' ? "bg-destructive/10 text-destructive" : "bg-amber-500/10 text-amber-500"
+                                                            )}>
+                                                                  {event.impact}
+                                                            </span>
+                                                            <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                                                  <MapPin className="h-3 w-3" /> {event.country}
+                                                            </span>
+                                                      </div>
+                                                      <p className="text-sm font-medium truncate">{event.name}</p>
+                                                </div>
+
+                                                <div className="text-right shrink-0">
+                                                      <div className="text-xs font-mono">
+                                                            <span className="text-muted-foreground">Fcst: </span>
+                                                            <span className="text-foreground">{event.consensus}{event.unit}</span>
+                                                      </div>
+                                                </div>
+                                          </div>
+                                    ))}
+                              </div>
+                        )}
+                  </div>
+            </Card>
+      );
 }

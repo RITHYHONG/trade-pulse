@@ -386,7 +386,7 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 transition-colors duration-300">
       <div className="container mx-auto px-6 py-12 max-w-6xl">
         {/* Header Section */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 px-2">
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 px-2 mt-10">
           <div className="space-y-2">
             <Link href="/" className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors group mb-4">
               <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />

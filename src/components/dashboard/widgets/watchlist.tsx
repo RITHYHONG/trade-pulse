@@ -1,123 +1,82 @@
-import Link from "next/link";
-import { Card } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
-import type { WatchlistInstrument } from "@/types";
-import { Skeleton } from "@/components/ui/skeleton";
+"use client";
 
-interface WatchlistWidgetProps {
-  instruments: WatchlistInstrument[];
-  isLoading?: boolean;
+import { Card } from "@/components/ui/card";
+import { LineChart, ArrowUp, ArrowDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+// Basic interface for watchlist items
+interface WatchlistItem {
+      symbol: string;
+      price: number;
+      change: number;
+      changePercent: number;
+      name?: string;
 }
 
-export function WatchlistWidget({ instruments, isLoading = false }: WatchlistWidgetProps) {
-  if (isLoading) {
-    return (
-      <Card className="col-span-full xl:col-span-2">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-white">Watchlist</h2>
-            <p className="mt-1 text-sm text-slate-300/80">Monitor price action for your high-conviction trades.</p>
-          </div>
-          <div className="text-xs font-semibold text-sky-400">&nbsp;</div>
-        </div>
+interface WatchlistWidgetProps {
+      instruments: WatchlistItem[];
+      isLoading?: boolean;
+}
 
-        <div className="mt-5 overflow-hidden rounded-xl border border-slate-800/70">
-          <table className="min-w-full divide-y divide-slate-800/70">
-            <thead className="bg-slate-900/80 text-left text-xs uppercase tracking-wide text-slate-400">
-              <tr>
-                <th className="px-4 py-3">Symbol</th>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Price</th>
-                <th className="px-4 py-3">Change</th>
-                <th className="px-4 py-3">Sector</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60 text-sm">
-              {Array.from({ length: 6 }).map((_, idx) => (
-                <tr key={idx} className="bg-slate-900/40">
-                  <td className="px-4 py-3 font-semibold text-white">
-                    <Skeleton className="w-12 h-4" />
-                  </td>
-                  <td className="px-4 py-3 text-slate-300">
-                    <Skeleton className="w-32 h-4" />
-                  </td>
-                  <td className="px-4 py-3 text-slate-200">
-                    <Skeleton className="w-16 h-4" />
-                  </td>
-                  <td className="px-4 py-3">
-                    <Skeleton className="w-16 h-4" />
-                  </td>
-                  <td className="px-4 py-3 text-slate-300">
-                    <Skeleton className="w-20 h-4" />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
-    );
-  }
-  return (
-    <Card className="col-span-full xl:col-span-2">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-white">Watchlist</h2>
-          <p className="mt-1 text-sm text-slate-300/80">
-            Monitor price action for your high-conviction trades.
-          </p>
-        </div>
-        <Link
-          href="/app/watchlist"
-          className="text-xs font-semibold text-sky-400 transition hover:text-sky-300 flex items-center gap-1"
-        >
-          Manage symbols
-          <ArrowRight className="w-3 h-3" />
-        </Link>
-      </div>
+export function WatchlistWidget({ instruments, isLoading }: WatchlistWidgetProps) {
+      if (isLoading) return <div className="h-96 rounded-xl bg-muted/20 animate-pulse" />;
 
-      <div className="mt-5 overflow-hidden rounded-xl border border-slate-800/70">
-        <table className="min-w-full divide-y divide-slate-800/70">
-          <thead className="bg-slate-900/80 text-left text-xs uppercase tracking-wide text-slate-400">
-            <tr>
-              <th className="px-4 py-3">Symbol</th>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Price</th>
-              <th className="px-4 py-3">Change</th>
-              <th className="px-4 py-3">Sector</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-800/60 text-sm">
-            {instruments.map((instrument) => {
-              const changePositive = instrument.change >= 0;
-              return (
-                <tr
-                  key={instrument.symbol}
-                  className="bg-slate-900/40 transition hover:bg-slate-900/70"
-                >
-                  <td className="px-4 py-3 font-semibold text-white">
-                    <Link href={`/app/watchlist/${instrument.symbol}`} className="hover:text-sky-300">
-                      {instrument.symbol}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3 text-slate-300">{instrument.name}</td>
-                  <td className="px-4 py-3 text-slate-200">
-                    ${instrument.price.toFixed(2)}
-                  </td>
-                  <td
-                    className={`px-4 py-3 font-medium ${changePositive ? "text-emerald-400" : "text-rose-400"}`}
-                  >
-                    {changePositive ? "+" : ""}
-                    {instrument.change.toFixed(2)} ({changePositive ? "+" : ""}
-                    {instrument.changePercent.toFixed(2)}%)
-                  </td>
-                  <td className="px-4 py-3 text-slate-300">{instrument.sector}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </Card>
-  );
+      // Fill with dummy data if empty for visualization
+      const data = instruments.length > 0 ? instruments : [
+            { symbol: "EURUSD", price: 1.0845, change: -0.0023, changePercent: -0.21, name: "Euro / US Dollar" },
+            { symbol: "GBPUSD", price: 1.2630, change: 0.0012, changePercent: 0.10, name: "British Pound" },
+            { symbol: "USDJPY", price: 151.20, change: 0.45, changePercent: 0.30, name: "US Dollar / Yen" },
+            { symbol: "XAUUSD", price: 2035.50, change: 12.40, changePercent: 0.61, name: "Gold" },
+            { symbol: "BTCUSD", price: 65120.00, change: 1250.00, changePercent: 1.95, name: "Bitcoin" },
+            { symbol: "SPX500", price: 5105.20, change: -15.50, changePercent: -0.30, name: "S&P 500" },
+      ];
+
+      return (
+            <Card className="h-full border-border bg-card shadow-sm overflow-hidden flex flex-col">
+                  <div className="p-6 border-b border-border flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                              <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                                    <LineChart className="h-5 w-5" />
+                              </div>
+                              <div>
+                                    <h3 className="font-bold text-lg">Market Watch</h3>
+                                    <p className="text-xs text-muted-foreground">Live Quotes</p>
+                              </div>
+                        </div>
+                  </div>
+
+                  <div className="flex-1 overflow-auto">
+                        <table className="w-full text-sm text-left">
+                              <thead className="text-xs text-muted-foreground bg-muted/30 uppercase font-medium">
+                                    <tr>
+                                          <th className="px-6 py-3">Symbol</th>
+                                          <th className="text-right px-6 py-3">Price</th>
+                                          <th className="text-right px-6 py-3">Change</th>
+                                    </tr>
+                              </thead>
+                              <tbody className="divide-y divide-border">
+                                    {data.map((item) => (
+                                          <tr key={item.symbol} className="hover:bg-muted/30 transition-colors group cursor-pointer">
+                                                <td className="px-6 py-4">
+                                                      <div className="font-bold text-foreground">{item.symbol}</div>
+                                                      <div className="text-xs text-muted-foreground">{item.name}</div>
+                                                </td>
+                                                <td className="px-6 py-4 text-right font-mono font-medium">
+                                                      {item.price.toFixed(item.symbol.includes('JPY') ? 2 : item.symbol.includes('BTC') ? 0 : 4)}
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                      <div className={cn("inline-flex items-center gap-1 font-medium px-2 py-0.5 rounded-full text-xs",
+                                                            item.change >= 0 ? "bg-emerald-500/10 text-emerald-500" : "bg-destructive/10 text-destructive"
+                                                      )}>
+                                                            {item.change >= 0 ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+                                                            {Math.abs(item.changePercent).toFixed(2)}%
+                                                      </div>
+                                                </td>
+                                          </tr>
+                                    ))}
+                              </tbody>
+                        </table>
+                  </div>
+            </Card>
+      );
 }
