@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
-import { getUserProfile, UserProfile } from '@/lib/firestore-service';
-import { BlogAuthor } from '@/types/blog';
+import { useState, useEffect } from "react";
+import { getUserProfile, UserProfile } from "@/lib/firestore-service";
+import { BlogAuthor } from "@/types/blog";
 
 // Simple in-memory cache for user profiles
 const profileCache = new Map<string, UserProfile | null>();
 const cacheTimestamps = new Map<string, number>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-const LOCAL_STORAGE_PREFIX = 'authorProfile_';
+const LOCAL_STORAGE_PREFIX = "authorProfile_";
 const LOCAL_STORAGE_DURATION = 60 * 60 * 1000; // 1 hour
 
 interface UseAuthorProfileOptions {
@@ -15,8 +15,12 @@ interface UseAuthorProfileOptions {
   fallbackAuthor: BlogAuthor;
 }
 
-export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileOptions) {
-  const [authorProfile, setAuthorProfile] = useState<BlogAuthor>(fallbackAuthor);
+export function useAuthorProfile({
+  authorId,
+  fallbackAuthor,
+}: UseAuthorProfileOptions) {
+  const [authorProfile, setAuthorProfile] =
+    useState<BlogAuthor>(fallbackAuthor);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,20 +39,24 @@ export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileO
         const { profile, timestamp } = JSON.parse(cachedData);
         const now = Date.now();
         if (now - timestamp < LOCAL_STORAGE_DURATION) {
-          setAuthorProfile({
-            name: profile.displayName || fallbackAuthor.name,
-            avatar: profile.photoURL || fallbackAuthor.avatar,
-            avatarUrl: profile.photoURL || fallbackAuthor.avatarUrl,
-            bio: fallbackAuthor.bio,
-            role: fallbackAuthor.role
-          });
+          if (profile) {
+            setAuthorProfile({
+              name: profile.displayName || fallbackAuthor.name,
+              avatar: profile.photoURL || fallbackAuthor.avatar,
+              avatarUrl: profile.photoURL || fallbackAuthor.avatarUrl,
+              bio: fallbackAuthor.bio,
+              role: fallbackAuthor.role,
+            });
+          } else {
+            setAuthorProfile(fallbackAuthor);
+          }
           return;
         } else {
           // Expired, remove from localStorage
           localStorage.removeItem(localStorageKey);
         }
       } catch (error) {
-        console.error('Error parsing cached author profile:', error);
+        console.error("Error parsing cached author profile:", error);
         localStorage.removeItem(localStorageKey);
       }
     }
@@ -57,15 +65,19 @@ export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileO
     const now = Date.now();
     const cached = profileCache.get(authorId);
     const cacheTime = cacheTimestamps.get(authorId);
-    
-    if (cached && cacheTime && (now - cacheTime) < CACHE_DURATION) {
-      setAuthorProfile({
-        name: cached.displayName || fallbackAuthor.name,
-        avatar: cached.photoURL || fallbackAuthor.avatar,
-        avatarUrl: cached.photoURL || fallbackAuthor.avatarUrl,
-        bio: fallbackAuthor.bio,
-        role: fallbackAuthor.role
-      });
+
+    if (cacheTime && now - cacheTime < CACHE_DURATION) {
+      if (cached) {
+        setAuthorProfile({
+          name: cached.displayName || fallbackAuthor.name,
+          avatar: cached.photoURL || fallbackAuthor.avatar,
+          avatarUrl: cached.photoURL || fallbackAuthor.avatarUrl,
+          bio: fallbackAuthor.bio,
+          role: fallbackAuthor.role,
+        });
+      } else {
+        setAuthorProfile(fallbackAuthor);
+      }
       return;
     }
 
@@ -84,10 +96,13 @@ export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileO
 
         // Also cache in localStorage
         const localStorageKey = `${LOCAL_STORAGE_PREFIX}${authorId}`;
-        localStorage.setItem(localStorageKey, JSON.stringify({
-          profile,
-          timestamp: now
-        }));
+        localStorage.setItem(
+          localStorageKey,
+          JSON.stringify({
+            profile,
+            timestamp: now,
+          }),
+        );
 
         if (profile) {
           setAuthorProfile({
@@ -95,7 +110,7 @@ export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileO
             avatar: profile.photoURL || fallbackAuthor.avatar,
             avatarUrl: profile.photoURL || fallbackAuthor.avatarUrl,
             bio: fallbackAuthor.bio,
-            role: fallbackAuthor.role
+            role: fallbackAuthor.role,
           });
         } else {
           setAuthorProfile(fallbackAuthor);
@@ -103,7 +118,9 @@ export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileO
       })
       .catch((err) => {
         if (cancelled) return;
-        setError(err instanceof Error ? err.message : 'Failed to fetch profile');
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch profile",
+        );
         setAuthorProfile(fallbackAuthor);
       })
       .finally(() => {
@@ -120,7 +137,7 @@ export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileO
   return {
     authorProfile,
     isLoading,
-    error
+    error,
   };
 }
 

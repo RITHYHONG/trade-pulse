@@ -1,29 +1,28 @@
 export type Sentiment = "positive" | "neutral" | "negative";
 
 export interface MarketNewsItem {
-	id: string;
-	title: string;
-	summary: string;
-	source: string;
-	publishedAt: string;
-	sentiment: Sentiment;
-	url: string;
+  id: string;
+  title: string;
+  summary: string;
+  source: string;
+  publishedAt: string;
+  sentiment: Sentiment;
+  url: string;
+  image?: string;
 }
 
-
-
 export interface WatchlistInstrument {
-	symbol: string;
-	name: string;
-	price: number;
-	change: number;
-	changePercent: number;
-	sector: string;
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  sector: string;
 }
 
 export interface InstrumentDetail extends WatchlistInstrument {
-	dayRange: string;
-	volume: number;
-	marketCap: number;
-	updatedAt: string;
+  dayRange: string;
+  volume: number;
+  marketCap: number;
+  updatedAt: string;
 }

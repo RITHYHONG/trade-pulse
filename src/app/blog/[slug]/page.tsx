@@ -4,6 +4,7 @@ import { BlogPost as BlogPostComponent } from '../BlogPost';
 import { blogPosts } from '@/data/blogData';
 import { getPostBySlug, getPostsByCategory, BlogPost as FirestoreBlogPost } from '@/lib/blog-firestore-service';
 import { BlogPost as UIBlogPost } from '@/types/blog';
+import ViewTracker from '@/components/blog/ViewTracker';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -84,11 +85,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen">
       <BlogPostComponent
         post={post}
         relatedPosts={relatedPosts}
       />
+      <ViewTracker postId={post.id!} />
     </div>
   );
 }
@@ -125,5 +127,10 @@ function mapFirestoreToUI(fsp: FirestoreBlogPost): UIBlogPost {
     category: fsp.category,
     isFeatured: false,
     views: typeof fsp.views === 'number' ? fsp.views : 0,
+    sentiment: fsp.sentiment,
+    confidenceLevel: fsp.confidenceLevel,
+    primaryAsset: fsp.primaryAsset,
+    relatedAssets: fsp.relatedAssets,
+    timeHorizon: fsp.timeHorizon,
   };
 }

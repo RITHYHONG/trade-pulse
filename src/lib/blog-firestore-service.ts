@@ -12,6 +12,7 @@ import {
   serverTimestamp,
   Timestamp,
   startAfter,
+  increment as Increment,
 } from "firebase/firestore";
 import { cache } from "react";
 import {
@@ -466,5 +467,20 @@ export async function getUserDrafts(userId: string): Promise<BlogPost[]> {
   } catch (error) {
     console.error("Error getting user drafts:", error);
     return [];
+  }
+}
+
+/**
+ * Increment the view count for a blog post
+ * @param postId - The ID of the post
+ */
+export async function incrementBlogPostView(postId: string): Promise<void> {
+  try {
+    const postRef = doc(db, "posts", postId);
+    await updateDoc(postRef, {
+      views: Increment(1),
+    });
+  } catch (error) {
+    console.error("Error incrementing view count:", error);
   }
 }
