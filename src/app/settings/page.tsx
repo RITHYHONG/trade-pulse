@@ -8,6 +8,8 @@ import { Label } from '../../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import { Switch } from '../../components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+
+export const dynamic = 'force-dynamic';
 import { Separator } from '../../components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import { Badge } from '../../components/ui/badge';
@@ -127,10 +129,10 @@ export default function SettingsPage() {
 
   // Sync theme when preferences are loaded
   React.useEffect(() => {
-    if (preferences.theme) {
+    if (preferences?.theme) {
       setTheme(preferences.theme);
     }
-  }, [preferences.theme, setTheme]);
+  }, [preferences?.theme, setTheme]);
 
   // Load user profile from Firestore
   React.useEffect(() => {

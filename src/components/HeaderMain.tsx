@@ -36,6 +36,7 @@ import LogoLight from '../../public/black-logo.svg';
 import navItems from '@/config/navigation';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import { UserRole } from '@/lib/user-role-helper';
 
 export function HeaderMain() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -112,6 +113,7 @@ export function HeaderMain() {
       email: user.email || '',
       bio: headerProfile.bio,
       photoURL: headerProfile.avatarUrl ?? headerProfile.avatar,
+      role: 'user' as UserRole,
     };
 
     setUserProfile(profile);

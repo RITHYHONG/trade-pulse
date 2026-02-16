@@ -18,6 +18,8 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 // Cookie data structure
 interface CookieData {
       name: string;

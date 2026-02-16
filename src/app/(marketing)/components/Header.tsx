@@ -32,6 +32,7 @@ import { BlogAuthor } from '@/types/blog';
 import SearchModal from '@/components/SearchModal';
 import Image from 'next/image';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { UserRole } from '@/lib/user-role-helper';
 
 import navItems from '@/config/navigation';
 
@@ -104,6 +105,7 @@ export function Header() {
       email: user.email || '',
       bio: headerProfile.bio,
       photoURL: headerProfile.avatarUrl ?? headerProfile.avatar,
+      role: 'user' as UserRole,
     };
 
     setUserProfile(profile);

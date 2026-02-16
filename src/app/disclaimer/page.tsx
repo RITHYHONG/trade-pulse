@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, ChevronDown, Download, Printer, Share2, Clock, Check, X, TrendingDown, BarChart3, Users, CreditCard, TrendingUp, Scale, Shield, AlertCircle, FileText, ExternalLink } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 interface RiskCategory {
   name: string;
   description: string;

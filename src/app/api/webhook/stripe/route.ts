@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { adminDb } from "@/lib/firebase-admin";
 
 export async function POST(req: Request) {
@@ -10,6 +10,7 @@ export async function POST(req: Request) {
   let event;
 
   try {
+    const stripe = getStripe();
     event = stripe.webhooks.constructEvent(
       body,
       signature,

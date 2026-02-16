@@ -7,6 +7,8 @@ export const metadata: Metadata = generateMetadata({
   path: '/cookies',
 });
 
+export const dynamic = 'force-dynamic';
+
 export default function CookiesPage() {
   return (
     <main className="container mx-auto px-8 py-16 prose prose-invert">

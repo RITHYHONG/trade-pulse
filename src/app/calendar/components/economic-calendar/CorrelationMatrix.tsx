@@ -10,8 +10,9 @@ interface Correlation {
   event1: string;
   event2: string;
   strength: number; // -1 to 1
-  leadLag: 'leads' | 'lags' | 'simultaneous';
+  leadLag: string;
   lagMinutes?: number;
+  category: string;
 }
 
 // --- Static Helpers & Config ---

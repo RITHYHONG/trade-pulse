@@ -8,6 +8,8 @@ export const metadata: Metadata = generateMetadata({
   path: '/terms',
 });
 
+export const dynamic = 'force-dynamic';
+
 export default function Page() {
   return (
     <main className="container mx-auto px-8 py-16 prose prose-invert">

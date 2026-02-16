@@ -32,7 +32,7 @@ import {
   SheetTrigger
 } from '@/components/ui/sheet';
 import { mockEconomicEvents, mockCentralBankEvents } from './components/economic-calendar/mockData';
-import { FilterState, EconomicEvent, ViewMode, CentralBankEvent, AiIntelligence } from './components/economic-calendar/types';
+import { FilterState, EconomicEvent, ViewMode, CentralBankEvent, AiIntelligence, Correlation } from './components/economic-calendar/types';
 // EconomicCalendarService removed from client-side imports for security
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -65,7 +65,7 @@ const CentralBankDashboard = dynamic(
     loading: () => <Skeleton className="h-32 w-full rounded-lg" />
   }
 );
-const MarketIntelContent = React.memo(({ events, aiIntelligence, isAiLoading, correlations }: { events: CentralBankEvent[], aiIntelligence: AiIntelligence | null, isAiLoading: boolean, correlations: unknown[] }) => (
+const MarketIntelContent = React.memo(({ events, aiIntelligence, isAiLoading, correlations }: { events: CentralBankEvent[], aiIntelligence: AiIntelligence | null, isAiLoading: boolean, correlations: Correlation[] }) => (
   <div className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-hide">
     {/* AI Verdict Section */}
     <div className="space-y-4">
@@ -150,7 +150,7 @@ export default function App() {
   const [isEventsLoading, setIsEventsLoading] = useState(true);
   const [aiIntelligence, setAiIntelligence] = useState<AiIntelligence | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [correlations, setCorrelations] = useState<unknown[]>([]);
+  const [correlations, setCorrelations] = useState<Correlation[]>([]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -182,12 +182,12 @@ export default function App() {
         const validatedData = calendarApiResponseSchema.parse(data);
 
         // Parse dates which come as strings from JSON API
-        const parsedEvents = validatedData.events.map((event: EconomicEvent) => ({
+        const parsedEvents = validatedData.events.map((event) => ({
           ...event,
           datetime: new Date(event.datetime)
         }));
 
-        const parsedCBEvents = validatedData.centralBankEvents.map((event: CentralBankEvent) => ({
+        const parsedCBEvents = validatedData.centralBankEvents.map((event) => ({
           ...event,
           datetime: new Date(event.datetime)
         }));

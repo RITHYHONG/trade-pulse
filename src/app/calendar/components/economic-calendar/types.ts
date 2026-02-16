@@ -84,3 +84,12 @@ export interface AiIntelligence {
   overallSummary: string;
   keyRisks: string[];
 }
+
+export interface Correlation {
+  event1: string;
+  event2: string;
+  strength: number; // -1 to 1
+  leadLag: string;
+  lagMinutes?: number;
+  category: string;
+}

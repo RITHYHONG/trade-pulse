@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { FilterState } from './components/economic-calendar/types';
+import { FilterState } from '../components/economic-calendar/types';
 
 const STORAGE_KEY = 'calendar-filters';
 const EVENT_ID_KEY = 'event';
@@ -152,7 +152,7 @@ function serializeFiltersToURL(filters: FilterState, params: URLSearchParams) {
 
     const defaultValue = defaults[key as keyof typeof defaults];
     const isDefault = Array.isArray(value)
-      ? value.length === defaultValue.length && [...value].sort().every((v, i) => v === [...defaultValue].sort()[i])
+      ? Array.isArray(defaultValue) && value.length === defaultValue.length && [...value].sort().every((v, i) => v === [...defaultValue].sort()[i])
       : value === defaultValue;
 
     if (!isDefault) {

@@ -68,8 +68,6 @@ export function generateMetadata({
       title: fullTitle,
       description,
       images: [image],
-      // Accessibility: include alt text for Twitter image previews
-      imageAlt: title || siteMetadata.title,
       creator: siteMetadata.twitterHandle,
       site: siteMetadata.twitterHandle,
     },

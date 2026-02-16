@@ -5,6 +5,8 @@ import { ChevronDown, Download, Printer, FileText, Shield, Globe, Info, Lock, Us
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 const complianceBadges = [
   { name: 'GDPR', region: 'EU/EEA', color: '#0066FF' },
   { name: 'CCPA', region: 'California', color: '#00F5FF' },
