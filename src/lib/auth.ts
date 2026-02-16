@@ -12,6 +12,8 @@ import { auth } from './firebase';
 // Note: Google login functions are separated in src/lib/google-auth.ts
 // To enable Google login, import and re-export the functions from google-auth.ts:
 // import { signInWithGoogle, signInWithGoogleRedirect, handleGoogleRedirectResult } from './google-auth';
+import { UserRole } from './user-role-helper';
+
 // export { signInWithGoogle, signInWithGoogleRedirect, handleGoogleRedirectResult };
 
 export interface AuthUser {
@@ -19,6 +21,7 @@ export interface AuthUser {
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
+  role?: UserRole;
 }
 
 export interface SignUpData {
@@ -87,7 +90,7 @@ export function onAuthStateChange(callback: (user: User | null) => void) {
 }
 
 // Convert Firebase User to AuthUser
-export function toAuthUser(user: User | null): AuthUser | null {
+export function toAuthUser(user: User | null, role?: UserRole): AuthUser | null {
   if (!user) return null;
 
   return {
@@ -95,6 +98,7 @@ export function toAuthUser(user: User | null): AuthUser | null {
     email: user.email,
     displayName: user.displayName,
     photoURL: user.photoURL,
+    role: role,
   };
 }
 

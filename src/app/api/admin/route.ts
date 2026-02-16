@@ -7,7 +7,7 @@ export async function GET() {
   const authToken = cookieStore.get("auth-token")?.value;
 
   // Double-check authorization (Middleware should handle this, but defense in depth)
-  if (!authToken || userRole !== "admin") {
+  if (!authToken || (userRole !== "admin" && userRole !== "superadmin")) {
     return NextResponse.json(
       { error: "Unauthorized: Admin access required" },
       { status: 401 },

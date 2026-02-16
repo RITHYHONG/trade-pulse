@@ -25,14 +25,23 @@ import {
 import { db, auth, storage } from "./firebase";
 import { retryFirebase } from "./retry";
 import { mapToAppError, logError } from "./error";
+import { UserRole } from "./user-role-helper";
 
 // User profile interface for Firestore
 export interface UserProfile {
   uid: string;
   displayName: string;
   email: string;
+  role: UserRole;
   bio?: string;
   photoURL?: string;
+  editorRequest?: {
+    status: 'none' | 'pending' | 'approved' | 'denied';
+    reason?: string;
+    requestedAt?: Timestamp | Date;
+    handledBy?: string;
+    handledAt?: Timestamp | Date;
+  };
   preferences?: {
     theme?: "light" | "dark" | "system";
     language?: string;
@@ -261,6 +270,10 @@ export async function initializeUserProfile(user: FirebaseUser): Promise<void> {
         displayName,
         email: user.email || "",
         photoURL,
+        role: "user", // Default role for new users
+        editorRequest: {
+          status: 'none'
+        },
         preferences: {
           theme: "dark",
           language: "en",

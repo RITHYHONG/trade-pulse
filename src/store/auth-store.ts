@@ -13,9 +13,10 @@ import {
   signInWithGoogleRedirect,
   handleGoogleRedirectResult,
 } from "../lib/google-auth";
-import { initializeUserProfile } from "../lib/firestore-service";
+import { initializeUserProfile, getUserProfile } from "../lib/firestore-service";
 import { clearAuthorProfileCache } from "../hooks/use-author-profile";
 import { mapToAppError, logError } from "../lib/error";
+import { UserRole } from "../lib/user-role-helper";
 
 interface AuthState {
   user: AuthUser | null;
@@ -56,6 +57,8 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
 
       // Initialize user profile in Firestore
       await initializeUserProfile(user);
+      const profile = await getUserProfile(user.uid);
+      const role = profile?.role || 'user';
 
       // Fetch ID token for secure session cookie creation
       const idToken = await user.getIdToken();
@@ -72,7 +75,7 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
         }),
       });
 
-      set({ user: toAuthUser(user), loading: false });
+      set({ user: toAuthUser(user, role), loading: false });
     } catch (error) {
       const appError = mapToAppError(error);
       logError(appError, { operation: "signUp", email });
@@ -86,6 +89,9 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
       set({ loading: true, error: null });
       const user = await signIn({ email, password });
 
+      const profile = await getUserProfile(user.uid);
+      const role = profile?.role || "user";
+
       // Fetch ID token for secure session cookie creation
       const idToken = await user.getIdToken();
 
@@ -101,7 +107,7 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
         }),
       });
 
-      set({ user: toAuthUser(user), loading: false });
+      set({ user: toAuthUser(user, role), loading: false });
     } catch (error) {
       const appError = mapToAppError(error);
       logError(appError, { operation: "signIn", email });
@@ -123,6 +129,9 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
       await initializeUserProfile(user);
       console.log("User profile initialization completed");
 
+      const profile = await getUserProfile(user.uid);
+      const role = profile?.role || "user";
+
       // Set auth cookies via API route (secure, HTTP-only)
       console.log("Setting auth cookies...");
       const idToken = await user.getIdToken();
@@ -138,7 +147,7 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
       });
       console.log("Auth cookies set successfully");
 
-      const authUser = toAuthUser(user);
+      const authUser = toAuthUser(user, role);
       console.log("Final auth user object:", authUser);
       set({ user: authUser, loading: false });
     } catch (error) {
@@ -225,6 +234,8 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
         if (user) {
           // User signed in via redirect
           await initializeUserProfile(user);
+          const profile = await getUserProfile(user.uid);
+          const role = profile?.role || "user";
 
           // Set auth cookies
           const idToken = await user.getIdToken();
@@ -239,7 +250,7 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
             }),
           });
 
-          const authUser = toAuthUser(user);
+          const authUser = toAuthUser(user, role);
           localStorage.setItem(
             "auth_state",
             JSON.stringify({
@@ -254,7 +265,13 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
 
         // No redirect result, continue with normal auth state listening
         const unsubscribe = onAuthStateChange(async (user) => {
-          const authUser = toAuthUser(user);
+          let role: UserRole | undefined;
+          if (user) {
+            const profile = await getUserProfile(user.uid);
+            role = profile?.role;
+          }
+          
+          const authUser = toAuthUser(user, role);
 
           // Cache the auth state
           if (authUser) {

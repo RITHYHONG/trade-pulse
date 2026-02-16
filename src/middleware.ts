@@ -16,7 +16,8 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/app") ||
     pathname.startsWith("/create-post") ||
-    pathname.startsWith("/settings")
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/blog")
   ) {
     if (!token) {
       // Add a flag to indicate potential session mismatch for client-side handling
@@ -28,9 +29,25 @@ export function middleware(request: NextRequest) {
       );
       return response;
     }
+
+    // Role-based access for blog
+    if (pathname.startsWith("/blog")) {
+      const allowedRoles = ["moderator", "editor", "admin", "superadmin"];
+      if (!userRole || !allowedRoles.includes(userRole)) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
+
+    // Role-based access for creating posts
+    if (pathname.startsWith("/create-post")) {
+      const allowedRoles = ["editor", "admin", "superadmin"];
+      if (!userRole || !allowedRoles.includes(userRole)) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
   }
 
-  // Admin routes - require admin role
+  // Admin routes - require moderator, admin or superadmin role
   if (pathname.startsWith("/admin")) {
     if (!token) {
       return NextResponse.redirect(
@@ -40,7 +57,8 @@ export function middleware(request: NextRequest) {
         ),
       );
     }
-    if (userRole !== "admin") {
+    const adminRoles = ["moderator", "admin", "superadmin"];
+    if (!userRole || !adminRoles.includes(userRole)) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }

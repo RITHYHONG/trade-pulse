@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminApp } from "@/lib/firebase-admin";
+import { getUserRole } from "@/lib/user-role-helper";
 
 /**
  * API route to set authentication cookies securely
@@ -21,8 +22,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    // Default role is 'user' - you can add logic here to fetch actual role from database
-    const userRole = "user"; // TODO: Fetch from Firestore user profile
+    // Fetch actual user role from Firestore
+    const userRole = await getUserRole(uid);
 
     // Create a session cookie
     const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
