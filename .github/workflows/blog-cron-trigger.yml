@@ -1,0 +1,16 @@
+name: Auto Trigger Blog Generation
+on:
+  schedule:
+    - cron: '0 8,14,20 * * *' # 8am, 2pm, 8pm UTC
+  workflow_dispatch: # Allows manual trigger from the GitHub Actions tab
+
+jobs:
+  trigger-cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cron Endpoint
+        run: |
+          # Replace with your deployed domain if available, otherwise it tests the trigger
+          # Using localhost or dummy URL for now as placeholder
+          curl -X GET "https://${{ secrets.APP_DOMAIN || 'your-app-domain.com' }}/api/cron/generate-blog" \
+               -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

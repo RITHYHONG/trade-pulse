@@ -38,3 +38,46 @@ export async function createBlogPostAdmin(
     throw new Error("Failed to create blog post via Admin SDK");
   }
 }
+
+/**
+ * Counts how many blog posts a specific author has created today.
+ */
+export async function countAuthorPostsToday(authorId: string): Promise<number> {
+  try {
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    const postsRef = adminDb.collection("posts");
+    const q = postsRef
+      .where("authorId", "==", authorId)
+      .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(startOfDay));
+    
+    const snapshot = await q.get();
+    return snapshot.size;
+  } catch (error) {
+    console.error("Error counting author posts today:", error);
+    return 0;
+  }
+}
+
+/**
+ * Retrieves the titles or slugs of posts created by an author today.
+ * Useful to avoid duplicate content from the same news source.
+ */
+export async function getAuthorPostsToday(authorId: string): Promise<string[]> {
+  try {
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    const postsRef = adminDb.collection("posts");
+    const q = postsRef
+      .where("authorId", "==", authorId)
+      .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(startOfDay));
+    
+    const snapshot = await q.get();
+    return snapshot.docs.map(doc => doc.data().title || "");
+  } catch (error) {
+    console.error("Error getting author posts today:", error);
+    return [];
+  }
+}
