@@ -14,12 +14,26 @@ export async function isMarketVolatile(
     const marketData = await getAllMarketData();
 
     // Filter for major assets we care about for volatility checks
-    const majorAssets = ["BTC", "ETH", "SOL", "SPY", "QQQ", "NVDA", "TSLA"];
+    // We should match the assets we are actually fetching in market-data-service.ts
+    const majorAssets = [
+      "BTC",
+      "ETH",
+      "SOL",
+      "BNB",
+      "AAPL",
+      "TSLA",
+      "NVDA",
+      "GOOGL",
+      "MSFT",
+      "AMD",
+    ];
 
     // Check if any major asset has moved more than the threshold
     const volatileAsset = marketData.find((item) => {
       // Check if it's a major asset (if symbol matches or contains)
-      const isMajor = majorAssets.some((major) => item.symbol.includes(major));
+      const isMajor = majorAssets.some((major) =>
+        item.symbol.toUpperCase().includes(major.toUpperCase()),
+      );
       if (!isMajor) return false;
 
       return Math.abs(item.changePercent) >= thresholdPercent;

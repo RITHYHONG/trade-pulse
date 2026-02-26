@@ -23,7 +23,13 @@ const navigation = [
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+export default function DashboardLayout({
+  children,
+  modal
+}: {
+  children: ReactNode;
+  modal: ReactNode;
+}) {
   return (
     <div className="min-h-screen bg-background font-sans">
       {/* Mobile Header */}
@@ -119,6 +125,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
           <div className="p-8 max-w-7xl mx-auto space-y-8 animate-fade-in">
             {children}
+            {modal}
           </div>
         </main>
       </div>

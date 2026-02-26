@@ -1,9 +1,14 @@
 import { SignUpForm } from '../components/SignUpForm';
 import type { Metadata } from 'next';
 import { generateMetadata } from '@/lib/seo';
+import { Suspense } from 'react';
 
 export default function SignUpPage() {
-  return <SignUpForm />;
+  return (
+    <Suspense fallback={null}>
+      <SignUpForm />
+    </Suspense>
+  );
 }
 
 export const metadata: Metadata = generateMetadata({

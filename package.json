@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "start": "next start",
     "lint": "eslint",
+    "cron": "node scripts/local-cron.js",
     "deploy:indexes": "firebase deploy --only firestore:indexes",
     "migrate:add-post-views": "ts-node ./scripts/add-post-views.ts"
   },
@@ -46,15 +47,12 @@
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tanstack/react-virtual": "^3.13.18",
-    "add": "^2.0.6",
     "axios": "^1.13.2",
-    "card": "^2.5.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^12.3.0",
     "firebase-admin": "^13.6.0",
     "firebase-tools": "^14.17.0",
-    "global": "^4.4.0",
     "isomorphic-dompurify": "^2.31.0",
     "lucide-react": "^0.554.0",
     "motion": "^12.23.26",
@@ -70,7 +68,6 @@
     "react-hook-form": "^7.65.0",
     "react-quill-new": "^3.6.0",
     "recharts": "^3.4.1",
-    "shadcn": "^3.3.1",
     "sonner": "^2.0.7",
     "stripe": "^20.2.0",
     "tailwind-merge": "^3.3.1",
@@ -82,7 +79,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^24.10.1",
+    "@types/node": "^20.0.0",
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
     "eslint": "^9",
@@ -91,5 +88,8 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "vitest": "^4.0.14"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }

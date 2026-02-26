@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { auth } from '@/lib/firebase';
@@ -225,6 +225,14 @@ function SortableBlock({ block, blockConfig, updateBlock, removeBlock, styles }:
 }
 
 export default function CreatePostPage() {
+  return (
+    <Suspense fallback={null}>
+      <CreatePostPageContent />
+    </Suspense>
+  );
+}
+
+function CreatePostPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const autoSaveRef = useRef<NodeJS.Timeout | null>(null);
