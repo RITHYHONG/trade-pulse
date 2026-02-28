@@ -1,0 +1,11 @@
+{
+  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@trade-pulse/web",
+  "installCommand": "cd ../.. && pnpm install",
+  "outputDirectory": ".next",
+  "crons": [
+    {
+      "path": "/api/cron/generate-blog",
+      "schedule": "0 8 * * *"
+    }
+  ]
+}

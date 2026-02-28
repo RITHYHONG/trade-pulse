@@ -1,9 +1,39 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
   serverExternalPackages: ["@prisma/client"],
+  // Transpile workspace packages so Next.js handles their raw TypeScript source.
+  // recharts v3 is ESM-only; transpiling it lets webpack bundle its d3 deps.
+  transpilePackages: [
+    "@trade-pulse/ui",
+    "@trade-pulse/types",
+    "@trade-pulse/config",
+    "recharts",
+  ],
+  // Turbopack alias: explicitly map @/ to apps/web/src using absolute paths so
+  // turbopack doesn't accidentally anchor resolution at the pnpm workspace root.
+  turbopack: {
+    resolveAlias: {
+      // Absolute paths ensure resolution works regardless of CWD anchor point.
+      "@trade-pulse/ui": path.join(__dirname, "../../packages/ui/src/index.ts"),
+      "@trade-pulse/types": path.join(__dirname, "../../packages/types/src/index.ts"),
+      "@trade-pulse/config": path.join(__dirname, "../../packages/config/src/index.ts"),
+    },
+  },
+  webpack(config) {
+    // In a pnpm monorepo, webpack resolves transitive deps from the pnpm virtual
+    // store. Adding the monorepo root node_modules as a fallback lets it find
+    // hoisted packages (d3-*, etc.) that live outside the pnpm .pnpm directory.
+    const monoRoot = path.resolve(__dirname, "../../node_modules");
+    if (!config.resolve.modules) config.resolve.modules = ["node_modules"];
+    if (!config.resolve.modules.includes(monoRoot)) {
+      config.resolve.modules.push(monoRoot);
+    }
+    return config;
+  },
   images: {
     remotePatterns: [
       {

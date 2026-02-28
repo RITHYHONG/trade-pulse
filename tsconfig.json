@@ -1,11 +1,8 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "target": "ES2017",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -17,29 +14,18 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "declaration": true,
+    "declarationMap": true,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@config/*": [
-        "./config/*"
-      ]
+      "@/*": ["./apps/web/src/*"],
+      "@config/*": ["./apps/web/config/*"],
+      "@trade-pulse/ui": ["./packages/ui/src/index.ts"],
+      "@trade-pulse/ui/*": ["./packages/ui/src/*"],
+      "@trade-pulse/types": ["./packages/types/src/index.ts"],
+      "@trade-pulse/types/*": ["./packages/types/src/*"],
+      "@trade-pulse/config": ["./packages/config/src/index.ts"],
+      "@trade-pulse/config/*": ["./packages/config/src/*"]
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "scripts"
-  ]
+  "exclude": ["node_modules"]
 }
