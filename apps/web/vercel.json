@@ -1,7 +1,7 @@
 {
-  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@trade-pulse/web",
+  "buildCommand": "cd ../.. && pnpm turbo run build --filter=@trade-pulse/web && cp -R apps/web/.next .next",
   "installCommand": "cd ../.. && pnpm install",
-  "outputDirectory": "apps/web/.next",
+  "outputDirectory": ".next",
   "crons": [
     {
       "path": "/api/cron/generate-blog",
