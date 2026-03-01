@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { postId } = body || {};
-
+ 
     if (!postId || typeof postId !== 'string') {
       return NextResponse.json({ error: 'Missing postId' }, { status: 400 });
     }
