@@ -8,6 +8,7 @@ export interface MarketNewsItem {
 	publishedAt: string;
 	sentiment: Sentiment;
 	url: string;
+	image?: string;
 }
 
 

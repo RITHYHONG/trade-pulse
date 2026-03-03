@@ -39,6 +39,9 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "apps/web/src",
+    "apps/web/node_modules",
+    "packages/*/node_modules"
   ]
 }
