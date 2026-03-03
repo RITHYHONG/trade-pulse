@@ -1,0 +1,25 @@
+name: Auto Generate Blog Posts
+
+on:
+  schedule:
+    - cron: '0 8 * * *'   # Daily at 8am UTC
+    - cron: '0 20 * * *'  # Daily at 8pm UTC
+  workflow_dispatch:       # Manual trigger from GitHub Actions tab
+
+jobs:
+  trigger-blog-cron:
+    name: Trigger Blog Generation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger /api/cron/generate-blog
+        run: |
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X GET "https://${{ secrets.APP_DOMAIN }}/api/cron/generate-blog" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}")
+
+          echo "Response status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Cron endpoint returned $HTTP_STATUS — failing CI"
+            exit 1
+          fi

@@ -33,48 +33,103 @@ const MOCK_NEWS: MarketNewsItem[] = [
   },
 ];
 
-const FMP_API_KEY = process.env.NEXT_PUBLIC_FMP_API_KEY;
+async function fetchFinnhubNews(): Promise<MarketNewsItem[]> {
+  const FINNHUB_API_KEY = process.env.NEXT_PUBLIC_FINNHUB_API_KEY;
+
+  if (!FINNHUB_API_KEY) {
+    throw new Error("Finnhub API key not set");
+  }
+
+  const response = await fetch(
+    `https://finnhub.io/api/v1/news?category=general&token=${FINNHUB_API_KEY}`,
+    { next: { revalidate: 0 } },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Finnhub News API failed with status ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error("Finnhub returned empty or invalid news data");
+  }
+
+  return data
+    .slice(0, 10)
+    .map((item: any) => ({
+      id: String(item.id || Math.random()),
+      title: item.headline || "No Title",
+      summary: item.summary || "",
+      source: item.source || "Finnhub",
+      publishedAt: item.datetime
+        ? new Date(item.datetime * 1000).toISOString()
+        : new Date().toISOString(),
+      sentiment: "neutral" as const,
+      url: item.url || "#",
+      image: item.image || undefined,
+    }))
+    .filter((item) => item.title !== "No Title" && item.summary.length > 0);
+}
+
+async function fetchFMPNews(): Promise<MarketNewsItem[]> {
+  const FMP_API_KEY = process.env.NEXT_PUBLIC_FMP_API_KEY;
+
+  if (!FMP_API_KEY || FMP_API_KEY === "your_fmp_api_key") {
+    throw new Error("FMP API key not set");
+  }
+
+  const response = await fetch(
+    `https://financialmodelingprep.com/api/v3/stock_news?limit=10&apikey=${FMP_API_KEY}`,
+    { next: { revalidate: 0 } },
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `FMP News API failed with status ${response.status} — free tier may not include /stock_news`,
+    );
+  }
+
+  const data = await response.json();
+
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error("FMP returned empty or invalid news data");
+  }
+
+  return data.map((item: any) => ({
+    id: item.url || String(Math.random()),
+    title: item.title || "No Title",
+    summary: item.text || "",
+    source: item.site || "Unknown",
+    publishedAt: item.publishedDate || new Date().toISOString(),
+    sentiment:
+      (item.sentiment?.toLowerCase() as "positive" | "negative" | "neutral") ||
+      "neutral",
+    url: item.url || "#",
+    image: item.image,
+  }));
+}
 
 export async function getMarketNews(): Promise<MarketNewsItem[]> {
-  if (!FMP_API_KEY || FMP_API_KEY === "your_fmp_api_key") {
-    console.warn("FMP API key missing, using mock market news.");
-    await new Promise((resolve) => setTimeout(resolve, 250));
-    return MOCK_NEWS;
-  }
-
+  // Try Finnhub first (free tier supports general market news)
   try {
-    const response = await fetch(
-      `https://financialmodelingprep.com/api/v3/stock_news?limit=10&apikey=${FMP_API_KEY}`,
-    );
-
-    if (!response.ok) {
-      console.error(`FMP News API failed with status ${response.status}`);
-      return MOCK_NEWS;
-    }
-
-    const data = await response.json();
-
-    if (!Array.isArray(data)) {
-      console.error("FMP News API returned unexpected data format:", data);
-      return MOCK_NEWS;
-    }
-
-    return data.map((item: any) => ({
-      id: item.url || Math.random().toString(),
-      title: item.title || "No Title",
-      summary: item.text || "",
-      source: item.site || "Unknown",
-      publishedAt: item.publishedDate || new Date().toISOString(),
-      sentiment:
-        (item.sentiment?.toLowerCase() as
-          | "positive"
-          | "negative"
-          | "neutral") || "neutral",
-      url: item.url || "#",
-      image: item.image,
-    }));
-  } catch (error) {
-    console.error("Error fetching real news:", error);
-    return MOCK_NEWS;
+    const news = await fetchFinnhubNews();
+    console.log(`[news-api] Fetched ${news.length} articles from Finnhub`);
+    return news;
+  } catch (err) {
+    console.warn("[news-api] Finnhub failed:", (err as Error).message);
   }
+
+  // Fallback to FMP
+  try {
+    const news = await fetchFMPNews();
+    console.log(`[news-api] Fetched ${news.length} articles from FMP`);
+    return news;
+  } catch (err) {
+    console.warn("[news-api] FMP failed:", (err as Error).message);
+  }
+
+  // Final fallback: mock data
+  console.warn("[news-api] All sources failed — using mock news");
+  return MOCK_NEWS;
 }
