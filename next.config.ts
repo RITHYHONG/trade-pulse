@@ -17,6 +17,52 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'firebasestorage.googleapis.com',
       },
+      // News / financial media image CDNs
+      {
+        protocol: 'https',
+        hostname: 'image.cnbcfm.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.wsj.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 's.yimg.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.reuters.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dims.apnews.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.bloomberg.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.marketwatch.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.seekingalpha.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.benzinga.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.financialmodelingprep.com',
+      },
+      // Allow any HTTPS image source (catch-all for dynamic news feeds)
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
     ],
   },
   async headers() {
