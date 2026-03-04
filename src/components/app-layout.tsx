@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import { HeaderMain } from "@/components/HeaderMain";
 import { Footer } from "../app/(marketing)/components/Footer";
@@ -20,7 +21,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SessionSync />
+      <Suspense fallback={null}>
+        <SessionSync />
+      </Suspense>
       {!isAuthPage && <HeaderMain />}
       <main className="flex-1" id="main-content">
         {children}

@@ -67,9 +67,7 @@ export function generateMetadata({
       card: 'summary_large_image',
       title: fullTitle,
       description,
-      images: [image],
-      // Accessibility: include alt text for Twitter image previews
-      imageAlt: title || siteMetadata.title,
+      images: [{ url: image, alt: title || siteMetadata.title }],
       creator: siteMetadata.twitterHandle,
       site: siteMetadata.twitterHandle,
     },

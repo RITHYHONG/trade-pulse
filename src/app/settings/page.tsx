@@ -127,10 +127,10 @@ export default function SettingsPage() {
 
   // Sync theme when preferences are loaded
   React.useEffect(() => {
-    if (preferences.theme) {
+    if (preferences?.theme) {
       setTheme(preferences.theme);
     }
-  }, [preferences.theme, setTheme]);
+  }, [preferences?.theme, setTheme]);
 
   // Load user profile from Firestore
   React.useEffect(() => {

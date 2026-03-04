@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { LoginForm } from '../components/LoginForm';
 import { SessionSync } from '../../../components/session-sync';
 import type { Metadata } from 'next';
@@ -6,7 +7,9 @@ import { generateMetadata } from '@/lib/seo';
 export default function LoginPage() {
   return (
     <>
-      <SessionSync />
+      <Suspense fallback={null}>
+        <SessionSync />
+      </Suspense>
       <LoginForm />
     </>
   );

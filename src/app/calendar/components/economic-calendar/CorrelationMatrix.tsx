@@ -6,7 +6,7 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
-interface Correlation {
+export interface Correlation {
   event1: string;
   event2: string;
   strength: number; // -1 to 1
