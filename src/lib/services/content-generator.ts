@@ -1,4 +1,4 @@
-import { generateContent } from "@/lib/gemini";
+import { generateDeepSeekContent } from "@/lib/deepseek";
 import type { MarketNewsItem } from "@/types/market";
 
 export interface GeneratedBlogPost {
@@ -34,28 +34,36 @@ function safeParseJSON(text: string): Record<string, unknown> | null {
 }
 
 /**
- * Uses Gemini to generate a structured blog post from a market news article.
+ * Uses DeepSeek to generate a structured blog post from a market news article.
  */
 export async function generateBlogPost(
   news: MarketNewsItem & { image?: string },
 ): Promise<GeneratedBlogPost> {
-  const prompt = `You are a professional financial analyst writing for TradePulse, a market intelligence platform.
+  const prompt = `Based on this market news article, write a comprehensive and detailed blog post.
+Objective: Write a deep-dive financial analysis that is 800-1200 words long. Use professional financial tone.
 
-Based on this market news article, write a detailed blog post:
+Source Data:
+- Title: ${news.title}
+- Summary: ${news.summary}
+- Source: ${news.source}
+- Published at: ${news.publishedAt}
 
-Title: ${news.title}
-Summary: ${news.summary}
-Source: ${news.source}
-Published: ${news.publishedAt}
+Instructions:
+1. Write a full-length article with multiple sections.
+2. Structure the HTML content with <h2> for headers, <p> for paragraphs, and <ul>/<li> for lists.
+3. Use <strong> for emphasis on key terms.
+4. Include an "Executive Summary", "Market Impact", "Technical Context", and "Future Outlook".
+5. Mention a primary asset ticker if applicable (e.g., TSLA).
+6. Do NOT use markdown code fences in your response.
 
-Return ONLY a valid JSON object (no markdown fences) with these exact fields:
+Return ONLY a valid JSON object with these exact fields:
 {
-  "title": "engaging SEO title for the post (can differ from news title)",
-  "content": "full HTML blog post content (800-1200 words), using <h2>, <p>, <ul>, <strong> tags",
+  "title": "a high-impact SEO title",
+  "content": "the complete HTML content (800-1200 words)",
   "metaDescription": "150-160 char SEO meta description",
-  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
-  "primaryAsset": "main ticker or asset mentioned (e.g. AAPL, BTC, SPY, or empty string)",
-  "relatedAssets": ["ticker1", "ticker2"],
+  "tags": ["ticker1", "sector", "market-trend", "analysis", "news"],
+  "primaryAsset": "ticker symbol (e.g. AAPL)",
+  "relatedAssets": ["ticker2", "ticker3"],
   "confidenceLevel": 75,
   "timeHorizon": "short-term|medium-term|long-term",
   "sentiment": "positive|neutral|negative"
@@ -64,10 +72,10 @@ Return ONLY a valid JSON object (no markdown fences) with these exact fields:
   let parsed: Record<string, unknown> | null = null;
 
   try {
-    const raw = await generateContent(prompt);
+    const raw = await generateDeepSeekContent(prompt);
     parsed = safeParseJSON(raw);
   } catch (err) {
-    console.warn("[content-generator] Gemini generation failed:", (err as Error).message);
+    console.warn("[content-generator] DeepSeek generation failed:", (err as Error).message);
   }
 
   // Fallback: build a minimal post from the news item itself

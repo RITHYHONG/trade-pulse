@@ -11,7 +11,7 @@ import {
 export const dynamic = "force-dynamic";
 
 const VOLATILITY_THRESHOLD = 1.5;
-const MAX_POSTS_PER_DAY = 2;
+const MAX_POSTS_PER_DAY = 20;
 const SYSTEM_USER_ID = "system-auto-blogger";
 
 export async function GET(request: Request) {
