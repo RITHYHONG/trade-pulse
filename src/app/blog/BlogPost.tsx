@@ -6,7 +6,6 @@ import { BlogPost as BlogPostType } from '../../types/blog';
 import { blogPosts } from '../../data/blogData';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
-import DOMPurify from 'isomorphic-dompurify';
 import { useAuthorProfile } from '@/hooks/use-author-profile';
 import { useMemo } from 'react';
 import dynamic from 'next/dynamic';
@@ -42,7 +41,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
     bio: post.author.bio,
     role: post.author.role
   }), [post.author.name, post.author.avatar, post.author.avatarUrl, post.author.bio, post.author.role]);
-  
+
   const { authorProfile } = useAuthorProfile({
     fallbackAuthor,
     authorId: post.authorId
@@ -77,7 +76,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
       <div className="relative">
         {/* Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent pointer-events-none" />
-        
+
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-12 mt-10">
           <div className="max-w-4xl mx-auto">
             {/* Breadcrumb - Simplified */}
@@ -94,8 +93,8 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
             <header className="space-y-6">
               {/* Category Badge - Standalone */}
               <div>
-                <Badge 
-                  variant="secondary" 
+                <Badge
+                  variant="secondary"
                   className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white border-0 px-4 py-1.5 text-sm font-medium shadow-lg shadow-cyan-500/20"
                 >
                   {post.category}
@@ -111,24 +110,24 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   </div>
                 </div> */}
               </div>
-              
+
               {/* Title */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight tracking-tight">
                 {post.title}
               </h1>
-              
+
               {/* Excerpt */}
               <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
                 {post.excerpt}
               </p>
-              
+
               {/* Author and Meta Info - Cleaner Layout */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-6 pb-8 border-b border-border">
                 <div className="flex items-center gap-4">
                   <div className="relative flex-shrink-0">
                     <div className="absolute -inset-0.5 from-cyan-500 to-blue-500 rounded-full opacity-75 blur"></div>
                     <ImageWithFallback
-                        src={authorProfile.avatar ?? ''}
+                      src={authorProfile.avatar ?? ''}
                       alt={authorProfile.name}
                       className="relative w-12 h-12 rounded-full ring-2 ring-background"
                     />
@@ -138,7 +137,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                     {/* <div className="text-sm text-muted-foreground">{authorProfile.bio || 'Market Analyst'}</div> */}
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-6 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-muted-foreground" />
@@ -175,7 +174,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
       {/* Main Content Area */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="max-w-4xl mx-auto">
-          
+
           {/* First Ad Placement */}
           <div className="mb-12 flex justify-center">
             <AdPlaceholder type="rectangle" />
@@ -186,7 +185,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
             {isLikelyHtml(post.content) ? (
               <div
                 className="prose prose-invert max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-cyan-400 hover:prose-a:text-cyan-300"
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
+                dangerouslySetInnerHTML={{ __html: post.content }}
               />
             ) : (
               <div className="text-muted-foreground leading-relaxed space-y-8">
@@ -266,9 +265,9 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                 <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-4">Topics</h4>
                 <div className="flex flex-wrap gap-3">
                   {post.tags.map((tag) => (
-                    <Badge 
-                      key={tag} 
-                      variant="outline" 
+                    <Badge
+                      key={tag}
+                      variant="outline"
                       className="text-muted-foreground bg-card/5 border-border hover:border-cyan-500/50 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-300 px-4 py-1.5"
                     >
                       #{tag}
@@ -283,25 +282,25 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5"></div>
               <div className="relative flex flex-col sm:flex-row items-center justify-between gap-4 p-6 border border-border backdrop-blur-sm">
                 <div className="flex items-center gap-3">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="border-border bg-card/5 text-muted-foreground hover:text-foreground hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
                   >
                     <ThumbsUp className="w-4 h-4 mr-2" />
                     <span className="hidden sm:inline">Found this helpful</span>
                     <span className="sm:hidden">Helpful</span>
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="border-border bg-card/5 text-muted-foreground hover:text-foreground hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
                   >
                     <Share2 className="w-4 h-4 mr-2" />
                     Share
                   </Button>
                 </div>
-                
-                <Button 
-                  variant="outline" 
+
+                <Button
+                  variant="outline"
                   className="border-border bg-card/5 text-muted-foreground hover:text-foreground hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
                 >
                   <Bookmark className="w-4 h-4 mr-2" />
@@ -339,9 +338,9 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                       >
                         Follow
                       </Button> */}
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         className="border-border bg-card/5 text-muted-foreground hover:text-foreground hover:bg-card/10 transition-all duration-300"
                       >
                         More Articles
@@ -372,9 +371,9 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {defaultRelatedPosts.map((relatedPost) => (
-                    <BlogCard 
-                      key={relatedPost.slug} 
-                      post={relatedPost} 
+                    <BlogCard
+                      key={relatedPost.slug}
+                      post={relatedPost}
                     />
                   ))}
                 </div>
