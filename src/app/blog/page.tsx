@@ -47,6 +47,11 @@ function mapFirestoreToUI(fsp: FirestoreBlogPost): UIBlogPost {
     category: fsp.category,
     isFeatured: false,
     views: typeof fsp.views === 'number' ? fsp.views : 0,
+    sentiment: fsp.sentiment,
+    confidenceLevel: fsp.confidenceLevel,
+    primaryAsset: fsp.primaryAsset,
+    relatedAssets: fsp.relatedAssets,
+    timeHorizon: fsp.timeHorizon,
   };
 }
 

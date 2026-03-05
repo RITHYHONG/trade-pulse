@@ -11,6 +11,7 @@ export interface BlogPost {
 	id?: string;
 	title: string;
 	excerpt: string;
+	summary?: string;
 	content: string;
 	publishedAt: string;
 	publishDate?: string;
@@ -25,6 +26,11 @@ export interface BlogPost {
 	category?: string;
 	isFeatured?: boolean;
 	views?: number;
+	sentiment?: string;
+	confidenceLevel?: number;
+	primaryAsset?: string;
+	relatedAssets?: string[];
+	timeHorizon?: string;
 }
 
 export interface AdItem {
