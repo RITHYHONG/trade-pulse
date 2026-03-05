@@ -1,5 +1,21 @@
 import type { MarketNewsItem } from "@/types";
 
+// Rotating pool of finance-themed fallback images (used when API returns no image)
+const FALLBACK_IMAGES = [
+  'https://images.unsplash.com/photo-1611974714851-48206138d73b?q=80&w=800&auto=format&fit=crop', // stock charts
+  'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=800&auto=format&fit=crop', // trading screens
+  'https://images.unsplash.com/photo-1569025743873-ea3a9ade89f9?q=80&w=800&auto=format&fit=crop', // financial graphs
+  'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop', // market overview
+  'https://images.unsplash.com/photo-1642790551116-18e150f248e3?q=80&w=800&auto=format&fit=crop', // crypto/finance
+];
+
+let fallbackIndex = 0;
+function getNextFallbackImage(): string {
+  const img = FALLBACK_IMAGES[fallbackIndex % FALLBACK_IMAGES.length];
+  fallbackIndex++;
+  return img;
+}
+
 const MOCK_NEWS: MarketNewsItem[] = [
   {
     id: "news-1",
@@ -67,7 +83,7 @@ async function fetchFinnhubNews(): Promise<MarketNewsItem[]> {
         : new Date().toISOString(),
       sentiment: "neutral" as const,
       url: item.url || "#",
-      image: item.image || undefined,
+      image: item.image || getNextFallbackImage(),
     }))
     .filter((item) => item.title !== "No Title" && item.summary.length > 0);
 }
@@ -106,7 +122,7 @@ async function fetchFMPNews(): Promise<MarketNewsItem[]> {
       (item.sentiment?.toLowerCase() as "positive" | "negative" | "neutral") ||
       "neutral",
     url: item.url || "#",
-    image: item.image,
+    image: item.image || getNextFallbackImage(),
   }));
 }
 

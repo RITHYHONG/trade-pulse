@@ -70,7 +70,7 @@ const nextConfig: NextConfig = {
     if (process.env.NODE_ENV === 'development') {
       return [];
     }
-    
+
     return [
       {
         source: '/(.*)',
@@ -84,7 +84,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https: http:",
-              "connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://firebase.googleapis.com https://firestore.googleapis.com https://*.firebaseio.com https://accounts.google.com",
+              "connect-src 'self' https: https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://firebase.googleapis.com https://firestore.googleapis.com https://*.firebaseio.com https://accounts.google.com https://finnhub.io https://financialmodelingprep.com",
               "frame-src 'self' https://accounts.google.com https://content.googleapis.com",
               "object-src 'none'",
               "base-uri 'self'",
