@@ -390,6 +390,29 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                       </h3>
                     );
                   }
+                  if (paragraph.startsWith('![')) {
+                    const match = paragraph.match(/!\[(.*?)\]\((.*?)\)/);
+                    if (match) {
+                      return (
+                        <div key={index} className="relative my-12 group">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-500"></div>
+                          <div className="relative aspect-[16/9] rounded-xl overflow-hidden border border-border bg-muted/30">
+                            <ImageWithFallback
+                              src={match[2]}
+                              alt={match[1]}
+                              fill
+                              className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
+                            {match[1] && (
+                              <div className="absolute bottom-4 left-4 right-4 text-xs text-white/60 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full w-fit max-w-[90%] truncate">
+                                {match[1]}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    }
+                  }
                   if (paragraph.includes('- ')) {
                     const lines = paragraph.split('\n');
                     const items = lines.filter(item => item.trim().startsWith('- '));

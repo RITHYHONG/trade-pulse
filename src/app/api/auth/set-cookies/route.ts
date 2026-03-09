@@ -18,10 +18,27 @@ export async function POST(request: NextRequest) {
       const [, payloadB64] = idToken.split('.');
       const payload = JSON.parse(Buffer.from(payloadB64, 'base64url').toString());
       const uid: string = payload.user_id || payload.sub || idToken;
+
+      // Look up role from Firestore REST API — rules allow authenticated users to read own profile
+      let userRole = 'user';
+      try {
+        const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'trade-pulse-b9fc4';
+        const fsRes = await fetch(
+          `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${uid}`,
+          { headers: { Authorization: `Bearer ${idToken}` } }
+        );
+        if (fsRes.ok) {
+          const fsData = await fsRes.json();
+          userRole = fsData?.fields?.role?.stringValue || 'user';
+        }
+      } catch {
+        // ignore — fall back to 'user'
+      }
+
       const response = NextResponse.json({ success: true, message: "Cookies set (admin SDK unavailable)" });
       const opts = { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' as const, maxAge: 60 * 60 * 24 * 5, path: '/' };
       response.cookies.set({ name: 'auth-token', value: uid, ...opts });
-      response.cookies.set({ name: 'user-role', value: 'user', ...opts, httpOnly: false });
+      response.cookies.set({ name: 'user-role', value: userRole, ...opts, httpOnly: false });
       response.cookies.set({ name: 'user-email', value: email || '', ...opts, httpOnly: false });
       response.cookies.set({ name: 'user-name', value: displayName || '', ...opts, httpOnly: false });
       return response;

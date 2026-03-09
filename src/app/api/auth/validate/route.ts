@@ -40,8 +40,24 @@ export async function POST(request: NextRequest) {
           maxAge: 60 * 60 * 24 * 5,
           path: "/",
         };
+        // Look up role from Firestore REST API — rules allow authenticated users to read own profile
+        let userRole = 'user';
+        try {
+          const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'trade-pulse-b9fc4';
+          const fsRes = await fetch(
+            `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${uid}`,
+            { headers: { Authorization: `Bearer ${idToken}` } }
+          );
+          if (fsRes.ok) {
+            const fsData = await fsRes.json();
+            userRole = fsData?.fields?.role?.stringValue || 'user';
+          }
+        } catch {
+          // ignore — fall back to 'user'
+        }
+
         response.cookies.set({ name: "auth-token", value: uid, ...cookieOpts });
-        response.cookies.set({ name: "user-role", value: "user", ...cookieOpts, httpOnly: false });
+        response.cookies.set({ name: "user-role", value: userRole, ...cookieOpts, httpOnly: false });
         response.cookies.set({ name: "user-email", value: email || "", ...cookieOpts, httpOnly: false });
         response.cookies.set({ name: "user-name", value: displayName || "", ...cookieOpts, httpOnly: false });
         return response;

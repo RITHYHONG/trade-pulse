@@ -14,22 +14,22 @@ export interface AdConfig {
 
 export const ads: AdConfig = {
   leaderboard: {
-    html: `<a href="https://www.binance.com/en/register?ref=876367856" target="_blank" rel="noopener noreferrer"><img src="https://banners.cex.io/728x90.gif" alt="Trade Crypto" style="border:0; display:block;" width="728" height="90" /></a>`,
+    html: `<a href="https://www.binance.com/en/register?ref=876367856" target="_blank" rel="noopener noreferrer"><img src="https://static.binance.com/branding/728x90.png" onerror="this.src='https://placehold.co/728x90/0f172a/0ea5e9?text=Trade+with+Binance'" alt="Trade Crypto" style="border:0; display:block; max-width:100%; height:auto;" width="728" height="90" /></a>`,
     width: 728,
     height: 90,
   },
   skyscraper: {
-    html: `<a href="https://www.binance.com/en/register?ref=876367856" target="_blank" rel="noopener noreferrer"><img src="https://banners.cex.io/160x600.gif" alt="Trade Crypto" style="border:0; display:block;" width="160" height="600" /></a>`,
+    html: `<a href="https://www.binance.com/en/register?ref=876367856" target="_blank" rel="noopener noreferrer"><img src="https://static.binance.com/branding/160x600.png" onerror="this.src='https://placehold.co/160x600/0f172a/0ea5e9?text=Trade+with+Binance'" alt="Trade Crypto" style="border:0; display:block; max-width:100%; height:auto;" width="160" height="600" /></a>`,
     width: 160,
     height: 600,
   },
   rectangle: {
-    html: `<a href="https://www.binance.com/en/register?ref=876367856" target="_blank" rel="noopener noreferrer"><img src="https://banners.cex.io/300x250.gif" alt="Trade Crypto" style="border:0; display:block;" width="300" height="250" /></a>`,
+    html: `<a href="https://www.binance.com/en/register?ref=876367856" target="_blank" rel="noopener noreferrer"><img src="https://static.binance.com/branding/300x250.png" onerror="this.src='https://placehold.co/300x250/0f172a/0ea5e9?text=Trade+with+Binance'" alt="Trade Crypto" style="border:0; display:block; max-width:100%; height:auto;" width="300" height="250" /></a>`,
     width: 300,
     height: 250,
   },
   banner: {
-    html: `<a href="https://www.binance.com/en/register?ref=876367856" target="_blank" rel="noopener noreferrer"><img src="https://banners.cex.io/468x60.gif" alt="Trade Crypto" style="border:0; display:block;" width="468" height="60" /></a>`,
+    html: `<a href="https://www.binance.com/en/register?ref=876367856" target="_blank" rel="noopener noreferrer"><img src="https://static.binance.com/branding/468x60.png" onerror="this.src='https://placehold.co/468x60/0f172a/0ea5e9?text=Trade+with+Binance'" alt="Trade Crypto" style="border:0; display:block; max-width:100%; height:auto;" width="468" height="60" /></a>`,
     width: 468,
     height: 60,
   },
