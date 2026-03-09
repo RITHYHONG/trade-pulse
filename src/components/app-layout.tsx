@@ -17,7 +17,8 @@ export function AppLayout({ children }: AppLayoutProps) {
   const isAuthPage = pathname?.startsWith('/login') ||
     pathname?.startsWith('/signup') ||
     pathname?.startsWith('/forgot-password') ||
-    pathname?.startsWith('/reset-password');
+    pathname?.startsWith('/reset-password') ||
+    pathname?.startsWith('/admin');
 
   return (
     <div className="min-h-screen flex flex-col">

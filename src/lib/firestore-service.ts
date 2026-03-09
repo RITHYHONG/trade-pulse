@@ -77,9 +77,6 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 
     // Preserve permission-related error semantics so callers can detect auth issues.
     if (appError.code === "FIRESTORE_PERMISSION_DENIED") {
-      console.error(
-        "Firebase permission error - user may not be authenticated properly",
-      );
       throw new Error("Authentication required to access profile");
     }
 
@@ -131,7 +128,6 @@ export async function updateUserProfile(
   },
 ): Promise<void> {
   try {
-    // Only include defined fields in the update
     const updateData: Partial<UserProfile> = {};
 
     if (profileData.displayName !== undefined) {

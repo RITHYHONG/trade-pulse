@@ -11,9 +11,25 @@ if (!admin.apps?.length) {
   const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
   const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
   let privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY as string | undefined;
+  const privateKeyB64 = process.env.FIREBASE_ADMIN_PRIVATE_KEY_B64;
+
+  // Handle Base64 encoded key (most reliable for env vars)
+  if (privateKeyB64) {
+    try {
+      privateKey = Buffer.from(privateKeyB64, 'base64').toString('utf8');
+    } catch (err) {
+      console.error('[firebase-admin] Failed to decode FIREBASE_ADMIN_PRIVATE_KEY_B64');
+    }
+  }
+
   if (privateKey) {
-    // Private key may have literal `\n` sequences in env; convert to real newlines
+    // Robust normalization for .env formatting (handles quotes and literal \n)
     privateKey = privateKey.replace(/\\n/g, '\n');
+    if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+      privateKey = privateKey.substring(1, privateKey.length - 1);
+    }
+    // Final trim to remove any accidental whitespace
+    privateKey = privateKey.trim();
   }
 
   try {

@@ -229,22 +229,10 @@ export function logError(error: AppError | unknown, context?: Record<string, unk
     severity: appError.severity,
     message: appError.userMessage,
     context,
-    originalError: appError.originalError,
+    originalError: appError.originalError instanceof Error ? appError.originalError.message : String(appError.originalError),
     meta: appError.meta,
   };
 
-  // Log to console with appropriate level
-  switch (appError.severity) {
-    case 'error':
-      console.error('[TradePulse Error]', logData);
-      break;
-    case 'warn':
-      console.warn('[TradePulse Warning]', logData);
-      break;
-    case 'info':
-      console.info('[TradePulse Info]', logData);
-      break;
-  }
 
   // TODO: In production, send to error monitoring service
   // Example: Sentry.captureException(appError.originalError, { extra: logData });

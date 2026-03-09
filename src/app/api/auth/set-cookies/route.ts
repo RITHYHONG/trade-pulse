@@ -35,8 +35,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    // Default role is 'user' - you can add logic here to fetch actual role from database
-    const userRole = "user"; // TODO: Fetch from Firestore user profile
+    // Fetch the actual role from Firestore user profile
+    let userRole = "user";
+    try {
+      const userDoc = await adminApp.firestore().collection("users").doc(uid).get();
+      if (userDoc.exists) {
+        userRole = userDoc.data()?.role || "user";
+      }
+    } catch (dbErr) {
+      console.error("[set-cookies] Error fetching user role from firestore:", dbErr);
+    }
 
     // Create a session cookie
     const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days

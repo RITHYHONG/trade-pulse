@@ -94,7 +94,16 @@ export async function POST(request: NextRequest) {
 
     // If cookies are missing or don't match, refresh them
     if (!authToken || authToken !== uid) {
-      const userRole = "user"; // TODO: Fetch from Firestore user profile if needed
+      // Fetch user role from Firestore
+      let userRole = "user";
+      try {
+        const userDoc = await adminApp.firestore().collection("users").doc(uid).get();
+        if (userDoc.exists) {
+          userRole = userDoc.data()?.role || "user";
+        }
+      } catch (dbErr) {
+        console.error("[validate] Error fetching user role from firestore:", dbErr);
+      }
 
       // Create a new session cookie
       const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
