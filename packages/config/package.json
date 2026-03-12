@@ -1,0 +1,12 @@
+{
+  "name": "@trade-pulse/config",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./eslint": "./eslint.js",
+    "./typescript": "./tsconfig.base.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

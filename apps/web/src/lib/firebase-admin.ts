@@ -3,33 +3,39 @@ import admin from 'firebase-admin';
 let _adminReady = false;
 
 // Initialize admin SDK once (server-side only)
-if (!admin.apps?.length) {
+if (admin.apps?.length) {
+  // Already initialized — e.g., Next.js HMR caused module re-evaluation.
+  // The firebase-admin singleton persists across module reloads so we can
+  // safely mark it as ready without re-calling initializeApp.
+  _adminReady = true;
+} else {
   // Option 1: single JSON blob (easiest for Vercel — paste the downloaded service account JSON)
   const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
 
   // Option 2: individual env vars
   const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
   const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
-  let privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY as string | undefined;
+  const rawPrivateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY as string | undefined;
   const privateKeyB64 = process.env.FIREBASE_ADMIN_PRIVATE_KEY_B64;
 
-  // Handle Base64 encoded key (most reliable for env vars)
-  if (privateKeyB64) {
-    try {
-      privateKey = Buffer.from(privateKeyB64, 'base64').toString('utf8');
-    } catch (err) {
-      console.error('[firebase-admin] Failed to decode FIREBASE_ADMIN_PRIVATE_KEY_B64');
-    }
+  // Normalize a raw PEM key from env-file format (handles literal \n and surrounding quotes)
+  function normalizePem(key: string): string {
+    let k = key.replace(/\\n/g, '\n');
+    if (k.startsWith('"') && k.endsWith('"')) k = k.slice(1, -1);
+    return k.trim();
   }
 
-  if (privateKey) {
-    // Robust normalization for .env formatting (handles quotes and literal \n)
-    privateKey = privateKey.replace(/\\n/g, '\n');
-    if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
-      privateKey = privateKey.substring(1, privateKey.length - 1);
+  // Prefer the raw key; only decode B64 as a fallback when no raw key is provided.
+  // This avoids a corrupt B64 value silently overriding a working raw key.
+  let privateKey: string | undefined;
+  if (rawPrivateKey) {
+    privateKey = normalizePem(rawPrivateKey);
+  } else if (privateKeyB64) {
+    try {
+      privateKey = Buffer.from(privateKeyB64, 'base64').toString('utf8').trim();
+    } catch (err) {
+      console.error('[firebase-admin] Failed to decode FIREBASE_ADMIN_PRIVATE_KEY_B64:', err);
     }
-    // Final trim to remove any accidental whitespace
-    privateKey = privateKey.trim();
   }
 
   try {
@@ -58,7 +64,8 @@ if (!admin.apps?.length) {
       );
     }
   } catch (err) {
-    console.error('[firebase-admin] Failed to initialize Firebase Admin SDK:', err);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[firebase-admin] Failed to initialize Firebase Admin SDK:', msg);
   }
 }
 

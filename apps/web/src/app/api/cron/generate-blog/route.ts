@@ -125,6 +125,7 @@ export async function GET(request: Request) {
 
     // Save to Firestore
     const postId = await createBlogPostAdmin(
+      SYSTEM_USER_ID,
       {
         ...blogContent,
         blocks: [],
@@ -137,9 +138,6 @@ export async function GET(request: Request) {
         sourceNewsTitle: selectedNews.title,
         sourceNewsUrl: selectedNews.url,
       },
-      SYSTEM_USER_ID,
-      "system@tradepulse.app",
-      "TradePulse Team",
     );
 
     return NextResponse.json({
