@@ -37,6 +37,7 @@ export async function GET() {
       const data = doc.data();
       return {
         id: doc.id,
+        slug: data.slug || '',
         title: data.title,
         category: data.category,
         authorName: data.authorName,

@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { 
   Users, 
   FileText, 
+  Image as ImageIcon,
   Activity, 
   Settings, 
   Shield, 
@@ -48,7 +49,16 @@ interface AdminStats {
   totalUsers: number;
   totalPosts: number;
   recentUsers: any[];
-  recentPosts: any[];
+  recentPosts: Array<{
+    id: string;
+    slug?: string;
+    title: string;
+    category: string;
+    authorName: string;
+    createdAt: string;
+    views: number;
+    isDraft: boolean;
+  }>;
   systemStatus: string;
   lastUpdate: string;
 }
@@ -108,6 +118,29 @@ function AdminDashboardContent() {
       toast.error("Generation failed. Check system logs.", { id });
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    const confirmed = window.confirm("Delete this post? This action cannot be undone.");
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch("/api/admin/delete-post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: postId }),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Failed to delete post");
+      }
+
+      toast.success("Post deleted successfully");
+      fetchDetailedStats();
+    } catch (error: any) {
+      toast.error(error?.message || "Delete failed");
     }
   };
 
@@ -288,14 +321,32 @@ function AdminDashboardContent() {
                             <DropdownMenuContent align="end" className="bg-slate-900 border-slate-800 text-slate-200">
                               <DropdownMenuLabel>Article Actions</DropdownMenuLabel>
                               <DropdownMenuSeparator className="bg-slate-800" />
-                              <DropdownMenuItem className="focus:bg-slate-800 cursor-pointer">
+                              <DropdownMenuItem
+                                onClick={() => post.slug && window.open(`/blog/${post.slug}`, '_blank')}
+                                className="focus:bg-slate-800 cursor-pointer"
+                              >
                                 <Eye className="mr-2 h-4 w-4" /> View Live
                               </DropdownMenuItem>
-                              <DropdownMenuItem className="focus:bg-slate-800 cursor-pointer">
+
+                              <DropdownMenuItem
+                                onClick={() => router.push(`/create-post?id=${post.id}`)}
+                                className="focus:bg-slate-800 cursor-pointer"
+                              >
                                 <FileText className="mr-2 h-4 w-4" /> Edit Content
                               </DropdownMenuItem>
+
+                              <DropdownMenuItem
+                                onClick={() => router.push(`/create-post?id=${post.id}&focus=image`)}
+                                className="focus:bg-slate-800 cursor-pointer"
+                              >
+                                <ImageIcon className="mr-2 h-4 w-4" /> Update Image
+                              </DropdownMenuItem>
+
                               <DropdownMenuSeparator className="bg-slate-800" />
-                              <DropdownMenuItem className="text-red-400 focus:bg-red-500/10 focus:text-red-400 cursor-pointer">
+                              <DropdownMenuItem
+                                onClick={() => handleDeletePost(post.id)}
+                                className="text-red-400 focus:bg-red-500/10 focus:text-red-400 cursor-pointer"
+                              >
                                 <Trash2 className="mr-2 h-4 w-4" /> Delete Post
                               </DropdownMenuItem>
                             </DropdownMenuContent>

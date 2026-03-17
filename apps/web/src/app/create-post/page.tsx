@@ -227,6 +227,7 @@ function SortableBlock({ block, blockConfig, updateBlock, removeBlock, styles }:
 export default function CreatePostPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const focusParam = searchParams.get('focus');
   const autoSaveRef = useRef<NodeJS.Timeout | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [showToolsPanel, setShowToolsPanel] = useState(true);
@@ -261,6 +262,8 @@ export default function CreatePostPage() {
   const [qualityScore] = useState(58);
   const [completionPercentage, setCompletionPercentage] = useState(15);
   const [characterCount, setCharacterCount] = useState(0);
+  const [highlightFeaturedImage, setHighlightFeaturedImage] = useState(false);
+  const [didScrollToFocus, setDidScrollToFocus] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [tagInput, setTagInput] = useState('');
@@ -468,6 +471,16 @@ export default function CreatePostPage() {
     setCompletionPercentage(Math.round((completed / fields.length) * 100));
   }, [post]);
 
+  // Scroll to featured image section when focus=image is in the URL
+  useEffect(() => {
+    if (focusParam === 'image' && featuredImageSectionRef.current && !didScrollToFocus) {
+      featuredImageSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setHighlightFeaturedImage(true);
+      setDidScrollToFocus(true);
+      window.setTimeout(() => setHighlightFeaturedImage(false), 2500);
+    }
+  }, [focusParam, didScrollToFocus]);
+
   const addBlock = (type: ContentBlock['type']) => {
     const newBlock: ContentBlock = {
       id: Date.now().toString(),
@@ -544,7 +557,7 @@ export default function CreatePostPage() {
 
   // Featured image file input + drag/drop handlers (client-side preview)
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+  const featuredImageSectionRef = useRef<HTMLDivElement | null>(null);
   const handleFileSelect = (file: File | null) => {
     if (!file) return;
     const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
@@ -1315,7 +1328,10 @@ export default function CreatePostPage() {
               </div>
 
               {/* Featured Image */}
-              <div className="bg-[#1A1D28] rounded-xl border border-gray-800/50 p-6">
+              <div
+                ref={featuredImageSectionRef}
+                className={`bg-[#1A1D28] rounded-xl border border-gray-800/50 p-6 transition-shadow ${highlightFeaturedImage ? 'ring-2 ring-primary/70 shadow-primary/40' : ''}`}
+              >
                 <div className="flex items-center gap-3 mb-4">
                   <ImageIcon size={18} className="text-[#00F5FF]" />
                   <h4 className="font-semibold text-white">Featured Image</h4>
