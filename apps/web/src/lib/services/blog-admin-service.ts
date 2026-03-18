@@ -115,10 +115,25 @@ export async function createBlogPostAdmin(
     .replace(/[^\w ]+/g, "")
     .replace(/ +/g, "-");
 
+  // Try to pull a matching user profile from Firestore so the system author can be customized
+  const userDoc = await adminDb.collection("users").doc(authorId).get();
+  const userData = userDoc.exists ? userDoc.data() : null;
+
+  const systemName =
+    (userData as any)?.displayName ||
+    (userData as any)?.name ||
+    "System Auto-Blogger";
+  const systemEmail = (userData as any)?.email || "";
+  const systemAvatar = (userData as any)?.photoURL || "/images/avatars/bot.png";
+  const systemRole = (userData as any)?.role || "admin";
+
   const postData = {
     ...input,
     id: postDocRef.id,
     authorId,
+    authorEmail: systemEmail,
+    authorName: systemName,
+    authorAvatar: systemAvatar,
     slug,
     publishedAt: new Date().toISOString(),
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -128,9 +143,9 @@ export async function createBlogPostAdmin(
     commentsCount: 0,
     author: {
       id: authorId,
-      name: "System Auto-Blogger",
-      avatar: "/images/avatars/bot.png",
-      role: "admin",
+      name: systemName,
+      avatar: systemAvatar,
+      role: systemRole,
     },
   };
 

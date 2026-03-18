@@ -68,6 +68,18 @@ function AdminDashboardContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingUser, setEditingUser] = useState<
+    | {
+        id: string;
+        name: string;
+        email: string;
+        role: string;
+        photoURL?: string;
+      }
+    | null
+  >(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [isUpdatingUser, setIsUpdatingUser] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const activeTab = searchParams.get("tab") || "overview";
@@ -97,6 +109,78 @@ function AdminDashboardContent() {
 
   const handleTabChange = (val: string) => {
     router.push(`/admin?tab=${val}`);
+  };
+
+  const startEditUser = (user: any) => {
+    setEditingUser({
+      id: user.id,
+      name: user.name || user.displayName || "",
+      email: user.email || "",
+      role: user.role || "user",
+      photoURL: user.photoURL || user.avatar || "",
+    });
+  };
+
+  const closeEditUser = () => setEditingUser(null);
+
+  const updateEditingUserField = (field: "name" | "email" | "role" | "photoURL", value: string) => {
+    setEditingUser((prev) => (prev ? { ...prev, [field]: value } : prev));
+  };
+
+  const uploadAvatarFile = async (file: File): Promise<string | null> => {
+    try {
+      setAvatarUploading(true);
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("userId", editingUser?.id || "");
+
+      const response = await fetch("/api/admin/upload-avatar", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Upload failed");
+      }
+
+      return result.url as string;
+    } catch (error: any) {
+      console.error("Avatar upload failed:", error);
+      toast.error(error?.message || "Failed to upload avatar");
+      return null;
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  const saveUserProfile = async () => {
+    if (!editingUser) return;
+    setIsUpdatingUser(true);
+
+    try {
+      const response = await fetch("/api/admin/update-user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editingUser),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Failed to update user profile");
+      }
+
+      toast.success("User profile updated");
+      setEditingUser(null);
+      fetchDetailedStats();
+    } catch (error: any) {
+      toast.error(error?.message || "Update failed");
+    } finally {
+      setIsUpdatingUser(false);
+    }
   };
 
   const runCronJob = async (force = false) => {
@@ -464,7 +548,12 @@ function AdminDashboardContent() {
                         </TableCell>
                         <TableCell className="text-slate-400 text-xs">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                         <TableCell className="text-right">
-                          <Button variant="ghost" size="sm" className="hover:bg-slate-800 text-slate-400">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="hover:bg-slate-800 text-slate-400"
+                            onClick={() => startEditUser(user)}
+                          >
                             Edit Profile
                           </Button>
                         </TableCell>
@@ -477,6 +566,95 @@ function AdminDashboardContent() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {editingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-slate-900 border border-slate-800 p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-bold text-slate-50">Edit User Profile</h2>
+                <p className="text-sm text-slate-400">Update display name, email, or role.</p>
+              </div>
+              <Button variant="ghost" onClick={closeEditUser} className="text-slate-400">
+                Close
+              </Button>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-slate-500">Display Name</label>
+                <Input
+                  value={editingUser.name}
+                  onChange={(e) => updateEditingUserField("name", e.target.value)}
+                  className="mt-1 bg-slate-950 border-slate-800"
+                  placeholder="TradePulse Team"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-500">Email</label>
+                <Input
+                  value={editingUser.email}
+                  onChange={(e) => updateEditingUserField("email", e.target.value)}
+                  className="mt-1 bg-slate-950 border-slate-800"
+                  placeholder="system@tradepulse.app"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">Role</label>
+                  <Input
+                    value={editingUser.role}
+                    onChange={(e) => updateEditingUserField("role", e.target.value)}
+                    className="mt-1 bg-slate-950 border-slate-800"
+                    placeholder="admin"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-500">Avatar</label>
+                  <div className="mt-2 flex items-center gap-3">
+                    <div className="h-12 w-12 overflow-hidden rounded-full bg-slate-800">
+                      {editingUser.photoURL ? (
+                        <img src={editingUser.photoURL} alt="Avatar" className="h-full w-full object-cover" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">No image</div>
+                      )}
+                    </div>
+                    <label className="cursor-pointer rounded-lg bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700">
+                      {avatarUploading ? "Uploading…" : "Upload"}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="sr-only"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const url = await uploadAvatarFile(file);
+                          if (url) {
+                            updateEditingUserField("photoURL", url);
+                          }
+                        }}
+                        disabled={avatarUploading}
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <Button variant="ghost" onClick={closeEditUser} disabled={isUpdatingUser}>
+                  Cancel
+                </Button>
+                <Button onClick={saveUserProfile} disabled={isUpdatingUser}>
+                  {isUpdatingUser ? "Saving…" : "Save"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

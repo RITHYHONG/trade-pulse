@@ -39,11 +39,16 @@ if (admin.apps?.length) {
   }
 
   try {
+    const storageBucket =
+      process.env.FIREBASE_STORAGE_BUCKET ||
+      process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+
     if (serviceAccountJson) {
       // Parse and use the full service account JSON
       const serviceAccount = JSON.parse(serviceAccountJson);
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
+        ...(storageBucket ? { storageBucket } : {}),
       });
       _adminReady = true;
     } else if (projectId && clientEmail && privateKey) {
@@ -53,6 +58,7 @@ if (admin.apps?.length) {
           clientEmail,
           privateKey,
         } as admin.ServiceAccount),
+        ...(storageBucket ? { storageBucket } : {}),
       });
       _adminReady = true;
     } else {
