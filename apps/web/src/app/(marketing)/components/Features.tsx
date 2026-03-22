@@ -1,212 +1,229 @@
 "use client";
 
 import { motion } from 'motion/react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
-import { Brain, Zap, Target, Clock, TrendingUp, Shield } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { 
+  HiCpuChip, 
+  HiBolt, 
+  HiViewfinderCircle, 
+  HiClock, 
+  HiShieldCheck,
+  HiSparkles,
+  HiChartBar
+} from 'react-icons/hi2';
+import { IconType } from 'react-icons';
 
-const features = [
-  {
-    icon: Brain,
-    title: "AI Market Intelligence",
-    description: "Advanced algorithms analyze thousands of data points to surface only the most relevant trading opportunities for your style.",
-    image: "https://images.unsplash.com/photo-1744782211816-c5224434614f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaW5hbmNpYWwlMjBjaGFydHMlMjBkYXRhfGVufDF8fHx8MTc1OTIzMjE1MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    reverse: false
-  },
-  {
-    icon: Zap,
-    title: "Lightning-Fast Alerts",
-    description: "Get notified instantly when your watchlist stocks show unusual pre-market activity or meet your custom criteria.",
-    image: "https://images.unsplash.com/photo-1711637397406-0c5fe8165dc6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaW5hbmNpYWwlMjBjaGFydHMlMjBkYXRhfGVufDF8fHx8MTc1OTIzMjE1MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    reverse: true
-  },
-  {
-    icon: Target,
-    title: "Precision Entry Points",
-    description: "AI-calculated support and resistance levels with probability-weighted entry and exit strategies tailored to your risk tolerance.",
-    image: "https://images.unsplash.com/photo-1744782211816-c5224434614f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmaW5hbmNpYWwlMjBjaGFydHMlMjBkYXRhfGVufDF8fHx8MTc1OTIzMjE1MXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    reverse: false
-  }
-];
+const BentoCard = ({ 
+  children, 
+  className = "", 
+  title, 
+  description, 
+  icon: Icon,
+  delay = 0 
+}: { 
+  children?: React.ReactNode; 
+  className?: string; 
+  title: string; 
+  description: string; 
+  icon: IconType;
+  delay?: number;
+}) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.5, delay }}
+    className={`relative group h-full bg-card/40 backdrop-blur-xl border border-white/5 rounded-[2rem] p-8 overflow-hidden hover:border-primary/30 transition-all duration-500 shadow-2xl ${className}`}
+  >
+    {/* Background Glow */}
+    <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors pointer-events-none" />
+    
+    <div className="relative z-10 h-full flex flex-col">
+      <div className="mb-6 flex items-center gap-4">
+        <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-500 shadow-inner">
+          <Icon className="w-6 h-6" />
+        </div>
+        <div className="text-xs font-bold uppercase tracking-widest text-primary/70">Engine Component</div>
+      </div>
+      
+      <div className="flex-grow">
+        <h3 className="text-2xl font-bold mb-3 tracking-tight group-hover:text-primary transition-colors">
+          {title}
+        </h3>
+        <p className="text-muted-foreground leading-relaxed text-sm mb-6 max-w-xs">
+          {description}
+        </p>
+      </div>
 
-const additionalFeatures = [
-  {
-    icon: Clock,
-    title: "5-Minute Morning Brief",
-    description: "Everything you need to know delivered in a digestible format before market open."
-  },
-  {
-    icon: TrendingUp,
-    title: "Trend Analysis",
-    description: "Multi-timeframe analysis to identify the strongest trending opportunities."
-  },
-  {
-    icon: Shield,
-    title: "Risk Management",
-    description: "Built-in position sizing and risk assessment tools for every trade."
-  }
-];
+      <div className="mt-auto pt-6 border-t border-white/5">
+        {children}
+      </div>
+    </div>
+  </motion.div>
+);
 
 export function Features() {
   return (
-    <section id="features" className="scroll-mt-24 pb-24 bg-gradient-to-b from-card/30 to-background">
-      <div className="container mx-auto px-8">
+    <section id="features" className="py-32 relative overflow-hidden bg-background">
+      {/* Background ambient light */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-primary/5 blur-[120px] pointer-events-none rounded-full" />
+      
+      <div className="container mx-auto px-6 relative z-10">
         <motion.div
-          className="text-center mb-20"
+          className="text-center mb-24"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8 }}
         >
-          <h2 className="text-4xl lg:text-5xl mb-6 font-bold">
-            Features That Give {' '}
-            <span className="bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
-              You The Edge
+          <motion.div
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-6"
+          >
+            <HiSparkles className="w-3 h-3" />
+            Performance Intelligence
+          </motion.div>
+          
+          <h2 className="text-5xl md:text-6xl mb-8 font-bold tracking-tight">
+            The Digital {' '}
+            <span className="bg-gradient-to-r from-foreground via-primary to-primary bg-clip-text text-transparent italic">
+              Edge
             </span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Professional-grade tools designed specifically for the modern trader&apos;s workflow
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            A comprehensive suite of intelligence tools designed to elevate every aspect of your trading day.
           </p>
         </motion.div>
 
-        {/* Main Features */}
-        <div className="space-y-32 mb-24">
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              className={`grid lg:grid-cols-2 gap-16 items-center ${feature.reverse ? 'lg:grid-flow-col-dense' : ''}`}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: index * 0.2 }}
-            >
-              {/* Text Content */}
-              <div className={`space-y-8 ${feature.reverse ? 'lg:col-start-2' : ''}`}>
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20">
-                  <feature.icon className="w-8 h-8 text-primary" />
+        {/* Bento Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 max-w-7xl mx-auto">
+          
+          {/* Main Card - AI Intelligence */}
+          <BentoCard 
+            className="md:col-span-6 lg:col-span-8 group/main"
+            title="AI Market Intelligence"
+            description="Advanced algorithms analyze 18,000+ data points per second to surface the highest probability opportunities."
+            icon={HiCpuChip}
+          >
+            <div className="relative h-48 md:h-64 rounded-2xl bg-black/40 border border-white/5 overflow-hidden flex items-center justify-center">
+              {/* Mock Data Visualization */}
+              <div className="absolute inset-0 p-6 flex flex-col justify-between">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-1">
+                    <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono">Real-time Stream</div>
+                    <div className="text-xl font-bold font-mono text-emerald-400">18.4k Data Points/s</div>
+                  </div>
+                  <div className="px-2 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] text-emerald-400 font-mono">ACTIVE</div>
                 </div>
-
-                <div>
-                  <h3 className="text-3xl lg:text-4xl mb-6 font-bold">
-                    {feature.title}
-                  </h3>
-                  <p className="text-xl text-muted-foreground leading-relaxed hover:text-primary translate-middle-y-1 duration-500">
-                    {feature.description}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-4 pt-4">
-                  <div className="h-px bg-gradient-to-r from-primary to-transparent flex-1" />
-                  <div className="text-sm text-primary">Professional Grade</div>
+                
+                {/* Simulated Chart Bars */}
+                <div className="flex items-end gap-1.5 h-24">
+                  {[40, 70, 45, 90, 65, 30, 85, 55, 75, 50, 95, 60, 40, 80, 50].map((h, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ height: 0 }}
+                      whileInView={{ height: `${h}%` }}
+                      transition={{ 
+                        duration: 1, 
+                        delay: i * 0.05,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                        repeatDelay: 2
+                      }}
+                      className="flex-1 bg-gradient-to-t from-primary/40 to-primary rounded-t-sm"
+                    />
+                  ))}
                 </div>
               </div>
+            </div>
+          </BentoCard>
 
-              {/* Image */}
-              <div className={`relative ${feature.reverse ? 'lg:col-start-1' : ''}`}>
-                <div className="relative bg-card/50 rounded-2xl p-6 border border-border backdrop-blur-sm">
-                  <div className="w-full h-48 sm:h-64 md:h-80 relative rounded-xl overflow-hidden">
-                    <ImageWithFallback
-                      src={feature.image}
-                      alt={feature.title}
-                      fill
-                      className="object-cover"
-                    />
+          {/* Vertical Card - Fast Alerts */}
+          <BentoCard 
+            className="md:col-span-6 lg:col-span-4"
+            title="Lightning Alerts"
+            description="Sub-10ms delivery on personalized watchlist notifications."
+            icon={HiBolt}
+            delay={0.1}
+          >
+            <div className="space-y-4">
+              {[
+                { label: "SPY unusual vol", time: "2s ago", type: "success" },
+                { label: "TSLA break-out", time: "12s ago", type: "primary" },
+                { label: "Watchlist Sync", time: "Now", type: "muted" }
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 text-xs">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full ${item.type === 'success' ? 'bg-emerald-400' : item.type === 'primary' ? 'bg-primary' : 'bg-white/20'}`} />
+                    <span className="font-medium">{item.label}</span>
                   </div>
-
-                  {/* Overlay badge */}
-                  <div className="absolute top-8 right-8 bg-primary/90 text-primary-foreground px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm z-20 shadow-lg flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                    AI Powered
-                  </div>
-
-                  {/* Dynamic Status Indicator */}
-                  {/* <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="absolute bottom-10 left-10 right-10 bg-black/60 backdrop-blur-xl border border-white/10 rounded-xl p-3 z-20"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-primary animate-ping" />
-                        <span className="text-[10px] font-bold text-white uppercase tracking-widest">
-                          {index === 0 && "Intelligence Engine"}
-                          {index === 1 && "Alert Pipeline"}
-                          {index === 2 && "Precision Engine"}
-                        </span>
-                      </div>
-                      <span className="text-[10px] font-mono text-primary/80">LIVE</span>
-                    </div>
-                    <div className="space-y-1.5">
-                      <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full bg-primary"
-                          animate={{ width: ["20%", "70%", "40%", "90%", "60%"] }}
-                          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-                        />
-                      </div>
-                      <div className="flex justify-between text-[9px] font-medium text-white/40">
-                        <span>{index === 0 ? "Analyzing Datapoints" : index === 1 ? "Scan In Progress" : "Calculating Risk"}</span>
-                        <span className="font-mono">
-                          {index === 0 && "18.4k/sec"}
-                          {index === 1 && "12ms delay"}
-                          {index === 2 && "99.4% Acc"}
-                        </span>
-                      </div>
-                    </div>
-                  </motion.div> */}
+                  <span className="text-white/40 font-mono text-[10px]">{item.time}</span>
                 </div>
+              ))}
+            </div>
+          </BentoCard>
 
-                {/* Floating decoration */}
-                <motion.div
-                  className="absolute -z-10 -top-8 -right-8 w-32 h-32 bg-primary/10 rounded-full blur-2xl"
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    opacity: [0.3, 0.5, 0.3]
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
+          {/* Step 3 - Precision Entry */}
+          <BentoCard 
+            className="md:col-span-3 lg:col-span-4"
+            title="Precision Edge"
+            description="Probability-weighted entry levels for 1200+ assets."
+            icon={HiViewfinderCircle}
+            delay={0.2}
+          >
+            <div className="flex items-center justify-center py-4">
+              <div className="relative w-32 h-32 flex items-center justify-center">
+                <motion.div 
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 rounded-full border-2 border-dashed border-primary/30"
+                />
+                <div className="w-24 h-24 rounded-full border-2 border-primary/60 flex items-center justify-center">
+                  <div className="text-2xl font-bold font-mono">99.4%</div>
+                </div>
+              </div>
+            </div>
+          </BentoCard>
+
+          {/* Grid Cards - Row 2 */}
+          <div className="md:col-span-3 lg:col-span-4 h-full">
+            <BentoCard 
+              title="Risk Engine"
+              description="Automated position sizing based on portfolio health."
+              icon={HiShieldCheck}
+              delay={0.3}
+            >
+              <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "70%" }}
+                  className="h-full bg-emerald-500"
                 />
               </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Additional Features Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h3 className="text-3xl text-center mb-12 font-bold">
-            Plus Everything Else You Need
-          </h3>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {additionalFeatures.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <Card className="p-8 h-full bg-card/50 border-border hover:bg-card/80 transition-all duration-300 hover:-translate-y-1">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 mb-6">
-                    <feature.icon className="w-6 h-6 text-primary" />
-                  </div>
-                  <h4 className="text-xl mb-4">{feature.title}</h4>
-                  <p className="text-muted-foreground hover:text-primary translate-middle-y-1 duration-500">{feature.description}</p>
-                </Card>
-              </motion.div>
-            ))}
+              <div className="flex justify-between mt-2 text-[10px] text-white/40 font-mono">
+                <span>RISK LEVEL</span>
+                <span className="text-emerald-400 font-bold uppercase">Safe</span>
+              </div>
+            </BentoCard>
           </div>
-        </motion.div>
+
+          <BentoCard 
+            className="md:col-span-6 lg:col-span-4"
+            title="Market Pulse"
+            description="Everything you need to know in a 5-minute pre-market brief."
+            icon={HiChartBar}
+            delay={0.4}
+          >
+            <div className="flex gap-2">
+              <div className="flex-1 h-12 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20">
+                <HiClock className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1 h-12 bg-primary/10 rounded-lg flex items-center justify-center border border-primary/20 font-bold font-mono text-primary italic">
+                09:30 AM
+              </div>
+            </div>
+          </BentoCard>
+
+        </div>
       </div>
     </section>
   );
-}
+}
