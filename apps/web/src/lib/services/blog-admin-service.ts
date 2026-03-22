@@ -115,17 +115,43 @@ export async function createBlogPostAdmin(
     .replace(/[^\w ]+/g, "")
     .replace(/ +/g, "-");
 
-  // Try to pull a matching user profile from Firestore so the system author can be customized
-  const userDoc = await adminDb.collection("users").doc(authorId).get();
-  const userData = userDoc.exists ? userDoc.data() : null;
+  // Ensure the system user profile exists, and prefer explicit profile values when available.
+  const systemDefaultProfile = {
+    displayName: "Trade Pulse Team",
+    name: "Trade Pulse Team",
+    email: "tradepulseteam@gmail.com",
+    photoURL: "https://storage.googleapis.com/trade-pulse-b9fc4.firebasestorage.app/user-avatars/S2XRzoQRudSqktLiKF2P98P4D902_1773854269398.svg?GoogleAccessId=firebase-adminsdk-fbsvc%40trade-pulse-b9fc4.iam.gserviceaccount.com&Expires=1805390270&Signature=V5kbV%2BJLJPpQqjDn%2BNBK%2Bmjtl7wyb6qVA5r4KEWbgraeMvefKvYi%2FZHnW4OA0lTe7ZAIZlTcn7RVCMPRAdN2zSOz2wZZwZExTYmUs93kGIvjA2%2FT1DM9Gj5cFXX9Pc7OemVL566JiunB%2FTrMuC7aY8QPCUbgIZN%2F5otuyCH4XChpDnDspXrLDxpwssQxgtNK00IkIGTa9%2F6Fu9nmKFqUZgJ489xuUjpZi1p3sgAK9XPFJFXqmhiiezyFoY1STIoaTtJyZbRt3SfgCewMBMTzFu9q%2BLj406Xyai%2BpS28%2B9ScBILz%2Bs6iqI6FJSp5LFsN50AHC0tdVXlFRfc8kRjuO1Q%3D%3D",
+    role: "user",
+    uid: authorId,
+    preferences: {
+      animations: true,
+      compactMode: false,
+      currency: "usd",
+      language: "en",
+      theme: "dark",
+      timezone: "utc",
+    },
+    notifications: {
+      email: true,
+      securityAlerts: true,
+      tradeAlerts: true,
+      weeklyUpdates: false,
+    },
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  };
 
-  const systemName =
-    (userData as any)?.displayName ||
-    (userData as any)?.name ||
-    "System Auto-Blogger";
-  const systemEmail = (userData as any)?.email || "";
-  const systemAvatar = (userData as any)?.photoURL || "/images/avatars/bot.png";
-  const systemRole = (userData as any)?.role || "admin";
+  const userRef = adminDb.collection("users").doc(authorId);
+  const userDoc = await userRef.get();
+  if (!userDoc.exists) {
+    await userRef.set(systemDefaultProfile);
+  }
+
+  const userData = (userDoc.exists ? userDoc.data() : systemDefaultProfile) as any;
+  const systemName = userData.displayName || userData.name || systemDefaultProfile.displayName;
+  const systemEmail = userData.email || systemDefaultProfile.email;
+  const systemAvatar = userData.photoURL || systemDefaultProfile.photoURL;
+  const systemRole = userData.role || systemDefaultProfile.role;
 
   const postData = {
     ...input,

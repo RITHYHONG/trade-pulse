@@ -117,7 +117,8 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   <div className="relative flex-shrink-0">
                     <div className="absolute -inset-0.5 from-cyan-500 to-blue-500 rounded-full opacity-75 blur"></div>
                     <ImageWithFallback
-                      src={authorProfile.avatar ?? ''}
+                      src={authorProfile.avatar || ''}
+                      fallbackSrc={post.author.avatarUrl || post.author.avatar || '/images/default-avatar.svg'}
                       alt={authorProfile.name}
                       className="relative w-12 h-12 rounded-full ring-2 ring-background"
                     />
@@ -174,17 +175,17 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
           {(post.sentiment || post.primaryAsset || post.confidenceLevel || post.timeHorizon) && (
             <div className="mb-20 relative group overflow-visible">
               <div className="absolute -inset-4 bg-gradient-to-r from-cyan-500/30 to-blue-600/30 rounded-[3rem] blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-              
+
               <div className="relative overflow-visible rounded-[2.5rem] border-4 border-white/[0.05] bg-slate-900/80 backdrop-blur-3xl p-8 sm:p-12 shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10">
-                  
+
                   {/* Left Side: Asset & Trend */}
                   <div className="space-y-6 flex-shrink-0">
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30">
                       <div className="w-2 h-2 rounded-full bg-cyan-500 animate-ping"></div>
                       <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-400">Live Forecast</span>
                     </div>
-                    
+
                     <div>
                       <h2 className="text-6xl sm:text-7xl font-black text-white tracking-tighter mb-2 italic">
                         {post.primaryAsset || "MARKET"}
@@ -194,7 +195,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                           {post.sentiment || "NEUTRAL"}
                         </span>
                         <div className={`p-2 rounded-full ${post.sentiment?.toLowerCase() === 'bullish' ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}>
-                           <TrendingUp className={`w-8 h-8 ${post.sentiment?.toLowerCase() === 'bearish' ? 'rotate-180' : ''}`} />
+                          <TrendingUp className={`w-8 h-8 ${post.sentiment?.toLowerCase() === 'bearish' ? 'rotate-180' : ''}`} />
                         </div>
                       </div>
                     </div>
@@ -208,7 +209,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                         <span>Projection</span>
                         <span>{post.timeHorizon || "H1"}</span>
                       </div>
-                      
+
                       <div className="h-24 py-4">
                         <svg viewBox="0 0 200 60" className="w-full h-full overflow-visible">
                           <defs>
@@ -217,9 +218,9 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                               <stop offset="100%" stopColor={post.sentiment.toLowerCase() === 'bullish' ? '#059669' : post.sentiment.toLowerCase() === 'bearish' ? '#dc2626' : '#d97706'} />
                             </linearGradient>
                             <filter id="glow">
-                              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                              <feGaussianBlur stdDeviation="2" result="coloredBlur" />
                               <feMerge>
-                                <feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/>
+                                <feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" />
                               </feMerge>
                             </filter>
                           </defs>
@@ -235,11 +236,11 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
 
                       <div className="flex justify-between items-center">
                         <div className="flex flex-col">
-                           <span className="text-[10px] font-bold text-white/30 uppercase">Confidence</span>
-                           <span className="text-xl font-black text-white">{post.confidenceLevel}%</span>
+                          <span className="text-[10px] font-bold text-white/30 uppercase">Confidence</span>
+                          <span className="text-xl font-black text-white">{post.confidenceLevel}%</span>
                         </div>
                         <div className="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                           <div className="h-full bg-cyan-500 shadow-[0_0_10px_#06b6d4]" style={{ width: `${post.confidenceLevel}%` }}></div>
+                          <div className="h-full bg-cyan-500 shadow-[0_0_10px_#06b6d4]" style={{ width: `${post.confidenceLevel}%` }}></div>
                         </div>
                       </div>
                     </div>
@@ -265,7 +266,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
             <div className="mb-24 relative">
               {/* Abstract Background Decoration */}
               <div className="absolute -left-12 top-0 w-24 h-full [clip-path:polygon(0_0,100%_0,0_100%)]"></div>
-              
+
               <div className="relative pl-12 border-l-2 border-cyan-500/30 py-8">
                 <div className="flex items-center gap-4 mb-8">
                   <div className="w-12 h-12 rounded-full border border-cyan-500/50 flex items-center justify-center bg-cyan-500/5">
@@ -273,11 +274,11 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   </div>
                   <h3 className="text-sm font-black uppercase tracking-[0.5em] text-cyan-500/80">Executive Brief</h3>
                 </div>
-                
+
                 <p className="text-4xl sm:text-5xl font-black text-white leading-[1.1] tracking-tighter max-w-3xl selection:bg-cyan-500 selection:text-black">
                   {post.excerpt}
                 </p>
-                
+
                 {/* <div className="mt-12 flex items-center gap-6">
                   <div className="flex -space-x-3">
                     {[1,2,3].map(i => (
@@ -417,21 +418,21 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                     const lines = paragraph.split('\n');
                     const items = lines.filter(item => item.trim().startsWith('- '));
                     const listTitle = lines[0].trim().startsWith('- ') ? null : lines[0];
-                    
+
                     return (
                       <div key={index} className="my-8">
                         {listTitle && (
-                           <div className="font-semibold text-foreground mb-4 font-sans">
-                             {listTitle}
-                           </div>
+                          <div className="font-semibold text-foreground mb-4 font-sans">
+                            {listTitle}
+                          </div>
                         )}
                         <ul className="space-y-3 pl-6 list-disc marker:text-border">
-                        {items.map((item, itemIndex) => {
-                          const content = item.replace('- ', '');
-                          const match = content.match(/^\*\*(.*?)\*\*(.*)/);
-                          
-                          return (
-                            <li key={itemIndex} className="text-foreground/80 pl-2">
+                          {items.map((item, itemIndex) => {
+                            const content = item.replace('- ', '');
+                            const match = content.match(/^\*\*(.*?)\*\*(.*)/);
+
+                            return (
+                              <li key={itemIndex} className="text-foreground/80 pl-2">
                                 {match ? (
                                   <>
                                     <strong className="text-foreground font-semibold">{match[1]}</strong>
@@ -440,9 +441,9 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                                 ) : (
                                   <span>{content}</span>
                                 )}
-                            </li>
-                          );
-                        })}
+                              </li>
+                            );
+                          })}
                         </ul>
                       </div>
                     );
@@ -452,7 +453,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                     return (
                       <div key={index} className="my-12 py-8 bg-secondary/20 rounded-xl px-8 flex flex-col items-center">
                         <div className="w-10 h-10 rounded-full bg-background border border-border shadow-sm flex items-center justify-center -mt-12 mb-6">
-                           <TrendingUp className="w-5 h-5 text-foreground/60" />
+                          <TrendingUp className="w-5 h-5 text-foreground/60" />
                         </div>
                         <p className="text-xl sm:text-2xl font-medium text-foreground text-center leading-relaxed">
                           {text}
@@ -466,10 +467,10 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                         <div className="flex gap-3 items-start">
                           <span className="text-orange-500 text-lg leading-none mt-0.5">ⓘ</span>
                           <div>
-                             <p className="text-orange-900/70 dark:text-orange-200/70 text-sm leading-relaxed">
-                                <strong className="font-semibold text-orange-900 dark:text-orange-200">Disclaimer: </strong>
-                                {paragraph.replace('Disclaimer:', '').trim()}
-                             </p>
+                            <p className="text-orange-900/70 dark:text-orange-200/70 text-sm leading-relaxed">
+                              <strong className="font-semibold text-orange-900 dark:text-orange-200">Disclaimer: </strong>
+                              {paragraph.replace('Disclaimer:', '').trim()}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -478,13 +479,13 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   if (paragraph.startsWith('Source:')) {
                     return (
                       <div key={index} className="mt-16 pt-6 flex items-center gap-2 border-t border-border/30 text-sm text-foreground/50 font-sans">
-                          <Eye className="w-4 h-4" />
-                          <span className="font-medium">Source:</span>
-                          <span className="hover:text-foreground transition-colors cursor-pointer border-b border-border hover:border-foreground/30">{paragraph.replace('Source:', '').trim()}</span>
+                        <Eye className="w-4 h-4" />
+                        <span className="font-medium">Source:</span>
+                        <span className="hover:text-foreground transition-colors cursor-pointer border-b border-border hover:border-foreground/30">{paragraph.replace('Source:', '').trim()}</span>
                       </div>
                     );
                   }
-                  
+
                   // Regular paragraph
                   return (
                     <p key={index} className="text-foreground/80 leading-[1.8] tracking-[-0.01em]">
@@ -562,7 +563,8 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   <div className="relative flex-shrink-0">
                     <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full opacity-75 blur group-hover:opacity-100 transition duration-300"></div>
                     <ImageWithFallback
-                      src={authorProfile.avatar ?? ''}
+                      src={authorProfile.avatar || ''}
+                      fallbackSrc={post.author.avatarUrl || post.author.avatar || '/images/default-avatar.svg'}
                       alt={authorProfile.name}
                       className="relative w-20 h-20 rounded-full ring-2 ring-background"
                     />

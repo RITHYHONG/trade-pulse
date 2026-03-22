@@ -1,0 +1,18 @@
+src/app/blog/[slug]/page.tsx(120,35): error TS2551: Property 'author' does not exist on type 'BlogPost'. Did you mean 'authorId'?
+src/app/blog/[slug]/page.tsx(121,39): error TS2551: Property 'author' does not exist on type 'BlogPost'. Did you mean 'authorId'?
+src/app/blog/[slug]/page.tsx(121,61): error TS2551: Property 'author' does not exist on type 'BlogPost'. Did you mean 'authorId'?
+src/app/blog/[slug]/page.tsx(122,42): error TS2551: Property 'author' does not exist on type 'BlogPost'. Did you mean 'authorId'?
+src/app/blog/[slug]/page.tsx(122,64): error TS2551: Property 'author' does not exist on type 'BlogPost'. Did you mean 'authorId'?
+src/app/blog/[slug]/page.tsx(123,16): error TS2551: Property 'author' does not exist on type 'BlogPost'. Did you mean 'authorId'?
+src/app/blog/[slug]/page.tsx(124,17): error TS2551: Property 'author' does not exist on type 'BlogPost'. Did you mean 'authorId'?
+src/app/blog/page.tsx(42,35): error TS2551: Property 'author' does not exist on type 'BlogPost'. Did you mean 'authorId'?
+src/app/blog/page.tsx(43,39): error TS2551: Property 'author' does not exist on type 'BlogPost'. Did you mean 'authorId'?
+src/app/blog/page.tsx(43,61): error TS2551: Property 'author' does not exist on type 'BlogPost'. Did you mean 'authorId'?
+src/app/blog/page.tsx(44,42): error TS2551: Property 'author' does not exist on type 'BlogPost'. Did you mean 'authorId'?
+src/app/blog/page.tsx(44,64): error TS2551: Property 'author' does not exist on type 'BlogPost'. Did you mean 'authorId'?
+src/app/blog/page.tsx(45,17): error TS2551: Property 'author' does not exist on type 'BlogPost'. Did you mean 'authorId'?
+src/hooks/use-author-profile.ts(94,50): error TS2339: Property 'name' does not exist on type 'UserProfile'.
+src/hooks/use-author-profile.ts(95,49): error TS2339: Property 'avatar' does not exist on type 'UserProfile'.
+src/hooks/use-author-profile.ts(96,52): error TS2339: Property 'avatar' does not exist on type 'UserProfile'.
+src/hooks/use-author-profile.ts(96,70): error TS2339: Property 'avatarUrl' does not exist on type 'UserProfile'.
+src/hooks/use-author-profile.ts(98,27): error TS2339: Property 'role' does not exist on type 'UserProfile'.

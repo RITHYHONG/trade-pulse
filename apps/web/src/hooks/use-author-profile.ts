@@ -36,11 +36,11 @@ export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileO
         const now = Date.now();
         if (now - timestamp < LOCAL_STORAGE_DURATION) {
           setAuthorProfile({
-            name: profile.displayName || fallbackAuthor.name,
-            avatar: profile.photoURL || fallbackAuthor.avatar,
-            avatarUrl: profile.photoURL || fallbackAuthor.avatarUrl,
-            bio: fallbackAuthor.bio,
-            role: fallbackAuthor.role
+            name: profile.displayName || profile.name || fallbackAuthor.name,
+            avatar: profile.photoURL || profile.avatar || fallbackAuthor.avatar,
+            avatarUrl: profile.photoURL || profile.avatar || profile.avatarUrl || fallbackAuthor.avatarUrl,
+            bio: profile.bio || fallbackAuthor.bio,
+            role: profile.role || fallbackAuthor.role,
           });
           return;
         } else {
@@ -90,12 +90,14 @@ export function useAuthorProfile({ authorId, fallbackAuthor }: UseAuthorProfileO
         }));
 
         if (profile) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const p = profile as any;
           setAuthorProfile({
-            name: profile.displayName || fallbackAuthor.name,
-            avatar: profile.photoURL || fallbackAuthor.avatar,
-            avatarUrl: profile.photoURL || fallbackAuthor.avatarUrl,
-            bio: fallbackAuthor.bio,
-            role: fallbackAuthor.role
+            name: profile.displayName || p.name || fallbackAuthor.name,
+            avatar: profile.photoURL || p.avatar || fallbackAuthor.avatar,
+            avatarUrl: profile.photoURL || p.avatar || p.avatarUrl || fallbackAuthor.avatarUrl,
+            bio: profile.bio || fallbackAuthor.bio,
+            role: p.role || fallbackAuthor.role,
           });
         } else {
           setAuthorProfile(fallbackAuthor);

@@ -27,6 +27,9 @@ function mapFirestoreToUI(fsp: FirestoreBlogPost): UIBlogPost {
     return new Date(String(d)).toISOString();
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const legacyAuthor = (fsp as any).author || {};
+
   return {
     id: fsp.id,
     slug: fsp.slug,
@@ -39,9 +42,10 @@ function mapFirestoreToUI(fsp: FirestoreBlogPost): UIBlogPost {
     tags: fsp.tags || [],
     featuredImage: fsp.featuredImage || '/images/placeholder-blog.svg',
     author: {
-      name: fsp.authorName || fsp.authorEmail?.split('@')[0] || 'Anonymous',
-      avatar: fsp.authorAvatar || '/images/default-avatar.svg',
-      avatarUrl: fsp.authorAvatar || '/images/default-avatar.svg', // Ensure compatibility
+      name: fsp.authorName || legacyAuthor.name || fsp.authorEmail?.split('@')[0] || 'Anonymous',
+      avatar: fsp.authorAvatar || legacyAuthor.avatar || legacyAuthor.avatarUrl || '/images/default-avatar.svg',
+      avatarUrl: fsp.authorAvatar || legacyAuthor.avatar || legacyAuthor.avatarUrl || '/images/default-avatar.svg',
+      role: legacyAuthor.role || 'user',
     },
     authorId: fsp.authorId,
     category: fsp.category,

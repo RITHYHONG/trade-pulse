@@ -1,27 +1,35 @@
 "use client";
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image, { ImageProps } from 'next/image';
 
-const ERROR_IMG_SRC =
-  'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODgiIGhlaWdodD0iODgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBvcGFjaXR5PSIuMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZWRoPSIzLjciPjxyZWN0IHg9IjE2IiB5PSIxNiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjU2IiByeD0iNiIvPjxwYXRoIGQ9Im0xNiA1OCAxNi0xOCAzMiAzMiIvPjxjaXJjbGUgY3g9IjUzIiBjeT0iMzUiIHI9IjciLz48L3N2Zz4KCg=='
 
 interface ImageWithFallbackProps extends Omit<ImageProps, 'src' | 'alt'> {
   src: string;
+  fallbackSrc?: string;
   alt: string;
 }
 
 export function ImageWithFallback(props: ImageWithFallbackProps) {
-  const [didError, setDidError] = useState(false)
+  const { src, fallbackSrc, alt, width, height, fill, ...rest } = props;
+  const [didError, setDidError] = useState(false);
+  const [currentSrc, setCurrentSrc] = useState(src);
+
+  useEffect(() => {
+    setCurrentSrc(src);
+    setDidError(false);
+  }, [src]);
 
   const handleError = () => {
-    setDidError(true)
-  }
-
-  const { src, alt, width, height, fill, ...rest } = props
+    if (fallbackSrc && currentSrc !== fallbackSrc) {
+      setCurrentSrc(fallbackSrc);
+    } else {
+      setDidError(true);
+    }
+  };
 
   // Handle empty or undefined src
-  const shouldShowError = didError || !src || src === '';
+  const shouldShowError = didError || (!currentSrc && !fallbackSrc);
 
   const imageProps: Partial<ImageProps & { fill?: boolean; width?: number; height?: number }> = {
     ...rest,
@@ -51,14 +59,14 @@ export function ImageWithFallback(props: ImageWithFallbackProps) {
             <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
           </svg>
         </div>
-        <div className="text-[10px] text-muted-foreground/40 font-mono truncate max-w-full px-2" title={src}>
-          {src ? (src.length > 30 ? src.substring(0, 27) + '...' : src) : 'No Image Source'}
+        <div className="text-[10px] text-muted-foreground/40 font-mono truncate max-w-full px-2" title={currentSrc || fallbackSrc || ''}>
+          {(currentSrc || fallbackSrc) ? ((currentSrc || fallbackSrc || '').length > 30 ? (currentSrc || fallbackSrc || '').substring(0, 27) + '...' : (currentSrc || fallbackSrc || '')) : 'No Image Source'}
         </div>
       </div>
     </div>
   ) : (
     <Image 
-      src={src} 
+      src={currentSrc || fallbackSrc || ''} 
       alt={alt} 
       {...imageProps}
     />
