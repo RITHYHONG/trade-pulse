@@ -11,30 +11,27 @@ import { NewsletterCTA } from './NewsletterCTA';
 import { BlogCard, BlogCardSkeleton } from './BlogCard';
 import { BlogMarketWrap } from './BlogMarketWrap';
 import { Button } from '@/components/ui/button';
-import { PenSquare } from 'lucide-react';
+import { HiPencilSquare, HiSparkles, HiQueueList } from 'react-icons/hi2';
 import { BlogPost } from '../../types/blog';
 import { BlogPost as FirestoreBlogPost } from '@/lib/blog-firestore-service';
 import Link from 'next/link';
 import { categories } from '../../data/blogData';
+import { motion } from 'motion/react';
 
 interface BlogIndexProps {
   initialPosts?: BlogPost[];
   featuredPosts?: BlogPost[];
 }
 
-
-
 // Helper function to convert Firestore post to UI BlogPost
 function mapFirestorePostToUIPost(firestorePost: FirestoreBlogPost): BlogPost {
-  // Handle Timestamp or Date conversion
   const getDateString = (dateField: Date | FirestoreBlogPost['publishedAt']): string => {
     if (!dateField) return new Date().toISOString();
     if (dateField instanceof Date) return dateField.toISOString();
-    // Handle non-Date object (timestamp, etc.) - convert to string first
     return new Date(String(dateField)).toISOString();
   };
 
-  const mappedPost = {
+  return {
     id: firestorePost.id,
     slug: firestorePost.slug,
     title: firestorePost.title,
@@ -42,7 +39,7 @@ function mapFirestorePostToUIPost(firestorePost: FirestoreBlogPost): BlogPost {
     content: firestorePost.content,
     publishedAt: getDateString(firestorePost.publishedAt),
     updatedAt: firestorePost.updatedAt ? getDateString(firestorePost.updatedAt) : undefined,
-    readingTime: '5 min read', // You can calculate this based on content length
+    readingTime: '5 min read',
     tags: firestorePost.tags,
     featuredImage: firestorePost.featuredImage || '/images/placeholder-blog.svg',
     author: {
@@ -55,8 +52,6 @@ function mapFirestorePostToUIPost(firestorePost: FirestoreBlogPost): BlogPost {
     isFeatured: false,
     isDraft: firestorePost.isDraft || false
   };
-
-  return mappedPost;
 }
 
 import { getCurrentUser } from '@/lib/auth';
@@ -64,13 +59,11 @@ import { getUserDrafts } from '@/lib/blog-firestore-service';
 
 export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = [] }: BlogIndexProps) {
   const [activeCategory, setActiveCategory] = useState('All Posts');
-  const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
-  const [featuredPosts, setFeaturedPosts] = useState<BlogPost[]>(initialFeatured);
+  const [posts] = useState<BlogPost[]>(initialPosts);
+  const [featuredPosts] = useState<BlogPost[]>(initialFeatured);
   const [drafts, setDrafts] = useState<BlogPost[]>([]);
-  // If we have initial posts, we aren't loading the main content
-  const [isLoading, setIsLoading] = useState(initialPosts.length === 0);
+  const [isLoading] = useState(initialPosts.length === 0);
 
-  // Fetch only drafts if user is logged in
   useEffect(() => {
     async function fetchDrafts() {
       try {
@@ -86,16 +79,11 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
         console.error('Error fetching drafts:', error);
       }
     }
-
-    // Only run if we haven't loaded drafts yet/on mount
     fetchDrafts();
   }, []);
 
-  // Filter posts based on active category
   const filteredPosts = useMemo(() => {
     if (activeCategory === 'All Posts') {
-      // Include drafts at the beginning for the author if they are in "All Posts" or "Drafts"
-      // or we can just show drafts in a separate section. Let's mix them for now with a badge handled in BlogCard
       return [...drafts, ...posts];
     }
     return posts.filter(post => post.category === activeCategory);
@@ -105,8 +93,6 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
     setActiveCategory(category);
   };
 
-  // Get posts for different sections
-  // Get posts for different sections
   const heroPost = useMemo(() => {
     if (activeCategory === 'All Posts') {
       return featuredPosts[0] || posts[0] || null;
@@ -121,7 +107,6 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
 
   const popularPosts = useMemo(() => {
     const source = activeCategory === 'All Posts' ? posts : filteredPosts;
-
     return [...source]
       .sort((a, b) => {
         const ta = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
@@ -137,102 +122,140 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
   }, [posts, filteredPosts, activeCategory]);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section with Search */}
+    <div className="min-h-screen bg-background relative overflow-hidden">
+
+
+      {/* Hero Section - The Main Headline */}
       <HeroSection
         featuredPost={heroPost}
         sidebarPosts={sidebarPosts}
         isLoading={isLoading}
       />
 
-      {/* News Ticker */}
-      <NewsTicker isLoading={isLoading} />
+            {/* Subtle background glow for the whole page */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-primary/5 blur-[120px] pointer-events-none" />
 
-      {/* AI Market Wrap Section */}
-      <BlogMarketWrap />
+      {/* News Ticker - Sticky at top or just below header */}
+      <div className="border-b border-border bg-card/30 backdrop-blur-sm sticky top-16 z-30">
+        <NewsTicker isLoading={isLoading} />
+      </div>
 
-      {/* Category Filter / Navigation */}
-      <CategoryFilter
-        activeCategory={activeCategory}
-        onCategoryChange={handleCategoryChange}
-      />
+      {/* Market Pulse Section - Quick Stats */}
+      <div className="py-6 border-y border-border bg-muted/20">
+        <BlogMarketWrap />
+      </div>
 
-      {!isLoading && filteredPosts.length === 0 && (
-        <div className="container mx-auto px-4 py-20 text-center">
-          <p className="text-xl text-muted-foreground">No posts found in this category.</p>
-          <Button
-            variant="link"
-            onClick={() => setActiveCategory('All Posts')}
-            className="mt-4 text-primary"
-          >
-            View all posts
-          </Button>
+      <div className="container mx-auto px-4 py-12">
+        <div className="flex flex-col lg:flex-row gap-8 items-start justify-between mb-12 border-b border-border pb-8">
+          <div className="max-w-xl">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-2 text-primary font-bold uppercase tracking-widest text-xs mb-4"
+            >
+              <HiSparkles className="w-4 h-4" />
+              Latest Intelligence
+            </motion.div>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+              Market <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">News Hub</span>
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Expert analysis, real-time alerts, and deep dives into the global financial pulse.
+            </p>
+          </div>
+
+          <div className="w-full lg:w-auto flex items-center gap-4">
+             <CategoryFilter
+              activeCategory={activeCategory}
+              onCategoryChange={handleCategoryChange}
+            />
+          </div>
         </div>
-      )}
 
-      {/* Latest News Section */}
-      <LatestNewsSection
-        posts={filteredPosts.slice(0, 6)}
-        isLoading={isLoading}
-      />
+        {!isLoading && filteredPosts.length === 0 && (
+          <div className="py-20 text-center">
+            <p className="text-xl text-muted-foreground font-medium">No intelligence reports in this sector.</p>
+            <Button
+              variant="link"
+              onClick={() => setActiveCategory('All Posts')}
+              className="mt-4 text-primary font-bold"
+            >
+              Reset to Main Stream
+            </Button>
+          </div>
+        )}
 
-      {/* Popular Story Section */}
-      <PopularStorySection
-        posts={popularPosts}
-        isLoading={isLoading}
-      />
+        {/* Dynamic Layout based on category selection */}
+        {activeCategory === 'All Posts' ? (
+          <div className="space-y-24">
+            <LatestNewsSection posts={filteredPosts.slice(0, 6)} isLoading={isLoading} />
+            <PopularStorySection posts={popularPosts} isLoading={isLoading} />
+            <HighlightSection posts={highlightPosts} isLoading={isLoading} />
+            
+            {categories
+              .filter(category => category !== 'All Posts')
+              .map(category => (
+                <CategoryNewsSection
+                  key={category}
+                  posts={posts}
+                  isLoading={isLoading}
+                  category={category}
+                />
+              ))
+            }
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredPosts.map((post) => (
+              <BlogCard key={post.id || post.slug} post={post} />
+            ))}
+          </div>
+        )}
+      </div>
 
-      {/* Highlight Section */}
-      <HighlightSection
-        posts={highlightPosts}
-        isLoading={isLoading}
-      />
-
-      {/* Dynamic Category Sections */}
-      {activeCategory === 'All Posts' && categories
-        .filter(category => category !== 'All Posts')
-        .map(category => (
-          <CategoryNewsSection
-            key={category}
-            posts={posts}
-            isLoading={isLoading}
-            category={category}
-          />
-        ))
-      }
-
-      {/* More Posts Grid */}
-      {(isLoading || filteredPosts.length > 9) && (
-        <section className="py-12 bg-muted/20">
+      {/* Footer Section with "More Stories" */}
+      {(isLoading || (activeCategory === 'All Posts' && filteredPosts.length > 9)) && (
+        <section className="py-24 bg-muted/10 border-t border-border mt-32">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-                More Stories
-              </h2>
+            <div className="flex items-center justify-between mb-12">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <HiQueueList className="w-6 h-6 text-primary" />
+                </div>
+                <h2 className="text-3xl font-bold tracking-tight">Archive Explorer</h2>
+              </div>
+              
               <Link href="/create-post">
-                <Button className="bg-primary hover:bg-primary/90 text-white rounded-full px-6">
-                  <PenSquare className="mr-2 h-4 w-4" />
-                  Write a Story
+                <Button className="bg-primary hover:bg-primary/90 text-white rounded-xl h-12 px-8 shadow-lg shadow-primary/20">
+                  <HiPencilSquare className="mr-2 h-5 w-5" />
+                  Publish Intelligence
                 </Button>
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {isLoading ? (
                 Array.from({ length: 6 }).map((_, i) => (
                   <BlogCardSkeleton key={i} />
                 ))
               ) : (
-                filteredPosts.slice(9).map((post) => (
+                filteredPosts.slice(9, 21).map((post) => (
                   <BlogCard key={post.id || post.slug} post={post} />
                 ))
               )}
             </div>
+            
+            {!isLoading && filteredPosts.length > 21 && (
+              <div className="mt-16 text-center">
+                <Button variant="outline" size="lg" className="rounded-xl border-2 px-10">
+                  Load More Archive
+                </Button>
+              </div>
+            )}
           </div>
         </section>
       )}
 
-      {/* Newsletter CTA */}
       <NewsletterCTA />
     </div>
   );

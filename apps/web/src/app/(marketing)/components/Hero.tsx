@@ -135,8 +135,8 @@ export function Hero() {
               <div className="space-y-4 md:space-y-6">
                 <div className="w-full h-40 sm:h-48 md:h-56 lg:h-64 relative rounded-lg border border-border overflow-hidden shadow-inner bg-slate-900/50">
                   <ImageWithFallback
-                    src="https://images.unsplash.com/photo-1611974717483-9b664a069e2a?auto=format&fit=crop&q=80&w=1200"
-                    alt="Institutional Trading Dashboard Mockup"
+                    src="/images/dashboard-preview.png"
+                    alt="Realtime trading dashboard preview"
                     fill
                     className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-1000"
                   />
@@ -157,6 +157,23 @@ export function Hero() {
                     <div className="text-xs md:text-sm text-muted-foreground">IWM</div>
                     <div className="text-base md:text-lg text-destructive">-0.5%</div>
                   </div>
+                </div>
+
+                <div className="mt-3 bg-card/90 rounded-xl p-3 md:p-4 border border-border space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider">AI Pre-market Pulse</div>
+                      <div className="text-lg md:text-xl font-semibold">72% Bullish</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs px-2 py-1 rounded-lg bg-success/15 text-success">Strong</span>
+                      <span className="text-xs px-2 py-1 rounded-lg bg-warning/15 text-warning">Watch</span>
+                    </div>
+                  </div>
+                  <div className="h-12 rounded-lg border border-border bg-slate-900/60 overflow-hidden">
+                    <div className="h-full w-[63%] bg-gradient-to-r from-success to-primary" />
+                  </div>
+                  <div className="text-xs text-muted-foreground">Analysis based on 52 US sector scans, news sentiment, and options flow.</div>
                 </div>
               </div>
             </div>

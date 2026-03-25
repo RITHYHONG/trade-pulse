@@ -31,6 +31,7 @@ export interface BlogPost {
 	primaryAsset?: string;
 	relatedAssets?: string[];
 	timeHorizon?: string;
+	isDraft?: boolean;
 }
 
 export interface AdItem {
