@@ -5,6 +5,7 @@ import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { formatRelativeTime } from '@/lib/dateUtils';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthorProfile } from '@/hooks/use-author-profile';
@@ -16,19 +17,7 @@ interface CategorySectionProps {
   isLoading?: boolean;
 }
 
-// Helper to format relative time
-function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-
-  if (diffInHours < 1) return 'Just now';
-  if (diffInHours < 24) return `${diffInHours} hours ago`;
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays === 1) return '1 day ago';
-  if (diffInDays < 7) return `${diffInDays} days ago`;
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
+// using shared formatRelativeTime from lib/dateUtils
 
 function formatViews(count?: number): string {
   if (!count) return '0 views';

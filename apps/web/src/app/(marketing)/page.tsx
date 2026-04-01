@@ -9,7 +9,7 @@ import type { Metadata } from 'next';
 
 export default function MarketingHome() {
   return (
-    <div className="overflow-x-hidden min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="scroll-smooth overflow-x-hidden min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
 
       <Hero />
       <ProblemSolution />

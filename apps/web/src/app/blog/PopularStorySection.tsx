@@ -5,6 +5,9 @@ import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
 import { HiArrowRight, HiFire, HiClock } from 'react-icons/hi2';
+import { Star, Bell } from 'lucide-react';
+import Sparkline from '@/components/Sparkline';
+import useWatchlistStore from '@/stores/watchlistStore';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'motion/react';
@@ -12,6 +15,7 @@ import { motion } from 'motion/react';
 interface PopularStorySectionProps {
   posts: BlogPost[];
   isLoading?: boolean;
+  compact?: boolean;
 }
 
 function PopularStorySkeleton() {
@@ -38,12 +42,15 @@ function PopularStorySkeleton() {
   );
 }
 
-function SmallStoryCard({ post }: { post: BlogPost }) {
+function SmallStoryCard({ post, compact }: { post: BlogPost; compact?: boolean }) {
+  const addToWatchlist = useWatchlistStore(state => state.addToWatchlist);
+  const setAlert = useWatchlistStore(state => state.addAlert);
+
   return (
     <Link href={`/blog/${post.slug}`}>
       <motion.article 
         whileHover={{ y: -5 }}
-        className="bg-card/40 backdrop-blur-md rounded-2xl overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-300 group cursor-pointer h-full flex flex-col shadow-lg shadow-black/5"
+        className={`bg-card/40 backdrop-blur-md rounded-2xl overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-300 group cursor-pointer h-full flex flex-col shadow-lg shadow-black/5 ${compact ? 'p-3' : ''}`}
       >
         <div className="relative h-32 overflow-hidden">
           <ImageWithFallback
@@ -54,9 +61,29 @@ function SmallStoryCard({ post }: { post: BlogPost }) {
           />
         </div>
         <div className="p-4 flex-grow flex flex-col justify-between">
-          <h4 className="text-xs font-bold text-foreground leading-tight line-clamp-2 mb-4 group-hover:text-primary transition-colors uppercase tracking-tight">
-            {post.title}
-          </h4>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-primary text-xs font-semibold uppercase tracking-wide">{post.category}</span>
+                {post.primaryAsset && (
+                  <span className="text-xs px-2 py-0.5 bg-muted/20 rounded-full">{post.primaryAsset}</span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <Sparkline data={(post._sparkline as number[]) || [1,2,3,2,3]} className="hidden sm:block" />
+                  <button onClick={(e) => { e.preventDefault(); addToWatchlist(post.slug); }} aria-label="Add to watchlist" className="p-2 rounded-md hover:bg-muted">
+                    <Star className="w-4 h-4" />
+                  </button>
+                  <button onClick={(e) => { e.preventDefault(); setAlert(post.slug); }} aria-label="Set alert" className="p-2 rounded-md hover:bg-muted">
+                    <Bell className="w-4 h-4" />
+                  </button>
+              </div>
+            </div>
+
+            <h4 className="text-xs font-bold text-foreground leading-tight line-clamp-2 mb-4 group-hover:text-primary transition-colors uppercase tracking-tight">
+              {post.title}
+            </h4>
+          </div>
           <div className="flex items-center gap-2 mt-auto">
             <div className="relative w-5 h-5 rounded-full overflow-hidden border border-primary/20">
               <ImageWithFallback
@@ -172,7 +199,7 @@ function MainStoryCard({ post }: { post: BlogPost }) {
   );
 }
 
-export function PopularStorySection({ posts, isLoading }: PopularStorySectionProps) {
+export function PopularStorySection({ posts, isLoading, compact = false }: PopularStorySectionProps) {
   const featuredPost = useMemo(() => posts[0] || null, [posts]);
   const mainPost = useMemo(() => posts[1] || null, [posts]);
   const gridPosts = useMemo(() => posts.slice(2, 5), [posts]);
@@ -215,7 +242,7 @@ export function PopularStorySection({ posts, isLoading }: PopularStorySectionPro
             {mainPost && <MainStoryCard post={mainPost} />}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-auto">
               {gridPosts.map((post) => (
-                <SmallStoryCard key={post.id || post.slug} post={post} />
+                <SmallStoryCard key={post.id || post.slug} post={post} compact={compact} />
               ))}
             </div>
           </div>

@@ -3,10 +3,14 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Star, Bell } from 'lucide-react';
+import Sparkline from '@/components/Sparkline';
+import useWatchlistStore from '@/stores/watchlistStore';
 
 interface HighlightSectionProps {
   posts: BlogPost[];
   isLoading?: boolean;
+  compact?: boolean;
 }
 
 function HighlightSkeleton() {
@@ -32,7 +36,7 @@ function HighlightSkeleton() {
   );
 }
 
-function HighlightGridCard({ post }: { post: BlogPost }) {
+function HighlightGridCard({ post, compact }: { post: BlogPost; compact?: boolean }) {
   return (
     <Link href={`/blog/${post.slug}`}>
       <article className="bg-card rounded-xl overflow-hidden border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 group cursor-pointer h-full">
@@ -52,10 +56,21 @@ function HighlightGridCard({ post }: { post: BlogPost }) {
         </div>
 
         {/* Content */}
-        <div className="p-4">
-          <h4 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-3 group-hover:text-primary transition-colors">
-            {post.title}
-          </h4>
+        <div className={`p-4 ${compact ? 'p-3' : ''}`}>
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-0 group-hover:text-primary transition-colors">
+              {post.title}
+            </h4>
+            <div className="flex items-center gap-2">
+              <Sparkline data={(post._sparkline as number[]) || [1,2,3,2,3]} className="hidden sm:block" />
+              <button onClick={(e) => { e.preventDefault(); addToWatchlist(post.slug); }} aria-label="Add to watchlist" className="p-2 rounded-md hover:bg-muted">
+                <Star className="w-4 h-4" />
+              </button>
+              <button onClick={(e) => { e.preventDefault(); setAlert(post.slug); }} aria-label="Set alert" className="p-2 rounded-md hover:bg-muted">
+                <Bell className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
 
           {/* Author */}
           <div className="flex items-center gap-2">
@@ -75,7 +90,7 @@ function HighlightGridCard({ post }: { post: BlogPost }) {
   );
 }
 
-export function HighlightSection({ posts, isLoading }: HighlightSectionProps) {
+export function HighlightSection({ posts, isLoading, compact = false }: HighlightSectionProps) {
   if (isLoading) {
     return <HighlightSkeleton />;
   }
@@ -157,7 +172,7 @@ export function HighlightSection({ posts, isLoading }: HighlightSectionProps) {
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {gridPosts.map((post) => (
-            <HighlightGridCard key={post.id || post.slug} post={post} />
+            <HighlightGridCard key={post.id || post.slug} post={post} compact={compact} />
           ))}
         </div>
       </div>

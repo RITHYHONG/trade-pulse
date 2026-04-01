@@ -7,24 +7,13 @@ import { HiArrowRight, HiChevronLeft, HiChevronRight, HiNewspaper } from 'react-
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState } from 'react';
+import { formatRelativeTime } from '@/lib/dateUtils';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface LatestNewsSectionProps {
   posts: BlogPost[];
   isLoading?: boolean;
-}
-
-function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-
-  if (diffInHours < 1) return 'Just now';
-  if (diffInHours < 24) return `${diffInHours}h ago`;
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays === 1) return 'Yesterday';
-  if (diffInDays < 7) return `${diffInDays}d ago`;
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  compact?: boolean;
 }
 
 function LatestNewsSkeleton() {
@@ -54,19 +43,19 @@ function LatestNewsSkeleton() {
   );
 }
 
-function LatestNewsCard({ post }: { post: BlogPost }) {
+function LatestNewsCard({ post, compact }: { post: BlogPost; compact?: boolean }) {
   return (
     <Link href={`/blog/${post.slug}`}>
       <motion.article 
         whileHover={{ y: -4 }}
-        className="bg-card/40 backdrop-blur-md rounded-[2.5rem] overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-500 group cursor-pointer h-full flex flex-col shadow-2xl shadow-primary/5"
+        className={`bg-card/40 backdrop-blur-md rounded-[2.5rem] overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-500 group cursor-pointer h-full flex flex-col shadow-2xl shadow-primary/5 ${compact ? 'p-4' : ''}`}
       >
         <div className="relative h-64 md:h-72 overflow-hidden">
           <ImageWithFallback
             src={post.featuredImage ?? ''}
             alt={post.title}
             fill
-            className="object-cover transition-transform duration-1000 group-hover:scale-105"
+            className={`object-cover transition-transform duration-1000 group-hover:scale-105 ${compact ? 'h-40 md:h-48' : ''}`}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           
@@ -115,7 +104,7 @@ function LatestNewsCard({ post }: { post: BlogPost }) {
   );
 }
 
-export function LatestNewsSection({ posts, isLoading }: LatestNewsSectionProps) {
+export function LatestNewsSection({ posts, isLoading, compact = false }: LatestNewsSectionProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const postsPerPage = 2;
 
@@ -181,7 +170,7 @@ export function LatestNewsSection({ posts, isLoading }: LatestNewsSectionProps) 
               className="grid grid-cols-1 md:grid-cols-2 gap-8"
             >
               {pages[currentPage].map((post) => (
-                <LatestNewsCard key={post.id || post.slug} post={post} />
+                <LatestNewsCard key={post.id || post.slug} post={post} compact={compact} />
               ))}
             </motion.div>
           </AnimatePresence>

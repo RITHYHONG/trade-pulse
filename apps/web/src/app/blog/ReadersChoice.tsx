@@ -5,27 +5,20 @@ import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { formatRelativeTime } from '@/lib/dateUtils';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import useWatchlistStore from '@/stores/watchlistStore';
+import { Star, Bell } from 'lucide-react';
+import Sparkline from '@/components/Sparkline';
 
 interface ReadersChoiceProps {
   posts: BlogPost[];
   isLoading?: boolean;
+  compact?: boolean;
 }
 
-// Helper to format relative time
-function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-
-  if (diffInHours < 1) return 'Just now';
-  if (diffInHours < 24) return `${diffInHours} hours ago`;
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays === 1) return '1 day ago';
-  if (diffInDays < 7) return `${diffInDays} days ago`;
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
+// using shared formatRelativeTime from lib/dateUtils
 
 // Skeleton for loading state
 function ReadersChoiceSkeleton() {
@@ -61,33 +54,37 @@ function ReadersChoiceSkeleton() {
 }
 
 // Small card component for the right side grid
-function SmallPostCard({ post }: { post: BlogPost }) {
+function SmallPostCard({ post, compact }: { post: BlogPost; compact?: boolean }) {
+  const addToWatchlist = useWatchlistStore(state => state.addToWatchlist);
+  const setAlert = useWatchlistStore(state => state.addAlert);
+
   return (
     <Link href={`/blog/${post.slug}`}>
-      <article className="flex gap-4 p-3 rounded-xl bg-card hover:bg-muted/50 transition-all duration-300 group cursor-pointer border border-border hover:border-primary/20 hover:shadow-lg">
+      <article className={`flex gap-4 ${compact ? 'p-2' : 'p-3'} rounded-xl bg-card hover:bg-muted/50 transition-all duration-300 group cursor-pointer border border-border hover:border-primary/20 hover:shadow-lg`}>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-primary text-xs font-semibold uppercase tracking-wide">
-              {post.category}
-            </span>
+            <span className="text-primary text-xs font-semibold uppercase tracking-wide">{post.category}</span>
             <span className="text-muted-foreground text-xs">•</span>
-            <span className="text-muted-foreground text-xs">
-              {formatRelativeTime(post.publishedAt)}
-            </span>
+            <span className="text-muted-foreground text-xs">{formatRelativeTime(post.publishedAt)}</span>
+            {post.primaryAsset && <span className="ml-2 text-xs px-2 py-0.5 bg-muted/20 rounded-full">{post.primaryAsset}</span>}
           </div>
 
-          <h3 className="text-foreground text-sm font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">
-            {post.title}
-          </h3>
+          <h3 className="text-foreground text-sm font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">{post.title}</h3>
         </div>
 
         <div className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
-          <ImageWithFallback
-            src={post.featuredImage ?? ''}
-            alt={post.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-110"
-          />
+          <ImageWithFallback src={post.featuredImage ?? ''} alt={post.title} fill className="object-cover transition-transform duration-300 group-hover:scale-110" />
+          <div className="absolute top-2 left-2">
+            <Sparkline data={(post._sparkline as number[]) || [1,2,3]} width={48} height={18} />
+          </div>
+        </div>
+        <div className="absolute top-2 right-2 flex gap-1">
+          <button onClick={(e) => { e.preventDefault(); addToWatchlist(post.slug); }} aria-label="Add to watchlist" className="p-1 rounded-md hover:bg-muted">
+            <Star className="w-4 h-4" />
+          </button>
+          <button onClick={(e) => { e.preventDefault(); setAlert(post.slug); }} aria-label="Set alert" className="p-1 rounded-md hover:bg-muted">
+            <Bell className="w-4 h-4" />
+          </button>
         </div>
       </article>
     </Link>
@@ -140,7 +137,7 @@ function LargeFeaturedCard({ post }: { post: BlogPost }) {
   );
 }
 
-export function ReadersChoice({ posts, isLoading }: ReadersChoiceProps) {
+export function ReadersChoice({ posts, isLoading, compact = false }: ReadersChoiceProps) {
   const featuredPost = useMemo(() => posts[0] || null, [posts]);
   const gridPosts = useMemo(() => posts.slice(1, 7), [posts]);
 
@@ -178,7 +175,7 @@ export function ReadersChoice({ posts, isLoading }: ReadersChoiceProps) {
 
           <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-4 content-start">
             {gridPosts.map((post) => (
-              <SmallPostCard key={post.id || post.slug} post={post} />
+              <SmallPostCard key={post.id || post.slug} post={post} compact={compact} />
             ))}
           </div>
         </div>

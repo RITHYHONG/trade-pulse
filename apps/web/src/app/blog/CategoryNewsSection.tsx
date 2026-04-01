@@ -7,11 +7,15 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Heart, Bell } from 'lucide-react';
+import useWatchlistStore from '@/stores/watchlistStore';
+import Sparkline from '@/components/Sparkline';
 
 interface CategoryNewsSectionProps {
   posts: BlogPost[];
   isLoading?: boolean;
   category?: string;
+  compact?: boolean;
 }
 
 function CategoryNewsSkeleton() {
@@ -43,7 +47,8 @@ function CategoryNewsSkeleton() {
 }
 
 // Small card for bottom grid
-function SmallNewsCard({ post }: { post: BlogPost }) {
+function SmallNewsCard({ post, compact }: { post: BlogPost; compact?: boolean }) {
+  const { addToWatchlist, removeFromWatchlist, addAlert, removeAlert, isInWatchlist, hasAlert } = useWatchlistStore();
   return (
     <Link href={`/blog/${post.slug}`}>
       <article className="bg-card rounded-xl overflow-hidden border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 group cursor-pointer h-full">
@@ -56,29 +61,55 @@ function SmallNewsCard({ post }: { post: BlogPost }) {
             className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
 
-          {/* Arrow Icon */}
-          <div className="absolute top-3 right-3 w-8 h-8 bg-primary rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <ArrowRight className="w-4 h-4 text-white" />
+          {/* Quick actions */}
+          <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={(e) => { e.stopPropagation(); e.preventDefault(); isInWatchlist(post.slug) ? removeFromWatchlist(post.slug) : addToWatchlist(post.slug); }}
+              aria-label="toggle watchlist"
+              className="w-8 h-8 rounded-lg bg-white/90 dark:bg-black/70 flex items-center justify-center shadow-sm"
+            >
+              <Heart className={`w-4 h-4 ${isInWatchlist(post.slug) ? 'text-red-500' : 'text-slate-700'}`} />
+            </button>
+
+            <button
+              onClick={(e) => { e.stopPropagation(); e.preventDefault(); hasAlert(post.slug) ? removeAlert(post.slug) : addAlert(post.slug); }}
+              aria-label="toggle alert"
+              className="w-8 h-8 rounded-lg bg-white/90 dark:bg-black/70 flex items-center justify-center shadow-sm"
+            >
+              <Bell className={`w-4 h-4 ${hasAlert(post.slug) ? 'text-yellow-500' : 'text-slate-700'}`} />
+            </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-4">
-          <h4 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-3 group-hover:text-primary transition-colors">
-            {post.title}
-          </h4>
+        <div className={`p-4 ${compact ? 'py-3' : ''}`}>
+          <div className="flex items-start justify-between gap-3">
+            <h4 className="text-sm font-semibold text-foreground leading-snug line-clamp-2 mb-1 group-hover:text-primary transition-colors">
+              {post.title}
+            </h4>
+            {/* Primary asset badge */}
+            {post.primaryAsset && (
+              <Badge variant="outline" className="text-xs h-fit self-start">{post.primaryAsset}</Badge>
+            )}
+          </div>
 
-          {/* Author */}
-          <div className="flex items-center gap-2">
-            <div className="relative w-5 h-5 rounded-full overflow-hidden">
-              <ImageWithFallback
-                src={post.author?.avatar || post.author?.avatarUrl || ''}
-                alt={post.author?.name || 'Author'}
-                fill
-                className="object-cover"
-              />
+          <div className="flex items-center justify-between mt-2">
+            <div className="flex items-center gap-2">
+              <div className="relative w-5 h-5 rounded-full overflow-hidden">
+                <ImageWithFallback
+                  src={post.author?.avatar || post.author?.avatarUrl || ''}
+                  alt={post.author?.name || 'Author'}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <span className="text-xs text-muted-foreground">{post.author?.name}</span>
             </div>
-            <span className="text-xs text-muted-foreground">{post.author?.name}</span>
+
+            {/* Sparkline */}
+            <div className="hidden md:block">
+              <Sparkline data={(post as any)._sparkline || []} />
+            </div>
           </div>
         </div>
       </article>
@@ -87,7 +118,8 @@ function SmallNewsCard({ post }: { post: BlogPost }) {
 }
 
 // Featured large card (left side)
-function FeaturedNewsCard({ post }: { post: BlogPost }) {
+function FeaturedNewsCard({ post, compact }: { post: BlogPost; compact?: boolean }) {
+  const { addToWatchlist, removeFromWatchlist, addAlert, removeAlert, isInWatchlist, hasAlert } = useWatchlistStore();
   return (
     <Link href={`/blog/${post.slug}`}>
       <article className="relative h-full min-h-[500px] rounded-2xl overflow-hidden group cursor-pointer">
@@ -102,9 +134,23 @@ function FeaturedNewsCard({ post }: { post: BlogPost }) {
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
-        {/* Arrow Icon */}
-        <div className="absolute bottom-6 right-6 w-12 h-12 bg-primary rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 group-hover:rotate-12">
-          <ArrowRight className="w-5 h-5 text-white" />
+        {/* Quick actions */}
+        <div className="absolute top-4 right-4 flex items-center gap-3">
+          <button
+            onClick={(e) => { e.stopPropagation(); e.preventDefault(); isInWatchlist(post.slug) ? removeFromWatchlist(post.slug) : addToWatchlist(post.slug); }}
+            aria-label="toggle watchlist"
+            className="w-10 h-10 rounded-lg bg-white/90 dark:bg-black/60 flex items-center justify-center shadow"
+          >
+            <Heart className={`w-5 h-5 ${isInWatchlist(post.slug) ? 'text-red-500' : 'text-slate-700'}`} />
+          </button>
+
+          <button
+            onClick={(e) => { e.stopPropagation(); e.preventDefault(); hasAlert(post.slug) ? removeAlert(post.slug) : addAlert(post.slug); }}
+            aria-label="toggle alert"
+            className="w-10 h-10 rounded-lg bg-white/90 dark:bg-black/60 flex items-center justify-center shadow"
+          >
+            <Bell className={`w-5 h-5 ${hasAlert(post.slug) ? 'text-yellow-400' : 'text-slate-700'}`} />
+          </button>
         </div>
 
         {/* Content */}
@@ -125,16 +171,23 @@ function FeaturedNewsCard({ post }: { post: BlogPost }) {
           </p>
 
           {/* Author */}
-          <div className="flex items-center gap-3">
-            <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-white/30">
-              <ImageWithFallback
-                src={post.author?.avatar || post.author?.avatarUrl || ''}
-                alt={post.author?.name || 'Author'}
-                fill
-                className="object-cover"
-              />
+          <div className="flex items-center gap-3 justify-between">
+            <div className="flex items-center gap-3">
+              <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-white/30">
+                <ImageWithFallback
+                  src={post.author?.avatar || post.author?.avatarUrl || ''}
+                  alt={post.author?.name || 'Author'}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <span className="text-white font-medium text-sm">{post.author?.name}</span>
             </div>
-            <span className="text-white font-medium text-sm">{post.author?.name}</span>
+
+            {/* Small sparkline */}
+            <div className="hidden md:block">
+              <Sparkline data={(post as any)._sparkline || []} stroke="#fff" height={28} width={96} />
+            </div>
           </div>
         </div>
       </article>
@@ -143,7 +196,8 @@ function FeaturedNewsCard({ post }: { post: BlogPost }) {
 }
 
 // Main featured card (right side top)
-function MainNewsCard({ post }: { post: BlogPost }) {
+function MainNewsCard({ post, compact }: { post: BlogPost; compact?: boolean }) {
+  const { addToWatchlist, removeFromWatchlist, addAlert, removeAlert, isInWatchlist, hasAlert } = useWatchlistStore();
   return (
     <Link href={`/blog/${post.slug}`}>
       <article className="bg-card rounded-2xl overflow-hidden border border-border hover:border-primary/30 hover:shadow-xl transition-all duration-300 group cursor-pointer">
@@ -157,9 +211,23 @@ function MainNewsCard({ post }: { post: BlogPost }) {
               className="object-cover transition-transform duration-500 group-hover:scale-110"
             />
 
-            {/* Arrow Icon */}
-            <div className="absolute bottom-4 right-4 w-10 h-10 bg-primary rounded-xl flex items-center justify-center transition-transform group-hover:scale-110">
-              <ArrowRight className="w-5 h-5 text-white" />
+            {/* Quick actions */}
+            <div className="absolute top-3 right-3 flex items-center gap-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); e.preventDefault(); isInWatchlist(post.slug) ? removeFromWatchlist(post.slug) : addToWatchlist(post.slug); }}
+                aria-label="toggle watchlist"
+                className="w-9 h-9 rounded-lg bg-white/95 dark:bg-black/60 flex items-center justify-center shadow"
+              >
+                <Heart className={`w-4 h-4 ${isInWatchlist(post.slug) ? 'text-red-500' : 'text-slate-700'}`} />
+              </button>
+
+              <button
+                onClick={(e) => { e.stopPropagation(); e.preventDefault(); hasAlert(post.slug) ? removeAlert(post.slug) : addAlert(post.slug); }}
+                aria-label="toggle alert"
+                className="w-9 h-9 rounded-lg bg-white/95 dark:bg-black/60 flex items-center justify-center shadow"
+              >
+                <Bell className={`w-4 h-4 ${hasAlert(post.slug) ? 'text-yellow-400' : 'text-slate-700'}`} />
+              </button>
             </div>
           </div>
 

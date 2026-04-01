@@ -6,31 +6,19 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
 import { Skeleton, SkeletonText } from '@/components/ui/skeleton';
 import { ArrowRight } from 'lucide-react';
+import { formatRelativeTime } from '@/lib/dateUtils';
 
 interface BlogCardProps {
   post: BlogPost;
+  compact?: boolean;
 }
 
-// Helper to format relative time
-function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-
-  if (diffInHours < 1) return 'Just now';
-  if (diffInHours < 24) return `${diffInHours} hours ago`;
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays === 1) return '1 day ago';
-  if (diffInDays < 7) return `${diffInDays} days ago`;
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-export function BlogCard({ post }: BlogCardProps) {
+export function BlogCard({ post, compact = false }: BlogCardProps) {
 
   return (
     <Link href={`/blog/${post.slug}`}>
       <article
-        className="flex gap-4 p-4 rounded-xl bg-card border border-border cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/30 group h-full"
+        className={`flex gap-4 ${compact ? 'p-3' : 'p-4'} rounded-xl bg-card border border-border cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:border-primary/30 group h-full`}
       >
         {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col">
@@ -39,10 +27,21 @@ export function BlogCard({ post }: BlogCardProps) {
             <span className="text-primary text-xs font-semibold uppercase tracking-wide">
               {post.category}
             </span>
+            {/* Primary asset badge (for traders) */}
+            {post.primaryAsset && (
+              <Badge className="text-xs px-2 py-0.5 ml-1 bg-muted/30 text-foreground border-0">{post.primaryAsset}</Badge>
+            )}
             <span className="text-muted-foreground text-xs">•</span>
             <span className="text-muted-foreground text-xs">
               {formatRelativeTime(post.publishedAt)}
             </span>
+
+            {/* Confidence level */}
+            {typeof post.confidenceLevel === 'number' && (
+              <span className="ml-2">
+                <Badge className="text-[11px] px-2 py-0.5 bg-primary/10 text-primary border-0">{Math.round(post.confidenceLevel)}%</Badge>
+              </span>
+            )}
           </div>
 
           {/* Title */}
@@ -51,9 +50,11 @@ export function BlogCard({ post }: BlogCardProps) {
           </h3>
 
           {/* Excerpt - Optional for larger cards */}
-          <p className="text-muted-foreground text-sm line-clamp-2 leading-relaxed hidden sm:block">
-            {post.excerpt}
-          </p>
+          {!compact && (
+            <p className="text-muted-foreground text-sm line-clamp-2 leading-relaxed hidden sm:block">
+              {post.excerpt}
+            </p>
+          )}
         </div>
 
         {/* Thumbnail */}

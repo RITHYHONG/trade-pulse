@@ -5,6 +5,7 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HiArrowRight, HiClock, HiUser } from 'react-icons/hi2';
+import { formatRelativeTime } from '@/lib/dateUtils';
 import { motion } from 'motion/react';
 
 interface HeroSectionProps {
@@ -14,19 +15,7 @@ interface HeroSectionProps {
   onSearch?: (query: string) => void;
 }
 
-// Helper to format relative time
-function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-
-  if (diffInHours < 1) return 'Just now';
-  if (diffInHours < 24) return `${diffInHours}h ago`;
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays === 1) return 'Yesterday';
-  if (diffInDays < 7) return `${diffInDays}d ago`;
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
+// using shared formatRelativeTime from lib/dateUtils
 
 function HeroSkeleton() {
   return (
@@ -87,7 +76,7 @@ export function HeroSection({ featuredPost, sidebarPosts, isLoading }: HeroSecti
   if (isLoading) return <HeroSkeleton />;
 
   return (
-    <section className="py-12 relative">
+    <section className="py-12 mt-8 relative">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
@@ -134,10 +123,9 @@ export function HeroSection({ featuredPost, sidebarPosts, isLoading }: HeroSecti
                         {featuredPost.title}
                       </h2>
 
-                      <p className="text-white/70 text-base md:text-lg line-clamp-2 leading-relaxed">
-                        {featuredPost.excerpt}
-                      </p>
 
+
+                    </motion.div>
                       <div className="flex items-center justify-between pt-4 border-t border-white/10">
                         <div className="flex items-center gap-4">
                           <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/40 p-0.5">
@@ -163,7 +151,6 @@ export function HeroSection({ featuredPost, sidebarPosts, isLoading }: HeroSecti
                           </div>
                         </div>
                       </div>
-                    </motion.div>
                   </div>
                 </article>
               </Link>
@@ -172,13 +159,7 @@ export function HeroSection({ featuredPost, sidebarPosts, isLoading }: HeroSecti
 
           {/* Sidebar Headline Stream */}
           <div className="lg:col-span-4 flex flex-col gap-6">
-            <div className="flex items-center justify-between px-2">
-              <h3 className="font-bold text-sm uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <HiUser className="w-4 h-4" />
-                Latest Stories
-              </h3>
-              <Link href="/blog" className="text-xs font-bold text-primary hover:underline">View All</Link>
-            </div>
+
             
             <div className="flex flex-col gap-4 flex-1">
               {sidebarPosts.slice(0, 4).map((post) => (

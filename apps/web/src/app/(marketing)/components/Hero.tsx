@@ -11,6 +11,7 @@ import {
   ScrollVelocityRow,
 } from '@/components/ui/scroll-based-velocity';
 
+
 import { MarketSentimentWidget } from './MarketSentimentWidget';
 
 export function Hero() {
@@ -135,7 +136,7 @@ export function Hero() {
               <div className="space-y-4 md:space-y-6">
                 <div className="w-full h-40 sm:h-48 md:h-56 lg:h-64 relative rounded-lg border border-border overflow-hidden shadow-inner bg-slate-900/50">
                   <ImageWithFallback
-                    src="/images/dashboard-preview.png"
+                    src="https://via.placeholder.com/1200x630.png?text=Dashboard+Preview"
                     alt="Realtime trading dashboard preview"
                     fill
                     className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-1000"

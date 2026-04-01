@@ -59,6 +59,7 @@ import { getUserDrafts } from '@/lib/blog-firestore-service';
 
 export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = [] }: BlogIndexProps) {
   const [activeCategory, setActiveCategory] = useState('All Posts');
+  const [compactView, setCompactView] = useState(false);
   const [posts] = useState<BlogPost[]>(initialPosts);
   const [featuredPosts] = useState<BlogPost[]>(initialFeatured);
   const [drafts, setDrafts] = useState<BlogPost[]>([]);
@@ -169,6 +170,14 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
               activeCategory={activeCategory}
               onCategoryChange={handleCategoryChange}
             />
+            <Button
+              variant={compactView ? 'secondary' : 'ghost'}
+              onClick={() => setCompactView((s) => !s)}
+              className="ml-2 h-10"
+              aria-pressed={compactView}
+            >
+              {compactView ? 'Dense View' : 'Compact View'}
+            </Button>
           </div>
         </div>
 
@@ -188,9 +197,9 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
         {/* Dynamic Layout based on category selection */}
         {activeCategory === 'All Posts' ? (
           <div className="space-y-24">
-            <LatestNewsSection posts={filteredPosts.slice(0, 6)} isLoading={isLoading} />
-            <PopularStorySection posts={popularPosts} isLoading={isLoading} />
-            <HighlightSection posts={highlightPosts} isLoading={isLoading} />
+            <LatestNewsSection posts={filteredPosts.slice(0, 6)} isLoading={isLoading} compact={compactView} />
+            <PopularStorySection posts={popularPosts} isLoading={isLoading} compact={compactView} />
+            <HighlightSection posts={highlightPosts} isLoading={isLoading} compact={compactView} />
             
             {categories
               .filter(category => category !== 'All Posts')
@@ -207,7 +216,7 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.map((post) => (
-              <BlogCard key={post.id || post.slug} post={post} />
+              <BlogCard key={post.id || post.slug} post={post} compact={compactView} />
             ))}
           </div>
         )}
@@ -240,7 +249,7 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
                 ))
               ) : (
                 filteredPosts.slice(9, 21).map((post) => (
-                  <BlogCard key={post.id || post.slug} post={post} />
+                  <BlogCard key={post.id || post.slug} post={post} compact={compactView} />
                 ))
               )}
             </div>
