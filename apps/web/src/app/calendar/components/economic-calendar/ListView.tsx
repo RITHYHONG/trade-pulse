@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { timeFormatter, shortDateFormatter } from '@/lib/formatters';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 // --- Static Constants & Helpers ---
 const IMPACT_SCORE = {
@@ -289,6 +290,8 @@ export const ListView = memo(({ events, onEventClick, isLoading = false }: ListV
 
   const SortIcon = sortOrder === 'asc' ? ChevronUp : ChevronDown;
 
+  const isSmallViewport = useMediaQuery('(max-width: 639px)');
+
   if (isLoading) {
     return (
       <div className="p-4 space-y-4">
@@ -297,6 +300,41 @@ export const ListView = memo(({ events, onEventClick, isLoading = false }: ListV
         ))}
       </div>
     )
+  }
+
+  if (isSmallViewport) {
+    return (
+      <ScrollArea className="h-full p-4">
+        <div className="space-y-3">
+          {sortedEvents.map(event => (
+            <div key={event.id} className="bg-card/40 border border-border/40 rounded-xl p-3">
+              <div className="flex items-start justify-between">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <div className={cn("w-2.5 h-2.5 rounded-full mt-0.5", IMPACT_STYLES[event.impact] || IMPACT_STYLES.low)} />
+                    <div className="font-bold text-sm truncate">{event.name}</div>
+                  </div>
+                  <div className="text-[0.75rem] text-muted-foreground mt-1">{event.country} • {timeFormatter.format(event.datetime)}</div>
+                </div>
+                <div className="flex-shrink-0 text-right ml-3">
+                  <div className="text-sm font-mono font-bold">{event.consensus}{event.unit}</div>
+                  <div className="text-[0.7rem] text-muted-foreground">Prev {event.previous}{event.unit}</div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between mt-3">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="h-6 text-[0.65rem]">{event.impact.toUpperCase()}</Badge>
+                  <div className="text-[0.75rem] text-muted-foreground">{event.category}</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button size="sm" variant="ghost" onClick={() => onEventClick(event)}>View</Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+    );
   }
 
   return (

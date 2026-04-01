@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import { cn } from '@/lib/utils';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { timeFormatter } from '@/lib/formatters';
 
 // --- Pure Helper Functions (Moved Outside Component) ---
@@ -108,6 +109,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const isSmallViewport = useMediaQuery('(max-width: 639px)');
 
   useEffect(() => {
     if (!event) return;
@@ -234,8 +236,8 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
         aria-labelledby="event-title"
         aria-describedby="event-description"
         className={cn(
-          "fixed right-0 top-0 h-full w-[600px] bg-card border-l border-border shadow-2xl z-50 overflow-y-auto",
-          !prefersReducedMotion && "animate-in slide-in-from-right duration-300"
+          isSmallViewport ? "fixed inset-0 w-full h-full bg-card z-50 overflow-y-auto p-4" : "fixed right-0 top-0 h-full w-[600px] bg-card border-l border-border shadow-2xl z-50 overflow-y-auto",
+          !prefersReducedMotion && (isSmallViewport ? "animate-in fade-in duration-200" : "animate-in slide-in-from-right duration-300")
         )}
       >
         {/* Header Section */}
