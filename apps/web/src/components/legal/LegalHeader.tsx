@@ -8,9 +8,9 @@ interface Props {
   title: string;
   version?: string;
   effectiveDate?: string;
-  selectedRegion: string;
-  regions: string[];
-  onRegionChange: (r: string) => void;
+  selectedRegion?: string;
+  regions?: string[];
+  onRegionChange?: (r: string) => void;
   onDownload?: () => void;
   onPrint?: () => void;
   onRequestData?: () => void;
@@ -27,6 +27,7 @@ export default function LegalHeader({
   onPrint,
   onRequestData,
 }: Props) {
+  const showRegionSelector = regions && regions.length > 1 && onRegionChange;
   return (
     <div className="border-b border-border bg-card">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
@@ -46,21 +47,23 @@ export default function LegalHeader({
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Globe className="w-5 h-5 text-primary" />
-              <select
-                value={selectedRegion}
-                onChange={(e) => onRegionChange(e.target.value)}
-                className="bg-muted text-foreground px-4 py-2 rounded-lg border border-border hover:border-[#00F5FF]/50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#00F5FF]/50"
-                aria-label="Select your region"
-              >
-                {regions.map((region) => (
-                  <option key={region} value={region}>
-                    {region}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {showRegionSelector && (
+              <div className="flex items-center gap-2">
+                <Globe className="w-5 h-5 text-primary" />
+                <select
+                  value={selectedRegion}
+                  onChange={(e) => onRegionChange!(e.target.value)}
+                  className="bg-muted text-foreground px-4 py-2 rounded-lg border border-border hover:border-[#00F5FF]/50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#00F5FF]/50"
+                  aria-label="Select your region"
+                >
+                  {regions!.map((region) => (
+                    <option key={region} value={region}>
+                      {region}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div className="flex flex-wrap gap-3">
               <Button onClick={onDownload} className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-[#353B52] transition-colors" aria-label="Download PDF">
@@ -71,10 +74,12 @@ export default function LegalHeader({
                 <Printer className="w-4 h-4" />
                 <span className="hidden sm:inline">Print</span>
               </Button>
-              <Button onClick={onRequestData} className="flex items-center gap-2 px-4 py-2 bg-primary text-foreground rounded-lg hover:bg-[#0052CC] transition-colors" aria-label="Request Data">
-                <Shield className="w-4 h-4" />
-                <span className="hidden sm:inline">Request Data</span>
-              </Button>
+              {onRequestData && (
+                <Button onClick={onRequestData} className="flex items-center gap-2 px-4 py-2 bg-primary text-foreground rounded-lg hover:bg-[#0052CC] transition-colors" aria-label="Request Data">
+                  <Shield className="w-4 h-4" />
+                  <span className="hidden sm:inline">Request Data</span>
+                </Button>
+              )}
             </div>
           </div>
         </div>

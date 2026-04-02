@@ -35,7 +35,7 @@ function Accordion({ title, icon, children, defaultOpen = false }: AccordionProp
       >
         <div className="flex items-center gap-4">
           <div className="text-primary">{icon}</div>
-          <h2 className="text-xl font-semibold text-foreground text-left">{title}</h2>
+          <span className="text-xl font-semibold text-foreground text-left">{title}</span>
         </div>
         <ChevronDown
           className={`w-5 h-5 text-primary transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
@@ -186,7 +186,7 @@ export default function PrivacyPolicyPage() {
                   key={section.id}
                   onClick={() => scrollToSection(section.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200 justify-start ${activeSection === section.id ? 'bg-primary text-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
-                  aria-current={activeSection === section.id ? 'true' : 'false'}
+                  aria-current={activeSection === section.id ? 'location' : undefined}
                 >
                   {section.icon}
                   <span className="text-sm">{section.label}</span>
