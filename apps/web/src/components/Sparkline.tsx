@@ -26,14 +26,14 @@ export function Sparkline({ data, width = 80, height = 24, stroke = '#06b6d4', c
   // Also create a smooth path using simple polyline
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className={className}>
-      <polyline
+      {/* <polyline
         fill="none"
         stroke={stroke}
         strokeWidth={1.5}
         points={points}
         strokeLinecap="round"
         strokeLinejoin="round"
-      />
+      /> */}
     </svg>
   );
 }
