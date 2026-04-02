@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useConsent } from '@/components/consent/ConsentManager';
 
 // Cookie data structure
 interface CookieData {
@@ -313,13 +314,8 @@ export default function CookiePolicyPage() {
       const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
       const [isScanning, setIsScanning] = useState(false);
 
-      const [consentPreferences, setConsentPreferences] = useState<ConsentPreferences>({
-            strictlyNecessary: true,
-            performance: false,
-            functionality: false,
-            marketing: false,
-            thirdParty: false,
-      });
+      // Persist consent using the shared hook
+      const { consent: consentPreferences, setConsent: setConsentPreferences, acceptAll, rejectNonEssential } = useConsent();
 
       const [consentHistory, setConsentHistory] = useState<Array<{
             timestamp: Date;
@@ -380,29 +376,13 @@ export default function CookiePolicyPage() {
             setConsentHistory(prev => [newHistoryEntry, ...prev]);
             setLastUpdated(new Date());
 
-            // In production, this would save to backend
+            // persisted automatically by hook
             alert('Your cookie preferences have been saved successfully!');
       };
 
-      const handleSelectAll = () => {
-            setConsentPreferences({
-                  strictlyNecessary: true,
-                  performance: true,
-                  functionality: true,
-                  marketing: true,
-                  thirdParty: true,
-            });
-      };
+      const handleSelectAll = () => acceptAll();
 
-      const handleSelectNone = () => {
-            setConsentPreferences({
-                  strictlyNecessary: true,
-                  performance: false,
-                  functionality: false,
-                  marketing: false,
-                  thirdParty: false,
-            });
-      };
+      const handleSelectNone = () => rejectNonEssential();
 
       const handleResetToDefault = () => {
             setConsentPreferences({

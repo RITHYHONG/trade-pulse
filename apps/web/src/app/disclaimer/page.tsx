@@ -30,6 +30,7 @@ function AccordionSection({ id, title, icon, children, defaultOpen = false, isWa
         }`}
     >
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full flex items-center justify-between p-6 transition-colors ${isWarning
             ? 'bg-[#EF4444]/20 hover:bg-[#EF4444]/30'
@@ -39,9 +40,9 @@ function AccordionSection({ id, title, icon, children, defaultOpen = false, isWa
       >
         <div className="flex items-center gap-4">
           <div className={isWarning ? 'text-[#EF4444]' : 'text-[#00F5FF]'}>{icon}</div>
-          <h2 className={`text-xl font-semibold text-left ${isWarning ? 'text-[#EF4444]' : 'text-white'}`}>
+          <span className={`text-xl font-semibold text-left ${isWarning ? 'text-[#EF4444]' : 'text-white'}`}>
             {title}
-          </h2>
+          </span>
         </div>
         <ChevronDown
           className={`w-5 h-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''
