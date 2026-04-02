@@ -29,6 +29,7 @@ function Accordion({ title, icon, children, defaultOpen = false }: AccordionProp
   return (
     <div className="border border-border rounded-lg overflow-hidden mb-5 transition-all duration-300 hover:border-[#00F5FF]/30">
       <Button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-6 bg-muted hover:bg-[#353B52] transition-colors"
         aria-expanded={isOpen}

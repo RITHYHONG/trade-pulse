@@ -52,7 +52,7 @@ export default function LegalHeader({
                 <Globe className="w-5 h-5 text-primary" />
                 <select
                   value={selectedRegion}
-                  onChange={(e) => onRegionChange!(e.target.value)}
+                  onChange={(e) => onRegionChange?.(e.target.value)}
                   className="bg-muted text-foreground px-4 py-2 rounded-lg border border-border hover:border-[#00F5FF]/50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#00F5FF]/50"
                   aria-label="Select your region"
                 >

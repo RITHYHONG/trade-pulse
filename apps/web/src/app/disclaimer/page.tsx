@@ -30,6 +30,7 @@ function AccordionSection({ id, title, icon, children, defaultOpen = false, isWa
         }`}
     >
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full flex items-center justify-between p-6 transition-colors ${isWarning
             ? 'bg-[#EF4444]/20 hover:bg-[#EF4444]/30'
