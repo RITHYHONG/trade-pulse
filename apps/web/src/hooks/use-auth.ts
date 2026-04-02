@@ -12,6 +12,7 @@ export function useAuth() {
     signInWithGoogleRedirect,
     signOut,
     resetPassword,
+    sendMagicLink,
     initializeAuth,
     setError,
   } = useAuthStore();
@@ -32,6 +33,7 @@ export function useAuth() {
     signInWithGoogleRedirect,
     signOut,
     resetPassword,
+    sendMagicLink,
     clearError: () => setError(null),
   };
 }

@@ -6,6 +6,9 @@ import {
   User,
   updateProfile,
   sendPasswordResetEmail,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
 } from 'firebase/auth';
 import { auth } from './firebase';
 
@@ -77,6 +80,61 @@ export async function resetPassword(email: string): Promise<void> {
     await sendPasswordResetEmail(auth, email);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to send password reset email';
+    throw new Error(message);
+  }
+}
+
+export async function sendMagicLink(email: string): Promise<void> {
+  try {
+    if (typeof window === 'undefined') {
+      throw new Error('sendMagicLink must be called from the client');
+    }
+
+    const actionCodeSettings = {
+      // After sign-in, the user will be redirected to this URL
+      url: `${window.location.origin}/magic-link`,
+      handleCodeInApp: true,
+    };
+
+    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+
+    // Persist email to localStorage so the magic-link landing page can read it
+    try {
+      window.localStorage.setItem('magic_email', email);
+    } catch (e) {
+      // ignore
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to send sign-in link';
+    throw new Error(message);
+  }
+}
+
+export async function completeMagicSignIn(email?: string): Promise<User> {
+  try {
+    if (typeof window === 'undefined') {
+      throw new Error('completeMagicSignIn must be called from the client');
+    }
+
+    const href = window.location.href;
+    if (!isSignInWithEmailLink(auth, href)) {
+      throw new Error('Not a valid sign-in link');
+    }
+
+    let userEmail = email;
+    if (!userEmail) {
+      userEmail = window.localStorage.getItem('magic_email') || '';
+    }
+
+    if (!userEmail) {
+      // Ask caller to provide email if not available
+      throw new Error('Missing email for magic sign-in');
+    }
+
+    const userCredential = await signInWithEmailLink(auth, userEmail, href);
+    return userCredential.user;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to complete sign-in';
     throw new Error(message);
   }
 }

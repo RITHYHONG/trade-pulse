@@ -77,6 +77,7 @@ export function SignUpForm() {
                 id="displayName"
                 type="text"
                 placeholder="John Doe"
+                autoComplete="name"
                 {...register('displayName')}
                 className={`pl-10 h-12 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-teal-500 focus:ring-teal-500/20 transition-all duration-200 ${errors.displayName ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''
                   }`}
@@ -98,13 +99,17 @@ export function SignUpForm() {
                 id="email"
                 type="email"
                 placeholder="john@example.com"
+                autoFocus
+                autoComplete="email"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'signup-email-error' : undefined}
                 {...register('email')}
                 className={`pl-10 h-12 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-teal-500 focus:ring-teal-500/20 transition-all duration-200 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''
                   }`}
               />
             </div>
             {errors.email && (
-              <p className="text-sm text-red-400 flex items-center space-x-1">
+              <p id="signup-email-error" className="text-sm text-red-400 flex items-center space-x-1">
                 <span>⚠</span>
                 <span>{errors.email.message}</span>
               </p>
@@ -119,6 +124,9 @@ export function SignUpForm() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Create a strong password"
+                autoComplete="new-password"
+                aria-invalid={!!errors.password}
+                aria-describedby={errors.password ? 'signup-password-error' : undefined}
                 {...register('password')}
                 className={`pl-10 pr-12 h-12 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-teal-500 focus:ring-teal-500/20 transition-all duration-200 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''
                   }`}
@@ -127,6 +135,8 @@ export function SignUpForm() {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors duration-200"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
               >
                 {showPassword ? (
                   <EyeOff className="h-5 w-5" />
@@ -151,6 +161,9 @@ export function SignUpForm() {
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="Confirm your password"
+                autoComplete="new-password"
+                aria-invalid={!!errors.confirmPassword}
+                aria-describedby={errors.confirmPassword ? 'signup-confirm-password-error' : undefined}
                 {...register('confirmPassword')}
                 className={`pl-10 pr-12 h-12 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-teal-500 focus:ring-teal-500/20 transition-all duration-200 ${errors.confirmPassword ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''
                   }`}
@@ -159,6 +172,8 @@ export function SignUpForm() {
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors duration-200"
+                aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                aria-pressed={showConfirmPassword}
               >
                 {showConfirmPassword ? (
                   <EyeOff className="h-5 w-5" />

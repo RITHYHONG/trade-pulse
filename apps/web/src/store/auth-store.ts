@@ -37,6 +37,7 @@ interface AuthActions {
   signInWithGoogleRedirect: () => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  sendMagicLink: (email: string) => Promise<void>;
   initializeAuth: () => void;
 }
 
@@ -144,6 +145,19 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     } catch (error) {
       const appError = mapToAppError(error);
       logError(appError, { operation: "signInWithGoogle" });
+      set({ error: appError.userMessage, loading: false });
+      throw error;
+    }
+  },
+
+  sendMagicLink: async (email: string) => {
+    try {
+      set({ loading: true, error: null });
+      await import('../lib/auth').then(m => m.sendMagicLink(email));
+      set({ loading: false });
+    } catch (error) {
+      const appError = mapToAppError(error);
+      logError(appError, { operation: 'sendMagicLink', email });
       set({ error: appError.userMessage, loading: false });
       throw error;
     }

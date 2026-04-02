@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useAuth } from '../../../hooks/use-auth';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
@@ -31,11 +32,12 @@ export default function ForgotPasswordPage() {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
+  const { resetPassword } = useAuth();
+
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setLoading(true);
     try {
-      // TODO: Implement password reset logic with data.email
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
+      await resetPassword(data.email);
       setEmailSent(true);
       toast.success('Password reset email sent!');
     } catch {
@@ -109,6 +111,10 @@ export default function ForgotPasswordPage() {
                 id="email"
                 type="email"
                 placeholder="you@example.com"
+                autoFocus
+                autoComplete="email"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'forgot-email-error' : undefined}
                 {...register('email')}
                 className={`pl-10 h-12 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-500 focus:ring-purple-500/20 transition-all duration-200 ${
                   errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''
@@ -116,7 +122,7 @@ export default function ForgotPasswordPage() {
               />
             </div>
             {errors.email && (
-              <p className="text-sm text-red-400 flex items-center space-x-1">
+              <p id="forgot-email-error" className="text-sm text-red-400 flex items-center space-x-1">
                 <span>⚠</span>
                 <span>{errors.email.message}</span>
               </p>

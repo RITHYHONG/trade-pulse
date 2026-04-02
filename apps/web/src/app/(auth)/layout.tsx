@@ -24,6 +24,8 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             alt="Trade Pulse dashboard preview"
             width={1400}
             height={900}
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            loading="lazy"
             className="absolute inset-0 h-full w-full object-cover opacity-30"
           />
           
