@@ -1,11 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
-      ChevronDown, Download, Printer, FileText, Cookie, Search, Filter,
-      ArrowUpDown, Check, Info, Clock, Shield, Globe, ExternalLink,
-      Settings, History, AlertCircle, RefreshCw, Database,
-      ChevronRight, ChartNoAxesCombined,
+      ChevronDown, 
+      Download, 
+      Printer, 
+      FileText, 
+      Cookie, 
+      Search,
+      Check, 
+      Info, 
+      Clock, 
+      Shield, 
+      Globe, 
+      ExternalLink,
+      Settings, 
+      History, 
+      AlertCircle, 
+      RefreshCw, 
+      Database,
+      ChevronRight, 
+      ChartNoAxesCombined,
       ChartSpline,
       BookHeart,
       ChartCandlestick,
@@ -13,12 +28,16 @@ import {
       Handshake,
       Target,
       Blocks,
-      Monitor
+      Monitor,
+      SearchCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import LegalAccordion from '@/components/legal/LegalAccordion';
+import LegalTLDR from '@/components/legal/LegalTLDR';
+import LegalLayout from '@/components/legal/LegalLayout';
+import LegalHeader from '@/components/legal/LegalHeader';
 
-// Cookie data structure
 interface CookieData {
       name: string;
       provider: string;
@@ -36,283 +55,77 @@ interface ConsentPreferences {
       thirdParty: boolean;
 }
 
-interface AccordionProps {
-      title: string;
-      icon: React.ReactNode;
-      children: React.ReactNode;
-      defaultOpen?: boolean;
-      color?: string;
-}
-
-function Accordion({ title, icon, children, defaultOpen = false, color = '#00F5FF' }: AccordionProps) {
-      const [isOpen, setIsOpen] = useState(defaultOpen);
-
-      return (
-            <div className="border border-[#2D3246] rounded-lg overflow-hidden mb-4 transition-all duration-300 hover:border-[#00F5FF]/30">
-                  <Button
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="w-full flex items-center justify-between p-6 bg-[#2D3246] hover:bg-[#353B52] transition-colors"
-                        aria-expanded={isOpen}
-                  >
-                        <div className="flex items-center gap-4">
-                              <div style={{ color }}>{icon}</div>
-                              <h2 className="text-xl font-semibold text-white text-left">{title}</h2>
-                        </div>
-                        <ChevronDown
-                              className={`w-5 h-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
-                              style={{ color }}
-                        />
-                  </Button>
-                  {isOpen && (
-                        <div className="p-6 bg-[#1A1D28] animate-slideDown">
-                              {children}
-                        </div>
-                  )}
-            </div>
-      );
-}
-
 const cookieCategories = [
       {
+            id: 'strictlyNecessary',
             name: 'Strictly Necessary',
-            color: '#10B981',
-            mandatory: true,
             icon: <Shield className="w-6 h-6" />,
-            purpose: 'Core platform functionality, security, login sessions',
-            examples: ['Session cookies', 'Authentication tokens', 'CSRF protection', 'Load balancing'],
-            description: 'These cookies are essential for the platform to function properly. They enable core functionalities such as security, network management, and accessibility.'
+            purpose: 'Core platform functionality and security',
+            description: 'These cookies are essential for the platform to function. They enable core features like login, security, and network management.',
+            mandatory: true
       },
       {
+            id: 'performance',
             name: 'Performance & Analytics',
-            color: '#00F5FF',
-            mandatory: false,
-            icon: <ChartNoAxesCombined className="w-6 h-6" />,
-            purpose: 'Platform optimization, bug tracking, user behavior analytics',
-            examples: ['Google Analytics', 'Error tracking', 'Performance metrics', 'User behavior analysis'],
-            description: 'These cookies help us understand how you interact with the platform, allowing us to improve performance and user experience.'
+            icon: <ChartSpline className="w-6 h-6" />,
+            purpose: 'Optimization and bug tracking',
+            description: 'Helps us understand how you interact with the platform, allowing us to improve performance and user experience.',
+            mandatory: false
       },
       {
+            id: 'functionality',
             name: 'Functionality & Personalization',
-            color: '#0066FF',
-            mandatory: false,
             icon: <Settings className="w-6 h-6" />,
-            purpose: 'Remember preferences, watchlists, dashboard layouts, alerts',
-            examples: ['Layout preferences', 'Watchlist storage', 'Theme selection', 'Language preferences'],
-            description: 'These cookies enable personalized features and remember your preferences across sessions.'
+            purpose: 'Remembering your preferences',
+            description: 'Enables personalized features like watchlists, theme selection, and language preferences across sessions.',
+            mandatory: false
       },
       {
+            id: 'marketing',
             name: 'Marketing & Targeting',
-            color: '#F59E0B',
-            mandatory: false,
             icon: <Target className="w-6 h-6" />,
-            purpose: 'Relevant trading offers, broker recommendations, content suggestions',
-            examples: ['Ad personalization', 'Retargeting pixels', 'Affiliate tracking', 'Conversion tracking'],
-            description: 'These cookies track your activity to deliver personalized advertising and measure campaign effectiveness.'
-      },
-      {
-            name: 'Third-Party Integrations',
-            color: '#8B5CF6',
-            mandatory: false,
-            icon: <Blocks className="w-6 h-6" />,
-            purpose: 'TradingView charts, news feeds, broker API connections',
-            examples: ['TradingView widgets', 'News provider cookies', 'Payment processors', 'Social media embeds'],
-            description: 'These cookies enable third-party services integrated into our platform to function properly.'
+            purpose: 'Relevant offers and content',
+            description: 'Used to deliver personalized advertising and content recommendations based on your trading interests.',
+            mandatory: false
       }
 ];
 
 const sampleCookieData: CookieData[] = [
       {
             name: 'trade_session',
-            provider: 'Trade Pulse (First-party)',
+            provider: 'Trade Pulse (1st party)',
             category: 'Strictly Necessary',
-            purpose: 'Maintain user login session and authentication state',
+            purpose: 'Maintains authentication state',
             duration: 'Session',
-            data: 'Encrypted user ID, session token'
-      },
-      {
-            name: 'csrf_token',
-            provider: 'Trade Pulse (First-party)',
-            category: 'Strictly Necessary',
-            purpose: 'Prevent cross-site request forgery attacks',
-            duration: 'Session',
-            data: 'Random token string'
+            data: 'Encrypted User ID'
       },
       {
             name: 'watchlist_prefs',
-            provider: 'Trade Pulse (First-party)',
+            provider: 'Trade Pulse (1st party)',
             category: 'Functionality',
-            purpose: 'Store user watchlist preferences and symbols',
-            duration: '1 year',
-            data: 'Instrument symbols, sort preferences'
-      },
-      {
-            name: 'dashboard_layout',
-            provider: 'Trade Pulse (First-party)',
-            category: 'Functionality',
-            purpose: 'Remember custom dashboard widget arrangements',
-            duration: '1 year',
-            data: 'Widget positions, sizes, visibility'
-      },
-      {
-            name: 'theme_preference',
-            provider: 'Trade Pulse (First-party)',
-            category: 'Functionality',
-            purpose: 'Store dark/light mode preference',
-            duration: '1 year',
-            data: 'Theme selection (dark/light)'
+            purpose: 'Stores watchlist symbols',
+            duration: '1 Year',
+            data: 'JSON symbols'
       },
       {
             name: '_ga',
-            provider: 'Google Analytics (Third-party)',
+            provider: 'Google Analytics',
             category: 'Performance',
-            purpose: 'Distinguish unique users for analytics',
-            duration: '2 years',
-            data: 'Client ID, timestamps'
-      },
-      {
-            name: '_gid',
-            provider: 'Google Analytics (Third-party)',
-            category: 'Performance',
-            purpose: 'Distinguish users for daily analytics',
-            duration: '24 hours',
-            data: 'Client ID, session data'
+            purpose: 'User analytics tracking',
+            duration: '2 Years',
+            data: 'Unique Client ID'
       },
       {
             name: 'tradingview_session',
-            provider: 'TradingView (Third-party)',
+            provider: 'TradingView',
             category: 'Third-Party',
-            purpose: 'Enable TradingView chart functionality',
+            purpose: 'Interactive chart state',
             duration: 'Session',
-            data: 'Chart preferences, session state'
-      },
-      {
-            name: 'stripe_sid',
-            provider: 'Stripe (Third-party)',
-            category: 'Strictly Necessary',
-            purpose: 'Payment processing and fraud prevention',
-            duration: '30 minutes',
-            data: 'Session identifier for payment'
-      },
-      {
-            name: 'ad_preferences',
-            provider: 'Trade Pulse (First-party)',
-            category: 'Marketing',
-            purpose: 'Store advertising consent and preferences',
-            duration: '1 year',
-            data: 'Consent status, preference flags'
-      },
-      {
-            name: '_fbp',
-            provider: 'Facebook (Third-party)',
-            category: 'Marketing',
-            purpose: 'Track visits across websites for advertising',
-            duration: '3 months',
-            data: 'Browser ID, visit timestamps'
-      },
-      {
-            name: 'affiliate_ref',
-            provider: 'Trade Pulse (First-party)',
-            category: 'Marketing',
-            purpose: 'Track affiliate referrals and conversions',
-            duration: '30 days',
-            data: 'Referral source, campaign ID'
-      }
-];
-
-const thirdPartyServices = [
-      {
-            name: 'Google Analytics',
-            purpose: 'Website analytics and user behavior tracking',
-            policyUrl: 'https://policies.google.com/privacy',
-            cookies: ['_ga', '_gid', '_gat']
-      },
-      {
-            name: 'TradingView',
-            purpose: 'Interactive trading charts and market data visualization',
-            policyUrl: 'https://www.tradingview.com/privacy-policy/',
-            cookies: ['tradingview_session', 'tv_ecuid']
-      },
-      {
-            name: 'Stripe',
-            purpose: 'Payment processing and subscription management',
-            policyUrl: 'https://stripe.com/privacy',
-            cookies: ['stripe_sid', '__stripe_mid']
-      },
-      {
-            name: 'Facebook Pixel',
-            purpose: 'Advertising and conversion tracking',
-            policyUrl: 'https://www.facebook.com/privacy/explanation',
-            cookies: ['_fbp', 'fr']
-      },
-      {
-            name: 'SendGrid',
-            purpose: 'Email delivery and notification services',
-            policyUrl: 'https://www.twilio.com/legal/privacy',
-            cookies: ['sendgrid_session']
-      }
-];
-
-const browserInstructions = [
-      {
-            browser: 'Chrome',
-            icon: '🌐',
-            steps: [
-                  'Click the three dots menu → Settings',
-                  'Click "Privacy and security" → "Cookies and other site data"',
-                  'Choose your preferred cookie settings',
-                  'Or click "See all cookies and site data" to manage individual cookies'
-            ]
-      },
-      {
-            browser: 'Firefox',
-            icon: '🦊',
-            steps: [
-                  'Click the menu button → Settings',
-                  'Select "Privacy & Security"',
-                  'Under "Cookies and Site Data", click "Manage Data"',
-                  'Search for "tradepulse.com" and remove cookies as needed'
-            ]
-      },
-      {
-            browser: 'Safari',
-            icon: '🧭',
-            steps: [
-                  'Safari → Preferences → Privacy',
-                  'Click "Manage Website Data"',
-                  'Search for "tradepulse.com"',
-                  'Click "Remove" or "Remove All"'
-            ]
-      },
-      {
-            browser: 'Edge',
-            icon: '🌊',
-            steps: [
-                  'Click the three dots → Settings',
-                  'Select "Cookies and site permissions"',
-                  'Click "Manage and delete cookies and site data"',
-                  'Click "See all cookies and site data"'
-            ]
-      },
-      {
-            browser: 'Brave',
-            icon: '🦁',
-            steps: [
-                  'Click the menu → Settings',
-                  'Go to "Privacy and security" → "Cookies and other site data"',
-                  'Choose "Block third-party cookies" or custom settings',
-                  'Manage site-specific settings as needed'
-            ]
+            data: 'Preferences'
       }
 ];
 
 export default function CookiePolicyPage() {
-      const [searchQuery, setSearchQuery] = useState('');
-      const [filterCategory, setFilterCategory] = useState('All');
-      const [sortColumn, setSortColumn] = useState<keyof CookieData | null>(null);
-      const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-      const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-      const [isScanning, setIsScanning] = useState(false);
-
       const [consentPreferences, setConsentPreferences] = useState<ConsentPreferences>({
             strictlyNecessary: true,
             performance: false,
@@ -321,15 +134,188 @@ export default function CookiePolicyPage() {
             thirdParty: false,
       });
 
-      const [consentHistory, setConsentHistory] = useState<Array<{
-            timestamp: Date;
-            action: string;
-            preferences: ConsentPreferences;
-      }>>([]);
-
+      const [searchQuery, setSearchQuery] = useState('');
+      const [filterCategory, setFilterCategory] = useState('All');
+      const [sortColumn, setSortColumn] = useState<keyof CookieData | null>(null);
+      const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+      const [consentHistory, setConsentHistory] = useState<{ timestamp: Date; action: string; preferences: ConsentPreferences }[]>([]);
+      const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+      const [isScanning, setIsScanning] = useState(false);
       const [doNotSell, setDoNotSell] = useState(false);
 
-      // Filter and sort cookie data
+      const handleToggle = (id: keyof ConsentPreferences) => {
+            if (id === 'strictlyNecessary') return;
+            setConsentPreferences((prev: ConsentPreferences) => ({ ...prev, [id]: !prev[id] }));
+      };
+
+      const handleSavePreferences = () => {
+            const newHistoryEntry = {
+                  timestamp: new Date(),
+                  action: 'Preferences Updated',
+                  preferences: { ...consentPreferences },
+            };
+
+            setConsentHistory((prev) => [newHistoryEntry, ...prev]);
+            setLastUpdated(new Date());
+            alert('Your cookie preferences have been saved successfully!');
+      };
+
+      return (
+            <LegalLayout>
+                  <LegalHeader 
+                        title="Cookie Policy"
+                        version="v1.4.2"
+                        updated="February 20, 2025"
+                  />
+
+                  <div className="max-w-4xl mx-auto space-y-16 pb-24">
+                        <LegalTLDR 
+                              summary="We use cookies to ensure security, enhance performance, and personalize your trading experience. Control your preferences below."
+                              bullets={[
+                                    'Essential cookies are required for platform access',
+                                    'Analytics help us improve trading tools',
+                                    'You can update preferences at any time in settings'
+                              ]}
+                        />
+
+                        {/* Consent Management Center */}
+                        <section className="bg-slate-50 dark:bg-slate-900 rounded-[32px] p-8 border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden">
+                              <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+                                    <Cookie className="w-48 h-48 text-blue-600" />
+                              </div>
+                              
+                              <div className="relative z-10">
+                                    <div className="flex items-center gap-3 text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest text-[10px] mb-6">
+                                          <div className="w-2 h-2 rounded-full bg-blue-600" />
+                                          Preference Center
+                                    </div>
+                                    
+                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8 tracking-tight">
+                                          Manage Cookie Consent
+                                    </h2>
+
+                                    <div className="grid gap-4 mb-10">
+                                          {cookieCategories.map((cat) => (
+                                                <div 
+                                                      key={cat.id}
+                                                      className={`p-6 rounded-2xl border transition-all duration-300 ${
+                                                            consentPreferences[cat.id as keyof ConsentPreferences] 
+                                                                  ? 'bg-white dark:bg-slate-950 border-blue-200 dark:border-blue-900/50 shadow-md' 
+                                                                  : 'bg-slate-100/50 dark:bg-slate-900/50 border-transparent hover:border-slate-200 dark:hover:border-slate-800'
+                                                      }`}
+                                                >
+                                                      <div className="flex items-start justify-between gap-6">
+                                                            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                                                  {cat.icon}
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                  <div className="flex items-center gap-3 mb-1">
+                                                                        <h3 className="font-bold text-slate-900 dark:text-white">{cat.name}</h3>
+                                                                        {cat.mandatory && (
+                                                                              <span className="text-[10px] bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded font-bold uppercase">Required</span>
+                                                                        )}
+                                                                  </div>
+                                                                  <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl">
+                                                                        {cat.description}
+                                                                  </p>
+                                                            </div>
+                                                            <button
+                                                                  onClick={() => handleToggle(cat.id as keyof ConsentPreferences)}
+                                                                  disabled={cat.mandatory}
+                                                                  className={`w-14 h-8 rounded-full p-1 transition-colors relative ${
+                                                                        consentPreferences[cat.id as keyof ConsentPreferences] ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-800'
+                                                                  } ${cat.mandatory ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                                            >
+                                                                  <div className={`w-6 h-6 bg-white rounded-full shadow-sm transition-transform ${consentPreferences[cat.id as keyof ConsentPreferences] ? 'translate-x-6' : 'translate-x-0'}`} />
+                                                            </button>
+                                                      </div>
+                                                </div>
+                                          ))}
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-8 border-t border-slate-100 dark:border-slate-800">
+                                          <p className="text-xs text-slate-400 max-w-sm text-center sm:text-left">
+                                                Your choices are saved as a "strictly necessary" cookie to remember your preferences for future visits.
+                                          </p>
+                                          <Button onClick={handleSavePreferences} size="lg" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-12 font-bold shadow-lg shadow-blue-500/20 py-6">
+                                                Save Preferences
+                                          </Button>
+                                    </div>
+                              </div>
+                        </section>
+
+                        {/* Detailed Cookie Audit */}
+                        <section>
+                              <div className="flex items-center gap-4 mb-10">
+                                    <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-blue-600">
+                                          <SearchCheck className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                          <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Cookie Inventory</h2>
+                                          <p className="text-sm text-slate-500">Live audit of cookies used on our platform</p>
+                                    </div>
+                              </div>
+
+                              <div className="overflow-hidden rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-x-auto">
+                                    <table className="w-full text-left border-collapse">
+                                          <thead>
+                                                <tr className="bg-slate-50 dark:bg-slate-950/50">
+                                                      <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Name</th>
+                                                      <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Provider</th>
+                                                      <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Purpose</th>
+                                                      <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Duration</th>
+                                                </tr>
+                                          </thead>
+                                          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                                {sampleCookieData.map((cookie, idx) => (
+                                                      <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors group">
+                                                            <td className="px-6 py-4">
+                                                                  <span className="font-mono text-xs bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded text-blue-600 dark:text-blue-400 border border-slate-100 dark:border-slate-700 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                                                        {cookie.name}
+                                                                  </span>
+                                                            </td>
+                                                            <td className="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
+                                                                  {cookie.provider}
+                                                            </td>
+                                                            <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                                                                  {cookie.purpose}
+                                                            </td>
+                                                            <td className="px-6 py-4 text-sm text-slate-400 whitespace-nowrap">
+                                                                  {cookie.duration}
+                                                            </td>
+                                                      </tr>
+                                                ))}
+                                          </tbody>
+                                    </table>
+                              </div>
+                        </section>
+
+                        {/* Browser Control Section */}
+                        <section className="grid md:grid-cols-2 gap-8">
+                              <div className="p-8 bg-slate-50 dark:bg-slate-900 rounded-[32px] border border-slate-100 dark:border-slate-800">
+                                    <Monitor className="w-8 h-8 text-blue-600 mb-6" />
+                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Manual Browser Controls</h3>
+                                    <p className="text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
+                                          You can also manage cookies through your browser settings. Each browser has different methods for blocking or deleting cookies.
+                                    </p>
+                                    <Link href="https://www.allaboutcookies.org/" target="_blank" className="inline-flex items-center gap-2 text-blue-600 font-bold text-sm hover:underline">
+                                          Learn more about cookies
+                                          <ExternalLink className="w-4 h-4" />
+                                    </Link>
+                              </div>
+                              <div className="p-8 bg-blue-600 rounded-[32px] text-white">
+                                    <LockKeyhole className="w-8 h-8 text-blue-100 mb-6" />
+                                    <h3 className="text-xl font-bold mb-4">Privacy Commitment</h3>
+                                    <p className="text-blue-100 leading-relaxed">
+                                          We never sell your browsing data to third parties. Our cookies are strictly used to improve your user experience and platform security.
+                                    </p>
+                              </div>
+                        </section>
+                  </div>
+            </LegalLayout>
+      );
+}
+
       const filteredCookies = sampleCookieData.filter(cookie => {
             const matchesSearch =
                   cookie.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -374,13 +360,11 @@ export default function CookiePolicyPage() {
             const newHistoryEntry = {
                   timestamp: new Date(),
                   action: 'Preferences Updated',
-                  preferences: { ...consentPreferences }
+                  preferences: { ...consentPreferences },
             };
 
-            setConsentHistory(prev => [newHistoryEntry, ...prev]);
+            setConsentHistory((prev) => [newHistoryEntry, ...prev]);
             setLastUpdated(new Date());
-
-            // In production, this would save to backend
             alert('Your cookie preferences have been saved successfully!');
       };
 
@@ -530,6 +514,18 @@ export default function CookiePolicyPage() {
                         </div>
                   </div>
 
+                  {/* Quick Summary for Traders */}
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <LegalTLDR
+                              summary="Quick: cookie choices affect charts, alerts, and personalized insights — accept all for full personalization or manage categories individually."
+                              bullets={[
+                                    'Cookie choices affect TradingView charts & alerts',
+                                    'Rejecting analytics reduces personalized recommendations',
+                                    'You can export cookie inventory or print this page',
+                              ]}
+                        />
+                  </div>
+
                   {/* Main Content */}
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                         <div className="flex flex-col lg:flex-row gap-8">
@@ -537,7 +533,7 @@ export default function CookiePolicyPage() {
                               <main className="flex-1 lg:w-[70%]">
                                     {/* Introduction */}
                                     <section id="introduction" className="mb-12">
-                                          <Accordion
+                                          <LegalAccordion
                                                 title="What Are Cookies?"
                                                 icon={<Info className="w-6 h-6" />}
                                                 defaultOpen={true}
@@ -574,12 +570,12 @@ export default function CookiePolicyPage() {
                                                             </p>
                                                       </div>
                                                 </div>
-                                          </Accordion>
+                                          </LegalAccordion>
                                     </section>
 
                                     {/* Why We Use Cookies */}
                                     <section id="why-we-use" className="mb-12">
-                                          <Accordion
+                                          <LegalAccordion
                                                 title="Why Trade Pulse Uses Cookies"
                                                 icon={<Settings className="w-6 h-6" />}
                                                 defaultOpen={true}
@@ -628,7 +624,7 @@ export default function CookiePolicyPage() {
                                                             </div>
                                                       ))}
                                                 </div>
-                                          </Accordion>
+                                          </LegalAccordion>
                                     </section>
 
                                     {/* Cookie Categories */}
@@ -639,11 +635,10 @@ export default function CookiePolicyPage() {
                                           </h2>
 
                                           {cookieCategories.map((category, idx) => (
-                                                <Accordion
+                                                <LegalAccordion
                                                       key={idx}
                                                       title={category.name}
                                                       icon={<span className="text-2xl">{category.icon}</span>}
-                                                      color={category.color}
                                                 >
                                                       <div className="space-y-4">
                                                             <div className="flex items-center justify-between mb-4">
@@ -690,7 +685,7 @@ export default function CookiePolicyPage() {
                                                                   </div>
                                                             )}
                                                       </div>
-                                                </Accordion>
+                                                </LegalAccordion>
                                           ))}
                                     </section>
 
@@ -802,7 +797,7 @@ export default function CookiePolicyPage() {
 
                                     {/* Third-Party Services */}
                                     <section id="third-party" className="mb-4">
-                                          <Accordion
+                                          <LegalAccordion
                                                 title="Third-Party Services & Cookies"
                                                 icon={<Globe className="w-6 h-6" />}
                                           >
@@ -843,12 +838,12 @@ export default function CookiePolicyPage() {
                                                             ))}
                                                       </div>
                                                 </div>
-                                          </Accordion>
+                                          </LegalAccordion>
                                     </section>
 
                                     {/* Browser Instructions */}
                                     <section id="browser-controls" className="mb-4">
-                                          <Accordion
+                                          <LegalAccordion
                                                 title="Browser-Level Cookie Controls"
                                                 icon={<Monitor className="w-6 h-6" />}
                                           >
@@ -890,12 +885,12 @@ export default function CookiePolicyPage() {
                                                             </p>
                                                       </div>
                                                 </div>
-                                          </Accordion>
+                                          </LegalAccordion>
                                     </section>
 
                                     {/* International Compliance */}
                                     <section id="compliance" className="mb-12">
-                                          <Accordion
+                                          <LegalAccordion
                                                 title="International Compliance"
                                                 icon={<Shield className="w-6 h-6" />}
                                           >
@@ -940,7 +935,7 @@ export default function CookiePolicyPage() {
                                                             ))}
                                                       </div>
                                                 </div>
-                                          </Accordion>
+                                          </LegalAccordion>
                                     </section>
                               </main>
 
@@ -1085,7 +1080,7 @@ export default function CookiePolicyPage() {
                                                                   <span
                                                                         className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${doNotSell ? 'translate-x-6' : 'translate-x-1'
                                                                               }`}
-                                                                  />
+                                                            />
                                                             </Button>
                                                       </div>
                                                 </div>

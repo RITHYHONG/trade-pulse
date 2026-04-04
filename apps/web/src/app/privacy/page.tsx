@@ -1,870 +1,605 @@
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { ChevronDown, Download, Printer, FileText, Shield, Globe, Info, Lock, Users, Database, Cookie, AlertCircle, Mail, ExternalLink, Check, BarChart3, TestTube, HardDrive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import LegalAccordion from '@/components/legal/LegalAccordion';
+import LegalTLDR from '@/components/legal/LegalTLDR';
+import LegalLayout from '@/components/legal/LegalLayout';
+import LegalHeader from '@/components/legal/LegalHeader';
 
 const complianceBadges = [
-  { name: 'GDPR', region: 'EU/EEA', color: '#0066FF' },
-  { name: 'CCPA', region: 'California', color: '#00F5FF' },
-  { name: 'PIPEDA', region: 'Canada', color: '#7C3AED' },
-  { name: 'LGPD', region: 'Brazil', color: '#10B981' },
+      { name: 'GDPR', region: 'EU/EEA', color: '#0066FF' },
+      { name: 'CCPA', region: 'California', color: '#00F5FF' },
+      { name: 'PIPEDA', region: 'Canada', color: '#7C3AED' },
+      { name: 'LGPD', region: 'Brazil', color: '#10B981' },
 ];
 
 const regions = ['Global', 'EU', 'California', 'Canada', 'Brazil'];
 
 interface AccordionProps {
-  title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
+      title: string;
+      icon: React.ReactNode;
+      children: React.ReactNode;
+      defaultOpen?: boolean;
 }
 
-function Accordion({ title, icon, children, defaultOpen = false }: AccordionProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-
-  return (
-    <div className="border border-border rounded-lg overflow-hidden mb-5 transition-all duration-300 hover:border-[#00F5FF]/30">
-      <Button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-6 bg-muted hover:bg-[#353B52] transition-colors"
-        aria-expanded={isOpen}
-      >
-        <div className="flex items-center gap-4">
-          <div className="text-primary">{icon}</div>
-          <h2 className="text-xl font-semibold text-foreground text-left">{title}</h2>
-        </div>
-        <ChevronDown
-          className={`w-5 h-5 text-primary transition-transform duration-300 ${isOpen ? 'rotate-180' : ''
-            }`}
-        />
-      </Button>
-      {isOpen && (
-        <div className="p-6 bg-card animate-slideDown">
-          {children}
-        </div>
-      )}
-    </div>
-  );
-}
+// Use the shared accessible LegalAccordion (Radix) for consistency
 
 interface DataCategoryProps {
-  name: string;
-  items: string[];
-  legalBasis: string[];
-  specialNote?: string;
+      name: string;
+      items: string[];
+      legalBasis: string[];
+      specialNote?: string;
 }
 
 function DataCategory({ name, items, legalBasis, specialNote }: DataCategoryProps) {
-  return (
-    <div className="mb-6 p-4 bg-background rounded-lg border border-border">
-      <h4 className="text-lg font-semibold text-primary mb-3">{name}</h4>
-      <ul className="space-y-2 mb-3">
-        {items.map((item, idx) => (
-          <li key={idx} className="flex items-start gap-2 text-muted-foreground">
-            <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-      <div className="flex flex-wrap gap-2 mb-2">
-        {legalBasis.map((basis, idx) => (
-          <span
-            key={idx}
-            className="px-3 py-1 bg-[#0066FF]/20 text-primary text-xs rounded-full border border-[#0066FF]/30"
-          >
-            {basis}
-          </span>
-        ))}
-      </div>
-      {specialNote && (
-        <div className="mt-3 p-3 bg-[#00F5FF]/10 border border-[#00F5FF]/30 rounded-lg">
-          <p className="text-sm text-primary flex items-start gap-2">
-            <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
-            <span>{specialNote}</span>
-          </p>
-        </div>
-      )}
-    </div>
-  );
+      return (
+            <div className="mb-8 p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all hover:shadow-md group">
+                  <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3">
+                        <div className="w-1.5 h-6 bg-blue-600 rounded-full" />
+                        {name}
+                  </h4>
+                  <ul className="space-y-4 mb-8">
+                        {items.map((item, idx) => (
+                              <li key={idx} className="flex items-start gap-4 text-slate-600 dark:text-slate-400 leading-relaxed">
+                                    <div className="mt-1.5 flex-shrink-0 w-4 h-4 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+                                          <Check className="w-2.5 h-2.5 text-blue-600 dark:text-blue-400" />
+                                    </div>
+                                    <span className="text-sm font-medium">{item}</span>
+                              </li>
+                        ))}
+                  </ul>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                        {legalBasis.map((basis, idx) => (
+                              <span
+                                    key={idx}
+                                    className="px-4 py-1.5 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider rounded-full border border-slate-200 dark:border-slate-700"
+                              >
+                                    {basis}
+                              </span>
+                        ))}
+                  </div>
+                  {specialNote && (
+                        <div className="mt-6 p-5 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/50 rounded-xl">
+                              <p className="text-xs font-medium text-blue-700 dark:text-blue-400 flex items-start gap-3 leading-relaxed">
+                                    <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                    <span>{specialNote}</span>
+                              </p>
+                        </div>
+                  )}
+            </div>
+      );
 }
 
 interface SecurityMeasureProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
+      icon: React.ReactNode;
+      title: string;
+      description: string;
 }
 
 function SecurityMeasure({ icon, title, description }: SecurityMeasureProps) {
-  return (
-    <div className="p-6 bg-card rounded-lg border border-border hover:border-[#00F5FF]/50 transition-all duration-300 hover:transform hover:scale-105">
-      <div className="mb-3">{icon}</div>
-      <h4 className="text-lg font-semibold text-foreground mb-2">{title}</h4>
-      <p className="text-muted-foreground text-sm">{description}</p>
-    </div>
-  );
+      return (
+            <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:border-blue-500/30 transition-all duration-300 group">
+                  <div className="mb-6 p-3 w-fit rounded-xl bg-slate-50 dark:bg-slate-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 transition-colors">
+                        {React.isValidElement(icon) ? React.cloneElement(icon, { className: 'w-6 h-6 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors' }) : null}
+                  </div>
+                  <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">{title}</h4>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{description}</p>
+            </div>
+      );
 }
 
 export default function PrivacyPolicyPage() {
-  const [selectedRegion, setSelectedRegion] = useState('Global');
-  const [activeSection, setActiveSection] = useState('introduction');
+      const [selectedRegion, setSelectedRegion] = useState('Global');
+      const [activeSection, setActiveSection] = useState('introduction');
 
-  const navigationSections = [
-    { id: 'introduction', label: 'Introduction', icon: <Info className="w-4 h-4" /> },
-    { id: 'data-collection', label: 'Data We Collect', icon: <Database className="w-4 h-4" /> },
-    { id: 'data-use', label: 'How We Use Data', icon: <FileText className="w-4 h-4" /> },
-    { id: 'data-sharing', label: 'Data Sharing', icon: <Users className="w-4 h-4" /> },
-    { id: 'cookies', label: 'Cookies & Tracking', icon: <Cookie className="w-4 h-4" /> },
-    { id: 'security', label: 'Data Security', icon: <Lock className="w-4 h-4" /> },
-    { id: 'rights', label: 'Your Rights', icon: <Shield className="w-4 h-4" /> },
-    { id: 'children', label: 'Children\'s Privacy', icon: <AlertCircle className="w-4 h-4" /> },
-    { id: 'international', label: 'International Transfers', icon: <Globe className="w-4 h-4" /> },
-    { id: 'contact', label: 'Contact Us', icon: <Mail className="w-4 h-4" /> },
-  ];
+      const navigationSections = [
+            { id: 'introduction', label: 'Introduction', icon: <Info className="w-4 h-4" /> },
+            { id: 'data-collection', label: 'Data We Collect', icon: <Database className="w-4 h-4" /> },
+            { id: 'data-use', label: 'How We Use Data', icon: <FileText className="w-4 h-4" /> },
+            { id: 'data-sharing', label: 'Data Sharing', icon: <Users className="w-4 h-4" /> },
+            { id: 'cookies', label: 'Cookies & Tracking', icon: <Cookie className="w-4 h-4" /> },
+            { id: 'security', label: 'Data Security', icon: <Lock className="w-4 h-4" /> },
+            { id: 'rights', label: 'Your Rights', icon: <Shield className="w-4 h-4" /> },
+                  { id: 'children', label: 'Children’s Privacy', icon: <AlertCircle className="w-4 h-4" /> },
+            { id: 'international', label: 'International Transfers', icon: <Globe className="w-4 h-4" /> },
+            { id: 'contact', label: 'Contact Us', icon: <Mail className="w-4 h-4" /> },
+      ];
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = navigationSections.map(s => s.id);
-      for (const sectionId of sections) {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top >= 0 && rect.top <= 300) {
-            setActiveSection(sectionId);
-            break;
-          }
-        }
-      }
-    };
+      useEffect(() => {
+            const handleScroll = () => {
+                  const sections = navigationSections.map(s => s.id);
+                  for (const sectionId of sections) {
+                        const element = document.getElementById(sectionId);
+                        if (element) {
+                              const rect = element.getBoundingClientRect();
+                              if (rect.top >= 0 && rect.top <= 300) {
+                                    setActiveSection(sectionId);
+                                    break;
+                              }
+                        }
+                  }
+            };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+            window.addEventListener('scroll', handleScroll);
+            return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
+      const scrollToSection = (id: string) => {
+            const element = document.getElementById(id);
+            if (element) {
+                  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+      };
 
-  const handlePrint = () => {
-    window.print();
-  };
+      const handlePrint = () => {
+            window.print();
+      };
 
-  const handleDownload = () => {
-    alert('Download functionality would generate a PDF version of this privacy policy.');
-  };
+      const handleDownload = () => {
+            alert('Download functionality would generate a PDF version of this privacy policy.');
+      };
 
-  const handleDataRequest = () => {
-    alert('This would open a form to request your personal data export.');
-  };
+      const handleDataRequest = () => {
+            alert('This would open a form to request your personal data export.');
+      };
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b border-border bg-card">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
+      return (
+            <LegalLayout>
+                  <LegalHeader
+                        title="Privacy Policy"
+                        version="Version 2.1"
+                        updated="March 15, 2024"
+                        badges={complianceBadges}
+                        regions={regions}
+                        selectedRegion={selectedRegion}
+                        onRegionChange={(r: string) => setSelectedRegion(r)}
+                        onDownload={handleDownload}
+                        onPrint={handlePrint}
+                        onRequest={handleDataRequest}
+                  />
 
-          {/* Title & Version */}
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-6">
-            <div>
-              <h1 className="text-4xl font-bold text-foreground mb-3">Privacy Policy</h1>
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="px-3 py-1 bg-[#0066FF]/20 text-primary text-sm rounded-full border border-[#0066FF]/30">
-                  Version 2.1
-                </span>
-                <span className="text-muted-foreground text-sm">
-                  Effective: January 15, 2024 • Updated: March 15, 2024
-                </span>
-              </div>
-            </div>
-
-            {/* Compliance Badges */}
-            <div className="flex flex-wrap gap-2">
-              {complianceBadges.map((badge) => (
-                <div
-                  key={badge.name}
-                  className="px-4 py-2 rounded-lg border"
-                  style={{
-                    backgroundColor: `${badge.color}15`,
-                    borderColor: `${badge.color}50`,
-                  }}
-                >
-                  <div className="text-sm font-semibold" style={{ color: badge.color }}>
-                    {badge.name}
+                  {/* Quick summary for traders */}
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+                        <LegalTLDR
+                              summary="Key points: we never collect trading account credentials, you control cookie preferences that affect charts and alerts, and you can request a data export."
+                              bullets={[
+                                    'No trading account credentials collected',
+                                    'Cookie choices affect TradingView charts & alerts',
+                                    'Request data export via privacy request',
+                                    'Security incidents notified within 72 hours',
+                              ]}
+                        />
                   </div>
-                  <div className="text-xs text-muted-foreground">{badge.region}</div>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Region Selector & Actions */}
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Globe className="w-5 h-5 text-primary" />
-              <select
-                value={selectedRegion}
-                onChange={(e) => setSelectedRegion(e.target.value)}
-                className="bg-muted text-foreground px-4 py-2 rounded-lg border border-border hover:border-[#00F5FF]/50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#00F5FF]/50"
-                aria-label="Select your region"
-              >
-                {regions.map((region) => (
-                  <option key={region} value={region}>
-                    {region}
-                  </option>
-                ))}
-              </select>
-            </div>
+                  {/* Main Content */}
+                  <div className="mt-20">
+                        <div className="flex flex-col lg:flex-row gap-20">
+                              {/* Sidebar Navigation */}
+                              <aside className="lg:w-72 flex-shrink-0 lg:sticky lg:top-12 h-fit">
+                                    <div className="space-y-12 no-print">
+                                          <div>
+                                                <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-8">
+                                                      On this page
+                                                </h3>
+                                                <div className="space-y-1">
+                                                      {navigationSections.map((section) => (
+                                                            <button
+                                                                  key={section.id}
+                                                                  onClick={() => scrollToSection(section.id)}
+                                                                  className={`w-full group flex items-center gap-4 py-3 text-left transition-all duration-300 border-r-2 ${activeSection === section.id
+                                                                        ? 'text-blue-600 dark:text-blue-400 border-blue-600 font-bold'
+                                                                        : 'text-slate-400 dark:text-slate-500 border-transparent hover:text-slate-900 dark:hover:text-white'
+                                                                        }`}
+                                                            >
+                                                                  <span className={`transition-transform duration-300 ${activeSection === section.id ? 'scale-110 translate-x-1' : 'group-hover:translate-x-1'}`}>
+                                                                        {React.isValidElement(section.icon) ? React.cloneElement(section.icon, { className: 'w-4 h-4' }) : section.icon}
+                                                                  </span>
+                                                                  <span className="text-sm font-medium leading-none">{section.label}</span>
+                                                            </button>
+                                                      ))}
+                                                </div>
+                                          </div>
 
-            <div className="flex flex-wrap gap-3">
-              <Button
-                onClick={handleDownload}
-                className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-[#353B52] transition-colors"
-                aria-label="Download PDF"
-              >
-                <Download className="w-4 h-4" />
-                <span className="hidden sm:inline">Download PDF</span>
-              </Button>
-              <Button
-                onClick={handlePrint}
-                className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-[#353B52] transition-colors"
-                aria-label="Print"
-              >
-                <Printer className="w-4 h-4" />
-                <span className="hidden sm:inline">Print</span>
-              </Button>
-              <Button
-                onClick={handleDataRequest}
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-foreground rounded-lg hover:bg-[#0052CC] transition-colors"
-                aria-label="Request your data"
-              >
-                <Shield className="w-4 h-4" />
-                <span className="hidden sm:inline">Request Data</span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+                                          {/* Quick Actions */}
+                                          <div className="mt-12 pt-12 border-t border-slate-100 dark:border-slate-800">
+                                                <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-6">
+                                                      Related
+                                                </h3>
+                                                <div className="space-y-4">
+                                                      <Link
+                                                            href="/terms"
+                                                            className="flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group"
+                                                      >
+                                                            <FileText className="w-4 h-4 text-slate-300 dark:text-slate-700 group-hover:text-blue-500 transition-colors" />
+                                                            Terms of Service
+                                                      </Link>
+                                                      <Link
+                                                            href="/disclaimer"
+                                                            className="flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group"
+                                                      >
+                                                            <Shield className="w-4 h-4 text-slate-300 dark:text-slate-700 group-hover:text-blue-500 transition-colors" />
+                                                            Risk Disclosure
+                                                      </Link>
+                                                </div>
+                                          </div>
+                                    </div>
+                              </aside>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar Navigation */}
-          <aside className="lg:w-64 flex-shrink-0">
-            <div className="lg:sticky lg:top-8 space-y-2">
-              <div className="mb-5">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                  Table of Contents
-                </h3>
-              </div>
-              {navigationSections.map((section) => (
-                <Button
-                  key={section.id}
-                  onClick={() => scrollToSection(section.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all duration-200 justify-start ${activeSection === section.id
-                    ? 'bg-primary text-foreground'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                    }`}
-                  aria-current={activeSection === section.id ? 'true' : 'false'}
-                >
-                  {section.icon}
-                  <span className="text-sm">{section.label}</span>
-                </Button>
-              ))}
+                              {/* Main Content Area */}
+                              <main className="flex-1 max-w-4xl min-w-0">
+                                    <div className="prose-h2:font-display prose-h2:text-4xl prose-h2:font-bold prose-h2:mb-10 prose-h2:tracking-tight prose-p:text-lg prose-p:leading-relaxed prose-p:text-slate-500 dark:prose-p:text-slate-400">
+                                    {/* Introduction */}
+                                    <section id="introduction" className="mb-24 scroll-mt-24 group">
+                                          <h2 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-10 font-display">
+                                                1. Introduction
+                                          </h2>
+                                          <div className="space-y-8">
+                                                <p className="text-xl leading-[1.7] text-slate-500 dark:text-slate-400">
+                                                      Welcome to <strong className="text-slate-900 dark:text-white font-bold">Trade Pulse.</strong> Your comprehensive financial intelligence platform. We are committed to protecting your privacy and ensuring transparency in how we collect, use, and safeguard your personal information.
+                                                </p>
+                                                <p className="text-xl leading-[1.7] text-slate-500 dark:text-slate-400">
+                                                      Our code of conduct and our pledge to be an upstanding member of the financial ecosystem are reflected in how we handle your data. This policy is written for clarity, not just compliance.
+                                                </p>
+                                                
+                                                <div className="p-10 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-slate-800 my-12">
+                                                      <h4 className="text-sm font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-6">Data Controller</h4>
+                                                      <div className="grid sm:grid-cols-2 gap-10">
+                                                            <div>
+                                                                  <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Company</p>
+                                                                  <p className="text-slate-900 dark:text-white font-bold text-lg">Trade Pulse Global Inc.</p>
+                                                            </div>
+                                                            <div>
+                                                                  <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Support</p>
+                                                                  <p className="text-slate-900 dark:text-white font-bold text-lg">privacy@tradepulse.io</p>
+                                                            </div>
+                                                      </div>
+                                                </div>
+                                          </div>
+                                    </section>
 
-              {/* Quick Actions */}
-              <div className="mt-6 pt-6 border-t border-border">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-                  Quick Actions
-                </h3>
-                <div className="space-y-2">
-                  <a
-                    href="/terms"
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Terms of Service
-                  </a>
-                  <a
-                    href="/disclaimer"
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Disclaimer
-                  </a>
-                </div>
-              </div>
-            </div>
-          </aside>
+                                    {/* Data Collection */}
+                                    <section id="data-collection" className="mb-24 scroll-mt-24">
+                                          <h2 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-10 font-display">
+                                                2. Data We Collect
+                                          </h2>
+                                          <p className="text-xl leading-[1.7] text-slate-500 dark:text-slate-400 mb-12">
+                                                We collect information in several ways, which together provide the tools to help the world is traders to create, develop and promote their trading strategies.
+                                          </p>
+                                          
+                                          <div className="grid gap-6">
+                                                <DataCategory
+                                                      name="Account Data"
+                                                      items={[
+                                                            'Email address, username, password (hashed)',
+                                                            'Profile information (trading experience, preferences)',
+                                                            'Subscription and payment information (via Stripe)',
+                                                            'Communication preferences',
+                                                      ]}
+                                                      legalBasis={['Contract', 'Legitimate Interest']}
+                                                />
 
-          {/* Main Content Area */}
-          <main className="flex-1 max-w-4xl">
-            {/* Introduction */}
-            <section id="introduction" className="mb-5 scroll-mt-8">
-              <Accordion
-                title="1. Introduction & Scope"
-                icon={<Info className="w-6 h-6" />}
-                defaultOpen={true}
-              >
-                <div className="prose prose-invert max-w-none">
-                  <p className="text-muted-foreground leading-relaxed mb-5">
-                    Welcome to <strong className="text-foreground">Trade Pulse</strong>, your comprehensive financial intelligence platform. We are committed to protecting your privacy and ensuring transparency in how we collect, use, and safeguard your personal information.
-                  </p>
-                  <p className="text-muted-foreground leading-relaxed mb-5">
-                    This Privacy Policy explains our data practices across our website, mobile applications, and all related services. It applies to all users globally and contains region-specific information for EU/EEA, California, Canada, and Brazil residents.
-                  </p>
-                  <div className="bg-[#0066FF]/10 border border-[#0066FF]/30 rounded-lg p-4 mb-5">
-                    <h4 className="text-foreground font-semibold mb-2">Data Controller Information</h4>
-                    <p className="text-muted-foreground text-sm mb-2">
-                      <strong>Company:</strong> Trade Pulse Inc.
-                    </p>
-                    <p className="text-muted-foreground text-sm mb-2">
-                      <strong>Data Protection Officer:</strong> dpo@tradepulse.com
-                    </p>
-                    <p className="text-muted-foreground text-sm">
-                      <strong>General Inquiries:</strong> privacy@tradepulse.com (48-hour response time)
-                    </p>
-                  </div>
-                  <p className="text-muted-foreground leading-relaxed">
-                    By using Trade Pulse, you agree to the collection and use of information in accordance with this policy. If you do not agree with our policies and practices, please do not use our services.
-                  </p>
-                </div>
-              </Accordion>
-            </section>
+                                                <DataCategory
+                                                      name="Financial Data"
+                                                      items={[
+                                                            'Watchlist and portfolio preferences (no real money data)',
+                                                            'Trading style and market preferences',
+                                                            'Analysis and research you create',
+                                                            'News submission and verification data',
+                                                      ]}
+                                                      legalBasis={['Consent', 'Legitimate Interest']}
+                                                      specialNote="We NEVER collect actual trading account credentials or real portfolio balances"
+                                                />
 
-            {/* Data Collection */}
-            <section id="data-collection" className="mb-5 scroll-mt-8">
-              <Accordion
-                title="2. Data We Collect"
-                icon={<Database className="w-6 h-6" />}
-                defaultOpen={true}
-              >
-                <div className="space-y-4">
-                  <DataCategory
-                    name="Account Data"
-                    items={[
-                      'Email address, username, password (hashed)',
-                      'Profile information (trading experience, preferences)',
-                      'Subscription and payment information (via Stripe)',
-                      'Communication preferences',
-                    ]}
-                    legalBasis={['Contract', 'Legitimate Interest']}
-                  />
+                                                <DataCategory
+                                                      name="Usage Data"
+                                                      items={[
+                                                            'IP address, browser type, device information',
+                                                            'Pages visited, time spent, features used',
+                                                            'Search queries within platform',
+                                                            'Error logs and performance data',
+                                                      ]}
+                                                      legalBasis={['Legitimate Interest']}
+                                                />
+                                          </div>
 
-                  <DataCategory
-                    name="Financial Data"
-                    items={[
-                      'Watchlist and portfolio preferences (no real money data)',
-                      'Trading style and market preferences',
-                      'Analysis and research you create',
-                      'News submission and verification data',
-                    ]}
-                    legalBasis={['Consent', 'Legitimate Interest']}
-                    specialNote="We NEVER collect actual trading account credentials or real portfolio balances"
-                  />
+                                    </section>
 
-                  <DataCategory
-                    name="Usage Data"
-                    items={[
-                      'IP address, browser type, device information',
-                      'Pages visited, time spent, features used',
-                      'Search queries within platform',
-                      'Error logs and performance data',
-                    ]}
-                    legalBasis={['Legitimate Interest']}
-                  />
+                                    {/* Data Use */}
+                                    <section id="data-use" className="mb-24 scroll-mt-24">
+                                          <h2 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-10 font-display">
+                                                3. How We Use Your Data
+                                          </h2>
+                                          <p className="text-xl leading-[1.7] text-slate-500 dark:text-slate-400 mb-12">
+                                                Please ensure that your usage patterns are relevant to the theme of the platform. We use your data to power the features that make Trade Pulse awesome.
+                                          </p>
 
-                  <DataCategory
-                    name="Cookies & Tracking"
-                    items={[
-                      'Authentication cookies',
-                      'Preference cookies',
-                      'Analytics cookies (Google Analytics)',
-                      'Advertising cookies (Google AdSense)',
-                    ]}
-                    legalBasis={['Consent', 'Legitimate Interest']}
-                  />
-                </div>
-              </Accordion>
-            </section>
+                                          <div className="overflow-x-auto -mx-4 sm:mx-0">
+                                                <table className="w-full text-left border-separate border-spacing-0">
+                                                      <thead>
+                                                            <tr>
+                                                                  <th className="py-4 px-4 bg-slate-50 dark:bg-slate-900/50 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 first:rounded-tl-2xl last:rounded-tr-2xl">Purpose</th>
+                                                                  <th className="py-4 px-4 bg-slate-50 dark:bg-slate-900/50 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800">Legal Basis</th>
+                                                                  <th className="py-4 px-4 bg-slate-50 dark:bg-slate-900/50 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800 last:rounded-tr-2xl">Retention</th>
+                                                            </tr>
+                                                      </thead>
+                                                      <tbody className="divide-y divide-slate-50 dark:divide-slate-900">
+                                                            {[
+                                                                  {
+                                                                        purpose: 'Provide core intelligence services',
+                                                                        basis: 'Contract',
+                                                                        retention: 'Active + 3 years',
+                                                                  },
+                                                                  {
+                                                                        purpose: 'Personalize financial research',
+                                                                        basis: 'Legitimate Interest',
+                                                                        retention: 'While active',
+                                                                  },
+                                                                  {
+                                                                        purpose: 'Send real-time market alerts',
+                                                                        basis: 'Consent',
+                                                                        retention: 'Until withdrawn',
+                                                                  },
+                                                                  {
+                                                                        purpose: 'Platform optimization',
+                                                                        basis: 'Legitimate Interest',
+                                                                        retention: '2 years',
+                                                                  },
+                                                            ].map((row, idx) => (
+                                                                  <tr key={idx} className="group hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
+                                                                        <td className="py-6 px-4 text-sm font-bold text-slate-900 dark:text-white">{row.purpose}</td>
+                                                                        <td className="py-6 px-4">
+                                                                              <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded-full border border-blue-100 dark:border-blue-800">
+                                                                                    {row.basis}
+                                                                              </span>
+                                                                        </td>
+                                                                        <td className="py-6 px-4 text-sm font-medium text-slate-500 dark:text-slate-400">{row.retention}</td>
+                                                                  </tr>
+                                                            ))}
+                                                      </tbody>
+                                                </table>
+                                          </div>
+                                    </section>
 
-            {/* Data Use */}
-            <section id="data-use" className="mb-5 scroll-mt-8">
-              <Accordion title="3. How We Use Your Data" icon={<FileText className="w-6 h-6" />}>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-left text-primary font-semibold py-3 px-2">Purpose</th>
-                        <th className="text-left text-primary font-semibold py-3 px-2">Data Used</th>
-                        <th className="text-left text-primary font-semibold py-3 px-2">Legal Basis</th>
-                        <th className="text-left text-primary font-semibold py-3 px-2">Retention</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[
-                        {
-                          purpose: 'Provide core services',
-                          data: 'Account, Financial, Usage',
-                          basis: 'Contract',
-                          retention: 'Active + 3 years',
-                        },
-                        {
-                          purpose: 'Personalize dashboard',
-                          data: 'Usage, Financial preferences',
-                          basis: 'Legitimate Interest',
-                          retention: 'While active',
-                        },
-                        {
-                          purpose: 'Send market alerts',
-                          data: 'Account, Preferences',
-                          basis: 'Consent',
-                          retention: 'Until withdrawn',
-                        },
-                        {
-                          purpose: 'Improve platform',
-                          data: 'Usage, Analytics',
-                          basis: 'Legitimate Interest',
-                          retention: '2 years',
-                        },
-                        {
-                          purpose: 'Advertising',
-                          data: 'Usage, Cookies',
-                          basis: 'Consent',
-                          retention: 'Varies by cookie',
-                        },
-                        {
-                          purpose: 'Legal compliance',
-                          data: 'Account, Usage',
-                          basis: 'Legal Obligation',
-                          retention: '7 years',
-                        },
-                      ].map((row, idx) => (
-                        <tr
-                          key={idx}
-                          className="border-b border-border/50 hover:bg-background transition-colors"
-                        >
-                          <td className="py-3 px-2 text-foreground">{row.purpose}</td>
-                          <td className="py-3 px-2 text-muted-foreground">{row.data}</td>
-                          <td className="py-3 px-2">
-                            <span className="px-2 py-1 bg-[#0066FF]/20 text-primary text-xs rounded">
-                              {row.basis}
-                            </span>
-                          </td>
-                          <td className="py-3 px-2 text-muted-foreground">{row.retention}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </Accordion>
-            </section>
+                                    {/* Data Sharing */}
+                                    <section id="data-sharing" className="mb-24 scroll-mt-24">
+                                          <h2 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-10 font-display">
+                                                4. Data Sharing & Third Parties
+                                          </h2>
+                                          <p className="text-xl leading-[1.7] text-slate-500 dark:text-slate-400 mb-12">
+                                                We put no restrictions on what you share. However, we have community guidelines that must be taken into consideration.
+                                          </p>
+                                          
+                                          <div className="grid md:grid-cols-2 gap-8">
+                                                {[
+                                                      {
+                                                            name: 'Service Providers',
+                                                            description: 'Process data on our behalf for cloud hosting, storage, and payments.',
+                                                            examples: ['AWS', 'Google Cloud', 'Stripe', 'SendGrid'],
+                                                            protection: 'GDPR-compliant DPA contracts',
+                                                      },
+                                                      {
+                                                            name: 'Legal & Regulatory',
+                                                            description: 'When required by law to protect users or respond to legal processes.',
+                                                            examples: ['Law enforcement', 'Regulatory bodies', 'Court orders'],
+                                                            protection: 'Minimum necessary disclosure',
+                                                      },
+                                                ].map((category, idx) => (
+                                                      <div key={idx} className="p-10 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm group">
+                                                            <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mb-8">
+                                                                  <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                                                            </div>
+                                                            <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 italic">{category.name}</h4>
+                                                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-8 leading-relaxed italic">{category.description}</p>
+                                                            <div className="flex flex-wrap gap-2 mb-8">
+                                                                  {category.examples.map((example, i) => (
+                                                                        <span key={i} className="px-3 py-1 bg-slate-50 dark:bg-slate-800 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 rounded-lg">
+                                                                              {example}
+                                                                        </span>
+                                                                  ))}
+                                                            </div>
+                                                            <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
+                                                                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">🛡️ {category.protection}</p>
+                                                            </div>
+                                                      </div>
+                                                ))}
+                                          </div>
+                                    </section>
 
-            {/* Data Sharing */}
-            <section id="data-sharing" className="mb-5 scroll-mt-8">
-              <Accordion title="4. Data Sharing & Third Parties" icon={<Users className="w-6 h-6" />}>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {[
-                    {
-                      name: 'Service Providers',
-                      description: 'Process data on our behalf',
-                      examples: ['Cloud hosting (AWS, Google Cloud)', 'Payment processors (Stripe)', 'Email services (SendGrid)', 'Analytics (Google Analytics, Mixpanel)'],
-                      protection: 'GDPR-compliant contracts',
-                    },
-                    {
-                      name: 'Advertising Partners',
-                      description: 'Only with explicit consent',
-                      examples: ['Google AdSense', 'Affiliate networks', 'Social media platforms', 'Email marketing platforms'],
-                      protection: 'Cookie consent required',
-                    },
-                    {
-                      name: 'Legal & Regulatory',
-                      description: 'When required by law',
-                      examples: ['Law enforcement requests', 'Regulatory bodies', 'Court orders'],
-                      protection: 'Minimum necessary disclosure',
-                    },
-                    {
-                      name: 'Business Transfers',
-                      description: 'In case of merger/acquisition',
-                      examples: ['Company sale', 'Asset transfer', 'Business restructuring'],
-                      protection: 'Contractual protections',
-                    },
-                  ].map((category, idx) => (
-                    <div
-                      key={idx}
-                      className="p-5 bg-background rounded-lg border border-border hover:border-[#00F5FF]/30 transition-all"
-                    >
-                      <h4 className="text-lg font-semibold text-primary mb-2">{category.name}</h4>
-                      <p className="text-sm text-muted-foreground mb-3">{category.description}</p>
-                      <ul className="space-y-1 mb-3">
-                        {category.examples.map((example, i) => (
-                          <li key={i} className="text-xs text-muted-foreground flex items-start gap-2">
-                            <span className="text-primary">•</span>
-                            <span>{example}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <div className="pt-3 border-t border-border">
-                        <p className="text-xs text-primary">🛡️ {category.protection}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Accordion>
-            </section>
+                                    {/* Cookies */}
+                                    <section id="cookies" className="mb-24 scroll-mt-24">
+                                          <h2 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-10 font-display">
+                                                5. Cookies & Tracking
+                                          </h2>
+                                          <p className="text-xl leading-[1.7] text-slate-500 dark:text-slate-400 mb-12">
+                                                We use cookies to maintain your login session and remember your layout preferences for charts and indicators.
+                                          </p>
 
-            {/* Cookies */}
-            <section id="cookies" className="mb-5 scroll-mt-8">
-              <Accordion title="5. Cookies & Tracking Technologies" icon={<Cookie className="w-6 h-6" />}>
-                <div className="space-y-6">
-                  <p className="text-muted-foreground">
-                    We use cookies and similar tracking technologies to enhance your experience, analyze usage, and deliver personalized content and advertising.
-                  </p>
+                                          <div className="grid gap-6">
+                                                {[
+                                                      {
+                                                            category: 'Essential',
+                                                            description: 'Security & Auth',
+                                                            examples: 'auth_token, session_id',
+                                                            color: '#3B82F6',
+                                                      },
+                                                      {
+                                                            category: 'Preferences',
+                                                            description: 'Layout & Theme',
+                                                            examples: 'theme_pref, indicator_settings',
+                                                            color: '#0EA5E9',
+                                                      },
+                                                ].map((cookie, idx) => (
+                                                      <div key={idx} className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between group">
+                                                            <div className="flex items-center gap-6">
+                                                                  <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center group-hover:bg-blue-50 dark:group-hover:bg-blue-900/40 transition-colors">
+                                                                        <Cookie className="w-6 h-6 text-slate-400 group-hover:text-blue-600 transition-colors" />
+                                                                  </div>
+                                                                  <div>
+                                                                        <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-1">{cookie.category}</h4>
+                                                                        <p className="text-sm font-semibold text-slate-400 dark:text-slate-500">{cookie.description}</p>
+                                                                  </div>
+                                                            </div>
+                                                            <div className="px-6 py-3 bg-slate-50 dark:bg-slate-800 rounded-full">
+                                                                  <p className="text-[10px] font-bold font-mono text-slate-400 dark:text-slate-500">{cookie.examples}</p>
+                                                            </div>
+                                                      </div>
+                                                ))}
+                                          </div>
+                                    </section>
 
-                  {[
-                    {
-                      category: 'Essential',
-                      description: 'Required for platform functionality',
-                      manageable: false,
-                      examples: 'auth_token, session_id',
-                      color: '#10B981',
-                    },
-                    {
-                      category: 'Preferences',
-                      description: 'Remember your settings',
-                      manageable: true,
-                      examples: 'theme_pref, layout_settings',
-                      color: '#0066FF',
-                    },
-                    {
-                      category: 'Analytics',
-                      description: 'Help us improve the platform',
-                      manageable: true,
-                      examples: 'Google Analytics, Hotjar',
-                      color: '#7C3AED',
-                    },
-                    {
-                      category: 'Marketing',
-                      description: 'Show relevant ads',
-                      manageable: true,
-                      examples: 'Google AdSense, Facebook Pixel',
-                      color: '#F59E0B',
-                    },
-                  ].map((cookie, idx) => (
-                    <div
-                      key={idx}
-                      className="p-4 bg-background rounded-lg border"
-                      style={{ borderColor: `${cookie.color}30` }}
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h4 className="text-lg font-semibold text-foreground">{cookie.category}</h4>
-                          <p className="text-sm text-muted-foreground">{cookie.description}</p>
+                                    {/* Security */}
+                                    <section id="security" className="mb-24 scroll-mt-24">
+                                          <h2 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-10 font-display">
+                                                6. Data Security
+                                          </h2>
+                                          <p className="text-xl leading-[1.7] text-slate-500 dark:text-slate-400 mb-12">
+                                                Encryption is at the core of our platform architecture, protecting your data at rest and in transit.
+                                          </p>
+
+                                          <div className="grid md:grid-cols-2 gap-8 mb-12">
+                                                {[
+                                                      {
+                                                            icon: <Lock />,
+                                                            title: 'Encryption',
+                                                            description: 'TLS 1.3 for data in transit, AES-256 for data at rest',
+                                                      },
+                                                      {
+                                                            icon: <Shield />,
+                                                            title: 'Access Control',
+                                                            description: 'Role-based access, multi-factor authentication option',
+                                                      },
+                                                      {
+                                                            icon: <BarChart3 />,
+                                                            title: 'Monitoring',
+                                                            description: '24/7 security monitoring, anomaly detection',
+                                                      },
+                                                      {
+                                                            icon: <HardDrive />,
+                                                            title: 'Backup',
+                                                            description: 'Regular encrypted backups, disaster recovery plan',
+                                                      },
+                                                ].map((measure, idx) => (
+                                                      <SecurityMeasure key={idx} {...measure} />
+                                                ))}
+                                          </div>
+
+                                          <div className="p-10 bg-slate-900 dark:bg-black rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden group">
+                                                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                                                      <AlertCircle className="w-32 h-32 text-blue-500" />
+                                                </div>
+                                                <div className="relative z-10">
+                                                      <h4 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                                                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                                                            Incident Response
+                                                      </h4>
+                                                      <p className="text-lg text-slate-400 leading-relaxed mb-8 max-w-xl italic">
+                                                            In the unlikely event of a data breach, we will notify affected users within 72 hours as required by GDPR and applicable laws.
+                                                      </p>
+                                                      <p className="text-sm font-bold uppercase tracking-widest text-slate-500">
+                                                            Security Contact: <span className="text-blue-400">security@tradepulse.io</span>
+                                                      </p>
+                                                </div>
+                                          </div>
+                                    </section>
+
+                                    {/* User Rights */}
+                                    <section id="rights" className="mb-24 scroll-mt-24">
+                                          <h2 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-10 font-display">
+                                                7. Your Rights
+                                          </h2>
+                                          <p className="text-xl leading-[1.7] text-slate-500 dark:text-slate-400 mb-12">
+                                                You have full control over your data. We provide the tools you need to access, export, or delete your information at any time.
+                                          </p>
+
+                                          <div className="grid md:grid-cols-2 gap-8 mb-12">
+                                                <div className="p-10 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+                                                      <div className="absolute top-0 right-0 p-8 opacity-5">
+                                                            <Globe className="w-24 h-24 text-blue-500" />
+                                                      </div>
+                                                      <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-6">GDPR / LGPD</h4>
+                                                      <ul className="space-y-4 mb-8">
+                                                            {['Right to access', 'Right to erasure', 'Right to portability', 'Right to object'].map((r, i) => (
+                                                                  <li key={i} className="flex items-center gap-3 text-sm font-medium text-slate-500 dark:text-slate-400">
+                                                                        <div className="w-1 h-1 rounded-full bg-blue-500" />
+                                                                        {r}
+                                                                  </li>
+                                                            ))}
+                                                      </ul>
+                                                      <Button onClick={handleDataRequest} className="w-full rounded-2xl py-6 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold hover:bg-black dark:hover:bg-slate-100 transition-all">
+                                                            Access Data Portal
+                                                      </Button>
+                                                </div>
+
+                                                <div className="p-10 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
+                                                      <div className="absolute top-0 right-0 p-8 opacity-5">
+                                                            <Shield className="w-24 h-24 text-blue-500" />
+                                                      </div>
+                                                      <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-6">CCPA / VCDPA</h4>
+                                                      <ul className="space-y-4 mb-8">
+                                                            {['Right to know', 'Right to delete', 'Right to opt-out', 'Non-discrimination'].map((r, i) => (
+                                                                  <li key={i} className="flex items-center gap-3 text-sm font-medium text-slate-500 dark:text-slate-400">
+                                                                        <div className="w-1 h-1 rounded-full bg-blue-500" />
+                                                                        {r}
+                                                                  </li>
+                                                            ))}
+                                                      </ul>
+                                                      <Button variant="outline" className="w-full rounded-2xl py-6 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+                                                            Manage Preferences
+                                                      </Button>
+                                                </div>
+                                          </div>
+                                    </section>
+
+                                    {/* Contact */}
+                                    <section id="contact" className="mb-24 scroll-mt-24">
+                                          <div className="p-12 sm:p-20 bg-blue-600 rounded-[3rem] text-white relative overflow-hidden group shadow-2xl">
+                                                <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-110 transition-transform duration-700">
+                                                      <Mail className="w-64 h-64 text-white" />
+                                                </div>
+                                                <div className="relative z-10">
+                                                      <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-8 font-display">
+                                                            Still have questions?
+                                                      </h2>
+                                                      <p className="text-xl sm:text-2xl text-blue-100 max-w-xl leading-relaxed mb-12">
+                                                            Our privacy team is here to help walk you through any concerns or data requests.
+                                                      </p>
+                                                      <div className="flex flex-col sm:flex-row gap-6">
+                                                            <Button className="rounded-2xl px-10 py-8 bg-white text-blue-600 font-bold text-xl hover:bg-white/95 hover:scale-105 transition-all shadow-xl">
+                                                                  Contact Support
+                                                            </Button>
+                                                            <div className="flex flex-col justify-center">
+                                                                  <p className="text-sm font-bold opacity-70 uppercase tracking-widest mb-1">Email directly</p>
+                                                                  <p className="font-bold text-xl">privacy@tradepulse.io</p>
+                                                            </div>
+                                                      </div>
+                                                </div>
+                                          </div>
+                                    </section>
+
+                                    </div>
+
+                              <div className="mt-40 pt-20 border-t border-slate-100 dark:border-slate-800">
+                                    <div className="flex flex-col sm:flex-row items-center justify-between gap-10">
+                                          <div className="flex items-center gap-2 font-display text-xl font-bold text-slate-400 dark:text-slate-600">
+                                                TradePulse.
+                                          </div>
+                                          <div className="flex flex-wrap justify-center gap-10 text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                                                <Link href="/terms" className="hover:text-blue-600 transition-colors">Terms of Service</Link>
+                                                <Link href="/disclaimer" className="hover:text-blue-600 transition-colors">Risk Disclosure</Link>
+                                                <Link href="/cookies" className="hover:text-blue-600 transition-colors">Cookie Policy</Link>
+                                          </div>
+                                    </div>
+                              </div>
+                        </main>
                         </div>
-                        <span
-                          className="px-3 py-1 text-xs font-semibold rounded-full"
-                          style={{
-                            backgroundColor: `${cookie.color}20`,
-                            color: cookie.color,
-                          }}
-                        >
-                          {cookie.manageable ? 'Optional' : 'Required'}
-                        </span>
-                      </div>
-                      <p className="text-xs text-[#666666] font-mono">{cookie.examples}</p>
-                    </div>
-                  ))}
-
-                  <div className="mt-4 p-4 bg-[#0066FF]/10 border border-[#0066FF]/30 rounded-lg">
-                    <p className="text-sm text-primary">
-                      You can manage cookie preferences through your browser settings or our cookie consent manager. Note that disabling certain cookies may affect platform functionality.
-                    </p>
-                  </div>
-                </div>
-              </Accordion>
-            </section>
-
-            {/* Security */}
-            <section id="security" className="mb-5 scroll-mt-8">
-              <Accordion title="6. Data Security Measures" icon={<Lock className="w-6 h-6" />}>
-                <div className="grid md:grid-cols-2 gap-4 mb-6">
-                  {[
-                    {
-                      icon: <Lock className="w-6 h-6" />,
-                      title: 'Encryption',
-                      description: 'TLS 1.3 for data in transit, AES-256 for data at rest',
-                    },
-                    {
-                      icon: <Shield className="w-6 h-6" />,
-                      title: 'Access Control',
-                      description: 'Role-based access, multi-factor authentication option',
-                    },
-                    {
-                      icon: <BarChart3 className="w-6 h-6" />,
-                      title: 'Monitoring',
-                      description: '24/7 security monitoring, anomaly detection',
-                    },
-                    {
-                      icon: <TestTube className="w-6 h-6" />,
-                      title: 'Testing',
-                      description: 'Regular penetration testing, vulnerability scans',
-                    },
-                    {
-                      icon: <Users className="w-6 h-6" />,
-                      title: 'Training',
-                      description: 'Employee security awareness training',
-                    },
-                    {
-                      icon: <HardDrive className="w-6 h-6" />,
-                      title: 'Backup',
-                      description: 'Regular encrypted backups, disaster recovery plan',
-                    },
-                  ].map((measure, idx) => (
-                    <SecurityMeasure key={idx} {...measure} />
-                  ))}
-                </div>
-
-                <div className="p-4 bg-[#DC2626]/10 border border-[#DC2626]/30 rounded-lg">
-                  <h4 className="text-foreground font-semibold mb-2 flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5 text-[#DC2626]" />
-                    Security Incident Response
-                  </h4>
-                  <p className="text-muted-foreground text-sm mb-2">
-                    In the unlikely event of a data breach, we will notify affected users within 72 hours as required by GDPR and applicable laws.
-                  </p>
-                  <p className="text-muted-foreground text-sm">
-                    <strong className="text-foreground">Report security concerns:</strong> security@tradepulse.com
-                  </p>
-                </div>
-              </Accordion>
-            </section>
-
-            {/* User Rights */}
-            <section id="rights" className="mb-5 scroll-mt-8">
-              <Accordion title="7. Your Data Protection Rights" icon={<Shield className="w-6 h-6" />}>
-                <div className="space-y-6">
-                  {selectedRegion === 'EU' || selectedRegion === 'Global' ? (
-                    <div className="p-5 bg-[#0066FF]/10 border border-[#0066FF]/30 rounded-lg">
-                      <h4 className="text-lg font-semibold text-primary mb-3">
-                        GDPR Rights (EU/EEA Residents)
-                      </h4>
-                      <ul className="space-y-2">
-                        {[
-                          'Right to access your personal data',
-                          'Right to rectification of inaccurate data',
-                          'Right to erasure ("right to be forgotten")',
-                          'Right to restriction of processing',
-                          'Right to data portability',
-                          'Right to object to processing',
-                          'Right to withdraw consent at any time',
-                        ].map((right, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-muted-foreground">
-                            <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                            <span>{right}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <p className="text-sm text-muted-foreground mt-4">
-                        <strong className="text-foreground">Response time:</strong> 30 days for access and deletion requests
-                      </p>
-                    </div>
-                  ) : null}
-
-                  {selectedRegion === 'California' || selectedRegion === 'Global' ? (
-                    <div className="p-5 bg-[#00F5FF]/10 border border-[#00F5FF]/30 rounded-lg">
-                      <h4 className="text-lg font-semibold text-primary mb-3">
-                        CCPA Rights (California Residents)
-                      </h4>
-                      <ul className="space-y-2">
-                        {[
-                          'Right to know what personal information is collected',
-                          'Right to know whether personal information is sold or disclosed',
-                          'Right to opt-out of the sale of personal information',
-                          'Right to delete personal information',
-                          'Right to non-discrimination for exercising CCPA rights',
-                        ].map((right, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-muted-foreground">
-                            <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                            <span>{right}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <Button
-                      onClick={handleDataRequest}
-                      className="p-4 bg-primary h-24 flex-col text-foreground rounded-lg hover:bg-primary-dark transition-all transform hover:scale-105"
-                    >
-                      <FileText className="w-8 h-8 mb-2" />
-                      <h5 className="font-semibold">Request Data Export</h5>
-                      <p className="text-xs opacity-90">Download all your personal data</p>
-                    </Button>
-                    <Button
-                      onClick={() => alert('This would open the account deletion form')}
-                      className="p-4 bg-muted h-24 flex-col text-foreground rounded-lg hover:bg-[#353B52] transition-all transform hover:scale-105"
-                    >
-                      <AlertCircle className="w-8 h-8 mb-2" />
-                      <h5 className="font-semibold mb-1">Delete Account</h5>
-                      <p className="text-xs opacity-90">Permanently delete your account</p>
-                    </Button>
-                  </div>
-                </div>
-              </Accordion>
-            </section>
-
-            {/* Children's Privacy */}
-            <section id="children" className="mb-5 scroll-mt-8">
-              <Accordion title="8. Children's Privacy" icon={<AlertCircle className="w-6 h-6" />}>
-                <div className="prose prose-invert max-w-none">
-                  <p className="text-muted-foreground leading-relaxed mb-5">
-                    Trade Pulse is not intended for individuals under the age of 18. We do not knowingly collect personal information from children.
-                  </p>
-                  <div className="p-4 bg-[#DC2626]/10 border border-[#DC2626]/30 rounded-lg">
-                    <h4 className="text-foreground font-semibold mb-2">Age Verification</h4>
-                    <p className="text-muted-foreground text-sm mb-2">
-                      During account registration, users must confirm they are 18 years or older. We implement age verification checks to prevent underage access.
-                    </p>
-                    <p className="text-muted-foreground text-sm">
-                      If you believe we have inadvertently collected information from a child under 18, please contact us immediately at privacy@tradepulse.com, and we will delete such information promptly.
-                    </p>
-                  </div>
-                </div>
-              </Accordion>
-            </section>
-
-            {/* International Transfers */}
-            <section id="international" className="mb-5 scroll-mt-8">
-              <Accordion title="9. International Data Transfers" icon={<Globe className="w-6 h-6" />}>
-                <div className="prose prose-invert max-w-none">
-                  <p className="text-muted-foreground leading-relaxed mb-5">
-                    Your information may be transferred to and processed in countries other than your country of residence. These countries may have data protection laws different from those in your jurisdiction.
-                  </p>
-                  <div className="grid md:grid-cols-2 gap-4 mb-5">
-                    <div className="p-4 bg-background rounded-lg border border-border">
-                      <h4 className="text-foreground font-semibold mb-2">Transfer Mechanisms</h4>
-                      <ul className="space-y-2">
-                        <li className="text-sm text-muted-foreground flex items-start gap-2">
-                          <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                          <span>Standard Contractual Clauses (SCCs)</span>
-                        </li>
-                        <li className="text-sm text-muted-foreground flex items-start gap-2">
-                          <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                          <span>EU-US Data Privacy Framework</span>
-                        </li>
-                        <li className="text-sm text-muted-foreground flex items-start gap-2">
-                          <Check className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                          <span>Adequacy Decisions</span>
-                        </li>
-                      </ul>
-                    </div>
-                    <div className="p-4 bg-background rounded-lg border border-border">
-                      <h4 className="text-foreground font-semibold mb-2">Data Locations</h4>
-                      <ul className="space-y-2">
-                        <li className="text-sm text-muted-foreground flex items-start gap-2">
-                          <Globe className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                          <span>United States</span>
-                        </li>
-                        <li className="text-sm text-muted-foreground flex items-start gap-2">
-                          <Globe className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                          <span>European Union</span>
-                        </li>
-                        <li className="text-sm text-muted-foreground flex items-start gap-2">
-                          <Globe className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                          <span>With adequate protection</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground text-sm">
-                    We ensure that adequate safeguards are in place to protect your data wherever it is processed.
-                  </p>
-                </div>
-              </Accordion>
-            </section>
-
-            {/* Contact */}
-            <section id="contact" className="mb-5 scroll-mt-8">
-              <Accordion title="10. Contact Us" icon={<Mail className="w-6 h-6" />}>
-                <div className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">
-                    If you have questions about this Privacy Policy or wish to exercise your data protection rights, please contact us:
-                  </p>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="p-5 bg-background rounded-lg border border-border">
-                      <h4 className="text-foreground font-semibold mb-3">General Privacy Inquiries</h4>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        <strong className="text-foreground">Email:</strong> privacy@tradepulse.com
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">Response Time:</strong> 48 hours
-                      </p>
-                    </div>
-
-                    <div className="p-5 bg-background rounded-lg border border-border">
-                      <h4 className="text-foreground font-semibold mb-3">Data Protection Officer</h4>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        <strong className="text-foreground">Email:</strong> dpo@tradepulse.com
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        <strong className="text-foreground">For:</strong> GDPR requests
-                      </p>
-                    </div>
                   </div>
 
-                  <div className="p-5 bg-[#0066FF]/10 border border-[#0066FF]/30 rounded-lg">
-                    <h4 className="text-foreground font-semibold mb-2">Trade Pulse Inc.</h4>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      123 Financial District<br />
-                      San Francisco, CA 94105<br />
-                      United States
-                    </p>
-                    <p className="text-xs text-[#666666]">
-                      Last updated: March 15, 2024 • Version 2.1
-                    </p>
-                  </div>
-
-                  <div className="p-4 bg-[#10B981]/10 border border-[#10B981]/30 rounded-lg">
-                    <p className="text-sm text-[#10B981]">
-                      <strong>Your privacy matters to us.</strong> We are committed to responding to all inquiries promptly and transparently.
-                    </p>
-                  </div>
-                </div>
-              </Accordion>
-            </section>
-
-            {/* Footer Related Documents */}
-            <div className="mt-12 p-6 bg-card rounded-lg border border-border">
-              <h3 className="text-lg font-semibold text-foreground mb-5">Related Legal Documents</h3>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {[
-                  { name: 'Terms of Service', href: '/terms' },
-                  { name: 'Disclaimer', href: '/disclaimer' },
-                  { name: 'Cookie Policy', href: '#cookies' },
-                ].map((doc, idx) => (
-                  <a
-                    key={idx}
-                    href={doc.href}
-                    className="flex items-center gap-2 p-3 bg-muted rounded-lg hover:bg-[#353B52] transition-colors"
-                  >
-                    <FileText className="w-4 h-4 text-primary" />
-                    <span className="text-sm text-foreground">{doc.name}</span>
-                    <ExternalLink className="w-3 h-3 text-muted-foreground ml-auto" />
-                  </a>
-                ))}
-              </div>
-            </div>
-          </main>
-        </div>
-      </div>
-
-      {/* Print Styles */}
-      <style jsx>{`
+                  {/* Print Styles */}
+                  <style jsx>{`
         @media print {
           .no-print {
             display: none !important;
@@ -889,6 +624,6 @@ export default function PrivacyPolicyPage() {
           animation: slideDown 0.3s ease-out;
         }
       `}</style>
-    </div>
-  );
+            </LegalLayout>
+      );
 }
