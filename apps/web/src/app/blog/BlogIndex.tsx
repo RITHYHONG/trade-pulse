@@ -146,13 +146,13 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
         <BlogMarketWrap />
       </div>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="flex flex-col lg:flex-row gap-8 items-start justify-between mb-12 border-b border-border pb-8">
-          <div className="max-w-xl">
+      <div className="container mx-auto px-4 lg:px-8 py-12">
+        <div className="flex flex-col gap-8 items-start justify-between mb-12 border-b border-border pb-8 lg:flex-row">
+          <div className="max-w-xl w-full">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-2 text-primary font-bold uppercase tracking-widest text-xs mb-4"
+              className="flex items-center gap-2 text-primary font-bold uppercase tracking-widest cus_h1 mb-4"
             >
               <HiSparkles className="w-4 h-4" />
               Latest Intelligence
@@ -165,7 +165,7 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
             </p>
           </div>
 
-          <div className="w-full lg:w-auto flex items-center gap-4">
+          <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-end lg:w-auto">
              <CategoryFilter
               activeCategory={activeCategory}
               onCategoryChange={handleCategoryChange}
@@ -173,7 +173,7 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
             <Button
               variant={compactView ? 'secondary' : 'ghost'}
               onClick={() => setCompactView((s) => !s)}
-              className="ml-2 h-10"
+              className="h-10 w-full sm:w-auto"
               aria-pressed={compactView}
             >
               {compactView ? 'Dense View' : 'Compact View'}
@@ -225,24 +225,23 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
       {/* Footer Section with "More Stories" */}
       {(isLoading || (activeCategory === 'All Posts' && filteredPosts.length > 9)) && (
         <section className="py-24 bg-muted/10 border-t border-border mt-32">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between mb-12">
+          <div className="container mx-auto px-4 lg:px-8">
+            <div className="flex flex-col gap-4 items-start justify-between mb-12 md:flex-row md:items-center">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-primary/10 rounded-lg">
                   <HiQueueList className="w-6 h-6 text-primary" />
                 </div>
-                <h2 className="text-3xl font-bold tracking-tight">Archive Explorer</h2>
+                <h2 className="cus_h1 font-bold tracking-tight">Archive Explorer</h2>
               </div>
-              
-              <Link href="/create-post">
-                <Button className="bg-primary hover:bg-primary/90 text-white rounded-xl h-12 px-8 shadow-lg shadow-primary/20">
+              <Link href="/create-post" className="w-full md:w-auto">
+                <Button className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white rounded-xl h-12 px-8 shadow-lg shadow-primary/20">
                   <HiPencilSquare className="mr-2 h-5 w-5" />
                   Publish Intelligence
                 </Button>
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {isLoading ? (
                 Array.from({ length: 6 }).map((_, i) => (
                   <BlogCardSkeleton key={i} />

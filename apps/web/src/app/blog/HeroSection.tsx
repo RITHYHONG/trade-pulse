@@ -119,7 +119,7 @@ export function HeroSection({ featuredPost, sidebarPosts, isLoading }: HeroSecti
                         {featuredPost.category} • {featuredPost.readingTime}
                       </span>
                       
-                      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight lg:leading-[1.1] tracking-tight group-hover:text-primary transition-colors">
+                      <h2 className="cus_h1 font-bold text-white leading-tight lg:leading-[1.1] tracking-tight group-hover:text-primary transition-colors">
                         {featuredPost.title}
                       </h2>
 

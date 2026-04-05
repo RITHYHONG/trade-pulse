@@ -63,7 +63,6 @@ function HighlightGridCard({ post, compact }: { post: BlogPost; compact?: boolea
               {post.title}
             </h4>
             <div className="flex items-center gap-2">
-              <Sparkline data={(post._sparkline as number[]) || [1,2,3,2,3]} className="hidden sm:block" />
               <button onClick={(e) => { e.preventDefault(); addToWatchlist(post.slug); }} aria-label="Add to watchlist" className="p-2 rounded-md hover:bg-muted">
                 <Star className="w-4 h-4" />
               </button>

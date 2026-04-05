@@ -143,6 +143,7 @@ export default function App() {
   const isMobile = useIsMobileBreakpoint();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [intelPanelOpen, setIntelPanelOpen] = useState(false);
+  const [mobileTab, setMobileTab] = useState<'calendar' | 'filters' | 'insights'>('calendar');
   const [selectedEvent, setSelectedEvent] = useState<EconomicEvent | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('timeline');
   const [events, setEvents] = useState<EconomicEvent[]>([]);
@@ -420,37 +421,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="lg:hidden">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="hover:bg-primary/10 hover:text-primary transition-all">
-                    <BrainCircuit className="w-5 h-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="p-0 w-[85%] sm:w-[400px] border-l-border/40 bg-background/95 backdrop-blur-xl">
-                  <SheetHeader className="p-6 border-b border-border/40">
-                    <SheetTitle className="text-sm font-bold flex items-center gap-2">
-                      <BrainCircuit className="w-4 h-4 text-primary" />
-                      MARKET INTELLIGENCE
-                    </SheetTitle>
-                  </SheetHeader>
-                  <MarketIntelContent
-                    events={mockCentralBankEvents}
-                    aiIntelligence={aiIntelligence}
-                    isAiLoading={isAiLoading}
-                    correlations={correlations}
-                  />
-                </SheetContent>
-              </Sheet>
-            </div>
-
-            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSidebarOpen(true)}>
-              <Filter className="w-4 h-4" />
-            </Button>
-
-            <div className="w-px h-6 bg-border/40 mx-1 hidden lg:block" />
-
+          <div className="flex items-center justify-end gap-2">
             <Badge variant="outline" className="hidden lg:flex font-mono text-[0.7rem] font-bold px-2.5 py-1 text-muted-foreground border-border/60 bg-secondary/20">
               {filteredEvents.length} LOADED
             </Badge>
@@ -458,41 +429,35 @@ export default function App() {
         </div>
       </div>
 
-      <main className="flex-1 flex overflow-hidden relative">
-        <aside
-          className={cn(
-            "flex-none border-r border-border/40 bg-background/50 backdrop-blur-sm transition-all duration-300 ease-in-out z-40",
-            sidebarOpen ? (isMobile ? "fixed inset-0 w-full" : "w-72") : "w-0"
-          )}
-        >
-          <div className="h-full relative flex flex-col bg-card/20">
-            {isMobile && (
-              <div className="flex items-center justify-between p-4 border-b border-border/40 bg-background/80">
-                <span className="text-xs font-bold tracking-widest uppercase">Global Filters</span>
-                <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} className="rounded-full">
-                  <ChevronLeft className="w-5 h-5" />
-                </Button>
-              </div>
+      <main className="flex-1 flex overflow-hidden relative pb-16 md:pb-0">
+        {!isMobile && (
+          <aside
+            className={cn(
+              "flex-none border-r border-border/40 bg-background/50 backdrop-blur-sm transition-all duration-300 ease-in-out z-40 hidden md:block",
+              sidebarOpen ? "w-72" : "w-0"
             )}
-            <FilterSidebar filters={filters} onFiltersChange={handleFiltersChange} events={events} />
-          </div>
-        </aside>
+          >
+            <div className="h-full relative flex flex-col bg-card/20">
+              <FilterSidebar filters={filters} onFiltersChange={handleFiltersChange} events={events} />
+            </div>
+          </aside>
+        )}
 
-        <div className="flex-1 flex flex-col min-w-0 bg-secondary/10 relative">
-          <div className="flex-none px-4 md:px-6 py-4 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
+        <div className={cn("flex-1 flex flex-col min-w-0 bg-secondary/10 relative", isMobile && mobileTab !== 'calendar' && "hidden")}>
+          <div className="flex-none px-4 md:px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 no-scrollbar">
               {!isMobile && (
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="hover:bg-background h-8 w-8 rounded-lg border border-border/40 text-muted-foreground transition-all hover:text-primary"
+                  className="hover:bg-background h-8 w-8 rounded-lg border border-border/40 text-muted-foreground transition-all hover:text-primary shrink-0"
                 >
                   {sidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                 </Button>
               )}
 
-              <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)} className="w-auto">
+              <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)} className="w-auto shrink-0">
                 <TabsList className="h-9 bg-muted/40 p-1 gap-1 border border-border/20 rounded-xl">
                   <TabsTrigger value="timeline" className="text-[11px] font-bold px-4 h-7 data-[state=active]:bg-primary/50 data-[state=active]:text-primary transition-all">
                     <BarChart3 className="w-3.5 h-3.5 mr-2" />
@@ -510,7 +475,7 @@ export default function App() {
               </Tabs>
             </div>
 
-            <div className="hidden lg:flex items-center gap-2">
+            <div className="hidden lg:flex items-center gap-2 mt-2 md:mt-0">
               <Button
                 variant="ghost"
                 size="sm"
@@ -540,7 +505,7 @@ export default function App() {
         <aside
           className={cn(
             "flex-none border-l border-border/40 bg-background/30 transition-all duration-300 ease-in-out flex flex-col overflow-hidden",
-            intelPanelOpen ? "w-[320px] xl:w-[380px]" : "w-0"
+            (isMobile ? mobileTab === 'insights' : intelPanelOpen) ? (isMobile ? "fixed inset-x-0 inset-y-0 pb-16 z-40 bg-background" : "w-[320px] xl:w-[380px]") : "w-0"
           )}
         >
           <div className="flex-none p-5 border-b border-border/40 bg-background/40 backdrop-blur-sm flex items-center justify-between">
@@ -548,9 +513,11 @@ export default function App() {
               <BrainCircuit className="w-4 h-4 text-primary" />
               <h3 className="font-bold text-xs tracking-widest uppercase">Market Intelligence</h3>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => setIntelPanelOpen(false)} className="h-7 w-7 rounded-full">
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+            {!isMobile && (
+              <Button variant="ghost" size="icon" onClick={() => setIntelPanelOpen(false)} className="h-7 w-7 rounded-full">
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            )}
           </div>
           <MarketIntelContent
             events={centralBankEvents}
@@ -559,6 +526,46 @@ export default function App() {
             correlations={correlations}
           />
         </aside>
+
+        {isMobile && mobileTab === 'filters' && (
+           <div className="flex-1 flex flex-col bg-background relative z-40 overflow-hidden pb-16">
+              <div className="flex items-center justify-between p-4 border-b border-border/40 bg-background/80 flex-none leading-none h-14">
+                <span className="text-xs font-bold tracking-widest uppercase items-center flex h-full">Global Filters</span>
+              </div>
+              <div className="flex-1 overflow-y-auto basis-full min-h-0 relative">
+                <FilterSidebar filters={filters} onFiltersChange={handleFiltersChange} events={events} />
+              </div>
+           </div>
+        )}
+
+        {isMobile && (
+          <nav className="fixed bottom-0 left-0 right-0 h-16 bg-background/90 backdrop-blur-xl border-t border-border/50 flex items-center justify-around z-50">
+            <button
+              onClick={() => setMobileTab('calendar')}
+              className={cn("flex flex-col items-center justify-center w-full h-full", mobileTab === 'calendar' ? 'text-primary' : 'text-muted-foreground hover:text-foreground')}
+            >
+              <BarChart3 className="w-5 h-5 mb-1" />
+              <span className="text-[10px] font-bold">Calendar</span>
+            </button>
+            <button
+              onClick={() => setMobileTab('filters')}
+              className={cn("flex flex-col items-center justify-center w-full h-full", mobileTab === 'filters' ? 'text-primary' : 'text-muted-foreground hover:text-foreground')}
+            >
+              <Filter className="w-5 h-5 mb-1" />
+              <span className="text-[10px] font-bold">Filters</span>
+            </button>
+            <button
+              onClick={() => {
+                setMobileTab('insights');
+                setIntelPanelOpen(true);
+              }}
+              className={cn("flex flex-col items-center justify-center w-full h-full", mobileTab === 'insights' ? 'text-primary' : 'text-muted-foreground hover:text-foreground')}
+            >
+              <BrainCircuit className="w-5 h-5 mb-1" />
+              <span className="text-[10px] font-bold">Insights</span>
+            </button>
+          </nav>
+        )}
 
         {selectedEvent && (
           <EventIntelligencePanel

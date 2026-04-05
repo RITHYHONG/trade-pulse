@@ -33,7 +33,7 @@ const TimelineEventCard = memo(({ event, onClick }: { event: EconomicEvent, onCl
     <div
       onClick={handleClick}
       className={cn(
-        "relative bg-card hover:bg-card/80 border border-border/40 rounded-xl p-4 cursor-pointer transition-all duration-300 group/card overflow-hidden",
+        "relative bg-card hover:bg-card/80 border border-border/40 rounded-xl p-2.5 md:p-3 cursor-pointer transition-all duration-300 group/card overflow-hidden",
         SENTIMENT_GLOW[event.historicalData.directionBias] || SENTIMENT_GLOW.neutral,
         "hover:-translate-y-0.5 animate-in fade-in slide-in-from-left-4 duration-500"
       )}
@@ -48,24 +48,24 @@ const TimelineEventCard = memo(({ event, onClick }: { event: EconomicEvent, onCl
         styles.bg
       )} />
 
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <div className={cn("w-1.5 h-1.5 rounded-full shadow-sm", styles.bg)} />
-            <span className="text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground">
+      <div className="flex flex-col md:flex-row items-start justify-between gap-2 md:gap-3">
+        <div className="space-y-0.5 flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <div className={cn("w-1.5 h-1.5 rounded-full shadow-sm flex-shrink-0", styles.bg)} />
+            <span className="text-[0.65rem] md:text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground whitespace-nowrap">
               {event.impact} Impact
             </span>
-            <span className="text-[0.7rem] text-muted-foreground px-1">•</span>
-            <span className="text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground">
+            <span className="text-[0.7rem] text-muted-foreground px-1 hidden sm:inline">•</span>
+            <span className="text-[0.65rem] md:text-[0.7rem] font-medium uppercase tracking-wider text-muted-foreground truncate">
               {event.country}
             </span>
           </div>
 
-          <h4 className="font-semibold text-foreground group-hover/card:text-primary transition-colors">
+          <h4 className="text-sm md:text-base font-semibold text-foreground group-hover/card:text-primary transition-colors line-clamp-2">
             {event.name}
           </h4>
 
-          <div className="flex items-center gap-3 pt-1">
+          <div className="flex items-center gap-3 pt-0.5">
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Clock className="w-3.5 h-3.5" />
               <span className="font-mono">
@@ -78,9 +78,12 @@ const TimelineEventCard = memo(({ event, onClick }: { event: EconomicEvent, onCl
           </div>
         </div>
 
-        <div className="text-right">
-          <div className="text-[0.7rem] text-muted-foreground uppercase tracking-wider mb-0.5">Expected Move</div>
-          <div className="text-sm font-mono font-medium text-foreground">
+        <div className="flex md:flex-col items-center md:items-end justify-between md:justify-start w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-border/10">
+          <div className="text-[0.65rem] md:text-[0.7rem] text-muted-foreground uppercase tracking-wider mb-0.5 md:text-right">
+            <span className="md:hidden">Exp. Move</span>
+            <span className="hidden md:inline">Expected Move</span>
+          </div>
+          <div className="text-xs md:text-sm font-mono font-medium text-foreground">
             ±{event.tradingSetup.expectedMove}%
           </div>
           <div className="mt-2 flex justify-end">
@@ -126,9 +129,9 @@ export const TimelineView = memo(({ events, onEventClick, isLoading = false }: T
 
   return (
     <ScrollArea className="h-full">
-      <div className="p-4 md:p-6 max-w-4xl mx-auto relative">
+      <div className="p-2 sm:p-4 md:p-6 max-w-4xl mx-auto relative overflow-x-hidden">
         {/* Current Time Indicator Line */}
-        <div className="absolute left-[79px] top-6 bottom-6 w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent z-0 pointer-events-none" />
+        <div className="absolute left-[55px] md:left-[79px] top-6 bottom-6 w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent z-0 pointer-events-none" />
 
         {/* Timeline Grid */}
         <div className="space-y-1 relative z-10">
@@ -139,16 +142,16 @@ export const TimelineView = memo(({ events, onEventClick, isLoading = false }: T
             if (hourEvents.length === 0) return null;
 
             return (
-              <div key={hour} className="flex items-start gap-4 md:gap-6 group">
+              <div key={hour} className="flex items-start gap-2 md:gap-6 group">
                 {/* Time Label */}
-                <div className="w-16 flex-shrink-0 pt-4 text-right">
-                  <div className="text-sm font-mono text-muted-foreground group-hover:text-foreground transition-colors">
+                <div className="w-12 md:w-16 flex-shrink-0 pt-4 text-right">
+                  <div className="text-xs md:text-sm font-mono text-muted-foreground group-hover:text-foreground transition-colors">
                     {hour.toString().padStart(2, '0')}:00
                   </div>
                 </div>
 
                 {/* Timeline Track */}
-                <div className="flex-1 pb-8 relative border-l border-border/40 pl-6 md:pl-8">
+                <div className="flex-1 min-w-0 pb-8 relative border-l border-border/40 pl-4 md:pl-8">
                   {/* Active Dot */}
                   <div className="absolute -left-[5px] top-[22px] w-2.5 h-2.5 rounded-full bg-border group-hover:bg-primary transition-colors border-2 border-background" />
 

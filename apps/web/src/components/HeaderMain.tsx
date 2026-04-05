@@ -339,15 +339,16 @@ export function HeaderMain() {
                     );
                   } else {
                     return (
-                      <div
+                      <Link
                         key={index}
+                        href={item.href}
                         onClick={() => setIsMenuOpen(false)}
                         className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold border-b-2 border-primary' : 'text-foreground hover:text-primary'}`}
                       >
                         <Link href={item.href}>
                           {item.label}
                         </Link>
-                      </div>
+                      </Link>
                     );
                   }
                 })}

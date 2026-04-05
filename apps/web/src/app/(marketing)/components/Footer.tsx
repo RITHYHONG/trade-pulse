@@ -110,13 +110,13 @@ export function Footer() {
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <Input
                 placeholder="Enter your email"
-                className="flex-1 bg-card border-border h-10"
+                className="flex-1 bg-card border-border h-11"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
               />
               <Button
-                className="bg-primary hover:bg-primary/90 px-8"
+                className="bg-primary hover:bg-primary/90 px-8 h-11"
                 onClick={handleSubscribe}
                 disabled={isLoading}
               >

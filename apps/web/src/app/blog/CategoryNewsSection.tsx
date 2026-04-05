@@ -106,10 +106,7 @@ function SmallNewsCard({ post, compact }: { post: BlogPost; compact?: boolean })
               <span className="text-xs text-muted-foreground">{post.author?.name}</span>
             </div>
 
-            {/* Sparkline */}
-            <div className="hidden md:block">
-              <Sparkline data={(post as any)._sparkline || []} />
-            </div>
+
           </div>
         </div>
       </article>
@@ -161,7 +158,7 @@ function FeaturedNewsCard({ post, compact }: { post: BlogPost; compact?: boolean
           </Badge>
 
           {/* Title */}
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight group-hover:text-primary/90 transition-colors">
+          <h2 className="cus_h1 font-bold text-white mb-3 leading-tight group-hover:text-primary/90 transition-colors">
             {post.title}
           </h2>
 
@@ -184,10 +181,7 @@ function FeaturedNewsCard({ post, compact }: { post: BlogPost; compact?: boolean
               <span className="text-white font-medium text-sm">{post.author?.name}</span>
             </div>
 
-            {/* Small sparkline */}
-            <div className="hidden md:block">
-              <Sparkline data={(post as any)._sparkline || []} stroke="#fff" height={28} width={96} />
-            </div>
+
           </div>
         </div>
       </article>
@@ -203,7 +197,7 @@ function MainNewsCard({ post, compact }: { post: BlogPost; compact?: boolean }) 
       <article className="bg-card rounded-2xl overflow-hidden border border-border hover:border-primary/30 hover:shadow-xl transition-all duration-300 group cursor-pointer">
         <div className="grid md:grid-cols-2 gap-0">
           {/* Image */}
-          <div className="relative h-48 md:h-64 overflow-hidden">
+          <div className="relative h-[100%] overflow-hidden">
             <ImageWithFallback
               src={post.featuredImage ?? ''}
               alt={post.title}

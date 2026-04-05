@@ -70,7 +70,6 @@ function SmallStoryCard({ post, compact }: { post: BlogPost; compact?: boolean }
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <Sparkline data={(post._sparkline as number[]) || [1,2,3,2,3]} className="hidden sm:block" />
                   <button onClick={(e) => { e.preventDefault(); addToWatchlist(post.slug); }} aria-label="Add to watchlist" className="p-2 rounded-md hover:bg-muted">
                     <Star className="w-4 h-4" />
                   </button>
@@ -218,7 +217,7 @@ export function PopularStorySection({ posts, isLoading, compact = false }: Popul
               <HiFire className="w-4 h-4" />
               Hot Right Now
             </div>
-            <h2 className="text-4xl lg:text-5xl font-bold tracking-tight">
+            <h2 className="cus_h1 font-bold tracking-tight">
               Most <span className="text-primary italic">Popular</span> Intelligence
             </h2>
           </div>

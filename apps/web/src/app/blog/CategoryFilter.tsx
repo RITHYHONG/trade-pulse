@@ -7,7 +7,7 @@ interface CategoryFilterProps {
 
 export function CategoryFilter({ activeCategory, onCategoryChange }: CategoryFilterProps) {
   return (
-    <div className="sticky top-16 z-10 bg-background/95 backdrop-blur-md border-b border-border py-4">
+    <div className="sticky top-16 z-10 bg-background/95 backdrop-blur-md border-b border-border py-4 overflow-auto">
       <div className="container mx-auto px-4">
         <div className="flex gap-1 overflow-x-auto pb-2 scrollbar-hide">
           {categories.map((category) => (

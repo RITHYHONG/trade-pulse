@@ -74,9 +74,7 @@ function SmallPostCard({ post, compact }: { post: BlogPost; compact?: boolean })
 
         <div className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
           <ImageWithFallback src={post.featuredImage ?? ''} alt={post.title} fill className="object-cover transition-transform duration-300 group-hover:scale-110" />
-          <div className="absolute top-2 left-2">
-            <Sparkline data={(post._sparkline as number[]) || [1,2,3]} width={48} height={18} />
-          </div>
+
         </div>
         <div className="absolute top-2 right-2 flex gap-1">
           <button onClick={(e) => { e.preventDefault(); addToWatchlist(post.slug); }} aria-label="Add to watchlist" className="p-1 rounded-md hover:bg-muted">

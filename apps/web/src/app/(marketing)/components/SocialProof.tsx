@@ -50,7 +50,7 @@ export function SocialProof() {
               key={index}
               className="text-center font-bold"
             >
-              <div className="text-3xl lg:text-4xl text-primary mb-2">{stat.value}</div>
+              <div className="cus_h1 text-primary mb-2">{stat.value}</div>
               <div className="text-muted-foreground">{stat.label}</div>
             </div>
           ))}
