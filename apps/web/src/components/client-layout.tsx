@@ -1,9 +1,10 @@
 'use client';
 
-import { SessionManager } from './session-manager';
-import ChatbotModal from './ai/chatbot';
+import dynamic from 'next/dynamic';
 import { ThemeProvider } from './providers/theme-provider';
-import { LastVisitedTracker } from './last-visited';
+
+const SessionManager = dynamic(() => import('./session-manager').then((mod) => mod.SessionManager), { ssr: false });
+const LastVisitedTracker = dynamic(() => import('./last-visited').then((mod) => mod.LastVisitedTracker), { ssr: false });
 
 interface ClientLayoutProps {
   children: React.ReactNode;

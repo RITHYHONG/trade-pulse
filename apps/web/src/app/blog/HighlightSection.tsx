@@ -37,6 +37,7 @@ function HighlightSkeleton() {
 }
 
 function HighlightGridCard({ post, compact }: { post: BlogPost; compact?: boolean }) {
+  const { addToWatchlist, addAlert } = useWatchlistStore();
   return (
     <Link href={`/blog/${post.slug}`}>
       <article className="bg-card rounded-xl overflow-hidden border border-border hover:border-primary/30 hover:shadow-lg transition-all duration-300 group cursor-pointer h-full">
@@ -66,7 +67,7 @@ function HighlightGridCard({ post, compact }: { post: BlogPost; compact?: boolea
               <button onClick={(e) => { e.preventDefault(); addToWatchlist(post.slug); }} aria-label="Add to watchlist" className="p-2 rounded-md hover:bg-muted">
                 <Star className="w-4 h-4" />
               </button>
-              <button onClick={(e) => { e.preventDefault(); setAlert(post.slug); }} aria-label="Set alert" className="p-2 rounded-md hover:bg-muted">
+              <button onClick={(e) => { e.preventDefault(); addAlert(post.slug); }} aria-label="Set alert" className="p-2 rounded-md hover:bg-muted">
                 <Bell className="w-4 h-4" />
               </button>
             </div>

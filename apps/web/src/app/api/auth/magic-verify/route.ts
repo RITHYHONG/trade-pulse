@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Rate limit checks: by IP and by email (if provided)
-    const ip = request.headers.get('x-forwarded-for') || request.ip || request.headers.get('x-real-ip') || 'unknown';
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     const emailKey = (email || '').toLowerCase();
 
     // record and evaluate IP attempts

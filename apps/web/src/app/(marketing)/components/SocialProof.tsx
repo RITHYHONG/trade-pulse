@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from 'motion/react';
 import { Star, Quote } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -45,35 +42,23 @@ export function SocialProof() {
   <section id="testimonials" className="scroll-mt-24 py-24 bg-gradient-to-b from-background to-card/30">
       <div className="container mx-auto px-8">
         {/* Stats Section */}
-        <motion.div 
+        <div 
           className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-20"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
         >
           {stats.map((stat, index) => (
-            <motion.div 
+            <div 
               key={index}
               className="text-center font-bold"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <div className="text-3xl lg:text-4xl text-primary mb-2">{stat.value}</div>
               <div className="text-muted-foreground">{stat.label}</div>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
 
         {/* Testimonials Section */}
-        <motion.div 
+        <div 
           className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
         >
           <h2 className="text-4xl lg:text-5xl mb-6 font-bold">
             Trusted by{' '}
@@ -84,16 +69,13 @@ export function SocialProof() {
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             See how traders are using our platform to consistently outperform the market
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid md:grid-cols-3 gap-8 mb-20">
           {testimonials.map((testimonial, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="transition-all duration-300"
             >
               <Card className="p-8 h-full bg-card/50 border-border hover:bg-card/80 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
                 {/* Quote icon */}
@@ -128,16 +110,12 @@ export function SocialProof() {
                   </div>
                 </div>
               </Card>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Partner Logos */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+        <div
         >
           <div className="text-center mb-12">
             <p className="text-muted-foreground">Integrated with leading financial platforms</p>
@@ -145,20 +123,15 @@ export function SocialProof() {
           
           <div className="flex items-center justify-center gap-12 flex-wrap opacity-60">
             {logos.map((logo, index) => (
-              <motion.div 
+              <div 
                 key={index}
                 className="px-6 py-3 border border-border rounded-lg text-sm font-medium hover:opacity-100 transition-opacity"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 0.6 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                whileHover={{ opacity: 1 }}
               >
                 {logo}
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

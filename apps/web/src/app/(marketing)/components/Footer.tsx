@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { motion } from 'motion/react';
 import { Linkedin, Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -100,13 +99,7 @@ export function Footer() {
       {/* Newsletter Section */}
       <div className="border-b border-border">
         <div className="container mx-auto px-8 py-16">
-          <motion.div
-            className="max-w-4xl mx-auto text-center"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <div className="max-w-4xl mx-auto text-center">
             <h3 className="text-3xl mb-4 font-bold">
               Stay Ahead of the Markets
             </h3>
@@ -134,7 +127,7 @@ export function Footer() {
             <p className="text-sm text-muted-foreground mt-4">
               Join 50,000+ traders getting our weekly newsletter. Unsubscribe anytime.
             </p>
-          </motion.div>
+          </div>
         </div>
       </div>
 
@@ -142,19 +135,9 @@ export function Footer() {
       <div className="container mx-auto px-8 py-16">
         <div className="grid lg:grid-cols-6 gap-12">
           {/* Brand Column */}
-          <motion.div
-            className="lg:col-span-2"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <div className="lg:col-span-2">
             <div className="flex items-center gap-3 mb-6">
-              <motion.div
-                className="flex items-center gap-3"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
-              >
+              <div className="flex items-center gap-3">
                 <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                   <Image
                     src={mounted ? (theme === 'light' ? LogoLight : LogoDark) : LogoDark}
@@ -164,7 +147,7 @@ export function Footer() {
                     priority
                   />
                 </Link>
-              </motion.div>
+              </div>
               <div>
                 <div className="font-bold text-xl">Trader Pulse</div>
                 <div className="text-sm text-muted-foreground">Pre-Market Intelligence</div>
@@ -186,17 +169,11 @@ export function Footer() {
                 <Mail className="w-5 h-5" width={20} height={20} />
               </Button>
             </div>
-          </motion.div>
+          </div>
 
           {/* Links Columns */}
-          {Object.entries(footerLinks).map(([category, links], categoryIndex) => (
-            <motion.div
-              key={category}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: categoryIndex * 0.1 }}
-            >
+          {Object.entries(footerLinks).map(([category, links]) => (
+            <div key={category}>
               <h4 className="font-semibold mb-6">{category}</h4>
               <ul className="space-y-4">
                 {links.map((link, linkIndex) => (
@@ -211,7 +188,7 @@ export function Footer() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
@@ -220,23 +197,11 @@ export function Footer() {
       <div className="border-t border-border">
         <div className="container mx-auto px-8 py-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-            <motion.div
-              className="text-sm text-muted-foreground"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
+            <div className="text-sm text-muted-foreground">
               © 2025 Trader Pulse. All rights reserved.
-            </motion.div>
+            </div>
 
-            <motion.div
-              className="flex items-center gap-8 text-sm text-muted-foreground"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
+            <div className="flex items-center gap-8 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
                 All systems operational
@@ -245,7 +210,7 @@ export function Footer() {
                 <Phone className="w-4 h-4" />
                 24/7 Support
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
@@ -253,17 +218,11 @@ export function Footer() {
       {/* Disclaimer */}
       <div className="bg-card/30 border-t border-border">
         <div className="container mx-auto px-8 py-6">
-          <motion.p
-            className="text-xs text-muted-foreground text-center leading-relaxed"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <p className="text-xs text-muted-foreground text-center leading-relaxed">
             <strong>Risk Disclaimer:</strong> Trading involves substantial risk and may not be suitable for all investors.
             Past performance is not indicative of future results. All trading decisions should be made based on your own analysis and risk tolerance.
             Trader Pulse is for informational purposes only and does not constitute investment advice.
-          </motion.p>
+          </p>
         </div>
       </div>
     </footer>

@@ -28,11 +28,10 @@ export default function LegalHeader({
         </div>
         
         <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-medium text-slate-500 dark:text-slate-400">
-          <a href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">Resources</a>
-          <a href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">Pricing</a>
-          <a href="#" className="text-slate-900 dark:text-white font-bold relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-blue-600">Privacy</a>
-          <a href="#" className="hover:text-slate-900 dark:hover:text-white transition-colors">About</a>
-        
+          <a href="/terms" className="hover:text-slate-900 dark:hover:text-white transition-colors">Terms of Service</a>
+          <a href="/disclaimer" className="hover:text-slate-900 dark:hover:text-white transition-colors">Risk Disclosure</a>
+          <a href="/cookies" className="hover:text-slate-900 dark:hover:text-white transition-colors">Cookie Policy</a>
+       
         </div>
       </nav>
 

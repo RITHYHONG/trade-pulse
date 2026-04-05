@@ -1,9 +1,9 @@
-import { Features } from "./components/Features";
-import { Footer } from "./components/Footer";
+import dynamic from 'next/dynamic';
 import { Hero } from "./components/Hero";
-import { Pricing } from "./components/Pricing";
-import { ProblemSolution } from "./components/ProblemSolution";
-import { SocialProof } from "./components/SocialProof";
+const ProblemSolution = dynamic(() => import("./components/ProblemSolution").then((mod) => mod.ProblemSolution));
+const Features = dynamic(() => import("./components/Features").then((mod) => mod.Features));
+const SocialProof = dynamic(() => import("./components/SocialProof").then((mod) => mod.SocialProof));
+const Pricing = dynamic(() => import("./components/Pricing").then((mod) => mod.Pricing));
 import { generateMetadata } from '@/lib/seo';
 import type { Metadata } from 'next';
 

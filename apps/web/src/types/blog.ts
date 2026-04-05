@@ -32,6 +32,7 @@ export interface BlogPost {
 	relatedAssets?: string[];
 	timeHorizon?: string;
 	isDraft?: boolean;
+	_sparkline?: number[];
 }
 
 export interface AdItem {

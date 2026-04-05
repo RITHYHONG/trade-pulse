@@ -84,7 +84,7 @@ function SecurityMeasure({ icon, title, description }: SecurityMeasureProps) {
       return (
             <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:border-blue-500/30 transition-all duration-300 group">
                   <div className="mb-6 p-3 w-fit rounded-xl bg-slate-50 dark:bg-slate-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 transition-colors">
-                        {React.isValidElement(icon) ? React.cloneElement(icon, { className: 'w-6 h-6 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors' }) : null}
+                        {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<{ className?: string }>, { className: 'w-6 h-6 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors' }) : null}
                   </div>
                   <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">{title}</h4>
                   <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{description}</p>
@@ -196,7 +196,7 @@ export default function PrivacyPolicyPage() {
                                                                         }`}
                                                             >
                                                                   <span className={`transition-transform duration-300 ${activeSection === section.id ? 'scale-110 translate-x-1' : 'group-hover:translate-x-1'}`}>
-                                                                        {React.isValidElement(section.icon) ? React.cloneElement(section.icon, { className: 'w-4 h-4' }) : section.icon}
+                                                                        {React.isValidElement(section.icon) ? React.cloneElement(section.icon as React.ReactElement<{ className?: string }>, { className: 'w-4 h-4' }) : section.icon}
                                                                   </span>
                                                                   <span className="text-sm font-medium leading-none">{section.label}</span>
                                                             </button>

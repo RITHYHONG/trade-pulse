@@ -1,18 +1,27 @@
 "use client";
 
+import dynamic from 'next/dynamic';
 import { Badge } from '@/components/ui/badge';
-import { ImageWithFallback } from '@/components/figma/ImageWithFallback';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Play } from 'lucide-react';
 import Link from 'next/link';
-import { motion } from 'motion/react';
 import {
   ScrollVelocityContainer,
   ScrollVelocityRow,
 } from '@/components/ui/scroll-based-velocity';
 
-
-import { MarketSentimentWidget } from './MarketSentimentWidget';
+const MarketSentimentWidget = dynamic(
+  () => import('./MarketSentimentWidget').then((mod) => mod.MarketSentimentWidget),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center gap-2 bg-card/30 backdrop-blur-md px-4 py-2 rounded-full border border-border/40 text-sm text-muted-foreground">
+        <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+        AI Market Pulse loading...
+      </div>
+    ),
+  }
+);
 
 export function Hero() {
   return (
@@ -23,26 +32,12 @@ export function Hero() {
       <div className="container mx-auto px-4 sm:px-6 md:px-8 py-24 md:py-20 lg:py-24 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
           {/* Left Column - Content */}
-          <motion.div
-            className="space-y-6 md:space-y-8 text-center md:text-left"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex justify-center md:justify-start"
-            >
+          <div className="space-y-6 md:space-y-8 text-center md:text-left">
+            <div className="flex justify-center md:justify-start">
               <MarketSentimentWidget />
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
+            <div>
               <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl xl:text-7xl tracking-tight font-bold">
                 See{' '}
                 <span className="bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
@@ -51,23 +46,13 @@ export function Hero() {
                 <br />
                 Make the Move
               </h1>
-            </motion.div>
+            </div>
 
-            <motion.p
-              className="text-lg md:text-xl text-muted-foreground max-w-lg leading-relaxed mx-auto md:mx-0"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
+            <p className="text-lg md:text-xl text-muted-foreground max-w-lg leading-relaxed mx-auto md:mx-0">
               AI-powered pre-market intelligence. Cut through the noise and start every trading day ahead of the curve.
-            </motion.p>
+            </p>
 
-            <motion.div
-              className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center md:justify-start"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center md:justify-start">
               <Button asChild size="lg" className="group px-6 md:px-8 w-full sm:w-auto bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25">
                 <Link href="#pricing">
                   Start Your Free Morning Routine
@@ -80,15 +65,10 @@ export function Hero() {
                   Watch 90-Second Demo
                 </Link>
               </Button>
-            </motion.div>
+            </div>
 
             {/* Trust indicators */}
-            <motion.div
-              className="flex items-center gap-8 pt-6 md:pt-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-            >
+            <div className="flex items-center gap-8 pt-6 md:pt-8">
               <ScrollVelocityContainer className="w-full opacity-60 relative">
                 <ScrollVelocityRow baseVelocity={5} direction={-1}>
                   <div className="flex items-center">
@@ -105,16 +85,11 @@ export function Hero() {
                 <div className="from-background pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r"></div>
                 <div className="from-background pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l"></div>
               </ScrollVelocityContainer>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
           {/* Right Column - Dashboard Mockup */}
-          <motion.div
-            className="relative mt-8 md:mt-0"
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
+          <div className="relative mt-8 md:mt-0">
             <div className="relative bg-card/50 rounded-2xl p-4 sm:p-6 md:p-8 border border-border backdrop-blur-sm">
               {/* Browser mockup header */}
               <div className="flex items-center gap-2 mb-4 md:mb-6 pb-3 md:pb-4 border-b border-border">
@@ -135,12 +110,16 @@ export function Hero() {
               {/* Dashboard content */}
               <div className="space-y-4 md:space-y-6">
                 <div className="w-full h-40 sm:h-48 md:h-56 lg:h-64 relative rounded-lg border border-border overflow-hidden shadow-inner bg-slate-900/50">
-                  <ImageWithFallback
-                    src="https://via.placeholder.com/1200x630.png?text=Dashboard+Preview"
-                    alt="Realtime trading dashboard preview"
-                    fill
-                    className="object-cover opacity-90 group-hover:scale-105 transition-transform duration-1000"
-                  />
+                  <div className="absolute inset-0 bg-slate-950/90" />
+                  <div className="absolute inset-6 rounded-2xl bg-gradient-to-br from-slate-800/90 via-slate-900/80 to-slate-950/80 shadow-inner">
+                    <div className="h-3 w-24 rounded-full bg-primary/70 mt-4 ml-4"></div>
+                    <div className="h-3 w-16 rounded-full bg-primary/50 mt-3 ml-4"></div>
+                    <div className="mt-6 grid grid-cols-3 gap-3 px-4">
+                      <div className="h-24 rounded-2xl bg-slate-800/80" />
+                      <div className="h-24 rounded-2xl bg-slate-800/80" />
+                      <div className="h-24 rounded-2xl bg-slate-800/80" />
+                    </div>
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent pointer-events-none" />
                 </div>
 
@@ -180,31 +159,9 @@ export function Hero() {
             </div>
 
             {/* Floating elements */}
-            <motion.div
-              className="absolute -top-4 -right-4 bg-primary/20 rounded-full w-16 h-16 blur-xl"
-              animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.6, 0.3]
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-            <motion.div
-              className="absolute -bottom-8 -left-8 bg-success/20 rounded-full w-24 h-24 blur-xl"
-              animate={{
-                scale: [1.2, 1, 1.2],
-                opacity: [0.2, 0.4, 0.2]
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-          </motion.div>
+            <div className="absolute -top-4 -right-4 bg-primary/20 rounded-full w-16 h-16 blur-xl animate-pulse" />
+            <div className="absolute -bottom-8 -left-8 bg-success/20 rounded-full w-24 h-24 blur-xl animate-pulse" />
+          </div>
         </div>
       </div>
     </section>

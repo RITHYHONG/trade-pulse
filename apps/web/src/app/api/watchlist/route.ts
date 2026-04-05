@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
 
+declare global {
+  var __WATCHLIST__: Map<string, Set<string>> | undefined;
+}
+
 type WatchlistStore = Map<string, Set<string>>;
 
 const WATCHLIST: WatchlistStore = globalThis.__WATCHLIST__ || new Map();
 // persist in global for dev hot reload
-// @ts-ignore
 globalThis.__WATCHLIST__ = WATCHLIST;
 
 function getSessionId(req: Request) {

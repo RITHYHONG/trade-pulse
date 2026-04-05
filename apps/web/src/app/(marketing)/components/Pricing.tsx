@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -77,12 +74,8 @@ export function Pricing() {
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-success/5 opacity-50" />
       
       <div className="container mx-auto px-8 relative z-10">
-        <motion.div 
+        <div 
           className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
         >
           <h2 className="text-4xl lg:text-5xl mb-6 font-bold">
             Choose Your{' '}
@@ -93,16 +86,12 @@ export function Pricing() {
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Start free, upgrade when you&apos;re ready to unlock your full potential
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {plans.map((plan, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
               className="relative"
             >
               <Card 
@@ -190,17 +179,13 @@ export function Pricing() {
                   )}
                 </div>
               </Card>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Bottom CTA */}
-        <motion.div 
+        <div 
           className="text-center mt-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
         >
           <div className="max-w-3xl mx-auto">
             <h3 className="text-2xl mb-4 font-bold">
@@ -215,15 +200,11 @@ export function Pricing() {
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Trust indicators */}
-        <motion.div 
+        <div 
           className="flex items-center justify-center gap-8 mt-12 text-sm text-muted-foreground"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.5 }}
         >
           <div className="flex items-center gap-2">
             <Check className="w-4 h-4 text-success" />
@@ -237,7 +218,7 @@ export function Pricing() {
             <Check className="w-4 h-4 text-success" />
             30-day money back
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

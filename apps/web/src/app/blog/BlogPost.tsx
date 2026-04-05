@@ -267,15 +267,15 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
               {/* Abstract Background Decoration */}
               <div className="absolute -left-12 top-0 w-24 h-full [clip-path:polygon(0_0,100%_0,0_100%)]"></div>
 
-              <div className="relative pl-12 border-l-2 border-cyan-500/30 py-8">
+              <div className="relative pl-12 border-l-2 border-[var(--border)] py-8">
                 <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 rounded-full border border-cyan-500/50 flex items-center justify-center bg-cyan-500/5">
+                  <div className="w-12 h-12 rounded-full border border-[var(--border)]/50 flex items-center justify-center bg-[var(--border)]/5">
                     <TrendingUp className="w-6 h-6 text-cyan-400" />
                   </div>
                   <h3 className="text-sm font-black uppercase tracking-[0.5em] text-cyan-500/80">Executive Brief</h3>
                 </div>
 
-                <p className="text-4xl sm:text-5xl font-black text-white leading-[1.1] tracking-tighter max-w-3xl selection:bg-cyan-500 selection:text-black">
+                <p className="text-4xl sm:text-5xl font-black text-[var(--foreground)] leading-[1.1] tracking-tighter max-w-3xl selection:bg-cyan-500 selection:text-black ">
                   {post.excerpt}
                 </p>
 
@@ -300,12 +300,12 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                 <style>{`
                   .prose-custom-html {
                     line-height: 1.8;
-                    color: hsl(var(--foreground) / 0.85);
+                    color: var(--foreground);
                   }
                   .prose-custom-html h1, 
                   .prose-custom-html h2, 
                   .prose-custom-html h3 {
-                    color: hsl(var(--foreground));
+                    color: var(--foreground);
                     font-weight: 600;
                     font-family: var(--font-sans);
                     margin-top: 2.5em;
@@ -313,27 +313,28 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                     letter-spacing: -0.01em;
                   }
                   .prose-custom-html h1 { font-size: 2.5em; }
-                  .prose-custom-html h2 { font-size: 1.75em; border-bottom: 1px solid hsl(var(--border) / 0.3); padding-bottom: 0.5em; }
+                  .prose-custom-html h2 { font-size: 1.75em; border-bottom: 1px solid var(--border); padding-bottom: 0.5em; }
                   .prose-custom-html h3 { font-size: 1.25em; }
                   
                   .prose-custom-html p {
                     margin-bottom: 1.5em;
                   }
                   .prose-custom-html a {
-                    color: hsl(var(--foreground));
+                    color: var(--foreground);
                     text-decoration: none;
-                    border-bottom: 1px solid hsl(var(--primary) / 0.5);
+                    border-bottom: 1px solid var(--primary);
                     transition: border-color 0.2s ease;
                   }
                   .prose-custom-html a:hover {
-                    border-bottom-color: hsl(var(--primary));
+                    border-bottom-color: var(--primary);
                   }
                   .prose-custom-html blockquote {
                     position: relative;
                     padding: 1rem 0 1rem 1.5rem;
                     margin: 2.5rem 0;
-                    border-left: 3px solid hsl(var(--foreground) / 0.2);
-                    color: hsl(var(--foreground) / 0.7);
+                    border-left: 3px solid var(--border);
+                    color: var(--foreground);
+                    opacity: 0.8;
                     font-style: italic;
                   }
                   .prose-custom-html blockquote p {
@@ -342,24 +343,25 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   .prose-custom-html ul {
                     list-style-type: disc;
                     padding-left: 1.5rem;
-                    color: hsl(var(--foreground) / 0.8);
+                    color: var(--foreground);
                   }
                   .prose-custom-html li {
                     margin-bottom: 0.5rem;
                   }
                   .prose-custom-html li::marker {
-                    color: hsl(var(--foreground) / 0.3);
+                    color: currentColor;
+                    opacity: 0.55;
                   }
                   .prose-custom-html mark {
-                    background-color: hsl(var(--primary) / 0.15);
-                    color: hsl(var(--foreground));
+                    background-color: rgba(229, 87, 63, 0.15);
+                    color: var(--foreground);
                     padding: 0.1em 0.2em;
                     border-radius: 0.2em;
                   }
                   .prose-custom-html img {
                     border-radius: 0.5rem;
                     margin: 2.5rem 0;
-                    border: 1px solid hsl(var(--border) / 0.3);
+                    border: 1px solid var(--border);
                   }
                 `}</style>
                 <div

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import { defaultMetadata } from "@config/seo";
 import "./globals.css";
-import "@/lib/firebase";
 import { Toaster } from "@/components/ui/sonner";
 import { ClientLayout } from "@/components/client-layout";
 import { AppLayout } from "@/components/app-layout";

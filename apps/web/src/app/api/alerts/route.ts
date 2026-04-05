@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
 
+declare global {
+  var __ALERTS__: Map<string, Set<string>> | undefined;
+}
+
 type AlertsStore = Map<string, Set<string>>;
 
 const ALERTS: AlertsStore = globalThis.__ALERTS__ || new Map();
 // persist in global for dev hot reload
-// @ts-ignore
 globalThis.__ALERTS__ = ALERTS;
 
 function getSessionId(req: Request) {

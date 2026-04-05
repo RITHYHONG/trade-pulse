@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, TrendingUp, User, LogOut, Settings, Search } from 'lucide-react';
+import { Menu, X, User, LogOut, Settings, Search } from 'lucide-react';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { usePathname } from 'next/navigation';
@@ -131,19 +130,10 @@ export function HeaderMain() {
   }, []);
 
   return (
-    <motion.header
-      className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border shadow-sm"
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-    >
+    <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border shadow-sm">
       <div className="container mx-auto px-6 lg:px-8 py-3">
         <div className="flex items-center justify-between">
-          <motion.div
-            className="flex items-center gap-3"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.15 }}
-          >
+          <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-90">
               <Image
                 src={mounted ? (theme === 'light' ? LogoLight : LogoDark) : LogoDark}
@@ -153,7 +143,7 @@ export function HeaderMain() {
                 priority
               />
             </Link>
-          </motion.div>
+          </div>
 
           <nav className="hidden lg:flex items-center gap-1">
             {navItems.map((item, index) => {
@@ -161,7 +151,7 @@ export function HeaderMain() {
 
               if (item.isComingSoon) {
                 return (
-                  <motion.a
+                  <a
                     key={index}
                     className="relative px-4 py-2 text-sm text-muted-foreground cursor-not-allowed group rounded-lg"
                   >
@@ -169,35 +159,29 @@ export function HeaderMain() {
                     <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-foreground text-background text-xs px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                       Coming Soon
                     </span>
-                  </motion.a>
+                  </a>
                 );
               } else if (item.isAnchor) {
                 return (
-                  <motion.a
+                  <a
                     key={index}
                     href={item.href}
                     onClick={() => setActive(item.href)}
                     className={`relative px-4 py-2 text-sm rounded-lg transition-colors ${isActive ? 'text-primary font-medium bg-primary-muted' : 'text-foreground hover:text-primary hover:bg-muted'}`}
-                    whileHover={{ y: -1 }}
-                    transition={{ duration: 0.15 }}
                   >
                     {item.label}
-                  </motion.a>
+                  </a>
                 );
               } else {
                 return (
-                  <motion.div
-                    key={index}
-                    whileHover={{ y: -1 }}
-                    transition={{ duration: 0.15 }}
-                  >
+                  <div key={index}>
                     <Link
                       href={item.href}
                       className={`relative px-4 py-2 text-sm rounded-lg transition-colors inline-block ${isActive ? 'text-primary font-medium bg-primary-muted' : 'text-foreground hover:text-primary hover:bg-muted'}`}
                     >
                       {item.label}
                     </Link>
-                  </motion.div>
+                  </div>
                 );
               }
             })}
@@ -304,15 +288,8 @@ export function HeaderMain() {
         </div>
       </div>
 
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25 }}
-            className="lg:hidden bg-card border-t border-border"
-          >
+      {isMenuOpen && (
+          <div className="lg:hidden bg-card border-t border-border transition-all duration-300">
             <div className="container mx-auto px-6 py-4">
               <nav className="flex flex-col gap-1 mb-4">
                 <div className="flex items-center justify-between py-2 px-3 mb-2 border-b border-border">
@@ -336,7 +313,7 @@ export function HeaderMain() {
 
                   if (item.isComingSoon) {
                     return (
-                      <motion.a
+                      <a
                         key={index}
                         className="py-2 text-muted-foreground cursor-not-allowed relative group"
                       >
@@ -344,11 +321,11 @@ export function HeaderMain() {
                         <span className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                           Coming Soon
                         </span>
-                      </motion.a>
+                      </a>
                     );
                   } else if (item.isAnchor) {
                     return (
-                      <motion.a
+                      <a
                         key={index}
                         href={item.href}
                         onClick={() => {
@@ -358,11 +335,11 @@ export function HeaderMain() {
                         className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold border-b-2 border-primary' : 'text-foreground hover:text-primary'}`}
                       >
                         {item.label}
-                      </motion.a>
+                      </a>
                     );
                   } else {
                     return (
-                      <motion.div
+                      <div
                         key={index}
                         onClick={() => setIsMenuOpen(false)}
                         className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold border-b-2 border-primary' : 'text-foreground hover:text-primary'}`}
@@ -370,7 +347,7 @@ export function HeaderMain() {
                         <Link href={item.href}>
                           {item.label}
                         </Link>
-                      </motion.div>
+                      </div>
                     );
                   }
                 })}
@@ -414,15 +391,14 @@ export function HeaderMain() {
                 )}
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
 
       {/* Search Modal */}
       <SearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
       />
-    </motion.header>
+    </header>
   );
 }

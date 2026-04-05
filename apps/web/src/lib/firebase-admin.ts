@@ -63,7 +63,7 @@ if (admin.apps?.length) {
       _adminReady = true;
     } else {
       // Missing credentials — log clearly and skip init to avoid ADC fallback crash
-      console.warn(
+      console.log(
         '[firebase-admin] Missing credentials. Set FIREBASE_SERVICE_ACCOUNT (JSON string) ' +
         'or FIREBASE_ADMIN_PROJECT_ID + FIREBASE_ADMIN_CLIENT_EMAIL + FIREBASE_ADMIN_PRIVATE_KEY. ' +
         'Admin SDK features (session cookies, server-side auth) will be disabled.'
@@ -72,6 +72,8 @@ if (admin.apps?.length) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[firebase-admin] Failed to initialize Firebase Admin SDK:', msg);
+    // Don't re-throw the error to prevent build failures
+    // _adminReady remains false, indicating admin features are disabled
   }
 }
 

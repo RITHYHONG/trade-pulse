@@ -1,37 +1,28 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { 
   AlertTriangle, 
-  Download, 
-  Printer, 
-  Share2, 
-  Clock, 
   Check, 
   X, 
   TrendingDown, 
   BarChart3, 
-  Users, 
   CreditCard, 
-  TrendingUp, 
-  Scale, 
-  Shield, 
   AlertCircle, 
-  FileText, 
-  ExternalLink,
-  ChevronRight,
-  Info
+  Info,
+  DollarSign,
+  Zap,
+  Lock,
+  BarChart,
+  Globe
 } from 'lucide-react';
-import LegalAccordion from '@/components/legal/LegalAccordion';
+import DisclaimerAcknowledgment from '@/components/legal/DisclaimerAcknowledgment';
 import LegalTLDR from '@/components/legal/LegalTLDR';
 import LegalLayout from '@/components/legal/LegalLayout';
 import LegalHeader from '@/components/legal/LegalHeader';
-import { Button } from '@/components/ui/button';
 
 interface RiskCategory {
   name: string;
   description: string;
-  icon: string;
+  icon: ReactNode;
 }
 
 function RiskCard({ risk }: { risk: RiskCategory }) {
@@ -51,70 +42,6 @@ function RiskCard({ risk }: { risk: RiskCategory }) {
 }
 
 export default function DisclaimerPage() {
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [readTime, setReadTime] = useState(0);
-  const [acknowledgments, setAcknowledgments] = useState({
-    acknowledge_risk: false,
-    not_advice: false,
-    personal_responsibility: false,
-  });
-
-  const allAcknowledged = Object.values(acknowledgments).every(value => value);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const scrollTop = window.scrollY;
-      const progress = (scrollTop / (documentHeight - windowHeight)) * 100;
-      setScrollProgress(Math.min(progress, 100));
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setReadTime(prev => prev + 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const handleCheckboxChange = (id: keyof typeof acknowledgments) => {
-    setAcknowledgments(prev => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
-  const handleAccept = () => {
-    if (allAcknowledged) {
-      const acknowledgmentData = {
-        timestamp: new Date().toISOString(),
-        version: 'v2.1.4',
-        readTime: readTime,
-        userAgent: navigator.userAgent,
-      };
-      alert('Disclaimer acknowledged! Compliance log generated.');
-    }
-  };
-
-  const handlePrint = () => window.print();
-  const handleDownload = () => alert('Generating PDF...');
-  
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: 'Trade Pulse Disclaimer',
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert('Link copied to clipboard!');
-    }
-  };
-
   const riskCategories: RiskCategory[] = [
     { name: 'Capital Risk', description: 'You can lose ALL of your invested capital.', icon: <DollarSign /> },
     { name: 'Leverage Risk', description: 'Margin trading can amplify losses beyond your investment.', icon: <Zap /> },
@@ -125,14 +52,6 @@ export default function DisclaimerPage() {
 
   return (
     <LegalLayout>
-      {/* Progress Bar */}
-      <div className="fixed top-0 left-0 right-0 h-1 bg-slate-100 dark:bg-slate-800 z-[100] no-print">
-        <div
-          className="h-full bg-blue-600 transition-all duration-300"
-          style={{ width: `${scrollProgress}%` }}
-        />
-      </div>
-
       <LegalHeader
         title="Risk Disclosure"
         version="v2.1.4"
@@ -259,74 +178,7 @@ export default function DisclaimerPage() {
           </p>
         </section>
 
-        {/* Compliance Footer */}
-        <div className="pt-12 border-t border-slate-100 dark:border-slate-800">
-          <div className="bg-slate-50 dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800">
-            <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-blue-600" />
-              Mandatory Acknowledgment
-            </h4>
-            
-            <div className="space-y-4 mb-8">
-              {[
-                { id: 'acknowledge_risk' as const, label: 'I understand trading involves substantial risk of loss' },
-                { id: 'not_advice' as const, label: 'I understand this is not financial advice' },
-                { id: 'personal_responsibility' as const, label: 'I accept full responsibility for my decisions' },
-              ].map((checkbox) => (
-                <label
-                  key={checkbox.id}
-                  className={`flex items-center gap-4 p-5 rounded-2xl border transition-all cursor-pointer ${
-                    acknowledgments[checkbox.id]
-                      ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500/50'
-                      : 'bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 hover:border-blue-500/30'
-                  }`}
-                >
-                  <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors ${
-                    acknowledgments[checkbox.id] ? 'bg-blue-600 border-blue-600' : 'border-slate-300 dark:border-slate-700'
-                  }`}>
-                    {acknowledgments[checkbox.id] && <Check className="w-4 h-4 text-white" />}
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={acknowledgments[checkbox.id]}
-                    onChange={() => handleCheckboxChange(checkbox.id)}
-                    className="hidden"
-                  />
-                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 select-none">
-                    {checkbox.label}
-                  </span>
-                </label>
-              ))}
-            </div>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div className="text-xs text-slate-500 font-medium">
-                {allAcknowledged ? 'Ready to proceed' : 'Please check all boxes'}
-              </div>
-              <Button
-                size="lg"
-                onClick={handleAccept}
-                disabled={!allAcknowledged}
-                className={`w-full sm:w-auto px-8 rounded-xl font-bold transition-all ${
-                  allAcknowledged 
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 scale-105' 
-                  : 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-600'
-                }`}
-              >
-                Accept & Continue
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <div className="text-center pb-12">
-          <p className="text-xs text-slate-400">
-            &copy; {new Date().getFullYear()} Trader Pulse. All rights reserved. 
-            <span className="mx-2">•</span>
-            <button onClick={handlePrint} className="hover:text-blue-600 transition-colors">Print PDF</button>
-          </p>
-        </div>
+        <DisclaimerAcknowledgment />
       </div>
     </LegalLayout>
   );
