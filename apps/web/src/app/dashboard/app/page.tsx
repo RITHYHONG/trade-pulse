@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { WidgetGrid } from "@/components/dashboard/widget-grid";
+import { DashboardWidgetLayout } from "@/components/dashboard/dashboard-widget-layout";
 import { AISummaryWidget } from "@/components/dashboard/widgets/ai-summary";
 import { EconomicCalendarWidget } from "@/components/dashboard/widgets/economic-calendar";
 import { WatchlistWidget } from "@/components/dashboard/widgets/watchlist";
@@ -28,16 +28,37 @@ async function WatchlistSection() {
 
 export default async function DashboardPage() {
   return (
-    <WidgetGrid className="pb-12">
-      <Suspense fallback={<Skeleton className="h-[360px]" />}>
-        <AISummarySection />
-      </Suspense>
-      <Suspense fallback={<Skeleton className="h-[360px]" />}>
-        <EconomicCalendarSection />
-      </Suspense>
-      <Suspense fallback={<Skeleton className="h-[360px]" />}>
-        <WatchlistSection />
-      </Suspense>
-    </WidgetGrid>
+    <DashboardWidgetLayout
+      className="pb-12"
+      widgets={[
+        {
+          id: "ai-summary",
+          title: "Market Pulse AI",
+          content: (
+            <Suspense fallback={<Skeleton className="h-[360px]" />}>
+              <AISummarySection />
+            </Suspense>
+          ),
+        },
+        {
+          id: "economic-calendar",
+          title: "Economic Calendar",
+          content: (
+            <Suspense fallback={<Skeleton className="h-[360px]" />}>
+              <EconomicCalendarSection />
+            </Suspense>
+          ),
+        },
+        {
+          id: "watchlist",
+          title: "Market Watch",
+          content: (
+            <Suspense fallback={<Skeleton className="h-[360px]" />}>
+              <WatchlistSection />
+            </Suspense>
+          ),
+        },
+      ]}
+    />
   );
 }
