@@ -54,7 +54,7 @@ export function MarketSessionsWidget() {
       };
 
       return (
-            <div className="rounded-xl border border-border bg-card p-5 shadow-sm h-full">
+            <div role="region" aria-labelledby="market-sessions-heading" className="rounded-xl border border-border bg-card p-5 shadow-sm h-full">
                   <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-2">
                               <div className="p-2 rounded-lg bg-primary/10 text-primary">

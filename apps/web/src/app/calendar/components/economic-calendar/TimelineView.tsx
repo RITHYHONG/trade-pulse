@@ -78,7 +78,7 @@ const TimelineEventCard = memo(({ event, onClick }: { event: EconomicEvent, onCl
           </div>
         </div>
 
-        <div className="flex md:flex-col items-center md:items-end justify-between md:justify-start w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-border/10">
+        <div className="flex  items-center md:items-end justify-around w-full md:w-auto pt-2 md:pt-0 border-t md:border-t-0 border-border/10">
           <div className="text-[0.65rem] md:text-[0.7rem] text-muted-foreground uppercase tracking-wider mb-0.5 md:text-right">
             <span className="md:hidden">Exp. Move</span>
             <span className="hidden md:inline">Expected Move</span>

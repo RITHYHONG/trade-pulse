@@ -224,7 +224,7 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
 
       {/* Footer Section with "More Stories" */}
       {(isLoading || (activeCategory === 'All Posts' && filteredPosts.length > 9)) && (
-        <section className="py-24 bg-muted/10 border-t border-border mt-32">
+        <section className="py-24 border-t border-border mt-32">
           <div className="container mx-auto px-4 lg:px-8">
             <div className="flex flex-col gap-4 items-start justify-between mb-12 md:flex-row md:items-center">
               <div className="flex items-center gap-3">

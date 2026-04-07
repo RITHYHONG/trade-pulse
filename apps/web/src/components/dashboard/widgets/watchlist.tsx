@@ -46,7 +46,8 @@ export function WatchlistWidget({ instruments, isLoading }: WatchlistWidgetProps
                   </div>
 
                   <div className="flex-1 overflow-auto">
-                        <table className="w-full text-sm text-left">
+                        <table className="w-full text-sm text-left" aria-label="Live market watchlist">
+                              <caption className="sr-only">Live market watchlist with current prices and change percentages.</caption>
                               <thead className="text-xs text-muted-foreground bg-muted/30 uppercase font-medium">
                                     <tr>
                                           <th className="px-6 py-3">Symbol</th>
@@ -56,7 +57,7 @@ export function WatchlistWidget({ instruments, isLoading }: WatchlistWidgetProps
                               </thead>
                               <tbody className="divide-y divide-border">
                                     {data.map((item) => (
-                                          <tr key={item.symbol} className="hover:bg-muted/30 transition-colors group cursor-pointer">
+                                          <tr key={item.symbol} className="hover:bg-muted/30 transition-colors group">
                                                 <td className="px-6 py-4">
                                                       <div className="font-bold text-foreground">{item.symbol}</div>
                                                       <div className="text-xs text-muted-foreground">{item.name}</div>

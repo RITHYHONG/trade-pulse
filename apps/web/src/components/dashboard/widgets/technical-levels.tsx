@@ -12,11 +12,11 @@ const DATA = [
 
 export function TechnicalLevelsWidget() {
       return (
-            <div className="rounded-xl border border-border bg-card p-0 shadow-sm h-full overflow-hidden">
+            <div role="region" aria-labelledby="technical-bias-heading" className="rounded-xl border border-border bg-card p-0 shadow-sm h-full overflow-hidden">
                   <div className="p-5 border-b border-border flex items-center justify-between bg-muted/20">
                         <div className="flex items-center gap-2">
                               <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                              <h3 className="font-semibold text-sm">Technical Bias</h3>
+                              <h3 id="technical-bias-heading" className="font-semibold text-sm">Technical Bias</h3>
                         </div>
                         <span className="text-xs text-muted-foreground">H4 Timeframe</span>
                   </div>
@@ -55,7 +55,7 @@ export function TechnicalLevelsWidget() {
                         ))}
                   </div>
                   <div className="p-3 text-center border-t border-border bg-muted/20">
-                        <button className="text-xs font-medium text-primary hover:underline">View All Analysis</button>
+                        <button type="button" className="text-xs font-medium text-primary hover:underline">View All Analysis</button>
                   </div>
             </div>
       );

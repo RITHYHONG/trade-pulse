@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calculator, ChevronRight, RotateCcw } from "lucide-react";
+import { Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,6 @@ export function RiskCalculatorWidget() {
       const [balance, setBalance] = useState(10000);
       const [riskPercent, setRiskPercent] = useState(1);
       const [stopLoss, setStopLoss] = useState(20);
-      const [pair, setPair] = useState("EURUSD");
 
       // Simple calculation: 
       // Risk Amount = Balance * (Risk% / 100)
@@ -37,8 +36,9 @@ export function RiskCalculatorWidget() {
 
                   <div className="space-y-5">
                         <div className="space-y-2">
-                              <Label className="text-xs text-muted-foreground">Account Balance ($)</Label>
+                              <Label htmlFor="balance-input" className="text-xs text-muted-foreground">Account Balance ($)</Label>
                               <Input
+                                    id="balance-input"
                                     type="number"
                                     value={balance}
                                     onChange={(e) => setBalance(Number(e.target.value))}
@@ -61,16 +61,35 @@ export function RiskCalculatorWidget() {
                         </div>
 
                         <div className="space-y-2">
-                              <Label className="text-xs text-muted-foreground">Stop Loss (Pips)</Label>
+                              <Label htmlFor="stop-loss-input" className="text-xs text-muted-foreground">Stop Loss (Pips)</Label>
                               <div className="flex gap-2">
-                                    <Button variant="outline" size="sm" className="h-9 w-9 p-0 bg-muted/50" onClick={() => setStopLoss(Math.max(5, stopLoss - 5))}>-</Button>
+                                    <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="sm"
+                                          className="h-9 w-9 p-0 bg-muted/50"
+                                          onClick={() => setStopLoss(Math.max(5, stopLoss - 5))}
+                                          aria-label="Decrease stop loss"
+                                    >
+                                          -
+                                    </Button>
                                     <Input
+                                          id="stop-loss-input"
                                           type="number"
                                           value={stopLoss}
                                           onChange={(e) => setStopLoss(Number(e.target.value))}
                                           className="h-9 text-center font-mono"
                                     />
-                                    <Button variant="outline" size="sm" className="h-9 w-9 p-0 bg-muted/50" onClick={() => setStopLoss(stopLoss + 5)}>+</Button>
+                                    <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="sm"
+                                          className="h-9 w-9 p-0 bg-muted/50"
+                                          onClick={() => setStopLoss(stopLoss + 5)}
+                                          aria-label="Increase stop loss"
+                                    >
+                                          +
+                                    </Button>
                               </div>
                         </div>
 

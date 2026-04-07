@@ -51,7 +51,7 @@ export function AISummaryWidget({ news, isLoading }: AISummaryWidgetProps) {
       const sentimentColor = positive > negative ? "text-emerald-500" : negative > positive ? "text-destructive" : "text-amber-500";
 
       return (
-            <Card className="h-full border-border bg-card shadow-sm overflow-hidden flex flex-col">
+            <Card role="region" aria-labelledby="market-pulse-ai-heading" className="h-full border-border bg-card shadow-sm overflow-hidden flex flex-col">
                   <div className="p-6 border-b border-border bg-gradient-to-r from-background to-muted/20">
                         <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center gap-2">
@@ -59,7 +59,7 @@ export function AISummaryWidget({ news, isLoading }: AISummaryWidgetProps) {
                                           <Sparkles className="h-5 w-5" />
                                     </div>
                                     <div>
-                                          <h3 className="font-bold text-lg">Market Pulse AI</h3>
+                                          <h3 id="market-pulse-ai-heading" className="font-bold text-lg">Market Pulse AI</h3>
                                           <p className="text-xs text-muted-foreground">Real-time analysis</p>
                                     </div>
                               </div>

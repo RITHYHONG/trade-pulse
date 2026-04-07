@@ -398,7 +398,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
 
       <div className="relative z-10 p-6 md:p-10 flex flex-col gap-10">
         {/* Header & Stats */}
-        <div className="flex lg:flex-row lg:items-end justify-between gap-8 px-4">
+        <div className="flexlglg:flex-row lg:items-end justify-between gap-8 px-4">
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary">
               <Zap className="w-3.5 h-3.5 fill-current" />
@@ -411,8 +411,8 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
             </div>
           </div>
 
-          <div className="flex gap-4">
             {/* Legend/Status - Static, no optimization needed */}
+          {/* <div className="flex gap-4">
             <div className="bg-card/40 backdrop-blur-xl border border-white/10 p-5 rounded-[2rem] flex items-center gap-6 shadow-2xl">
               <div className="flex -space-x-3">
                 {[
@@ -434,7 +434,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Main Grid Container */}

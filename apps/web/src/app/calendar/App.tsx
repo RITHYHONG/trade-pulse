@@ -475,7 +475,7 @@ export default function App() {
               </Tabs>
             </div>
 
-            <div className="hidden lg:flex items-center gap-2 mt-2 md:mt-0">
+            <div className="hidden lg:flex items-end gap-2 mt-2 md:mt-0">
               <Button
                 variant="ghost"
                 size="sm"

@@ -19,14 +19,14 @@ interface HeroSectionProps {
 
 function HeroSkeleton() {
   return (
-    <section className="py-12">
+    <section className="py-12 mt-8">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-8">
-            <Skeleton className="w-full h-[500px] rounded-3xl" />
+            <Skeleton className="w-full h-full rounded-3xl" />
           </div>
           <div className="lg:col-span-4 space-y-4">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4].map((i) => (
               <Skeleton key={i} className="h-32 w-full rounded-2xl" />
             ))}
           </div>
@@ -84,7 +84,7 @@ export function HeroSection({ featuredPost, sidebarPosts, isLoading }: HeroSecti
           {featuredPost && (
             <div className="lg:col-span-8">
               <Link href={`/blog/${featuredPost.slug}`}>
-                <article className="relative h-[480px] lg:h-[560px] rounded-[2.5rem] overflow-hidden group cursor-pointer shadow-2xl shadow-primary/5">
+                <article className="relative h-[480px] lg:h-full rounded-[2.5rem] overflow-hidden group cursor-pointer shadow-2xl shadow-primary/5">
                   <ImageWithFallback
                     src={featuredPost.featuredImage ?? ''}
                     alt={featuredPost.title}
