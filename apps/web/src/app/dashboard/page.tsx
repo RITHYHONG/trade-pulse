@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import type { Metadata } from 'next';
 import { generateMetadata } from '@/lib/seo';
 import { AISummaryWidget } from "@/components/dashboard/widgets/ai-summary";
@@ -8,33 +7,13 @@ import { MarketSessionsWidget } from "@/components/dashboard/widgets/market-sess
 import { RiskCalculatorWidget } from "@/components/dashboard/widgets/risk-calculator";
 import { TechnicalLevelsWidget } from "@/components/dashboard/widgets/technical-levels";
 import { DashboardWidgetLayout } from "@/components/dashboard/dashboard-widget-layout";
-import { StatCard, SectionFallback } from "@/components/dashboard/ui/stat-card";
-import { getMarketNews } from "@/lib/api/news-api";
-import { getWatchlist } from "@/lib/api/market-data";
-import { EconomicCalendarService } from "@/services/economic-calendar.service";
+import { StatCard } from "@/components/dashboard/ui/stat-card";
+import { getDashboardData } from "@/lib/dashboard-service";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Activity, ShieldCheck, Zap } from "lucide-react";
 
-// Async Data Fetchers
-async function AISummarySection() {
-  const news = await getMarketNews();
-  return <AISummaryWidget news={news} />;
-}
-
-async function EconomicCalendarSection() {
-  const today = new Date();
-  const end = new Date(today);
-  end.setDate(today.getDate() + 3);
-  const events = await EconomicCalendarService.getEvents(today, end);
-  return <EconomicCalendarWidget events={events} />;
-}
-
-async function WatchlistSection() {
-  const instruments = await getWatchlist();
-  return <WatchlistWidget instruments={instruments} />;
-}
-
 export default async function DashboardPage() {
+  const { marketNews, watchlist, calendarEvents } = await getDashboardData();
   return (
     <div className="space-y-8">
       {/* Header Section */}
@@ -104,20 +83,12 @@ export default async function DashboardPage() {
           {
             id: "ai-summary",
             title: "Market Pulse AI",
-            content: (
-              <Suspense fallback={<SectionFallback label="market summary" className="h-64" />}>
-                <AISummarySection />
-              </Suspense>
-            ),
+            content: <AISummaryWidget news={marketNews} />,
           },
           {
             id: "watchlist",
             title: "Market Watch",
-            content: (
-              <Suspense fallback={<SectionFallback label="watchlist" className="h-96" />}>
-                <WatchlistSection />
-              </Suspense>
-            ),
+            content: <WatchlistWidget instruments={watchlist} />,
           },
           {
             id: "market-sessions",
@@ -137,11 +108,7 @@ export default async function DashboardPage() {
           {
             id: "economic-calendar",
             title: "Economic Calendar",
-            content: (
-              <Suspense fallback={<SectionFallback label="economic calendar" className="h-64" />}>
-                <EconomicCalendarSection />
-              </Suspense>
-            ),
+            content: <EconomicCalendarWidget events={calendarEvents} />,
           },
         ]}
       />
