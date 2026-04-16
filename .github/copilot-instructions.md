@@ -20,6 +20,7 @@ Trade Pulse is a Next.js 15 financial trading platform with Firebase backend, fe
 - **Development**: `npm run dev` (uses Turbopack for fast builds)
 - **Build**: `npm run build` (Turbopack enabled)
 - **Firebase Deploy**: `npm run deploy:indexes` for Firestore index updates
+ - **Note:** Do not run `npm run build` automatically after completing tasks or edits; leave build execution to the developer.
 - **Auth Flow**: Cookies managed via `/api/auth/set-cookies` and `/api/auth/clear-cookies`
 - **Middleware Protection**: Routes like `/dashboard`, `/create-post` require auth-token cookie
 

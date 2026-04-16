@@ -11,6 +11,8 @@ import { StatCard } from "@/components/dashboard/ui/stat-card";
 import { getDashboardData } from "@/lib/dashboard-service";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Activity, ShieldCheck, Zap } from "lucide-react";
+import { DashboardClient } from "@/components/dashboard/DashboardClient";
+
 
 export default async function DashboardPage() {
   const { marketNews, watchlist, calendarEvents } = await getDashboardData();

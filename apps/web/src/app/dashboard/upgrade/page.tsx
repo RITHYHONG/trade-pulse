@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function LegacyUpgradeRedirect() {
-  redirect("/app/upgrade");
+  redirect("/dashboard/app/upgrade");
 }

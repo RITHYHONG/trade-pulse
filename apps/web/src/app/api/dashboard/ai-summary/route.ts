@@ -25,14 +25,23 @@ export async function GET(request: Request) {
       `;
     } else {
       prompt = `
-        Provide a professional "Daily Market Wrap" summary for Trade Pulse.
+        Provide a punchy, clean "Daily Market Wrap" for a professional trading dashboard.
         Market Data:
         ${marketContext}
         
-        The summary should have 3 paragraphs:
-        1. Overall session tone and lead assets.
-        2. Sector performance (Crypto vs Stocks vs Forex).
-        3. Critical risks or upcoming events to watch.
+        CRITICAL INSTRUCTIONS:
+        - Return EXACTLY 3 short, distinct points separated by DOUBLE newlines.
+        - Keep each point strictly under 15 words. Be snappy and direct.
+        - DO NOT use emojis of any kind.
+        - DO NOT use markdown formatting (like asterisks **, hash #, or bullet dashes -). Just plain text.
+        - Start each point with a short capitalized category word followed by a colon.
+        
+        Example format:
+        TONE: Bullish momentum dominating the session driven by tech strength.
+
+        LEADERS: Tech and Crypto surging past key resistance levels on volume.
+
+        WATCH: Yields are spiking, causing drag on defensive sectors.
       `;
     }
 
@@ -43,7 +52,17 @@ export async function GET(request: Request) {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    if (error instanceof Error && error.message === "MISSING_API_KEY") {
+    const errorMessage = error instanceof Error ? error.message : "Internal Error";
+
+    if (errorMessage.includes("429")) {
+      return Response.json({
+        summary: "TONE: Tech sectors are maintaining support amid mixed macroeconomic signals.\n\nLEADERS: Large-cap AI equities continue to outperform broader indices on high volume.\n\nWATCH: Approaching Federal Reserve commentary may introduce short-term yield volatility.",
+        timestamp: new Date().toISOString(),
+        isDemo: true
+      });
+    }
+
+    if (errorMessage === "MISSING_API_KEY") {
       return Response.json({
         summary:
           "Demo Mode: Trade Pulse is currently monitoring historical price action and sentiment drivers. To enable live AI institutional summaries, please configure your GOOGLE_GENERATIVE_AI_API_KEY in the environment settings.",
@@ -56,7 +75,7 @@ export async function GET(request: Request) {
       {
         summary:
           "Market summary engine is currently refining its data. Please check back shortly for institutional insights.",
-        error: error instanceof Error ? error.message : "Internal Error",
+        error: errorMessage,
       },
       { status: 500 },
     );

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { LineChart, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,7 @@ interface WatchlistWidgetProps {
 }
 
 export function WatchlistWidget({ instruments, isLoading }: WatchlistWidgetProps) {
+      const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
       if (isLoading) return <div className="h-96 rounded-xl bg-muted/20 animate-pulse" />;
 
       // Fill with dummy data if empty for visualization
@@ -56,8 +58,27 @@ export function WatchlistWidget({ instruments, isLoading }: WatchlistWidgetProps
                                     </tr>
                               </thead>
                               <tbody className="divide-y divide-border">
-                                    {data.map((item) => (
-                                          <tr key={item.symbol} className="hover:bg-muted/30 transition-colors group">
+                                    {data.map((item) => {
+                                    const isSelected = item.symbol === selectedSymbol || (selectedSymbol === null && data[0]?.symbol === item.symbol);
+                                    return (
+                                          <tr
+                                                key={item.symbol}
+                                                tabIndex={0}
+                                                role="button"
+                                                aria-label={`Select ${item.symbol} details`}
+                                                aria-selected={isSelected}
+                                                onClick={() => setSelectedSymbol(item.symbol)}
+                                                onKeyDown={(event) => {
+                                                      if (event.key === 'Enter' || event.key === ' ') {
+                                                            event.preventDefault();
+                                                            setSelectedSymbol(item.symbol);
+                                                      }
+                                                }}
+                                                className={cn(
+                                                      "transition-colors group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                                                      isSelected ? "bg-primary/10" : "hover:bg-muted/30",
+                                                )}
+                                          >
                                                 <td className="px-6 py-4">
                                                       <div className="font-bold text-foreground">{item.symbol}</div>
                                                       <div className="text-xs text-muted-foreground">{item.name}</div>
@@ -74,10 +95,25 @@ export function WatchlistWidget({ instruments, isLoading }: WatchlistWidgetProps
                                                       </div>
                                                 </td>
                                           </tr>
-                                    ))}
+                                    );
+                              })}
                               </tbody>
                         </table>
+                  </div>
+                  <div className="mt-5 rounded-xl border border-border bg-muted/50 p-5">
+                        <h4 className="text-sm font-semibold">Selected Instrument</h4>
+                        {data.length > 0 ? (
+                              <div className="mt-3 grid gap-2 text-sm text-muted-foreground">
+                                    <p className="font-medium text-foreground">{data.find((item) => item.symbol === selectedSymbol)?.name ?? data[0].name}</p>
+                                    <p>Price: ${data.find((item) => item.symbol === selectedSymbol)?.price.toFixed(4) ?? data[0].price.toFixed(4)}</p>
+                                    <p>Change: {data.find((item) => item.symbol === selectedSymbol)?.change.toFixed(2) ?? data[0].change.toFixed(2)} ({data.find((item) => item.symbol === selectedSymbol)?.changePercent.toFixed(2) ?? data[0].changePercent.toFixed(2)}%)</p>
+                                    <p>Sector: {data.find((item) => item.symbol === selectedSymbol)?.sector ?? data[0].sector}</p>
+                              </div>
+                        ) : (
+                              <p className="text-sm text-muted-foreground">Select a symbol to view more details.</p>
+                        )}
                   </div>
             </Card>
       );
 }
+

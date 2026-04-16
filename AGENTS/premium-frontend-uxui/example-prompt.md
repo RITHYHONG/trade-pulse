@@ -1,0 +1,1 @@
+I have attached a reference image of a premium SaaS dashboard. Please refactor my current DashboardContainer.tsx and Sidebar.js to match the visual style of this image.

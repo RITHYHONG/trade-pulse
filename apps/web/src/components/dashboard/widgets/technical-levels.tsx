@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
 
 const DATA = [
@@ -11,6 +13,10 @@ const DATA = [
 ];
 
 export function TechnicalLevelsWidget() {
+      const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
+      const router = useRouter();
+      const selected = DATA.find((item) => item.symbol === selectedSymbol) ?? DATA[0];
+
       return (
             <div role="region" aria-labelledby="technical-bias-heading" className="rounded-xl border border-border bg-card p-0 shadow-sm h-full overflow-hidden">
                   <div className="p-5 border-b border-border flex items-center justify-between bg-muted/20">
@@ -23,7 +29,7 @@ export function TechnicalLevelsWidget() {
 
                   <div className="divide-y divide-border">
                         {DATA.map((item) => (
-                              <div key={item.symbol} className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors cursor-default group">
+                              <div key={item.symbol} className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors group">
                                     <div className="flex items-center gap-3">
                                           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary font-bold text-[10px] text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                                                 {item.symbol.substring(0, 2)}
@@ -37,7 +43,7 @@ export function TechnicalLevelsWidget() {
                                           </div>
                                     </div>
 
-                                    <div className="text-right">
+                                    <div className="text-right flex flex-col items-end gap-2">
                                           <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold mb-1
                             ${item.bias === 'Bullish' ? 'bg-emerald-500/10 text-emerald-500' :
                                                       item.bias === 'Bearish' ? 'bg-destructive/10 text-destructive' : 'bg-gray-500/10 text-gray-500'}`
@@ -50,9 +56,33 @@ export function TechnicalLevelsWidget() {
                                           <p className={`text-xs font-medium ${item.change.startsWith('+') ? 'text-emerald-500' : 'text-destructive'}`}>
                                                 {item.change}
                                           </p>
+                                          <div className="flex items-center gap-2">
+                                                <button
+                                                      type="button"
+                                                      className="text-xs font-medium text-primary hover:underline"
+                                                      onClick={() => setSelectedSymbol(item.symbol)}
+                                                      aria-label={`Quick view ${item.symbol} technical details`}
+                                                >
+                                                      Quick View
+                                                </button>
+                                                <button
+                                                      type="button"
+                                                      className="text-xs font-medium text-foreground underline"
+                                                      onClick={() => router.push(`/trade?symbol=${encodeURIComponent(item.symbol)}`)}
+                                                      aria-label={`Open trade for ${item.symbol}`}
+                                                >
+                                                      Open Trade
+                                                </button>
+                                          </div>
                                     </div>
                               </div>
                         ))}
+                  </div>
+                  <div className="p-4 border-t border-border bg-muted/10">
+                        <p className="text-sm font-semibold">Quick view details</p>
+                        <p className="text-xs text-muted-foreground mt-2">
+                              {selected.symbol} currently shows a {selected.bias.toLowerCase()} bias at key level {selected.level} with {selected.change} movement and sentiment score {selected.sentiment}.
+                        </p>
                   </div>
                   <div className="p-3 text-center border-t border-border bg-muted/20">
                         <button type="button" className="text-xs font-medium text-primary hover:underline">View All Analysis</button>

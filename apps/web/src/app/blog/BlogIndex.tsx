@@ -11,7 +11,7 @@ import { NewsletterCTA } from './NewsletterCTA';
 import { BlogCard, BlogCardSkeleton } from './BlogCard';
 import { BlogMarketWrap } from './BlogMarketWrap';
 import { Button } from '@/components/ui/button';
-import { HiPencilSquare, HiSparkles, HiQueueList } from 'react-icons/hi2';
+import { HiPencilSquare, HiQueueList } from 'react-icons/hi2';
 import { BlogPost } from '../../types/blog';
 import { BlogPost as FirestoreBlogPost } from '@/lib/blog-firestore-service';
 import Link from 'next/link';
@@ -154,7 +154,7 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
               whileInView={{ opacity: 1, x: 0 }}
               className="flex items-center gap-2 text-primary font-bold uppercase tracking-widest cus_h1 mb-4"
             >
-              <HiSparkles className="w-4 h-4" />
+              {/* <HiSparkles className="w-4 h-4" /> */}
               Latest Intelligence
             </motion.div>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
