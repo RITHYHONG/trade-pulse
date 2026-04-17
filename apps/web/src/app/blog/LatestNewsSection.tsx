@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { HiArrowRight, HiChevronLeft, HiChevronRight, HiNewspaper } from 'react-icons/hi2';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { formatRelativeTime } from '@/lib/dateUtils';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -118,11 +118,52 @@ export function LatestNewsSection({ posts, isLoading, compact = false }: LatestN
   const nextPage = () => setCurrentPage((prev) => (prev + 1) % totalPages);
   const prevPage = () => setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages);
 
+  const [isHovered, setIsHovered] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoPlay = true;
+  const autoPlayInterval = 6000; // ms
+
+  // Helper to clear existing timer
+  const clearTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current as ReturnType<typeof setInterval>);
+      timerRef.current = null;
+    }
+  };
+
+  // Start autoplay timer (respects hover and totalPages)
+  const startTimer = () => {
+    clearTimer();
+    if (!autoPlay || totalPages <= 1) return;
+    timerRef.current = setInterval(() => {
+      setCurrentPage((prev) => (prev + 1) % totalPages);
+    }, autoPlayInterval);
+  };
+
+  // Reset timer after manual interaction
+  const resetTimer = () => {
+    clearTimer();
+    // restart after a short tick to avoid immediate change
+    setTimeout(() => startTimer(), 50);
+  };
+
+  // Manage autoplay lifecycle
+  useEffect(() => {
+    if (!autoPlay || totalPages <= 1) return;
+    if (!isHovered) startTimer();
+    return () => clearTimer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoPlay, totalPages, isHovered]);
+
   if (isLoading) return <LatestNewsSkeleton />;
   if (posts.length === 0) return null;
 
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section
+      className="py-24 relative overflow-hidden"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-primary/5 blur-[100px] rounded-full pointer-events-none" />
       
@@ -142,7 +183,10 @@ export function LatestNewsSection({ posts, isLoading, compact = false }: LatestN
               <Button
                 variant="outline"
                 size="icon"
-                onClick={prevPage}
+                onClick={() => {
+                  prevPage();
+                  resetTimer();
+                }}
                 className="w-12 h-12 rounded-full border-2 border-border hover:bg-muted hover:border-primary/30 transition-all"
               >
                 <HiChevronLeft className="w-6 h-6" />
@@ -150,7 +194,10 @@ export function LatestNewsSection({ posts, isLoading, compact = false }: LatestN
               <Button
                 variant="outline"
                 size="icon"
-                onClick={nextPage}
+                onClick={() => {
+                  nextPage();
+                  resetTimer();
+                }}
                 className="w-12 h-12 rounded-full border-2 border-border hover:bg-muted hover:border-primary/30 transition-all"
               >
                 <HiChevronRight className="w-6 h-6" />
@@ -182,7 +229,10 @@ export function LatestNewsSection({ posts, isLoading, compact = false }: LatestN
             {pages.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setCurrentPage(i)}
+                onClick={() => {
+                  setCurrentPage(i);
+                  resetTimer();
+                }}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
                   currentPage === i ? "w-8 bg-primary" : "w-2 bg-border hover:bg-primary/40"
                  }`}
