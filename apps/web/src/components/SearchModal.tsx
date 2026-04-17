@@ -33,14 +33,52 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [searchSuggestions] = useState<string[]>(getSearchSuggestions());
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Load recent searches on mount
   useEffect(() => {
     if (isOpen) {
       setRecentSearches(getRecentSearches());
+      setSelectedIndex(-1);
     }
   }, [isOpen]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isOpen) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex(prev => 
+          prev < filteredResults.length - 1 ? prev + 1 : prev
+        );
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex(prev => prev > 0 ? prev - 1 : prev);
+      } else if (e.key === 'Enter' && selectedIndex >= 0) {
+        const result = filteredResults[selectedIndex];
+        if (result) {
+          handleResultClick(result.href);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, filteredResults, selectedIndex]);
+
+  // Scroll selected item into view
+  useEffect(() => {
+    if (selectedIndex >= 0 && scrollContainerRef.current) {
+      const selectedElement = scrollContainerRef.current.children[selectedIndex] as HTMLElement;
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+  }, [selectedIndex]);
 
   // Debounced search effect
   useEffect(() => {
@@ -53,11 +91,12 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       const timeout = setTimeout(async () => {
         try {
           const results = await searchDatabase(searchQuery, {
-            maxResults: 20,
+            maxResults: 10,
             includeTypes: ['blog', 'page', 'feature', 'user'],
             sortBy: 'relevance'
           });
           setFilteredResults(results);
+          setSelectedIndex(results.length > 0 ? 0 : -1);
         } catch (error) {
           console.error('Search error:', error);
           setFilteredResults([]);
@@ -70,6 +109,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     } else {
       setFilteredResults([]);
       setIsLoading(false);
+      setSelectedIndex(-1);
     }
 
     return () => {
@@ -87,10 +127,11 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     }
   };
 
-  const handleResultClick = () => {
+  const handleResultClick = (href: string) => {
     saveRecentSearch(searchQuery);
     setRecentSearches(getRecentSearches());
     onClose();
+    window.location.href = href;
   };
 
   const clearRecentSearches = () => {
@@ -113,212 +154,175 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     }
   };
 
-  const getTypeBadgeColor = (type: string) => {
-    switch (type) {
-      case 'blog':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case 'page':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'feature':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
-      case 'user':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
-    }
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] p-0 gap-0">
-        <DialogHeader className="p-6 pb-4 border-b">
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <Search className="w-5 h-5" />
-            Search Trade Pulse
-          </DialogTitle>
-        </DialogHeader>
-        
-        <div className="flex flex-col max-h-[60vh]">
-          {/* Search Input */}
-          <div className="p-6 pb-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search posts, features, users..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && searchQuery.trim()) {
-                    handleSearch(searchQuery);
-                  }
-                }}
-                className="pl-10 pr-10 h-12 text-base"
-                autoFocus
-              />
-              {isLoading && (
-                <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 animate-spin" />
-              )}
-              {searchQuery && !isLoading && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {/* Search Results */}
-          <div className="flex-1 overflow-y-auto">
-            {!searchQuery.trim() ? (
-              <div className="px-6 pb-6">
-                {/* Recent Searches */}
-                {recentSearches.length > 0 && (
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        Recent Searches
-                      </h3>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={clearRecentSearches}
-                        className="text-xs text-gray-500"
-                      >
-                        Clear
-                      </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {recentSearches.map((search, index) => (
-                        <Badge
-                          key={index}
-                          variant="secondary"
-                          className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
-                          onClick={() => handleSearch(search)}
-                        >
-                          {search}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Search Suggestions */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4" />
-                    Popular Searches
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {searchSuggestions.map((suggestion, index) => (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
-                        onClick={() => handleSearch(suggestion)}
-                      >
-                        {suggestion}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
+      <DialogContent className="max-w-2xl p-0 gap-0 overflow-hidden border-none bg-slate-950/95 backdrop-blur-xl shadow-2xl shadow-blue-500/10 ring-1 ring-white/10 [&>button]:hidden">
+        {/* Modern Search Bar */}
+        <div className="relative group p-4 border-b border-white/5 bg-white/5">
+          <Search className="absolute left-7 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 transition-colors group-focus-within:text-blue-400" />
+          <Input
+            placeholder="Search Trade Pulse..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-12 pr-12 h-14 text-lg bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-slate-100 placeholder:text-slate-500 font-medium"
+            autoFocus
+          />
+          <div className="absolute right-7 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
+            ) : searchQuery ? (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="p-1.5 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <X className="w-4 h-4 text-slate-400" />
+              </button>
             ) : (
-              <div className="px-6 pb-6">
-                {isLoading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                    <span className="ml-2 text-gray-500">Searching...</span>
-                  </div>
-                ) : filteredResults.length > 0 ? (
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                      Found {filteredResults.length} result{filteredResults.length !== 1 ? 's' : ''}
-                    </h3>
-                    {filteredResults.map((result) => (
-                      <motion.div
-                        key={result.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Link 
-                          href={result.href} 
-                          onClick={() => handleResultClick()}
-                          className="block p-4 rounded-lg border dark:border-gray-700 dark:hover:border-gray-600 hover:bg-muted/50 dark:hover:bg-gray-800 transition-colors"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className={`p-2 rounded-lg ${getTypeBadgeColor(result.type)}`}>
-                              {getTypeIcon(result.type)}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-2">
-                                <h4 className="font-medium text-gray-100 line-clamp-1">
-                                  {result.title}
-                                </h4>
-                                {result.date && (
-                                  <span className="text-xs text-gray-400 whitespace-nowrap">
-                                    {result.date}
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
-                                {result.description}
-                              </p>
-                              <div className="flex items-center gap-2 mt-2">
-                                <Badge variant="outline" className="text-xs">
-                                  {result.category || result.type}
-                                </Badge>
-                                {result.metadata?.tags && result.metadata.tags.length > 0 && (
-                                  <div className="flex gap-1">
-                                    {result.metadata.tags.slice(0, 2).map((tag, index) => (
-                                      <Badge key={index} variant="secondary" className="text-xs">
-                                        {tag}
-                                      </Badge>
-                                    ))}
-                                    {result.metadata.tags.length > 2 && (
-                                      <span className="text-xs text-gray-500">
-                                        +{result.metadata.tags.length - 2} more
-                                      </span>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </Link>
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                      No results found
-                    </h3>
-                    <p className="text-gray-500 dark:text-gray-400">
-                      Try adjusting your search terms or browse our popular content below.
-                    </p>
-                    <div className="mt-4 flex flex-wrap gap-2 justify-center">
-                      {searchSuggestions.slice(0, 4).map((suggestion, index) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
-                          onClick={() => handleSearch(suggestion)}
-                        >
-                          {suggestion}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-slate-800 border border-white/10 text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                <span>ESC</span>
               </div>
             )}
+          </div>
+        </div>
+        
+        <div className="max-h-[min(480px,70vh)] overflow-y-auto">
+          {!searchQuery.trim() ? (
+            <div className="p-4 space-y-6">
+              {/* Recent Searches */}
+              {recentSearches.length > 0 && (
+                <section>
+                  <div className="flex items-center justify-between mb-3 px-2">
+                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5" />
+                      Recent Searches
+                    </h3>
+                    <button
+                      onClick={clearRecentSearches}
+                      className="text-xs text-slate-500 hover:text-red-400 transition-colors"
+                    >
+                      Clear all
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 px-1">
+                    {recentSearches.slice(0, 5).map((search, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSearch(search)}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-white/5 hover:bg-slate-800 hover:border-blue-500/50 text-sm text-slate-300 transition-all"
+                      >
+                        <Search className="w-3 h-3 text-slate-500" />
+                        {search}
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Quick Jump Suggestions */}
+              <section>
+                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3 px-2 flex items-center gap-2">
+                  <TrendingUp className="w-3.5 h-3.5" />
+                  Popular Topics
+                </h3>
+                <div className="grid grid-cols-2 gap-2 px-1">
+                  {searchSuggestions.slice(0, 4).map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleSearch(suggestion)}
+                      className="flex items-center justify-between p-3 rounded-xl bg-slate-900/50 border border-white/5 hover:bg-blue-500/5 hover:border-blue-500/30 text-left transition-all"
+                    >
+                      <span className="text-sm text-slate-200 font-medium">{suggestion}</span>
+                      <TrendingUp className="w-4 h-4 text-blue-500/50" />
+                    </button>
+                  ))}
+                </div>
+              </section>
+            </div>
+          ) : (
+            <div className="p-2" ref={scrollContainerRef}>
+              {filteredResults.length > 0 ? (
+                <div className="space-y-1">
+                  {filteredResults.map((result, idx) => (
+                    <motion.div
+                      key={result.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.03 }}
+                    >
+                      <Link 
+                        href={result.href} 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleResultClick(result.href);
+                        }}
+                        className={`group flex items-center gap-4 p-3 rounded-xl transition-all ${
+                          idx === selectedIndex 
+                            ? 'bg-blue-500/10 border-blue-500/30' 
+                            : 'hover:bg-white/5 border-transparent'
+                        } border`}
+                      >
+                        <div className={`p-2.5 rounded-lg shrink-0 ${
+                          idx === selectedIndex 
+                            ? 'bg-blue-500 text-white' 
+                            : 'bg-slate-800 text-slate-400 group-hover:text-blue-400 transition-colors'
+                        }`}>
+                          {getTypeIcon(result.type)}
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <h4 className={`text-sm font-semibold truncate ${
+                              idx === selectedIndex ? 'text-blue-400' : 'text-slate-200'
+                            }`}>
+                              {result.title}
+                            </h4>
+                            <span className="text-[10px] text-slate-500 font-medium uppercase tracking-tighter shrink-0 px-2 py-0.5 rounded-full bg-slate-900 border border-white/5">
+                              {result.type}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">
+                            {result.description}
+                          </p>
+                        </div>
+
+                        {idx === selectedIndex && (
+                          <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-blue-500/20 text-[10px] font-bold text-blue-400">
+                            <span>ENTER</span>
+                          </div>
+                        )}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </div>
+              ) : !isLoading && (
+                <div className="py-12 text-center">
+                  <div className="inline-flex p-4 rounded-full bg-slate-900 border border-white/5 mb-4">
+                    <Search className="w-8 h-8 text-slate-600" />
+                  </div>
+                  <h3 className="text-slate-200 font-semibold mb-1">No results for "{searchQuery}"</h3>
+                  <p className="text-sm text-slate-500 px-12">
+                    Try searching for something else or browse popular topics above.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Shortcuts Footer */}
+        <div className="p-3 border-t border-white/5 bg-slate-900/30 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5">
+              <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-white/10 text-slate-300">↑↓</kbd>
+              Navigate
+            </span>
+            <span className="flex items-center gap-1.5">
+              <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-white/10 text-slate-300">↵</kbd>
+              Select
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 text-slate-400">
+            Powered by <span className="text-blue-400 font-bold tracking-tight">TradePulse AI</span>
           </div>
         </div>
       </DialogContent>

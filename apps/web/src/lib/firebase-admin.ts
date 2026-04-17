@@ -109,3 +109,25 @@ export async function incrementPostViews(postId: string, amount: number = 1) {
   const views = typeof data?.views === 'number' ? data.views : (data?.views ?? null);
   return views;
 }
+
+export async function incrementPostHelpful(postId: string, amount: number = 1) {
+  if (!_adminReady) {
+    console.warn('[firebase-admin] incrementPostHelpful: Admin SDK not initialized, skipping.');
+    return null;
+  }
+
+  const postRef = adminDb.collection('posts').doc(postId);
+  const increment = admin.firestore.FieldValue.increment(amount) as any;
+
+  try {
+    await postRef.update({ helpfulCount: increment });
+  } catch (err) {
+    console.warn('incrementPostHelpful: update failed, attempting set with merge', err);
+    await postRef.set({ helpfulCount: increment }, { merge: true });
+  }
+
+  const snap = await postRef.get();
+  const data = snap.data();
+  const helpfulCount = typeof data?.helpfulCount === 'number' ? data.helpfulCount : (data?.helpfulCount ?? null);
+  return helpfulCount;
+}

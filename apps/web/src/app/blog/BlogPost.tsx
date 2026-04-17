@@ -7,8 +7,10 @@ import { blogPosts } from '../../data/blogData';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
 import { useAuthorProfile } from '@/hooks/use-author-profile';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { toast } from 'sonner';
+import { ShareButton } from './ShareButton';
 
 // Lazy load below-the-fold components
 const AdPlaceholder = dynamic(() => import('./AdPlaceholder').then(mod => ({ default: mod.AdPlaceholder })), {
@@ -66,6 +68,78 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
     return `${(count / 1000000).toFixed(1)}M views`;
   };
 
+  const [helpfulCount, setHelpfulCount] = useState<number>(post.helpfulCount ?? 0);
+  const [helpfulSelected, setHelpfulSelected] = useState<boolean>(false);
+  const [helpfulState, setHelpfulState] = useState<'idle' | 'saving'>('idle');
+
+  useEffect(() => {
+    const postId = post.id || post.slug;
+    if (!postId) return;
+
+    const stored = typeof window !== 'undefined'
+      ? window.localStorage.getItem(`post_helpful_feedback_${postId}`)
+      : null;
+
+    setHelpfulSelected(stored === 'true');
+  }, [post.id, post.slug]);
+
+  const handleHelpfulClick = async () => {
+    if (helpfulState !== 'idle') return;
+    const postId = post.id || post.slug;
+    if (!postId) {
+      toast.error('Cannot record feedback for this article.');
+      return;
+    }
+
+    const nextSelected = !helpfulSelected;
+    const delta = nextSelected ? 1 : -1;
+    const storageKey = `post_helpful_feedback_${postId}`;
+    const previousCount = helpfulCount;
+    const previousSelected = helpfulSelected;
+
+    setHelpfulSelected(nextSelected);
+    setHelpfulCount(Math.max(0, helpfulCount + delta));
+    setHelpfulState('saving');
+
+    if (typeof window !== 'undefined') {
+      if (nextSelected) {
+        window.localStorage.setItem(storageKey, 'true');
+      } else {
+        window.localStorage.removeItem(storageKey);
+      }
+    }
+
+    try {
+      const response = await fetch('/api/blog/helpful', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId, delta }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.error || 'Unable to submit feedback');
+      }
+
+      setHelpfulCount(typeof data.helpfulCount === 'number' ? data.helpfulCount : helpfulCount);
+      toast.success(nextSelected ? 'Marked helpful.' : 'Removed helpful vote.');
+    } catch (error) {
+      console.error('Helpful feedback error:', error);
+      toast.error('Failed to update helpful feedback.');
+      setHelpfulSelected(previousSelected);
+      setHelpfulCount(previousCount);
+      if (typeof window !== 'undefined') {
+        if (previousSelected) {
+          window.localStorage.setItem(storageKey, 'true');
+        } else {
+          window.localStorage.removeItem(storageKey);
+        }
+      }
+    } finally {
+      setHelpfulState('idle');
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
@@ -100,12 +174,13 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground leading-[1.05] tracking-tight mb-12">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[1.05] tracking-tight mb-12">
               {post.title}
             </h1>
 
             {/* Author Profile Card */}
-            <div className="flex items-center gap-6 p-6 rounded-[2rem] bg-card border border-border/50 shadow-xl shadow-black/5 max-w-fit mb-16">
+            <div className="flex justify-between items-center gap-6 p-6 rounded-[2rem] bg-card border border-border/50 shadow-xl shadow-black/5 max-w-full mb-16">
+              <div className='flex items-center gap-6'>
               <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-primary/20">
                 <ImageWithFallback
                   src={authorProfile.avatar || ''}
@@ -115,14 +190,20 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   className="object-cover"
                 />
               </div>
+
+
               <div className="flex flex-col">
                 <span className="text-xl font-bold text-foreground">{authorProfile.name}</span>
-                <span className="text-muted-foreground text-xs font-bold uppercase tracking-[0.2em]">{authorProfile.role || 'Market Analyst'}</span>
+                {/* <span className="text-muted-foreground text-xs font-bold uppercase tracking-[0.2em]">{authorProfile.role || 'Market Analyst'}</span> */}
               </div>
+              </div>
+
+
               <div className="ml-8 pr-4">
-                <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 hover:text-primary transition-colors">
-                  <Share2 className="w-5 h-5" />
-                </Button>
+                <ShareButton 
+                  title={post.title} 
+                  excerpt={post.excerpt}
+                />
               </div>
             </div>
             
@@ -150,197 +231,264 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
             <AdPlaceholder type="rectangle" />
           </div>
 
-          {/* Market Outlook Widget */}
+          {/* Market Outlook Widget - RECONSTRUCTED FROM IMAGE */}
           {(post.sentiment || post.primaryAsset || post.confidenceLevel || post.timeHorizon) && (
-            <div className="mb-20 relative group overflow-visible">
-              <div className="absolute -inset-4 bg-gradient-to-r from-cyan-500/30 to-blue-600/30 rounded-[3rem] blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-
-              <div className="relative overflow-visible rounded-[2.5rem] border-4 border-white/[0.05] bg-slate-900/80 backdrop-blur-3xl p-8 sm:p-12 shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10">
-
-                  {/* Left Side: Asset & Trend */}
-                  <div className="space-y-6 flex-shrink-0">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30">
-                      <div className="w-2 h-2 rounded-full bg-cyan-500 animate-ping"></div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-400">Live Forecast</span>
-                    </div>
-
-                    <div>
-                      <h2 className="text-6xl sm:text-7xl font-black text-white tracking-tighter mb-2 italic">
+            <div className="mb-24 space-y-6">
+              <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-[#121212] shadow-2xl">
+                {/* Header Section */}
+                <div className="p-8 pb-0 flex justify-between items-start">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-3">
+                      <h2 className="text-5xl font-black text-white tracking-tighter leading-none">
                         {post.primaryAsset || "MARKET"}
                       </h2>
-                      <div className="flex items-center gap-4">
-                        <span className={`text-3xl font-black uppercase tracking-widest ${post.sentiment?.toLowerCase() === 'bullish' ? 'text-green-500' : post.sentiment?.toLowerCase() === 'bearish' ? 'text-red-500' : 'text-yellow-500'}`}>
-                          {post.sentiment || "NEUTRAL"}
-                        </span>
-                        <div className={`p-2 rounded-full ${post.sentiment?.toLowerCase() === 'bullish' ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}>
-                          <TrendingUp className={`w-8 h-8 ${post.sentiment?.toLowerCase() === 'bearish' ? 'rotate-180' : ''}`} />
-                        </div>
-                      </div>
+                      <span className="px-3 py-1 bg-orange-500/10 border border-orange-500/20 rounded text-[10px] font-bold text-orange-500 tracking-widest uppercase">
+                        Live Forecast
+                      </span>
                     </div>
+                    <p className="text-xs font-bold text-white/30 uppercase tracking-widest">
+                      {post.category || "Asset Class Trust"}
+                    </p>
                   </div>
 
-                  {/* Right Side: Simple Trend Graph */}
-                  {post.sentiment && post.primaryAsset && (
-                    <div className="w-full lg:w-72 h-48 bg-slate-950/60 rounded-[2rem] border border-white/10 p-6 flex flex-col justify-between overflow-hidden relative group/graph">
-                      <div className="absolute inset-0 bg-gradient-to-t from-cyan-500/[0.03] to-transparent pointer-events-none"></div>
-                      <div className="flex justify-between items-center text-[10px] font-black text-white/40 uppercase tracking-widest">
-                        <span>Projection</span>
-                        <span>{post.timeHorizon || "H1"}</span>
-                      </div>
-
-                      <div className="h-24 py-4">
-                        <svg viewBox="0 0 200 60" className="w-full h-full overflow-visible">
-                          <defs>
-                            <linearGradient id="trendGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                              <stop offset="0%" stopColor={post.sentiment.toLowerCase() === 'bullish' ? '#10b981' : post.sentiment.toLowerCase() === 'bearish' ? '#ef4444' : '#f59e0b'} />
-                              <stop offset="100%" stopColor={post.sentiment.toLowerCase() === 'bullish' ? '#059669' : post.sentiment.toLowerCase() === 'bearish' ? '#dc2626' : '#d97706'} />
-                            </linearGradient>
-                            <filter id="glow">
-                              <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-                              <feMerge>
-                                <feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" />
-                              </feMerge>
-                            </filter>
-                          </defs>
-                          {post.sentiment.toLowerCase() === 'bullish' ? (
-                            <path d="M0,50 Q50,40 100,25 T200,5" stroke="url(#trendGradient)" strokeWidth="4" fill="none" filter="url(#glow)" className="group-hover/graph:translate-y-[-5px] transition-transform duration-700" />
-                          ) : post.sentiment.toLowerCase() === 'bearish' ? (
-                            <path d="M0,10 Q50,20 100,35 T200,55" stroke="url(#trendGradient)" strokeWidth="4" fill="none" filter="url(#glow)" className="group-hover/graph:translate-y-[5px] transition-transform duration-700" />
-                          ) : (
-                            <path d="M0,30 Q50,20 100,40 T200,30" stroke="url(#trendGradient)" strokeWidth="4" fill="none" filter="url(#glow)" />
-                          )}
-                        </svg>
-                      </div>
-
-                      <div className="flex justify-between items-center">
-                        <div className="flex flex-col">
-                          <span className="text-[10px] font-bold text-white/30 uppercase">Confidence</span>
-                          <span className="text-xl font-black text-white">{post.confidenceLevel}%</span>
-                        </div>
-                        <div className="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                          <div className="h-full bg-cyan-500 shadow-[0_0_10px_#06b6d4]" style={{ width: `${post.confidenceLevel}%` }}></div>
-                        </div>
-                      </div>
+                  <div className="text-right space-y-1">
+                    <div className="flex items-center justify-end gap-2 text-orange-500">
+                      <TrendingUp className={`w-5 h-5 ${post.sentiment?.toLowerCase() === 'bearish' ? 'rotate-180' : ''}`} />
+                      <span className="text-sm font-black uppercase tracking-widest">
+                        {post.sentiment || "NEUTRAL"}
+                      </span>
                     </div>
-                  )}
+                    <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest text-right">
+                      Sentiment Score: 5.2/10
+                    </p>
+                  </div>
                 </div>
 
-                {/* Related Asset Badges */}
-                {post.relatedAssets && post.relatedAssets.length > 0 && (
-                  <div className="mt-12 pt-8 border-t border-white/5 flex flex-wrap gap-3">
-                    {post.relatedAssets.map(asset => (
-                      <span key={asset} className="px-6 py-2 bg-white/5 hover:bg-cyan-500 hover:text-black hover:font-black rounded-full text-sm font-bold border border-white/10 transition-all cursor-pointer">
-                        {asset}
-                      </span>
-                    ))}
+                {/* Main Chart Area */}
+                <div className="px-8 mt-4 relative h-64 w-full group/chart">
+                  <div className="absolute top-4 right-8 z-10">
+                    <div className="bg-orange-500/10 border border-orange-500/30 px-3 py-1 rounded text-[10px] font-mono text-orange-500">
+                      PROJ. $512.40
+                    </div>
                   </div>
-                )}
+                  
+                  <svg viewBox="0 0 800 200" className="w-full h-full overflow-visible drop-shadow-[0_0_25px_rgba(249,115,22,0.3)]">
+                    <defs>
+                      <linearGradient id="imageTrendGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#f97316" />
+                        <stop offset="100%" stopColor="#ea580c" />
+                      </linearGradient>
+                    </defs>
+                    <path 
+                      d="M0,150 L100,140 L200,160 L300,110 L400,120 L500,80 L600,90 L700,50" 
+                      stroke="url(#imageTrendGradient)" 
+                      strokeWidth="4" 
+                      fill="none" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="700" cy="50" r="6" fill="#f97316" className="animate-pulse" />
+                  </svg>
+                  
+                  <div className="absolute bottom-4 left-8 flex items-center justify-between w-[calc(100%-4rem)]">
+                    <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
+                      Medium-Term Projection (90D)
+                    </span>
+                    <div className="flex gap-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-white/10"></div>
+                        <span className="text-[10px] font-bold text-white/20 uppercase">Historical</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                        <span className="text-[10px] font-bold text-white/20 uppercase">Predicted</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Middle Stats Bar */}
+                <div className="px-8 py-6 border-t border-white/5 bg-white/[0.02] flex flex-wrap items-center justify-between gap-8">
+                  <div className="flex-1 min-w-[200px] flex items-center gap-6">
+                    <div className="w-full max-w-[240px] space-y-2">
+                      <div className="flex justify-between items-end">
+                        <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Model Confidence</span>
+                        <span className="text-2xl font-black text-white leading-none">{post.confidenceLevel}%</span>
+                      </div>
+                      <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-orange-500" style={{ width: `${post.confidenceLevel}%` }}></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-12">
+                     <div className="flex flex-col">
+                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Vol. Risk</span>
+                        <span className="text-sm font-black text-white">LOW-MOD</span>
+                     </div>
+                     <div className="flex flex-col">
+                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Alpha Prob.</span>
+                        <span className="text-sm font-black text-white">+12.4%</span>
+                     </div>
+                     <div className="flex flex-col">
+                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Signals</span>
+                        <span className="text-sm font-black text-white">8 ACTIVE</span>
+                     </div>
+                  </div>
+                </div>
+
+                {/* Footer Section */}
+                <div className="px-8 py-4 border-t border-white/5 bg-[#0a0a0a] flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Correlated:</span>
+                    <div className="flex gap-2">
+                      {["USO", "QQQ", "VIX"].map(ticker => (
+                        <span key={ticker} className="px-3 py-1 bg-white/5 rounded-lg text-[10px] font-bold text-white/40 border border-white/10 uppercase tracking-widest">
+                          {ticker}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <button className="flex items-center gap-2 text-[10px] font-black text-orange-500 uppercase tracking-widest hover:translate-x-1 transition-transform">
+                    View Full Analysis <ArrowRight className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Detail Analysis Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { title: "Immediate Trigger", icon: "⚡", content: "CPI data release scheduled for 08:30 EST may invalidate current bullish trajectory.", color: "text-blue-400" },
+                  { title: "Liquidity Alert", icon: "⚠️", content: "Order book depth narrowing in SPY options chain at the $500.00 strike price.", color: "text-orange-400" },
+                  { title: "Structural Note", icon: "◇", content: "Consolidation pattern entering its 4th session. Expansion anticipated within 48h.", color: "text-white/40" }
+                ].map((card, i) => (
+                  <div key={i} className="p-8 rounded-2xl bg-[#121212] border border-white/5 flex flex-col gap-4">
+                    <div className="flex items-center gap-2">
+                      <span className={card.color}>{card.icon}</span>
+                      <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${card.color}`}>
+                        {card.title}
+                      </span>
+                    </div>
+                    <p className="text-sm font-medium text-white/60 leading-relaxed">
+                      {card.content}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           )}
 
           {/* Article Summary - Key Highlights */}
           {post.excerpt && (
-            <div className="mb-24 relative">
-              {/* Abstract Background Decoration */}
-              <div className="absolute -left-12 top-0 w-24 h-full [clip-path:polygon(0_0,100%_0,0_100%)]"></div>
-
-              <div className="relative pl-12 border-l-2 border-[var(--border)] py-8">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-12 h-12 rounded-full border border-[var(--border)]/50 flex items-center justify-center bg-[var(--border)]/5">
-                    <TrendingUp className="w-6 h-6 text-cyan-400" />
+            <div className="mb-32 relative">
+              <div className="absolute -left-4 top-0 bottom-0 w-1.5 bg-gradient-to-b from-cyan-500 via-blue-500 to-transparent rounded-full opacity-50"></div>
+              
+              <div className="pl-12 space-y-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-cyan-400" />
                   </div>
-                  <h3 className="text-sm font-black uppercase tracking-[0.5em] text-cyan-500/80">Executive Brief</h3>
+                  <span className="text-xs font-black uppercase tracking-[0.4em] text-cyan-500/60">Executive Summary</span>
                 </div>
 
-                <p className="text-4xl sm:text-5xl font-black text-[var(--foreground)] leading-[1.1] tracking-tighter max-w-3xl selection:bg-cyan-500 selection:text-black ">
+                <p className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground leading-[1.1] tracking-tight selection:bg-cyan-500 selection:text-black">
                   {post.excerpt}
                 </p>
 
-                {/* <div className="mt-12 flex items-center gap-6">
+                {/* <div className="flex items-center gap-8 pt-4">
                   <div className="flex -space-x-3">
-                    {[1,2,3].map(i => (
-                      <div key={i} className="w-8 h-8 rounded-full border-2 border-slate-950 bg-slate-800 flex items-center justify-center text-[10px] font-bold text-white/40">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="w-10 h-10 rounded-full border-2 border-background bg-slate-800 flex items-center justify-center text-[10px] font-bold text-white/40 ring-1 ring-white/5">
                         {i}
                       </div>
                     ))}
                   </div>
-                  <span className="text-xs font-bold text-white/30 uppercase tracking-widest">Core Insights identified</span>
+                  <div className="h-px w-12 bg-border"></div>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Validated Insights</span>
                 </div> */}
               </div>
             </div>
           )}
 
           {/* Article Content - Elegant Minimalist / "Notion" Style */}
-          <article className="prose prose-lg dark:prose-invert w-full mx-auto md:text-lg lg:text-xl font-serif">
+          <article className="prose prose-lg dark:prose-invert w-full mx-auto md:text-xl lg:text-2xl font-sans selection:bg-cyan-500/20">
             {isLikelyHtml(post.content) ? (
-              <div className="prose-custom-html relative">
+              <div className="prose-custom-html relative space-y-12">
                 <style>{`
                   .prose-custom-html {
-                    line-height: 1.8;
+                    line-height: 1.7;
                     color: var(--foreground);
+                    letter-spacing: -0.015em;
                   }
                   .prose-custom-html h1, 
                   .prose-custom-html h2, 
                   .prose-custom-html h3 {
                     color: var(--foreground);
-                    font-weight: 600;
-                    font-family: var(--font-sans);
-                    margin-top: 2.5em;
-                    margin-bottom: 1em;
-                    letter-spacing: -0.01em;
+                    font-weight: 800;
+                    margin-top: 3.5em;
+                    margin-bottom: 1.25em;
+                    letter-spacing: -0.04em;
+                    line-height: 1.1;
                   }
-                  .prose-custom-html h1 { font-size: 2.5em; }
-                  .prose-custom-html h2 { font-size: 1.75em; border-bottom: 1px solid var(--border); padding-bottom: 0.5em; }
-                  .prose-custom-html h3 { font-size: 1.25em; }
+                  .prose-custom-html h1 { font-size: 3.5em; }
+                  .prose-custom-html h2 { font-size: 2.25em; }
+                  .prose-custom-html h3 { font-size: 1.5em; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: 0.1em; }
                   
                   .prose-custom-html p {
-                    margin-bottom: 1.5em;
+                    margin-bottom: 2em;
+                    opacity: 0.9;
                   }
                   .prose-custom-html a {
                     color: var(--foreground);
                     text-decoration: none;
-                    border-bottom: 1px solid var(--primary);
-                    transition: border-color 0.2s ease;
+                    box-shadow: inset 0 -4px 0 var(--cyan-500);
+                    transition: all 0.2s ease;
+                    font-weight: 600;
                   }
                   .prose-custom-html a:hover {
-                    border-bottom-color: var(--primary);
+                    background: var(--cyan-500/10);
+                    box-shadow: inset 0 -8px 0 var(--cyan-500);
                   }
                   .prose-custom-html blockquote {
                     position: relative;
-                    padding: 1rem 0 1rem 1.5rem;
-                    margin: 2.5rem 0;
-                    border-left: 3px solid var(--border);
+                    padding: 2.5rem;
+                    margin: 4rem 0;
+                    background: var(--white/0.02);
+                    border-radius: 2rem;
+                    border-left: 4px solid var(--cyan-500);
                     color: var(--foreground);
-                    opacity: 0.8;
+                    font-size: 1.1em;
                     font-style: italic;
+                    line-height: 1.6;
                   }
                   .prose-custom-html blockquote p {
                     margin: 0;
                   }
                   .prose-custom-html ul {
-                    list-style-type: disc;
-                    padding-left: 1.5rem;
-                    color: var(--foreground);
+                    list-style-type: none;
+                    padding-left: 0;
+                    margin-bottom: 3rem;
                   }
                   .prose-custom-html li {
-                    margin-bottom: 0.5rem;
+                    position: relative;
+                    padding-left: 2rem;
+                    margin-bottom: 1rem;
+                    opacity: 0.85;
                   }
-                  .prose-custom-html li::marker {
-                    color: currentColor;
-                    opacity: 0.55;
-                  }
-                  .prose-custom-html mark {
-                    background-color: rgba(229, 87, 63, 0.15);
-                    color: var(--foreground);
-                    padding: 0.1em 0.2em;
-                    border-radius: 0.2em;
+                  .prose-custom-html li::before {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    top: 0.7em;
+                    width: 0.6em;
+                    height: 2px;
+                    background: var(--cyan-500);
                   }
                   .prose-custom-html img {
-                    border-radius: 0.5rem;
-                    margin: 2.5rem 0;
-                    border: 1px solid var(--border);
+                    border-radius: 2.5rem;
+                    margin: 4.5rem 0;
+                    box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5);
+                    border: 1px solid var(--white/0.05);
                   }
                 `}</style>
                 <div
@@ -349,127 +497,32 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                 />
               </div>
             ) : (
-              <div className="space-y-8">
+              <div className="space-y-12">
                 {post.content.split('\n\n').map((paragraph, index) => {
                   if (paragraph.startsWith('# ')) {
                     return (
-                      <h1 key={index} className="text-3xl sm:text-4xl font-semibold text-foreground mt-16 mb-8 font-sans tracking-tight">
+                      <h1 key={index} className="text-5xl md:text-6xl font-black text-foreground mt-24 mb-10 tracking-tighter leading-none">
                         {paragraph.replace('# ', '')}
                       </h1>
                     );
                   }
                   if (paragraph.startsWith('## ')) {
                     return (
-                      <h2 key={index} className="text-2xl sm:text-3xl font-medium text-foreground mt-14 mb-6 font-sans border-b border-border/30 pb-4">
+                      <h2 key={index} className="text-3xl md:text-4xl font-extrabold text-foreground mt-20 mb-8 tracking-tight">
                         {paragraph.replace('## ', '')}
                       </h2>
                     );
                   }
                   if (paragraph.startsWith('### ')) {
                     return (
-                      <h3 key={index} className="text-xl font-medium text-foreground mt-10 mb-4 font-sans">
+                      <h3 key={index} className="text-lg font-black text-muted-foreground mt-16 mb-4 uppercase tracking-[0.2em]">
                         {paragraph.replace('### ', '')}
                       </h3>
                     );
                   }
-                  if (paragraph.startsWith('![')) {
-                    const match = paragraph.match(/!\[(.*?)\]\((.*?)\)/);
-                    if (match) {
-                      return (
-                        <div key={index} className="relative my-12 group">
-                          <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-2xl opacity-0 group-hover:opacity-100 blur transition duration-500"></div>
-                          <div className="relative aspect-[16/9] rounded-xl overflow-hidden border border-border bg-muted/30">
-                            <ImageWithFallback
-                              src={match[2]}
-                              alt={match[1]}
-                              fill
-                              className="object-cover transition-transform duration-700 group-hover:scale-105"
-                            />
-                            {match[1] && (
-                              <div className="absolute bottom-4 left-4 right-4 text-xs text-white/60 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full w-fit max-w-[90%] truncate">
-                                {match[1]}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    }
-                  }
-                  if (paragraph.includes('- ')) {
-                    const lines = paragraph.split('\n');
-                    const items = lines.filter(item => item.trim().startsWith('- '));
-                    const listTitle = lines[0].trim().startsWith('- ') ? null : lines[0];
-
-                    return (
-                      <div key={index} className="my-8">
-                        {listTitle && (
-                          <div className="font-semibold text-foreground mb-4 font-sans">
-                            {listTitle}
-                          </div>
-                        )}
-                        <ul className="space-y-3 pl-6 list-disc marker:text-border">
-                          {items.map((item, itemIndex) => {
-                            const content = item.replace('- ', '');
-                            const match = content.match(/^\*\*(.*?)\*\*(.*)/);
-
-                            return (
-                              <li key={itemIndex} className="text-foreground/80 pl-2">
-                                {match ? (
-                                  <>
-                                    <strong className="text-foreground font-semibold">{match[1]}</strong>
-                                    <span>{match[2]}</span>
-                                  </>
-                                ) : (
-                                  <span>{content}</span>
-                                )}
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    );
-                  }
-                  if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-                    const text = paragraph.replace(/\*\*/g, '');
-                    return (
-                      <div key={index} className="my-12 py-8 bg-secondary/20 rounded-xl px-8 flex flex-col items-center">
-                        <div className="w-10 h-10 rounded-full bg-background border border-border shadow-sm flex items-center justify-center -mt-12 mb-6">
-                          <TrendingUp className="w-5 h-5 text-foreground/60" />
-                        </div>
-                        <p className="text-xl sm:text-2xl font-medium text-foreground text-center leading-relaxed">
-                          {text}
-                        </p>
-                      </div>
-                    );
-                  }
-                  if (paragraph.startsWith('Disclaimer:')) {
-                    return (
-                      <div key={index} className="my-12 rounded-lg bg-orange-500/5 border border-orange-500/10 p-5 font-sans">
-                        <div className="flex gap-3 items-start">
-                          <span className="text-orange-500 text-lg leading-none mt-0.5">ⓘ</span>
-                          <div>
-                            <p className="text-orange-900/70 dark:text-orange-200/70 text-sm leading-relaxed">
-                              <strong className="font-semibold text-orange-900 dark:text-orange-200">Disclaimer: </strong>
-                              {paragraph.replace('Disclaimer:', '').trim()}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  }
-                  if (paragraph.startsWith('Source:')) {
-                    return (
-                      <div key={index} className="mt-16 pt-6 flex items-center gap-2 border-t border-border/30 text-sm text-foreground/50 font-sans">
-                        <Eye className="w-4 h-4" />
-                        <span className="font-medium">Source:</span>
-                        <span className="hover:text-foreground transition-colors cursor-pointer border-b border-border hover:border-foreground/30">{paragraph.replace('Source:', '').trim()}</span>
-                      </div>
-                    );
-                  }
-
-                  // Regular paragraph
+                  // Regular paragraph with better typography
                   return (
-                    <p key={index} className="text-foreground/80 leading-[1.8] tracking-[-0.01em]">
+                    <p key={index} className="text-foreground/85 leading-relaxed tracking-tight mb-8">
                       {paragraph}
                     </p>
                   );
@@ -503,36 +556,48 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
               </div>
             )}
 
-            {/* Engagement Actions - Glassmorphism Style */}
-            <div className="relative overflow-hidden rounded-2xl">
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5"></div>
-              <div className="relative flex flex-col sm:flex-row items-center justify-between gap-4 p-6 border border-border backdrop-blur-sm">
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="outline"
-                    className="border-border bg-card/5 text-muted-foreground hover:text-foreground hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
-                  >
-                    <ThumbsUp className="w-4 h-4 mr-2" />
-                    <span className="hidden sm:inline">Found this helpful</span>
-                    <span className="sm:hidden">Helpful</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="border-border bg-card/5 text-muted-foreground hover:text-foreground hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
-                  >
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Share
-                  </Button>
-                </div>
+          {/* Engagement Actions - Glassmorphism Style */}
+            <div className="relative group">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-[2rem] blur opacity-50 group-hover:opacity-100 transition duration-500"></div>
+              <div className="relative flex flex-col sm:flex-row items-center justify-between gap-6 p-8 rounded-[2rem] border border-white/10 bg-white/[0.02] backdrop-blur-md">
+                {/* <div className="flex items-center gap-4 justify-between"> */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button
+                      variant="ghost"
+                      onClick={handleHelpfulClick}
+                      disabled={helpfulState !== 'idle'}
+                      aria-pressed={helpfulSelected}
+                      className={`h-12 px-6 rounded-xl border border-white/10 transition-all duration-300 ${helpfulSelected ? 'bg-emerald-500/15 text-emerald-300 border-emerald-400/20 hover:bg-emerald-500/20' : 'bg-white/5 text-white/70 hover:text-emerald-400 hover:bg-emerald-400/10 hover:border-emerald-400/20'} disabled:cursor-not-allowed disabled:text-white/40 disabled:border-white/5`}
+                    >
+                      <ThumbsUp className="w-5 h-5 mr-3 transition-transform group-hover:scale-110" />
+                      <span className="font-bold tracking-tight">
+                        {helpfulSelected ? 'Helpful' : 'Helpful Insight'}
+                      </span>
+                    </Button>
+                    <span className="text-sm font-medium text-muted-foreground">
+                      {helpfulCount} {helpfulCount === 1 ? 'helpful vote' : 'helpful votes'}
+                    </span>
+                  </div>
+                  <ShareButton 
+                    variant="ghost"
+                    size="default"
+                    className="h-12 px-6 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-cyan-400 hover:bg-cyan-400/10 hover:border-cyan-400/20 transition-all duration-300"
+                    showText={true}
+                    title={post.title}
+                    excerpt={post.excerpt}
+                  />
+                {/* </div> */}
 
-                <Button
-                  variant="outline"
-                  className="border-border bg-card/5 text-muted-foreground hover:text-foreground hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300"
-                >
-                  <Bookmark className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Save for Later</span>
-                  <span className="sm:hidden">Save</span>
-                </Button>
+                {/* <div className="flex items-center gap-3">
+                  <div className="h-10 w-px bg-white/10 hidden sm:block"></div>
+                  <Button
+                    variant="ghost"
+                    className="h-12 w-12 sm:w-auto sm:px-6 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-amber-400 hover:bg-amber-400/10 hover:border-amber-400/20 transition-all duration-300"
+                  >
+                    <Bookmark className="w-5 h-5 sm:mr-3" />
+                    <span className="hidden sm:inline font-bold tracking-tight">Save Reference</span>
+                  </Button>
+                </div> */}
               </div>
             </div>
 
