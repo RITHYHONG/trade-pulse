@@ -11,6 +11,8 @@ import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { toast } from 'sonner';
 import { ShareButton } from './ShareButton';
+import { MarketOutlookWidget } from './MarketOutlookWidget';
+import { PromoBanner } from './PromoBanner';
 
 // Lazy load below-the-fold components
 const AdPlaceholder = dynamic(() => import('./AdPlaceholder').then(mod => ({ default: mod.AdPlaceholder })), {
@@ -147,76 +149,72 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
       </div>
 
       {/* Hero Section - Redesigned for Impact */}
-      <div className="relative pt-20 pb-16 overflow-hidden">
+      <div className="relative pt-12 pb-10 overflow-hidden bg-background">
         {/* Abstract Background Elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -mr-64 -mt-32 -z-10" />
-        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-primary/5 blur-[80px] rounded-full -ml-32 -mb-16 -z-10" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-3xl rounded-full -mr-32 -mt-32 -z-10" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/5 blur-3xl rounded-full -ml-32 -mb-16 -z-10" />
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+          <div className="max-w-4xl mx-auto">
             {/* Category / Date Header */}
-            <div className="flex flex-wrap items-center gap-4 mb-10">
-               <span className="px-5 py-1.5 bg-primary text-white rounded-full text-[10px] font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/20">
+            <div className="flex flex-wrap items-center gap-4 mb-8">
+               <span className="px-4 py-1.5 bg-primary text-primary-foreground rounded-full text-xs font-bold uppercase tracking-widest shadow-sm">
                 {post.category}
               </span>
-              <div className="flex items-center gap-2 text-muted-foreground text-xs font-bold uppercase tracking-widest">
-                <Calendar className="w-3.5 h-3.5 text-primary" />
+              <div className="flex items-center gap-2 text-muted-foreground text-xs font-semibold uppercase tracking-wider">
+                <Calendar className="w-4 h-4 text-primary/70" />
                 <span>{formatDate(post.publishedAt)}</span>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground text-xs font-bold uppercase tracking-widest">
-                <Clock className="w-3.5 h-3.5 text-primary" />
+              <div className="flex items-center gap-2 text-muted-foreground text-xs font-semibold uppercase tracking-wider">
+                <Clock className="w-4 h-4 text-primary/70" />
                 <span>{post.readingTime}</span>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground text-xs font-bold uppercase tracking-widest">
-                <Eye className="w-3.5 h-3.5 text-primary" />
+              <div className="flex items-center gap-2 text-muted-foreground text-xs font-semibold uppercase tracking-wider">
+                <Eye className="w-4 h-4 text-primary/70" />
                 <span>{formatViews(post.views)}</span>
               </div>
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[1.05] tracking-tight mb-12">
+            <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-foreground leading-[1.05] tracking-tight mb-10">
               {post.title}
             </h1>
 
             {/* Author Profile Card */}
-            <div className="flex justify-between items-center gap-6 p-6 rounded-[2rem] bg-card border border-border/50 shadow-xl shadow-black/5 max-w-full mb-16">
-              <div className='flex items-center gap-6'>
-              <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-primary/20">
-                <ImageWithFallback
-                  src={authorProfile.avatar || ''}
-                  fallbackSrc={post.author.avatarUrl || post.author.avatar || '/images/default-avatar.svg'}
-                  alt={authorProfile.name}
-                  fill
-                  className="object-cover"
-                />
+            {/* <div className="flex flex-wrap justify-between items-center gap-6 p-4 md:p-6 rounded-2xl bg-card border border-border shadow-sm mb-12">
+              <div className='flex items-center gap-4 md:gap-6'>
+                <div className="relative w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden border-[3px] border-primary/10">
+                  <ImageWithFallback
+                    src={authorProfile.avatar || ''}
+                    fallbackSrc={post.author.avatarUrl || post.author.avatar || '/images/default-avatar.svg'}
+                    alt={authorProfile.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-lg md:text-xl font-bold text-foreground">{authorProfile.name}</span>
+                  <span className="text-muted-foreground text-sm font-medium">{authorProfile.role || 'Market Analyst'}</span>
+                </div>
               </div>
-
-
-              <div className="flex flex-col">
-                <span className="text-xl font-bold text-foreground">{authorProfile.name}</span>
-                {/* <span className="text-muted-foreground text-xs font-bold uppercase tracking-[0.2em]">{authorProfile.role || 'Market Analyst'}</span> */}
-              </div>
-              </div>
-
-
-              <div className="ml-8 pr-4">
+              <div className="ml-auto pr-2">
                 <ShareButton 
                   title={post.title} 
                   excerpt={post.excerpt}
                 />
               </div>
-            </div>
+            </div> */}
             
             {/* Featured Image - High Fidelity */}
-            <div className="relative aspect-[21/9] rounded-[3rem] overflow-hidden shadow-2xl border-4 border-card group">
+            <div className="relative aspect-[21/9] rounded-2xl overflow-hidden shadow-lg border border-border group">
               <ImageWithFallback
                 src={post.featuredImage ?? ''}
                 alt={post.title}
                 fill
-                className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                className="object-cover transition-transform duration-700 motion-safe:group-hover:scale-105"
                 priority
               />
-              <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-[3rem]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
             </div>
           </div>
         </div>
@@ -228,155 +226,11 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
 
           {/* First Ad Placement */}
           <div className="mb-12 flex justify-center">
-            <AdPlaceholder type="rectangle" />
+            <PromoBanner />
           </div>
 
           {/* Market Outlook Widget - RECONSTRUCTED FROM IMAGE */}
-          {(post.sentiment || post.primaryAsset || post.confidenceLevel || post.timeHorizon) && (
-            <div className="mb-24 space-y-6">
-              <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-[#121212] shadow-2xl">
-                {/* Header Section */}
-                <div className="p-8 pb-0 flex justify-between items-start">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-3">
-                      <h2 className="text-5xl font-black text-white tracking-tighter leading-none">
-                        {post.primaryAsset || "MARKET"}
-                      </h2>
-                      <span className="px-3 py-1 bg-orange-500/10 border border-orange-500/20 rounded text-[10px] font-bold text-orange-500 tracking-widest uppercase">
-                        Live Forecast
-                      </span>
-                    </div>
-                    <p className="text-xs font-bold text-white/30 uppercase tracking-widest">
-                      {post.category || "Asset Class Trust"}
-                    </p>
-                  </div>
-
-                  <div className="text-right space-y-1">
-                    <div className="flex items-center justify-end gap-2 text-orange-500">
-                      <TrendingUp className={`w-5 h-5 ${post.sentiment?.toLowerCase() === 'bearish' ? 'rotate-180' : ''}`} />
-                      <span className="text-sm font-black uppercase tracking-widest">
-                        {post.sentiment || "NEUTRAL"}
-                      </span>
-                    </div>
-                    <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest text-right">
-                      Sentiment Score: 5.2/10
-                    </p>
-                  </div>
-                </div>
-
-                {/* Main Chart Area */}
-                <div className="px-8 mt-4 relative h-64 w-full group/chart">
-                  <div className="absolute top-4 right-8 z-10">
-                    <div className="bg-orange-500/10 border border-orange-500/30 px-3 py-1 rounded text-[10px] font-mono text-orange-500">
-                      PROJ. $512.40
-                    </div>
-                  </div>
-                  
-                  <svg viewBox="0 0 800 200" className="w-full h-full overflow-visible drop-shadow-[0_0_25px_rgba(249,115,22,0.3)]">
-                    <defs>
-                      <linearGradient id="imageTrendGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#f97316" />
-                        <stop offset="100%" stopColor="#ea580c" />
-                      </linearGradient>
-                    </defs>
-                    <path 
-                      d="M0,150 L100,140 L200,160 L300,110 L400,120 L500,80 L600,90 L700,50" 
-                      stroke="url(#imageTrendGradient)" 
-                      strokeWidth="4" 
-                      fill="none" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round"
-                    />
-                    <circle cx="700" cy="50" r="6" fill="#f97316" className="animate-pulse" />
-                  </svg>
-                  
-                  <div className="absolute bottom-4 left-8 flex items-center justify-between w-[calc(100%-4rem)]">
-                    <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
-                      Medium-Term Projection (90D)
-                    </span>
-                    <div className="flex gap-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-white/10"></div>
-                        <span className="text-[10px] font-bold text-white/20 uppercase">Historical</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-                        <span className="text-[10px] font-bold text-white/20 uppercase">Predicted</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Middle Stats Bar */}
-                <div className="px-8 py-6 border-t border-white/5 bg-white/[0.02] flex flex-wrap items-center justify-between gap-8">
-                  <div className="flex-1 min-w-[200px] flex items-center gap-6">
-                    <div className="w-full max-w-[240px] space-y-2">
-                      <div className="flex justify-between items-end">
-                        <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Model Confidence</span>
-                        <span className="text-2xl font-black text-white leading-none">{post.confidenceLevel}%</span>
-                      </div>
-                      <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-orange-500" style={{ width: `${post.confidenceLevel}%` }}></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-12">
-                     <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Vol. Risk</span>
-                        <span className="text-sm font-black text-white">LOW-MOD</span>
-                     </div>
-                     <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Alpha Prob.</span>
-                        <span className="text-sm font-black text-white">+12.4%</span>
-                     </div>
-                     <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Signals</span>
-                        <span className="text-sm font-black text-white">8 ACTIVE</span>
-                     </div>
-                  </div>
-                </div>
-
-                {/* Footer Section */}
-                <div className="px-8 py-4 border-t border-white/5 bg-[#0a0a0a] flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Correlated:</span>
-                    <div className="flex gap-2">
-                      {["USO", "QQQ", "VIX"].map(ticker => (
-                        <span key={ticker} className="px-3 py-1 bg-white/5 rounded-lg text-[10px] font-bold text-white/40 border border-white/10 uppercase tracking-widest">
-                          {ticker}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <button className="flex items-center gap-2 text-[10px] font-black text-orange-500 uppercase tracking-widest hover:translate-x-1 transition-transform">
-                    View Full Analysis <ArrowRight className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Detail Analysis Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                  { title: "Immediate Trigger", icon: "⚡", content: "CPI data release scheduled for 08:30 EST may invalidate current bullish trajectory.", color: "text-blue-400" },
-                  { title: "Liquidity Alert", icon: "⚠️", content: "Order book depth narrowing in SPY options chain at the $500.00 strike price.", color: "text-orange-400" },
-                  { title: "Structural Note", icon: "◇", content: "Consolidation pattern entering its 4th session. Expansion anticipated within 48h.", color: "text-white/40" }
-                ].map((card, i) => (
-                  <div key={i} className="p-8 rounded-2xl bg-[#121212] border border-white/5 flex flex-col gap-4">
-                    <div className="flex items-center gap-2">
-                      <span className={card.color}>{card.icon}</span>
-                      <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${card.color}`}>
-                        {card.title}
-                      </span>
-                    </div>
-                    <p className="text-sm font-medium text-white/60 leading-relaxed">
-                      {card.content}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <MarketOutlookWidget post={post} />
 
           {/* Article Summary - Key Highlights */}
           {post.excerpt && (
@@ -533,7 +387,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
 
           {/* Mid-Article Ad */}
           <div className="my-16 flex justify-center">
-            <AdPlaceholder type="banner" />
+            <PromoBanner />
           </div>
 
           {/* Article Footer - Modern Design */}
