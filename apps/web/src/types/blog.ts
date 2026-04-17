@@ -32,6 +32,7 @@ export interface BlogPost {
 	relatedAssets?: string[];
 	timeHorizon?: string;
 	isDraft?: boolean;
+	helpfulCount?: number;
 	_sparkline?: number[];
 }
 
