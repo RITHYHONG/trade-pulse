@@ -72,91 +72,70 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
 
       </div>
 
-      {/* Hero Section - Clean & Organized */}
-      <div className="relative">
-        {/* Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent pointer-events-none" />
+      {/* Hero Section - Redesigned for Impact */}
+      <div className="relative pt-20 pb-16 overflow-hidden">
+        {/* Abstract Background Elements */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -mr-64 -mt-32 -z-10" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-primary/5 blur-[80px] rounded-full -ml-32 -mb-16 -z-10" />
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-12 mt-10">
-          <div className="max-w-4xl mx-auto">
-            {/* Breadcrumb - Simplified */}
-            {/* <CustomBreadcrumb 
-              items={[
-                { label: 'Home', href: '/' },
-                { label: 'Blog', href: '/blog' },
-                { label: post.title, href: `/blog/${post.slug}` }
-              ]} 
-              className="mb-6" 
-            /> */}
-
-            {/* Article Header */}
-            <header className="space-y-6">
-              {/* Category Badge - Standalone */}
-              <div className="flex items-center gap-3">
-                <Badge
-                  variant="outline"
-                  className="bg-primary-muted text-primary border-primary/20 px-4 py-1.5 text-xs font-bold uppercase tracking-wider shadow-sm"
-                >
-                  {post.category}
-                </Badge>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto">
+            {/* Category / Date Header */}
+            <div className="flex flex-wrap items-center gap-4 mb-10">
+               <span className="px-5 py-1.5 bg-primary text-white rounded-full text-[10px] font-bold uppercase tracking-[0.2em] shadow-lg shadow-primary/20">
+                {post.category}
+              </span>
+              <div className="flex items-center gap-2 text-muted-foreground text-xs font-bold uppercase tracking-widest">
+                <Calendar className="w-3.5 h-3.5 text-primary" />
+                <span>{formatDate(post.publishedAt)}</span>
               </div>
-
-              {/* Title */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight tracking-tight">
-                {post.title}
-              </h1>
-
-              {/* Excerpt */}
-              <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed">
-                {post.excerpt}
-              </p>
-
-              {/* Author and Meta Info - Cleaner Layout */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-6 pb-8 border-b border-border">
-                <div className="flex items-center gap-4">
-                  <div className="relative flex-shrink-0">
-                    <div className="absolute -inset-0.5 from-cyan-500 to-blue-500 rounded-full opacity-75 blur"></div>
-                    <ImageWithFallback
-                      src={authorProfile.avatar || ''}
-                      fallbackSrc={post.author.avatarUrl || post.author.avatar || '/images/default-avatar.svg'}
-                      alt={authorProfile.name}
-                      className="relative w-12 h-12 rounded-full ring-2 ring-background"
-                    />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-foreground">{authorProfile.name}</div>
-                    {/* <div className="text-sm text-muted-foreground">{authorProfile.bio || 'Market Analyst'}</div> */}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-muted-foreground" />
-                    <span>{formatDate(post.publishedAt)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-                    <span>{post.readingTime}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Eye className="w-4 h-4 text-muted-foreground" />
-                    <span>{formatViews(post.views)}</span>
-                  </div>
-                </div>
+              <div className="flex items-center gap-2 text-muted-foreground text-xs font-bold uppercase tracking-widest">
+                <Clock className="w-3.5 h-3.5 text-primary" />
+                <span>{post.readingTime}</span>
               </div>
-            </header>
+              <div className="flex items-center gap-2 text-muted-foreground text-xs font-bold uppercase tracking-widest">
+                <Eye className="w-3.5 h-3.5 text-primary" />
+                <span>{formatViews(post.views)}</span>
+              </div>
+            </div>
 
-            {/* Featured Image - Cleaner Style */}
-            <div className="relative my-10 group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-2xl opacity-10 group-hover:opacity-20 blur transition duration-300"></div>
-              <div className="relative aspect-[16/9] rounded-xl overflow-hidden ring-1 ring-border">
+            {/* Main Headline */}
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground leading-[1.05] tracking-tight mb-12">
+              {post.title}
+            </h1>
+
+            {/* Author Profile Card */}
+            <div className="flex items-center gap-6 p-6 rounded-[2rem] bg-card border border-border/50 shadow-xl shadow-black/5 max-w-fit mb-16">
+              <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-primary/20">
                 <ImageWithFallback
-                  src={post.featuredImage ?? ''}
-                  alt={post.title}
+                  src={authorProfile.avatar || ''}
+                  fallbackSrc={post.author.avatarUrl || post.author.avatar || '/images/default-avatar.svg'}
+                  alt={authorProfile.name}
                   fill
                   className="object-cover"
                 />
               </div>
+              <div className="flex flex-col">
+                <span className="text-xl font-bold text-foreground">{authorProfile.name}</span>
+                <span className="text-muted-foreground text-xs font-bold uppercase tracking-[0.2em]">{authorProfile.role || 'Market Analyst'}</span>
+              </div>
+              <div className="ml-8 pr-4">
+                <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/10 hover:text-primary transition-colors">
+                  <Share2 className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+            
+            {/* Featured Image - High Fidelity */}
+            <div className="relative aspect-[21/9] rounded-[3rem] overflow-hidden shadow-2xl border-4 border-card group">
+              <ImageWithFallback
+                src={post.featuredImage ?? ''}
+                alt={post.title}
+                fill
+                className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                priority
+              />
+              <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-[3rem]" />
             </div>
           </div>
         </div>

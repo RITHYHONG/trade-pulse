@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { HiArrowRight, HiClock, HiUser } from 'react-icons/hi2';
 import { formatRelativeTime } from '@/lib/dateUtils';
 import { motion } from 'motion/react';
+import { Button } from '@/components/ui/button';
 
 interface HeroSectionProps {
   featuredPost: BlogPost | null;

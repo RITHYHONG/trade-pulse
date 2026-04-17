@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Skeleton, SkeletonText } from '@/components/ui/skeleton';
 import { ArrowRight } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/dateUtils';
+import { motion } from 'motion/react';
 
 interface BlogCardProps {
   post: BlogPost;
@@ -31,10 +32,10 @@ export function BlogCard({ post, compact = false }: BlogCardProps) {
             {post.primaryAsset && (
               <Badge className="text-xs px-2 py-0.5 ml-1 bg-muted/30 text-foreground border-0">{post.primaryAsset}</Badge>
             )}
-            <span className="text-muted-foreground text-xs">•</span>
+            {/* <span className="text-muted-foreground text-xs">•</span>
             <span className="text-muted-foreground text-xs">
               {formatRelativeTime(post.publishedAt)}
-            </span>
+            </span> */}
 
             {/* Confidence level */}
             {typeof post.confidenceLevel === 'number' && (

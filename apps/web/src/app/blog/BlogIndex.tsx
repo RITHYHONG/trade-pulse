@@ -142,42 +142,44 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
       </div>
 
       {/* Market Pulse Section - Quick Stats */}
-      <div className="py-6 border-y border-border bg-muted/20">
+      {/* <div className="py-6 border-y border-border bg-muted/20">
         <BlogMarketWrap />
-      </div>
+      </div> */}
 
       <div className="container mx-auto px-4 lg:px-8 py-12">
-        <div className="flex flex-col gap-8 items-start justify-between mb-12 border-b border-border pb-8 lg:flex-row">
-          <div className="max-w-xl w-full">
+        <div className="flex flex-col gap-8 items-end justify-between mb-12 border-b border-border pb-8 lg:flex-row">
+          <div className="max-w-2xl w-full">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-2 text-primary font-bold uppercase tracking-widest cus_h1 mb-4"
+              className="flex items-center gap-2 text-primary font-bold uppercase tracking-[0.3em] text-sm mb-4"
             >
-              {/* <HiSparkles className="w-4 h-4" /> */}
               Latest Intelligence
             </motion.div>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-              Market <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">News Hub</span>
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6">
+              Market <span className="text-primary italic">News</span> Hub
             </h1>
-            <p className="text-muted-foreground text-lg">
-              Expert analysis, real-time alerts, and deep dives into the global financial pulse.
-            </p>
           </div>
 
-          <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-end lg:w-auto">
-             <CategoryFilter
+          <div className="flex w-full flex-col gap-6 lg:w-auto">
+            <CategoryFilter
               activeCategory={activeCategory}
               onCategoryChange={handleCategoryChange}
             />
-            <Button
-              variant={compactView ? 'secondary' : 'ghost'}
-              onClick={() => setCompactView((s) => !s)}
-              className="h-10 w-full sm:w-auto"
-              aria-pressed={compactView}
-            >
-              {compactView ? 'Dense View' : 'Compact View'}
-            </Button>
+            <div className="flex items-center justify-between gap-4">
+               <p className="text-muted-foreground text-sm font-medium">
+                Showing research in <span className="text-foreground font-bold">{activeCategory}</span>
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCompactView((s) => !s)}
+                className="h-9 rounded-full px-4 border-2 font-bold text-xs uppercase tracking-widest"
+                aria-pressed={compactView}
+              >
+                {compactView ? 'Standard View' : 'Compact View'}
+              </Button>
+            </div>
           </div>
         </div>
 

@@ -62,7 +62,7 @@ function SmallNewsCard({ post, compact }: { post: BlogPost; compact?: boolean })
           />
 
           {/* Quick actions */}
-          <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          {/* <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={(e) => { e.stopPropagation(); e.preventDefault(); isInWatchlist(post.slug) ? removeFromWatchlist(post.slug) : addToWatchlist(post.slug); }}
               aria-label="toggle watchlist"
@@ -78,7 +78,7 @@ function SmallNewsCard({ post, compact }: { post: BlogPost; compact?: boolean })
             >
               <Bell className={`w-4 h-4 ${hasAlert(post.slug) ? 'text-yellow-500' : 'text-slate-700'}`} />
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Content */}
@@ -132,7 +132,7 @@ function FeaturedNewsCard({ post, compact }: { post: BlogPost; compact?: boolean
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
         {/* Quick actions */}
-        <div className="absolute top-4 right-4 flex items-center gap-3">
+        {/* <div className="absolute top-4 right-4 flex items-center gap-3">
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); isInWatchlist(post.slug) ? removeFromWatchlist(post.slug) : addToWatchlist(post.slug); }}
             aria-label="toggle watchlist"
@@ -148,7 +148,7 @@ function FeaturedNewsCard({ post, compact }: { post: BlogPost; compact?: boolean
           >
             <Bell className={`w-5 h-5 ${hasAlert(post.slug) ? 'text-yellow-400' : 'text-slate-700'}`} />
           </button>
-        </div>
+        </div> */}
 
         {/* Content */}
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
@@ -206,7 +206,7 @@ function MainNewsCard({ post, compact }: { post: BlogPost; compact?: boolean }) 
             />
 
             {/* Quick actions */}
-            <div className="absolute top-3 right-3 flex items-center gap-2">
+            {/* <div className="absolute top-3 right-3 flex items-center gap-2">
               <button
                 onClick={(e) => { e.stopPropagation(); e.preventDefault(); isInWatchlist(post.slug) ? removeFromWatchlist(post.slug) : addToWatchlist(post.slug); }}
                 aria-label="toggle watchlist"
@@ -222,7 +222,7 @@ function MainNewsCard({ post, compact }: { post: BlogPost; compact?: boolean }) 
               >
                 <Bell className={`w-4 h-4 ${hasAlert(post.slug) ? 'text-yellow-400' : 'text-slate-700'}`} />
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* Content */}
