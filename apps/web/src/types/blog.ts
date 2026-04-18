@@ -31,6 +31,11 @@ export interface BlogPost {
 	primaryAsset?: string;
 	relatedAssets?: string[];
 	timeHorizon?: string;
+	projectedPrice?: string;
+	volatilityRisk?: string;
+	alphaProbability?: string;
+	activeSignalsCount?: number;
+	correlatedTickers?: string[];
 	isDraft?: boolean;
 	helpfulCount?: number;
 	_sparkline?: number[];
