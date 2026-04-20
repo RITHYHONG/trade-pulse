@@ -36,6 +36,12 @@ export interface BlogPost {
 	alphaProbability?: string;
 	activeSignalsCount?: number;
 	correlatedTickers?: string[];
+	analysisCards?: {
+		title: string;
+		content: string;
+		icon?: string;
+		color?: string;
+	}[];
 	isDraft?: boolean;
 	helpfulCount?: number;
 	_sparkline?: number[];

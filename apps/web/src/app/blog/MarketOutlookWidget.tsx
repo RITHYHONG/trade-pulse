@@ -40,7 +40,7 @@ export function MarketOutlookWidget({ post }: { post: BlogPostType }) {
         <div className="px-6 mt-4 relative h-48 w-full group/chart">
           <div className="absolute top-4 right-6 z-10">
             <div className="bg-orange-500/10 border border-orange-500/30 px-2 py-1 rounded text-[10px] font-mono text-orange-500">
-              PROJ. $512.40
+              PROJ. {post.projectedPrice || "$512.40"}
             </div>
           </div>
           
@@ -51,15 +51,59 @@ export function MarketOutlookWidget({ post }: { post: BlogPostType }) {
                 <stop offset="100%" stopColor="#ea580c" />
               </linearGradient>
             </defs>
-            <path 
-              d="M0,150 L100,140 L200,160 L300,110 L400,120 L500,80 L600,90 L700,50" 
-              stroke="url(#imageTrendGradient)" 
-              strokeWidth="4" 
-              fill="none" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            />
-            <circle cx="700" cy="50" r="5" fill="#f97316" className="animate-pulse" />
+            {(() => {
+              // Extract sparkline data
+              const sparkData = post._sparkline;
+              const hasSparkline = sparkData && Array.isArray(sparkData) && sparkData.length >= 2;
+              
+              let pathData = "M0,150 L100,140 L200,160 L300,110 L400,120 L500,80 L600,90 L700,50";
+              let lastX = 700;
+              let lastY = 50;
+              
+              if (hasSparkline) {
+                const width = 800;
+                const height = 200;
+                const padding = 40;
+                const chartWidth = width - padding * 2;
+                const chartHeight = height - padding * 2;
+                
+                const min = Math.min(...sparkData);
+                const max = Math.max(...sparkData);
+                const range = max - min || 1;
+                
+                const points = sparkData.map((val, i) => {
+                  const x = padding + (i / (sparkData.length - 1)) * chartWidth;
+                  // Invert y because SVG coordinates start from top
+                  const y = height - (padding + ((val - min) / range) * chartHeight);
+                  return { x, y };
+                });
+                
+                pathData = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ');
+                lastX = points[points.length - 1].x;
+                lastY = points[points.length - 1].y;
+              }
+              
+              return (
+                <>
+                  <path 
+                    d={pathData} 
+                    stroke="url(#imageTrendGradient)" 
+                    strokeWidth="4" 
+                    fill="none" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className="transition-all duration-700 ease-in-out"
+                  />
+                  <circle 
+                    cx={lastX} 
+                    cy={lastY} 
+                    r="5" 
+                    fill="#f97316" 
+                    className="animate-pulse" 
+                  />
+                </>
+              );
+            })()}
           </svg>
           
           <div className="absolute bottom-2 left-6 flex items-center justify-between w-[calc(100%-3rem)]">
@@ -96,15 +140,15 @@ export function MarketOutlookWidget({ post }: { post: BlogPostType }) {
           <div className="flex items-center gap-8">
               <div className="flex flex-col">
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Vol. Risk</span>
-                <span className="text-sm font-black text-foreground">LOW-MOD</span>
+                <span className="text-sm font-black text-foreground">{post.volatilityRisk || "LOW-MOD"}</span>
               </div>
-              <div className="flex flex-col">
+              {/* <div className="flex flex-col">
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Alpha Prob.</span>
-                <span className="text-sm font-black text-foreground">+12.4%</span>
-              </div>
+                <span className="text-sm font-black text-foreground">{post.alphaProbability || "+12.4%"}</span>
+              </div> */}
               <div className="flex flex-col">
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Signals</span>
-                <span className="text-sm font-black text-foreground">8 ACTIVE</span>
+                <span className="text-sm font-black text-foreground">{post.activeSignalsCount || "8"} ACTIVE</span>
               </div>
           </div>
         </div>
@@ -114,7 +158,7 @@ export function MarketOutlookWidget({ post }: { post: BlogPostType }) {
           <div className="flex items-center gap-3">
             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Correlated:</span>
             <div className="flex gap-2">
-              {["USO", "QQQ", "VIX"].map(ticker => (
+              {(post.correlatedTickers || ["USO", "QQQ", "VIX"]).map(ticker => (
                 <span key={ticker} className="px-2 py-0.5 bg-background rounded text-[10px] font-bold text-foreground border border-border uppercase tracking-widest">
                   {ticker}
                 </span>
@@ -129,11 +173,11 @@ export function MarketOutlookWidget({ post }: { post: BlogPostType }) {
 
       {/* Detail Analysis Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {[
+        {(post.analysisCards || [
           { title: "Immediate Trigger", icon: "⚡", content: "CPI data release scheduled for 08:30 EST may invalidate current bullish trajectory.", color: "text-blue-500", bg: "" },
           { title: "Liquidity Alert", icon: "⚠️", content: "Order book depth narrowing in SPY options chain at the $500.00 strike price.", color: "text-orange-500", bg: "" },
           { title: "Structural Note", icon: "◇", content: "Consolidation pattern entering its 4th session. Expansion anticipated within 48h.", color: "text-foreground", bg: "" }
-        ].map((card, i) => (
+        ]).map((card, i) => (
           <div key={i} className="p-6 rounded-xl bg-card border border-border flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center gap-2">
               <span className={card.color}>{card.icon}</span>

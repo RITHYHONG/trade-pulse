@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { MarketOutlookWidget } from './MarketOutlookWidget';
 import { PromoBanner } from './PromoBanner';
 import { BlogPostEngagement } from './BlogPostEngagement.client';
+import { ShareButton } from './ShareButton';
 
 interface BlogPostProps {
   post: BlogPostType;
@@ -44,7 +45,9 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
 
         <div className="container mx-auto mt-12 px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl">
-            <div className="mb-8 flex flex-wrap items-center gap-4">
+
+            <div className="mb-6 flex items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               <span className="rounded-full bg-primary px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-sm">
                 {post.category}
               </span>
@@ -52,17 +55,19 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                 <Calendar className="h-4 w-4 text-primary/70" />
                 <span>{formatDate(post.publishedAt)}</span>
               </div>
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              {/* <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 <Clock className="h-4 w-4 text-primary/70" />
                 <span>{post.readingTime}</span>
-              </div>
+              </div> */}
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 <Eye className="h-4 w-4 text-primary/70" />
                 <span>{formatViews(post.views)}</span>
               </div>
             </div>
+              <ShareButton title={post.title} excerpt={post.excerpt} variant="ghost" size="sm" className="text-muted-foreground hover:text-primary" />
+              </div>
 
-            <h1 className="mb-10 text-4xl font-black leading-[1.05] tracking-tight text-foreground md:text-5xl lg:text-7xl">
+            <h1 className="mb-10 text-3xl font-black leading-[1.05] tracking-tight text-foreground md:text-4xl lg:text-6xl">
               {post.title}
             </h1>
 
@@ -101,7 +106,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
                   <span className="text-xs font-black uppercase tracking-[0.4em] text-cyan-500/60">Executive Summary</span>
                 </div>
 
-                <p className="text-4xl font-black leading-[1.1] tracking-tight text-foreground selection:bg-cyan-500 selection:text-black md:text-5xl lg:text-6xl">
+                <p className="text-3xl font-black leading-[1.1] tracking-tight text-foreground selection:bg-cyan-500 selection:text-black md:text-4xl lg:text-5xl">
                   {post.excerpt}
                 </p>
               </div>

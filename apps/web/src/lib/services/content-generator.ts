@@ -12,6 +12,18 @@ export interface GeneratedBlogPost {
   confidenceLevel: number;
   timeHorizon: string;
   sentiment: string;
+  projectedPrice?: string;
+  volatilityRisk?: string;
+  alphaProbability?: string;
+  activeSignalsCount?: number;
+  correlatedTickers?: string[];
+  analysisCards?: {
+    title: string;
+    content: string;
+    icon?: string;
+    color?: string;
+  }[];
+  _sparkline: number[];
 }
 
 function slugify(text: string): string {
@@ -23,12 +35,55 @@ function slugify(text: string): string {
     .slice(0, 80);
 }
 
+/**
+ * Returns an array of 12-15 numbers representing a trend based on the sentiment.
+ * Positive/Bullish sentiments produce generally upward trends with some noise.
+ * Negative/Bearish sentiments produce generally downward trends with some noise.
+ * Neutral produces a oscillating trend around a baseline.
+ */
+function generateRepresentativeSparkline(sentiment: string): number[] {
+  const length = 12 + Math.floor(Math.random() * 4); // 12-15 points
+  const data: number[] = [];
+  let currentVal = 100 + Math.random() * 20; // Start around 100-120
+  
+  const isPositive = ["positive", "bullish", "strong_buy", "buy"].includes(sentiment.toLowerCase());
+  const isNegative = ["negative", "bearish", "strong_sell", "sell"].includes(sentiment.toLowerCase());
+  
+  for (let i = 0; i < length; i++) {
+    data.push(Number(currentVal.toFixed(2)));
+    
+    // Trend factor
+    let change = (Math.random() - 0.5) * 4; // Noise: -2 to +2
+    if (isPositive) {
+      change += 1.5; // Bias upward
+    } else if (isNegative) {
+      change -= 1.5; // Bias downward
+    }
+    
+    currentVal += change;
+  }
+  
+  return data;
+}
+
 function safeParseJSON(text: string): Record<string, unknown> | null {
-  // Strip markdown code fences if present
-  const cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
   try {
-    return JSON.parse(cleaned);
+    // 1. Try direct parsing first
+    return JSON.parse(text);
   } catch {
+    try {
+      // 2. Try to extract JSON from the string using a more robust regex or brackets matching
+      // Looking for the first '{' and last '}'
+      const firstBrace = text.indexOf("{");
+      const lastBrace = text.lastIndexOf("}");
+
+      if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        const jsonCandidate = text.substring(firstBrace, lastBrace + 1);
+        return JSON.parse(jsonCandidate);
+      }
+    } catch (innerError) {
+      console.error("[content-generator] Extraction parse failed:", innerError);
+    }
     return null;
   }
 }
@@ -55,31 +110,76 @@ Instructions:
 4. Include an "Executive Summary", "Market Impact", "Technical Context", and "Future Outlook".
 5. Mention a primary asset ticker if applicable (e.g., TSLA).
 6. Do NOT use markdown code fences in your response.
+7. Return ONLY the JSON object. No conversational text before or after the JSON.
 
-Return ONLY a valid JSON object with these exact fields:
+Strict JSON Schema (all fields REQUIRED):
 {
-  "title": "a high-impact SEO title",
-  "content": "the complete HTML content (800-1200 words)",
-  "metaDescription": "150-160 char SEO meta description",
-  "tags": ["ticker1", "sector", "market-trend", "analysis", "news"],
-  "primaryAsset": "ticker symbol (e.g. AAPL)",
-  "relatedAssets": ["ticker2", "ticker3"],
+  "title": \"string\",
+  "content": \"string (min 1500 chars)\",
+  "metaDescription": \"string (150-160 chars)\",
+  "tags": [\"string\"],
+  "primaryAsset": \"string\",
+  "relatedAssets": [\"string\"],
   "confidenceLevel": 75,
-  "timeHorizon": "short-term|medium-term|long-term",
-  "sentiment": "positive|neutral|negative"
+  "timeHorizon": \"short-term|medium-term|long-term\",
+  "sentiment": \"positive|neutral|negative\",
+  "projectedPrice": \"string\",
+  "volatilityRisk": \"LOW|LOW-MOD|MODERATE|HIGH\",
+  "alphaProbability": \"string\",
+  "activeSignalsCount": 8,
+  "correlatedTickers": [\"string\"],
+  "analysisCards": [
+    { "title": \"Immediate Trigger\", \"content\": \"short analysis\", \"icon\": \"⚡\", \"color\": \"text-blue-500\" },
+    { "title": \"Liquidity Alert\", \"content\": \"short analysis\", \"icon\": \"⚠️\", \"color\": \"text-orange-500\" },
+    { "title": \"Structural Note\", \"content\": \"short analysis\", \"icon\": \"◇\", \"color\": \"text-foreground\" }
+  ]
 }`;
 
   let parsed: Record<string, unknown> | null = null;
+  let raw = "";
 
   try {
-    const raw = await generateDeepSeekContent(prompt);
+    raw = await generateDeepSeekContent(prompt);
+    console.log("[content-generator] Raw DeepSeek Response:", raw);
+
     parsed = safeParseJSON(raw);
+
+    if (parsed) {
+      console.log("[content-generator] Parsing succeeded.");
+      const fields = [
+        "title",
+        "content",
+        "metaDescription",
+        "tags",
+        "primaryAsset",
+        "relatedAssets",
+        "confidenceLevel",
+        "timeHorizon",
+        "sentiment",
+        "projectedPrice",
+        "volatilityRisk",
+        "alphaProbability",
+        "activeSignalsCount",
+        "correlatedTickers",
+        "analysisCards",
+      ];
+      const present = fields.filter((f) => f in (parsed as object));
+      const missing = fields.filter((f) => !(f in (parsed as object)));
+      console.log(`[content-generator] Fields present: ${present.join(", ")}`);
+      if (missing.length > 0) {
+        console.warn(`[content-generator] Fields missing: ${missing.join(", ")}`);
+      }
+    } else {
+      console.error("[content-generator] Parsing failed for the response.");
+    }
   } catch (err) {
-    console.warn("[content-generator] DeepSeek generation failed:", (err as Error).message);
+    console.error("[content-generator] DeepSeek generation failed:", (err as Error).message);
   }
 
   // Fallback: build a minimal post from the news item itself
   if (!parsed) {
+    console.warn("[content-generator] Using fallback minimal post.");
+    const sentiment = news.sentiment ?? "neutral";
     return {
       title: news.title,
       slug: slugify(news.title),
@@ -90,11 +190,29 @@ Return ONLY a valid JSON object with these exact fields:
       relatedAssets: [],
       confidenceLevel: 50,
       timeHorizon: "short-term",
-      sentiment: news.sentiment ?? "neutral",
+      sentiment,
+      _sparkline: generateRepresentativeSparkline(sentiment),
     };
   }
 
   const title = String(parsed.title || news.title);
+
+  // Parse numeric fields safely (they might be strings)
+  const confidenceLevel =
+    typeof parsed.confidenceLevel === "number"
+      ? parsed.confidenceLevel
+      : typeof parsed.confidenceLevel === "string"
+      ? parseInt(parsed.confidenceLevel, 10)
+      : 70;
+
+  const activeSignalsCount =
+    typeof parsed.activeSignalsCount === "number"
+      ? parsed.activeSignalsCount
+      : typeof parsed.activeSignalsCount === "string"
+      ? parseInt(parsed.activeSignalsCount, 10)
+      : undefined;
+
+  const sentiment = String(parsed.sentiment || news.sentiment || "neutral");
 
   return {
     title,
@@ -104,8 +222,15 @@ Return ONLY a valid JSON object with these exact fields:
     tags: Array.isArray(parsed.tags) ? (parsed.tags as string[]) : ["market news"],
     primaryAsset: String(parsed.primaryAsset || ""),
     relatedAssets: Array.isArray(parsed.relatedAssets) ? (parsed.relatedAssets as string[]) : [],
-    confidenceLevel: typeof parsed.confidenceLevel === "number" ? parsed.confidenceLevel : 70,
+    confidenceLevel: isNaN(confidenceLevel) ? 70 : confidenceLevel,
     timeHorizon: String(parsed.timeHorizon || "short-term"),
-    sentiment: String(parsed.sentiment || news.sentiment || "neutral"),
+    sentiment,
+    projectedPrice: parsed.projectedPrice ? String(parsed.projectedPrice) : undefined,
+    volatilityRisk: parsed.volatilityRisk ? String(parsed.volatilityRisk) : undefined,
+    alphaProbability: parsed.alphaProbability ? String(parsed.alphaProbability) : undefined,
+    activeSignalsCount: isNaN(activeSignalsCount as number) ? undefined : activeSignalsCount,
+    correlatedTickers: Array.isArray(parsed.correlatedTickers) ? (parsed.correlatedTickers as string[]) : undefined,
+    analysisCards: Array.isArray(parsed.analysisCards) ? (parsed.analysisCards as any[]) : undefined,
+    _sparkline: generateRepresentativeSparkline(sentiment),
   };
 }
