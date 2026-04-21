@@ -54,6 +54,17 @@ export interface BlogPost {
   updatedAt?: Date | Timestamp;
   publishedAt?: Date | Timestamp;
   views?: number;
+  projectedPrice?: string;
+  volatilityRisk?: string;
+  alphaProbability?: string;
+  activeSignalsCount?: number;
+  correlatedTickers?: string[];
+  analysisCards?: {
+    title: string;
+    content: string;
+    icon?: string;
+    color?: string;
+  }[];
 }
 
 /**

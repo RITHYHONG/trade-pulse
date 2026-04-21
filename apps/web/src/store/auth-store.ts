@@ -207,9 +207,9 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
       await resetPassword(email);
       set({ loading: false });
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Password reset failed";
-      set({ error: message, loading: false });
+      const appError = mapToAppError(error);
+      logError(appError, { operation: "resetPassword", email });
+      set({ error: appError.userMessage, loading: false });
       throw error;
     }
   },

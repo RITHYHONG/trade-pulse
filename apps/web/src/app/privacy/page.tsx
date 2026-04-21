@@ -39,14 +39,14 @@ function DataCategory({ name, items, legalBasis, specialNote }: DataCategoryProp
       return (
             <div className="mb-8 p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm transition-all hover:shadow-md group">
                   <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3">
-                        <div className="w-1.5 h-6 bg-blue-600 rounded-full" />
+                        <div className="w-1.5 h-6 bg-primary rounded-full" />
                         {name}
                   </h4>
                   <ul className="space-y-4 mb-8">
                         {items.map((item, idx) => (
                               <li key={idx} className="flex items-start gap-4 text-slate-600 dark:text-slate-400 leading-relaxed">
-                                    <div className="mt-1.5 flex-shrink-0 w-4 h-4 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-                                          <Check className="w-2.5 h-2.5 text-blue-600 dark:text-blue-400" />
+                                    <div className="mt-1.5 flex-shrink-0 w-4 h-4 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                                          <Check className="w-2.5 h-2.5 text-primary dark:text-primary" />
                                     </div>
                                     <span className="text-sm font-medium">{item}</span>
                               </li>
@@ -63,8 +63,8 @@ function DataCategory({ name, items, legalBasis, specialNote }: DataCategoryProp
                         ))}
                   </div>
                   {specialNote && (
-                        <div className="mt-6 p-5 bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/50 rounded-xl">
-                              <p className="text-xs font-medium text-blue-700 dark:text-blue-400 flex items-start gap-3 leading-relaxed">
+                        <div className="mt-6 p-5 bg-primary/5 dark:bg-primary/10 border border-primary/20 dark:border-primary/30 rounded-xl">
+                              <p className="text-xs font-medium text-primary dark:text-primary flex items-start gap-3 leading-relaxed">
                                     <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
                                     <span>{specialNote}</span>
                               </p>
@@ -82,9 +82,9 @@ interface SecurityMeasureProps {
 
 function SecurityMeasure({ icon, title, description }: SecurityMeasureProps) {
       return (
-            <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:border-blue-500/30 transition-all duration-300 group">
-                  <div className="mb-6 p-3 w-fit rounded-xl bg-slate-50 dark:bg-slate-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 transition-colors">
-                        {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<{ className?: string }>, { className: 'w-6 h-6 text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors' }) : null}
+            <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:border-primary/30 transition-all duration-300 group">
+                  <div className="mb-6 p-3 w-fit rounded-xl bg-slate-50 dark:bg-slate-800 group-hover:bg-primary/10 dark:group-hover:bg-primary/20 transition-colors">
+                        {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<{ className?: string }>, { className: 'w-6 h-6 text-slate-400 group-hover:text-primary dark:group-hover:text-primary transition-colors' }) : null}
                   </div>
                   <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">{title}</h4>
                   <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{description}</p>
@@ -191,7 +191,7 @@ export default function PrivacyPolicyPage() {
                                                                   key={section.id}
                                                                   onClick={() => scrollToSection(section.id)}
                                                                   className={`w-full group flex items-center gap-4 py-3 text-left transition-all duration-300 border-r-2 ${activeSection === section.id
-                                                                        ? 'text-blue-600 dark:text-blue-400 border-blue-600 font-bold'
+                                                                        ? 'text-primary dark:text-primary border-primary font-bold'
                                                                         : 'text-slate-400 dark:text-slate-500 border-transparent hover:text-slate-900 dark:hover:text-white'
                                                                         }`}
                                                             >
@@ -212,16 +212,16 @@ export default function PrivacyPolicyPage() {
                                                 <div className="space-y-4">
                                                       <Link
                                                             href="/terms"
-                                                            className="flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group"
+                                                            className="flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors group"
                                                       >
-                                                            <FileText className="w-4 h-4 text-slate-300 dark:text-slate-700 group-hover:text-blue-500 transition-colors" />
+                                                            <FileText className="w-4 h-4 text-slate-300 dark:text-slate-700 group-hover:text-primary transition-colors" />
                                                             Terms of Service
                                                       </Link>
                                                       <Link
                                                             href="/disclaimer"
-                                                            className="flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group"
+                                                            className="flex items-center gap-3 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors group"
                                                       >
-                                                            <Shield className="w-4 h-4 text-slate-300 dark:text-slate-700 group-hover:text-blue-500 transition-colors" />
+                                                            <Shield className="w-4 h-4 text-slate-300 dark:text-slate-700 group-hover:text-primary transition-colors" />
                                                             Risk Disclosure
                                                       </Link>
                                                 </div>
@@ -246,7 +246,7 @@ export default function PrivacyPolicyPage() {
                                                 </p>
                                                 
                                                 <div className="p-10 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-slate-800 my-12">
-                                                      <h4 className="text-sm font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-6">Data Controller</h4>
+                                                      <h4 className="text-sm font-bold uppercase tracking-widest text-primary mb-6">Data Controller</h4>
                                                       <div className="grid sm:grid-cols-2 gap-10">
                                                             <div>
                                                                   <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Company</p>
@@ -352,7 +352,7 @@ export default function PrivacyPolicyPage() {
                                                                   <tr key={idx} className="group hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
                                                                         <td className="py-6 px-4 text-sm font-bold text-slate-900 dark:text-white">{row.purpose}</td>
                                                                         <td className="py-6 px-4">
-                                                                              <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded-full border border-blue-100 dark:border-blue-800">
+                                                                              <span className="px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary text-[10px] font-bold uppercase tracking-wider rounded-full border border-primary/20 dark:border-primary/30">
                                                                                     {row.basis}
                                                                               </span>
                                                                         </td>
@@ -389,8 +389,8 @@ export default function PrivacyPolicyPage() {
                                                       },
                                                 ].map((category, idx) => (
                                                       <div key={idx} className="p-10 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm group">
-                                                            <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mb-8">
-                                                                  <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                                                            <div className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center mb-8">
+                                                                  <Users className="w-6 h-6 text-primary dark:text-primary" />
                                                             </div>
                                                             <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 italic">{category.name}</h4>
                                                             <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-8 leading-relaxed italic">{category.description}</p>
@@ -402,7 +402,7 @@ export default function PrivacyPolicyPage() {
                                                                   ))}
                                                             </div>
                                                             <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
-                                                                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">🛡️ {category.protection}</p>
+                                                                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary dark:text-primary">🛡️ {category.protection}</p>
                                                             </div>
                                                       </div>
                                                 ))}
@@ -435,8 +435,8 @@ export default function PrivacyPolicyPage() {
                                                 ].map((cookie, idx) => (
                                                       <div key={idx} className="p-8 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center justify-between group">
                                                             <div className="flex items-center gap-6">
-                                                                  <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center group-hover:bg-blue-50 dark:group-hover:bg-blue-900/40 transition-colors">
-                                                                        <Cookie className="w-6 h-6 text-slate-400 group-hover:text-blue-600 transition-colors" />
+                                                                  <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center group-hover:bg-primary/10 dark:group-hover:bg-primary/20 transition-colors">
+                                                                        <Cookie className="w-6 h-6 text-slate-400 group-hover:text-primary transition-colors" />
                                                                   </div>
                                                                   <div>
                                                                         <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-1">{cookie.category}</h4>
@@ -489,18 +489,18 @@ export default function PrivacyPolicyPage() {
 
                                           <div className="p-10 bg-slate-900 dark:bg-black rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden group">
                                                 <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
-                                                      <AlertCircle className="w-32 h-32 text-blue-500" />
+                                                      <AlertCircle className="w-32 h-32 text-primary" />
                                                 </div>
                                                 <div className="relative z-10">
                                                       <h4 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                                                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                                                            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                                                             Incident Response
                                                       </h4>
                                                       <p className="text-lg text-slate-400 leading-relaxed mb-8 max-w-xl italic">
                                                             In the unlikely event of a data breach, we will notify affected users within 72 hours as required by GDPR and applicable laws.
                                                       </p>
                                                       <p className="text-sm font-bold uppercase tracking-widest text-slate-500">
-                                                            Security Contact: <span className="text-blue-400">security@tradepulse.io</span>
+                                                            Security Contact: <span className="text-primary">security@tradepulse.io</span>
                                                       </p>
                                                 </div>
                                           </div>
@@ -518,13 +518,13 @@ export default function PrivacyPolicyPage() {
                                           <div className="grid md:grid-cols-2 gap-8 mb-12">
                                                 <div className="p-10 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
                                                       <div className="absolute top-0 right-0 p-8 opacity-5">
-                                                            <Globe className="w-24 h-24 text-blue-500" />
+                                                            <Globe className="w-24 h-24 text-primary" />
                                                       </div>
                                                       <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-6">GDPR / LGPD</h4>
                                                       <ul className="space-y-4 mb-8">
                                                             {['Right to access', 'Right to erasure', 'Right to portability', 'Right to object'].map((r, i) => (
                                                                   <li key={i} className="flex items-center gap-3 text-sm font-medium text-slate-500 dark:text-slate-400">
-                                                                        <div className="w-1 h-1 rounded-full bg-blue-500" />
+                                                                              <div className="w-1 h-1 rounded-full bg-primary" />
                                                                         {r}
                                                                   </li>
                                                             ))}
@@ -536,13 +536,13 @@ export default function PrivacyPolicyPage() {
 
                                                 <div className="p-10 bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
                                                       <div className="absolute top-0 right-0 p-8 opacity-5">
-                                                            <Shield className="w-24 h-24 text-blue-500" />
+                                                            <Shield className="w-24 h-24 text-primary" />
                                                       </div>
                                                       <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-6">CCPA / VCDPA</h4>
                                                       <ul className="space-y-4 mb-8">
                                                             {['Right to know', 'Right to delete', 'Right to opt-out', 'Non-discrimination'].map((r, i) => (
                                                                   <li key={i} className="flex items-center gap-3 text-sm font-medium text-slate-500 dark:text-slate-400">
-                                                                        <div className="w-1 h-1 rounded-full bg-blue-500" />
+                                                                              <div className="w-1 h-1 rounded-full bg-primary" />
                                                                         {r}
                                                                   </li>
                                                             ))}
@@ -556,7 +556,7 @@ export default function PrivacyPolicyPage() {
 
                                     {/* Contact */}
                                     <section id="contact" className="mb-24 scroll-mt-24">
-                                          <div className="p-12 sm:p-20 bg-blue-600 rounded-[3rem] text-white relative overflow-hidden group shadow-2xl">
+                                          <div className="p-12 sm:p-20 bg-primary rounded-[3rem] text-white relative overflow-hidden group shadow-2xl">
                                                 <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:scale-110 transition-transform duration-700">
                                                       <Mail className="w-64 h-64 text-white" />
                                                 </div>
@@ -564,11 +564,11 @@ export default function PrivacyPolicyPage() {
                                                       <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-8 font-display">
                                                             Still have questions?
                                                       </h2>
-                                                      <p className="text-xl sm:text-2xl text-blue-100 max-w-xl leading-relaxed mb-12">
+                                                      <p className="text-xl sm:text-2xl text-white/80 max-w-xl leading-relaxed mb-12">
                                                             Our privacy team is here to help walk you through any concerns or data requests.
                                                       </p>
                                                       <div className="flex flex-col sm:flex-row gap-6">
-                                                            <Button className="rounded-2xl px-10 py-8 bg-white text-blue-600 font-bold text-xl hover:bg-white/95 hover:scale-105 transition-all shadow-xl">
+                                                            <Button className="rounded-2xl px-10 py-8 bg-white text-primary font-bold text-xl hover:bg-primary/10 hover:scale-105 transition-all shadow-xl">
                                                                   Contact Support
                                                             </Button>
                                                             <div className="flex flex-col justify-center">
@@ -588,9 +588,9 @@ export default function PrivacyPolicyPage() {
                                                 TradePulse.
                                           </div>
                                           <div className="flex flex-wrap justify-center gap-10 text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                                                <Link href="/terms" className="hover:text-blue-600 transition-colors">Terms of Service</Link>
-                                                <Link href="/disclaimer" className="hover:text-blue-600 transition-colors">Risk Disclosure</Link>
-                                                <Link href="/cookies" className="hover:text-blue-600 transition-colors">Cookie Policy</Link>
+                                                <Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
+                                                <Link href="/disclaimer" className="hover:text-primary transition-colors">Risk Disclosure</Link>
+                                                <Link href="/cookies" className="hover:text-primary transition-colors">Cookie Policy</Link>
                                           </div>
                                     </div>
                               </div>

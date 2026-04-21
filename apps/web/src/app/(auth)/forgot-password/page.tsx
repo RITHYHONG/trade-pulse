@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const { resetPassword } = useAuth();
+  const { resetPassword, error: authError } = useAuth();
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setLoading(true);
@@ -40,8 +40,10 @@ export default function ForgotPasswordPage() {
       await resetPassword(data.email);
       setEmailSent(true);
       toast.success('Password reset email sent!');
-    } catch {
-      toast.error('Failed to send reset email. Please try again.');
+    } catch (err) {
+      console.error('Reset password error:', err);
+      // The store error is also available via authError if needed
+      toast.error(authError || 'Failed to send reset email. Please try again.');
     } finally {
       setLoading(false);
     }

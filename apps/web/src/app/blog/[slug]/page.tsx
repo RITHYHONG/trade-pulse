@@ -135,5 +135,11 @@ function mapFirestoreToUI(fsp: FirestoreBlogPost): UIBlogPost {
     primaryAsset: fsp.primaryAsset,
     relatedAssets: fsp.relatedAssets,
     timeHorizon: fsp.timeHorizon,
+    projectedPrice: fsp.projectedPrice,
+    volatilityRisk: fsp.volatilityRisk,
+    alphaProbability: fsp.alphaProbability,
+    activeSignalsCount: fsp.activeSignalsCount,
+    correlatedTickers: fsp.correlatedTickers,
+    analysisCards: fsp.analysisCards,
   };
 }

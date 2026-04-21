@@ -35,11 +35,11 @@ function TermSection({ number, title, icon, children }: TermSectionProps) {
   return (
     <section className="mb-20 last:mb-0 group">
       <div className="flex items-center gap-4 mb-8">
-        <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:border-blue-500/30 transition-all duration-300 shadow-sm">
+        <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-primary dark:text-primary group-hover:border-primary/30 transition-all duration-300 shadow-sm">
           {icon}
         </div>
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-1">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-primary dark:text-primary mb-1">
             Section {number}
           </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
@@ -49,7 +49,7 @@ function TermSection({ number, title, icon, children }: TermSectionProps) {
       </div>
       
       <div className="pl-0 sm:pl-16">
-        <div className="prose prose-slate dark:prose-invert max-w-none prose-p:text-slate-500 dark:prose-p:text-slate-400 prose-p:leading-relaxed prose-strong:text-slate-900 dark:prose-strong:text-white prose-a:text-blue-600 dark:prose-a:text-blue-400 no-underline hover:prose-a:underline">
+        <div className="prose prose-slate dark:prose-invert max-w-none prose-p:text-slate-500 dark:prose-p:text-slate-400 prose-p:leading-relaxed prose-strong:text-slate-900 dark:prose-strong:text-white prose-a:text-primary dark:prose-a:text-primary no-underline hover:prose-a:underline">
           {children}
         </div>
       </div>
@@ -103,7 +103,7 @@ export default function Page() {
             </p>
             <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-2xl p-6 mt-6">
               <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                <Shield className="w-4 h-4 text-blue-600" />
+                <Shield className="w-4 h-4 text-primary" />
                 Security Responsibilities
               </h4>
               <ul className="grid gap-3 list-none p-0 m-0">
@@ -172,17 +172,17 @@ export default function Page() {
             <p>
               If you have any questions about these Terms, please contact us at:
             </p>
-            <div className="mt-8 p-8 bg-blue-600 rounded-3xl text-white relative overflow-hidden group">
+            <div className="mt-8 p-8 bg-primary/30 rounded-3xl text-white relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
                 <Mail className="w-32 h-32" />
               </div>
               <h4 className="text-xl font-bold mb-2 relative z-10">Have questions?</h4>
-              <p className="text-blue-100 mb-6 relative z-10 max-w-sm">
+              <p className="text-white/80 mb-6 relative z-10 max-w-sm">
                 Our legal team is here to help you understand your rights and responsibilities.
               </p>
               <a 
                 href="mailto:support@traderpulse.com" 
-                className="inline-flex items-center gap-2 bg-white text-blue-600 px-6 py-3 rounded-xl font-bold hover:bg-blue-50 transition-colors relative z-10"
+                className="inline-flex items-center gap-2 hover:text-stone-50 bg-white text-primary px-6 py-3 rounded-xl font-bold hover:bg-primary/50 transition-colors relative z-10"
               >
                 support@traderpulse.com
                 <ChevronRight className="w-4 h-4" />

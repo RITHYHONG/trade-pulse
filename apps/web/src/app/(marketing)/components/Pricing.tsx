@@ -95,17 +95,19 @@ export function Pricing() {
               className="relative"
             >
               <Card 
-                className={`p-8 h-full relative overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col ${
+                className={`p-8 h-full relative overflow-hidden transition-all duration-500 hover:-translate-y-2 flex flex-col ${
                   plan.popular 
-                    ? 'bg-gradient-to-br from-primary/10 to-primary/5 border-primary/30 shadow-lg shadow-primary/10' 
-                    : 'bg-card/50 border-border hover:bg-card/80'
+                    ? 'bg-gradient-to-br from-primary/10 via-card to-primary/5 border-primary/40 shadow-2xl shadow-primary/20 ring-1 ring-primary/20' 
+                    : 'bg-card/50 border-border hover:bg-card/80 shadow-xl'
                 }`}
               >
                 {plan.tag && (
-                  <Badge className="absolute top-3 pb-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground px-6 py-1">
-                    <Zap className="w-4 h-4 mr-1" />
-                    {plan.tag}
-                  </Badge>
+                  <div className="absolute top-0 left-0 right-0 flex justify-center">
+                    <div className="bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-b-xl shadow-lg flex items-center gap-1.5 animate-in fade-in slide-in-from-top-2 duration-500">
+                      <Zap className="w-3 h-3 fill-current" />
+                      {plan.tag}
+                    </div>
+                  </div>
                 )}
 
                 {plan.popular && !plan.tag && (

@@ -27,9 +27,9 @@ interface RiskCategory {
 
 function RiskCard({ risk }: { risk: RiskCategory }) {
   return (
-    <div className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:border-red-500/30 transition-all duration-300 group">
+    <div className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:border-primary/30 transition-all duration-300 group">
       <div className="flex items-start gap-4">
-        <div className="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-950/30 flex items-center justify-center text-red-600 dark:text-red-400 text-2xl group-hover:scale-110 transition-transform">
+        <div className="w-12 h-12 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary dark:text-primary text-2xl group-hover:scale-110 transition-transform">
           {risk.icon}
         </div>
         <div>
@@ -69,14 +69,14 @@ export default function DisclaimerPage() {
         />
 
         {/* Critical Warning Section */}
-        <div className="relative overflow-hidden p-8 bg-red-50/50 dark:bg-red-950/10 border-2 border-red-500/20 rounded-3xl group">
+        <div className="relative overflow-hidden p-8 bg-primary/5 dark:bg-primary/10 border-2 border-primary/20 rounded-3xl group">
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-700 pointer-events-none">
-            <AlertTriangle className="w-48 h-48 text-red-600" />
+            <AlertTriangle className="w-48 h-48 text-primary" />
           </div>
           
           <div className="relative z-10">
-            <div className="flex items-center gap-3 text-red-600 dark:text-red-400 font-bold uppercase tracking-widest text-xs mb-6">
-              <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+            <div className="flex items-center gap-3 text-primary dark:text-primary font-bold uppercase tracking-widest text-xs mb-6">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               Critical Legal Warning
             </div>
             
@@ -97,8 +97,8 @@ export default function DisclaimerPage() {
                   'No money management'
                 ].map((point, idx) => (
                   <li key={idx} className="flex items-center gap-3 text-slate-600 dark:text-slate-400 font-medium m-0">
-                    <div className="w-5 h-5 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
-                      <X className="w-3 h-3 text-red-600 dark:text-red-400" />
+                    <div className="w-5 h-5 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center flex-shrink-0">
+                      <X className="w-3 h-3 text-primary dark:text-primary" />
                     </div>
                     {point}
                   </li>
@@ -106,8 +106,8 @@ export default function DisclaimerPage() {
               </ul>
             </div>
             
-            <div className="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-red-100 dark:border-red-900/30 flex items-start gap-4">
-              <Info className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
+            <div className="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-primary/20 flex items-start gap-4">
+              <Info className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
               <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
                 You are <strong className="text-slate-900 dark:text-white">solely responsible</strong> for your investment decisions. Always consult with a licensed professional.
               </p>
@@ -118,7 +118,7 @@ export default function DisclaimerPage() {
         {/* Investment Risks */}
         <section>
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-blue-600">
+            <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-primary">
               <TrendingDown className="w-6 h-6" />
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Investment & Trading Risks</h2>
@@ -141,7 +141,7 @@ export default function DisclaimerPage() {
         {/* Content Accuracy */}
         <section>
           <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-blue-600">
+            <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-center text-primary">
               <BarChart3 className="w-6 h-6" />
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Information Accuracy</h2>
@@ -168,9 +168,9 @@ export default function DisclaimerPage() {
         </section>
 
         {/* Affiliate Disclosure */}
-        <section className="p-8 bg-blue-50/30 dark:bg-blue-900/10 border border-blue-500/10 rounded-3xl">
+        <section className="p-8 bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-3xl">
           <div className="flex items-center gap-4 mb-6">
-            <CreditCard className="w-6 h-6 text-blue-600" />
+            <CreditCard className="w-6 h-6 text-primary" />
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">Affiliate Relationships</h3>
           </div>
           <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-0">

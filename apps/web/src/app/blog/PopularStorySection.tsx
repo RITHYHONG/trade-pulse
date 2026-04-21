@@ -65,18 +65,18 @@ function SmallStoryCard({ post, compact }: { post: BlogPost; compact?: boolean }
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-primary text-xs font-semibold uppercase tracking-wide">{post.category}</span>
-                {post.primaryAsset && (
+                {/* {post.primaryAsset && (
                   <span className="text-xs px-2 py-0.5 bg-muted/20 rounded-full">{post.primaryAsset}</span>
-                )}
+                )} */}
               </div>
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                   <button onClick={(e) => { e.preventDefault(); addToWatchlist(post.slug); }} aria-label="Add to watchlist" className="p-2 rounded-md hover:bg-muted">
                     <Star className="w-4 h-4" />
                   </button>
                   <button onClick={(e) => { e.preventDefault(); setAlert(post.slug); }} aria-label="Set alert" className="p-2 rounded-md hover:bg-muted">
                     <Bell className="w-4 h-4" />
                   </button>
-              </div>
+              </div> */}
             </div>
 
             <h4 className="text-xs font-bold text-foreground leading-tight line-clamp-2 mb-4 group-hover:text-primary transition-colors uppercase tracking-tight">
@@ -155,7 +155,7 @@ function MainStoryCard({ post }: { post: BlogPost }) {
         className="bg-card/40 backdrop-blur-md rounded-[2.5rem] overflow-hidden border border-border/50 hover:border-primary/20 transition-all duration-300 group cursor-pointer shadow-xl"
       >
         <div className="grid md:grid-cols-2">
-          <div className="relative h-56 md:h-72 overflow-hidden">
+          <div className="relative h-[100%] overflow-hidden">
             <ImageWithFallback
               src={post.featuredImage ?? ''}
               alt={post.title}

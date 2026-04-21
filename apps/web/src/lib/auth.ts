@@ -76,9 +76,12 @@ export async function signOutUser(): Promise<void> {
 
 // Send password reset email
 export async function resetPassword(email: string): Promise<void> {
+  console.log(`Attempting to send password reset email to: ${email}`);
   try {
     await sendPasswordResetEmail(auth, email);
+    console.log(`Password reset email sent successfully to: ${email}`);
   } catch (error) {
+    console.error(`Error in resetPassword for ${email}:`, error);
     const message = error instanceof Error ? error.message : 'Failed to send password reset email';
     throw new Error(message);
   }
