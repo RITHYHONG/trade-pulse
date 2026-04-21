@@ -12,6 +12,7 @@ interface WatchlistItem {
       change: number;
       changePercent: number;
       name?: string;
+      sector?: string;
 }
 
 interface WatchlistWidgetProps {
@@ -25,12 +26,12 @@ export function WatchlistWidget({ instruments, isLoading }: WatchlistWidgetProps
 
       // Fill with dummy data if empty for visualization
       const data = instruments.length > 0 ? instruments : [
-            { symbol: "EURUSD", price: 1.0845, change: -0.0023, changePercent: -0.21, name: "Euro / US Dollar" },
-            { symbol: "GBPUSD", price: 1.2630, change: 0.0012, changePercent: 0.10, name: "British Pound" },
-            { symbol: "USDJPY", price: 151.20, change: 0.45, changePercent: 0.30, name: "US Dollar / Yen" },
-            { symbol: "XAUUSD", price: 2035.50, change: 12.40, changePercent: 0.61, name: "Gold" },
-            { symbol: "BTCUSD", price: 65120.00, change: 1250.00, changePercent: 1.95, name: "Bitcoin" },
-            { symbol: "SPX500", price: 5105.20, change: -15.50, changePercent: -0.30, name: "S&P 500" },
+            { symbol: "EURUSD", price: 1.0845, change: -0.0023, changePercent: -0.21, name: "Euro / US Dollar", sector: "Forex" },
+            { symbol: "GBPUSD", price: 1.2630, change: 0.0012, changePercent: 0.10, name: "British Pound", sector: "Forex" },
+            { symbol: "USDJPY", price: 151.20, change: 0.45, changePercent: 0.30, name: "US Dollar / Yen", sector: "Forex" },
+            { symbol: "XAUUSD", price: 2035.50, change: 12.40, changePercent: 0.61, name: "Gold", sector: "Commodity" },
+            { symbol: "BTCUSD", price: 65120.00, change: 1250.00, changePercent: 1.95, name: "Bitcoin", sector: "Cryptocurrency" },
+            { symbol: "SPX500", price: 5105.20, change: -15.50, changePercent: -0.30, name: "S&P 500", sector: "Index" },
       ];
 
       return (
