@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { adminApp, isAdminReady, adminDb } from "@/lib/firebase-admin";
 
-async function verifyAdmin(cookieStore: ReturnType<typeof cookies>) {
+async function verifyAdmin(cookieStore: Awaited<ReturnType<typeof cookies>>) {
   const authToken = cookieStore.get("auth-token")?.value;
   if (!authToken) return { ok: false, status: 401, message: "Missing session" };
 
