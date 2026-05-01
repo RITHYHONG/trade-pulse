@@ -5,8 +5,6 @@ import { mockCentralBankEvents } from "@/app/calendar/components/economic-calend
 
 // Mock intelligence function (replace with real AI call if available)
 async function getCalendarIntelligence(events: EconomicEvent[]) {
-  // Simulate AI processing
-  await new Promise((resolve) => setTimeout(resolve, 500));
   const highImpact = events.filter((e) => e.impact === "high");
 
   return {

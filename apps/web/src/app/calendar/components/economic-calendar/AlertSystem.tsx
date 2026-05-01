@@ -122,7 +122,7 @@ const AlertItem = memo(({ alert, onToggle, onDelete, index }: {
           <div className="flex items-center gap-2">
             <span className="text-[0.7rem] text-muted-foreground font-medium">{alert.condition}</span>
             {alert.threshold && (
-              <Badge variant="outline" className="h-4 text-[9px] px-1 font-mono border-transparent bg-background/40">
+              <Badge variant="outline" className="h-4 text-[9px] px-1 font-sans border-transparent bg-background/40">
                 {alert.threshold}%
               </Badge>
             )}

@@ -128,7 +128,7 @@ const RelationshipItem = memo(({ corr, index }: { corr: Correlation, index: numb
           <ArrowRight className="w-2.5 h-2.5 text-muted-foreground" />
           <span className="text-[0.7rem] font-bold text-foreground/80">{corr.event2}</span>
         </div>
-        <span className={cn("text-[0.7rem] font-mono font-bold", styles.text)}>
+        <span className={cn("text-[0.7rem] font-sans font-bold", styles.text)}>
           {corr.strength > 0 ? '+' : ''}{corr.strength.toFixed(2)}
         </span>
       </div>
@@ -177,7 +177,7 @@ export const CorrelationMatrix = memo(({ correlations = [] }: { correlations?: C
             <p className="text-[0.7rem] text-muted-foreground font-medium uppercase tracking-wider">Live Analysis</p>
           </div>
         </div>
-        <Badge variant="outline" className="h-5 text-[0.8rem] font-mono border-emerald-500/30 text-emerald-500 bg-emerald-500/5 px-1.5">
+        <Badge variant="outline" className="h-5 text-[0.8rem] font-sans border-emerald-500/30 text-emerald-500 bg-emerald-500/5 px-1.5">
           ACTIVE
         </Badge>
       </div>

@@ -1,7 +1,6 @@
 import React, { useMemo, memo, useCallback } from 'react';
 import { EconomicEvent } from './types';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Clock, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { timeFormatter } from '@/lib/formatters';
@@ -32,10 +31,11 @@ const TimelineEventCard = memo(({ event, onClick }: { event: EconomicEvent, onCl
   return (
     <div
       onClick={handleClick}
+      style={{ containIntrinsicSize: '120px' }}
       className={cn(
         "relative bg-card hover:bg-card/80 border border-border/40 rounded-xl p-2.5 md:p-3 cursor-pointer transition-all duration-300 group/card overflow-hidden",
         SENTIMENT_GLOW[event.historicalData.directionBias] || SENTIMENT_GLOW.neutral,
-        "hover:-translate-y-0.5 animate-in fade-in slide-in-from-left-4 duration-500"
+        "hover:-translate-y-0.5 animate-in fade-in slide-in-from-left-4 duration-500 [content-visibility:auto]"
       )}
     >
       {/* Dynamic Background Glow */}
@@ -68,7 +68,7 @@ const TimelineEventCard = memo(({ event, onClick }: { event: EconomicEvent, onCl
           <div className="flex items-center gap-3 pt-0.5">
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Clock className="w-3.5 h-3.5" />
-              <span className="font-mono">
+              <span className="font-sans">
                 {timeFormatter.format(event.datetime)}
               </span>
             </div>
@@ -83,7 +83,7 @@ const TimelineEventCard = memo(({ event, onClick }: { event: EconomicEvent, onCl
             <span className="md:hidden">Exp. Move</span>
             <span className="hidden md:inline">Expected Move</span>
           </div>
-          <div className="text-xs md:text-sm font-mono font-medium text-foreground">
+          <div className="text-xs md:text-sm font-sans font-medium text-foreground">
             ±{event.tradingSetup.expectedMove}%
           </div>
           <div className="mt-2 flex justify-end">
@@ -128,7 +128,7 @@ export const TimelineView = memo(({ events, onEventClick, isLoading = false }: T
   }
 
   return (
-    <ScrollArea className="h-full">
+    <div className="h-full overflow-y-auto">
       <div className="p-2 sm:p-4 md:p-6 max-w-4xl mx-auto relative overflow-x-hidden">
         {/* Current Time Indicator Line */}
         <div className="absolute left-[55px] md:left-[79px] top-6 bottom-6 w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent z-0 pointer-events-none" />
@@ -145,7 +145,7 @@ export const TimelineView = memo(({ events, onEventClick, isLoading = false }: T
               <div key={hour} className="flex items-start gap-2 md:gap-6 group">
                 {/* Time Label */}
                 <div className="w-12 md:w-16 flex-shrink-0 pt-4 text-right">
-                  <div className="text-xs md:text-sm font-mono text-muted-foreground group-hover:text-foreground transition-colors">
+                  <div className="text-xs md:text-sm font-sans text-muted-foreground group-hover:text-foreground transition-colors">
                     {hour.toString().padStart(2, '0')}:00
                   </div>
                 </div>
@@ -171,7 +171,7 @@ export const TimelineView = memo(({ events, onEventClick, isLoading = false }: T
           })}
         </div>
       </div>
-    </ScrollArea>
+    </div>
   );
 });
 

@@ -1,8 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { FilterSidebar } from './components/economic-calendar/FilterSidebar';
 import { TimelineView } from './components/economic-calendar/TimelineView';
-import { HeatMapView } from './components/economic-calendar/HeatMapView';
-import { ListView } from './components/economic-calendar/ListView';
 import dynamic from 'next/dynamic';
 import { AlertSystem } from './components/economic-calendar/AlertSystem';
 import { CorrelationMatrix, Correlation } from './components/economic-calendar/CorrelationMatrix';
@@ -43,6 +41,15 @@ import { useCalendarState } from './hooks/use-calendar-state';
 import { useIsMobileBreakpoint } from '@/hooks/use-media-query';
 
 // Dynamically import heavy components with SSR disabled
+const HeatMapView = dynamic(
+  () => import('./components/economic-calendar/HeatMapView').then(mod => ({ default: mod.HeatMapView })),
+  { ssr: false, loading: () => <div className="p-6 h-full w-full"><Skeleton className="h-full w-full rounded-xl" /></div> }
+);
+
+const ListView = dynamic(
+  () => import('./components/economic-calendar/ListView').then(mod => ({ default: mod.ListView })),
+  { ssr: false, loading: () => <div className="p-6 h-full w-full"><Skeleton className="h-full w-full rounded-xl" /></div> }
+);
 const EventIntelligencePanel = dynamic(
   () => import('./components/economic-calendar/EventIntelligencePanel').then(mod => ({ default: mod.EventIntelligencePanel })),
   {
@@ -329,7 +336,11 @@ export default function App() {
               </div>
             </div>
             <div className="flex-1 max-w-md mx-auto hidden md:block">
-              <Skeleton className="h-8 w-48 rounded-full mx-auto" />
+              <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-full border border-border/40 w-fit">
+                <Skeleton className="w-3.5 h-3.5 rounded-full" />
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-5 w-24 rounded-full" />
+              </div>
             </div>
             <div className="flex items-center justify-end gap-2">
               <Skeleton className="hidden lg:block h-6 w-20 rounded" />
@@ -360,10 +371,14 @@ export default function App() {
                 {!isMobile && (
                   <Skeleton className="h-8 w-8 rounded-lg shrink-0" />
                 )}
-                <Skeleton className="h-9 w-64 rounded-xl" />
+                <div className="h-9 bg-muted/40 p-1 flex gap-1 border border-border/20 rounded-xl shrink-0">
+                  <Skeleton className="h-7 w-[108px] rounded-md" />
+                  <Skeleton className="h-7 w-[105px] rounded-md" />
+                  <Skeleton className="h-7 w-[78px] rounded-md" />
+                </div>
               </div>
               <div className="hidden lg:flex items-end gap-2 mt-2 md:mt-0">
-                <Skeleton className="h-8 w-28 rounded-md" />
+                <Skeleton className="h-8 w-[133px] rounded-md" />
               </div>
             </div>
 
@@ -441,14 +456,14 @@ export default function App() {
             <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-full border border-border/40">
               <Zap className="w-3.5 h-3.5 text-amber-500" />
               <span className="text-[11px] font-bold text-muted-foreground">CRITICAL EVENTS:</span>
-              <Badge variant="outline" className="h-5 bg-rose-500/10 text-rose-500 border-rose-500/20 px-2 font-mono text-[0.7rem]">
+              <Badge variant="outline" className="h-5 bg-rose-500/10 text-rose-500 border-rose-500/20 px-2 font-sans text-[0.7rem]">
                 {highImpactCount} HIGH IMPACT
               </Badge>
             </div>
           </div>
 
           <div className="flex items-center justify-end gap-2">
-            <Badge variant="outline" className="hidden lg:flex font-mono text-[0.7rem] font-bold px-2.5 py-1 text-muted-foreground border-border/60 bg-secondary/20">
+            <Badge variant="outline" className="hidden lg:flex font-sans text-[0.7rem] font-bold px-2.5 py-1 text-muted-foreground border-border/60 bg-secondary/20">
               {filteredEvents.length} LOADED
             </Badge>
           </div>
