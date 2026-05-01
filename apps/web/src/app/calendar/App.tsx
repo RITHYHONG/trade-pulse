@@ -162,9 +162,9 @@ export default function App() {
       start.setDate(today.getDate() - 2);
       const end = new Date(today);
       end.setDate(today.getDate() + 14);
-      
+
       const url = `/api/calendar/bulk?start=${start.toISOString()}&end=${end.toISOString()}`;
-      
+
       try {
         setIsEventsLoading(true);
         setIsAiLoading(true); // Set AI loading true at the start of the bulk fetch
@@ -172,7 +172,7 @@ export default function App() {
         const response = await fetch(url, {
           signal: abortController.signal
         });
-        
+
         if (!response.ok) {
           throw new Error(`Failed to fetch bulk calendar data: ${response.status} ${response.statusText}`);
         }
@@ -203,10 +203,10 @@ export default function App() {
           // Request was cancelled, this is expected behavior
           return;
         }
-        
+
         // Show user-friendly error toast
         toast.error('Failed to load calendar data. Using cached data instead.');
-        
+
         // Fallback to mock data
         setEvents(mockEconomicEvents);
         setCentralBankEvents(mockCentralBankEvents);
@@ -398,24 +398,24 @@ export default function App() {
             </div>
             <div className="flex-1 overflow-y-auto p-4 space-y-8">
               <div className="space-y-4">
-                 <div className="flex justify-between items-center"><Skeleton className="h-3 w-24" /><Skeleton className="h-4 w-16" /></div>
-                 <Skeleton className="h-32 w-full rounded-xl" />
+                <div className="flex justify-between items-center"><Skeleton className="h-3 w-24" /><Skeleton className="h-4 w-16" /></div>
+                <Skeleton className="h-32 w-full rounded-xl" />
               </div>
               <div className="space-y-4">
-                 <div className="flex justify-between items-center"><Skeleton className="h-3 w-32" /><Skeleton className="h-3 w-3 rounded-full" /></div>
-                 <Skeleton className="h-32 w-full rounded-lg" />
+                <div className="flex justify-between items-center"><Skeleton className="h-3 w-32" /><Skeleton className="h-3 w-3 rounded-full" /></div>
+                <Skeleton className="h-32 w-full rounded-lg" />
               </div>
             </div>
           </aside>
-          
+
           {isMobile && (
             <nav className="fixed bottom-0 left-0 right-0 h-16 bg-background/90 backdrop-blur-xl border-t border-border/50 flex items-center justify-around z-50">
-               {[1, 2, 3].map(i => (
-                  <div key={i} className="flex flex-col items-center justify-center w-full h-full">
-                     <Skeleton className="w-5 h-5 mb-1 rounded" />
-                     <Skeleton className="h-2 w-10 rounded" />
-                  </div>
-               ))}
+              {[1, 2, 3].map(i => (
+                <div key={i} className="flex flex-col items-center justify-center w-full h-full">
+                  <Skeleton className="w-5 h-5 mb-1 rounded" />
+                  <Skeleton className="h-2 w-10 rounded" />
+                </div>
+              ))}
             </nav>
           )}
         </main>
@@ -554,14 +554,14 @@ export default function App() {
         </aside>
 
         {isMobile && mobileTab === 'filters' && (
-           <div className="flex-1 flex flex-col bg-background relative z-40 overflow-hidden pb-16">
-              <div className="flex items-center justify-between p-4 border-b border-border/40 bg-background/80 flex-none leading-none h-14">
-                <span className="text-xs font-bold tracking-widest uppercase items-center flex h-full">Global Filters</span>
-              </div>
-              <div className="flex-1 overflow-y-auto basis-full min-h-0 relative">
-                <FilterSidebar filters={filters} onFiltersChange={handleFiltersChange} events={events} />
-              </div>
-           </div>
+          <div className="flex-1 flex flex-col bg-background relative z-40 overflow-hidden pb-16">
+            <div className="flex items-center justify-between p-4 border-b border-border/40 bg-background/80 flex-none leading-none h-14">
+              <span className="text-xs font-bold tracking-widest uppercase items-center flex h-full">Global Filters</span>
+            </div>
+            <div className="flex-1 overflow-y-auto basis-full min-h-0 relative">
+              <FilterSidebar filters={filters} onFiltersChange={handleFiltersChange} events={events} />
+            </div>
+          </div>
         )}
 
         {isMobile && (
