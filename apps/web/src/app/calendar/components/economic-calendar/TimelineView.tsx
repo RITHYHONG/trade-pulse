@@ -29,7 +29,7 @@ const TimelineEventCard = memo(({ event, onClick }: { event: EconomicEvent, onCl
   }, [onClick, event]);
 
   return (
-    <div
+    <article
       onClick={handleClick}
       style={{ containIntrinsicSize: '120px' }}
       className={cn(
@@ -91,7 +91,7 @@ const TimelineEventCard = memo(({ event, onClick }: { event: EconomicEvent, onCl
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 });
 
@@ -134,7 +134,7 @@ export const TimelineView = memo(({ events, onEventClick, isLoading = false }: T
         <div className="absolute left-[55px] md:left-[79px] top-6 bottom-6 w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent z-0 pointer-events-none" />
 
         {/* Timeline Grid */}
-        <div className="space-y-1 relative z-10">
+        <div className="space-y-1 relative z-10" role="list" aria-label="Economic Events Timeline">
           {HOURS.map(hour => {
             const hourEvents = eventsByHour[hour] || [];
 

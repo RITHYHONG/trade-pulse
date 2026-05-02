@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { FilterSidebar } from './components/economic-calendar/FilterSidebar';
 import { TimelineView } from './components/economic-calendar/TimelineView';
@@ -439,7 +441,7 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-background selection:bg-primary/10 transition-colors duration-300">
+    <div id="main-content" className="h-screen flex flex-col bg-background selection:bg-primary/10 transition-colors duration-300">
       <div className="flex-none border-b border-border/40 bg-background/80 backdrop-blur-md">
         <div className="px-4 md:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -447,8 +449,8 @@ export default function App() {
               <Activity className="w-5 h-5 animate-pulse" />
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-sm font-bold text-foreground leading-tight tracking-tight">TradePulse <span className="text-primary">Calendar</span></h1>
-              <p className="text-[0.7rem] text-muted-foreground font-semibold uppercase tracking-widest opacity-60">Intelligence Hub</p>
+              <h1 className="text-sm font-bold text-foreground leading-tight tracking-tight">Economic Calendar & <span className="text-primary">Market Intelligence Hub</span></h1>
+              <p className="text-[0.7rem] text-muted-foreground font-semibold uppercase tracking-widest opacity-60">TradePulse Intelligence</p>
             </div>
           </div>
 
@@ -463,6 +465,11 @@ export default function App() {
           </div>
 
           <div className="flex items-center justify-end gap-2">
+            <nav aria-label="Breadcrumb" className="hidden xl:flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mr-4">
+              <a href="/" className="hover:text-primary transition-colors">Home</a>
+              <ChevronRight className="w-3 h-3" />
+              <span className="text-primary">Economic Calendar</span>
+            </nav>
             <Badge variant="outline" className="hidden lg:flex font-sans text-[0.7rem] font-bold px-2.5 py-1 text-muted-foreground border-border/60 bg-secondary/20">
               {filteredEvents.length} LOADED
             </Badge>
