@@ -1,8 +1,11 @@
 ﻿[
   {
-    "origin": ["*"],
-    "method": ["GET", "HEAD", "PUT", "POST", "DELETE"],
+    "origin": [
+      "https://trade-pulse-b9fc4.web.app",
+      "https://trade-pulse-b9fc4.firebaseapp.com"
+    ],
+    "method": ["GET", "HEAD"],
     "maxAgeSeconds": 3600,
-    "responseHeader": ["Content-Type", "Access-Control-Allow-Origin"]
+    "responseHeader": ["Content-Type"]
   }
 ]

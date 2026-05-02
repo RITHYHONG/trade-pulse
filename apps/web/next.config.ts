@@ -58,10 +58,14 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'cdn.financialmodelingprep.com',
       },
-      // Allow any HTTPS image source (catch-all for dynamic news feeds)
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: '**.finnhub.io',
+      },
+      // picsum placeholder images used in UI
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
       },
     ],
   },

@@ -1,19 +1,35 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import { unstable_cache } from 'next/cache';
 import { BlogIndex } from './BlogIndex';
+import { getPublishedPosts, BlogPost as FirestoreBlogPost } from '@/lib/blog-firestore-service';
+import { BlogPost as UIBlogPost } from '@/types/blog';
 
 export const metadata: Metadata = {
-  title: 'Trading Insights & Market Analysis | Trader Pulse Blog',
-  description: 'Stay ahead with our expert trading insights, market analysis, and pre-market intelligence. Get the latest trends and strategies from professional traders.',
-  keywords: 'trading insights, market analysis, pre-market, trading strategies, financial news',
+  title: 'Trading Insights & Market Analysis | Trade Pulse Blog',
+  description: 'Stay ahead with expert trading insights, market analysis, and pre-market intelligence. Get the latest trends and strategies from professional traders.',
+  keywords: 'trading insights, market analysis, pre-market analysis, trading strategies, financial news, stock market',
+  authors: [{ name: 'Trade Pulse Team' }],
+  alternates: { canonical: '/blog' },
   openGraph: {
-    title: 'Trading Insights & Market Analysis | Trader Pulse Blog',
-    description: 'Expert trading insights and market analysis to keep you ahead of the curve',
+    title: 'Trading Insights & Market Analysis | Trade Pulse Blog',
+    description: 'Expert trading insights and market analysis to keep you ahead of the curve.',
     type: 'website',
+    url: '/blog',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Trading Insights & Market Analysis | Trade Pulse Blog',
+    description: 'Expert trading insights and market analysis to keep you ahead of the curve.',
   },
 };
 
-import { getPublishedPosts, getFeaturedPosts, BlogPost as FirestoreBlogPost } from '@/lib/blog-firestore-service';
-import { BlogPost as UIBlogPost } from '@/types/blog';
+// Cache Firestore reads for 1 hour on the server — prevents redundant network
+// round-trips on every ISR cycle and dramatically reduces TTFB.
+const getCachedPosts = unstable_cache(
+  async () => getPublishedPosts(12),
+  ['blog-published-posts'],
+  { revalidate: 3600, tags: ['blog-posts'] },
+);
 
 // Helper: map Firestore post shape to UI BlogPost
 function mapFirestoreToUI(fsp: FirestoreBlogPost): UIBlogPost {
@@ -59,16 +75,14 @@ function mapFirestoreToUI(fsp: FirestoreBlogPost): UIBlogPost {
   };
 }
 
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 3600;
 
 export default async function BlogPage() {
-  const [publishedPosts, featuredFs] = await Promise.all([
-    getPublishedPosts(50), // Limit to 50 for initial load
-    getFeaturedPosts(5)
-  ]);
+  // Single cached Firestore read — featured posts are derived from the same result
+  const publishedPosts = await getCachedPosts();
 
   const posts = publishedPosts.map(mapFirestoreToUI);
-  const featured = featuredFs.map(mapFirestoreToUI);
+  const featured = posts.slice(0, 5);
 
   return (
     <div className="overflow-x-hidden min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">

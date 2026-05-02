@@ -14,34 +14,13 @@ export async function POST(request: NextRequest) {
     }
 
     if (!isAdminReady) {
-      // Fallback: decode JWT payload client-side without verification (dev only)
-      const [, payloadB64] = idToken.split('.');
-      const payload = JSON.parse(Buffer.from(payloadB64, 'base64url').toString());
-      const uid: string = payload.user_id || payload.sub || idToken;
-
-      // Look up role from Firestore REST API — rules allow authenticated users to read own profile
-      let userRole = 'user';
-      try {
-        const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'trade-pulse-b9fc4';
-        const fsRes = await fetch(
-          `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${uid}`,
-          { headers: { Authorization: `Bearer ${idToken}` } }
-        );
-        if (fsRes.ok) {
-          const fsData = await fsRes.json();
-          userRole = fsData?.fields?.role?.stringValue || 'user';
-        }
-      } catch {
-        // ignore — fall back to 'user'
-      }
-
-      const response = NextResponse.json({ success: true, message: "Cookies set (admin SDK unavailable)" });
-      const opts = { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' as const, maxAge: 60 * 60 * 24 * 5, path: '/' };
-      response.cookies.set({ name: 'auth-token', value: uid, ...opts });
-      response.cookies.set({ name: 'user-role', value: userRole, ...opts, httpOnly: false });
-      response.cookies.set({ name: 'user-email', value: email || '', ...opts, httpOnly: false });
-      response.cookies.set({ name: 'user-name', value: displayName || '', ...opts, httpOnly: false });
-      return response;
+      // Admin SDK is unavailable — refuse to set auth cookies rather than
+      // accepting an unverified token. This prevents privilege escalation.
+      console.error("[set-cookies] Firebase Admin SDK not initialised — rejecting request.");
+      return NextResponse.json(
+        { error: "Auth service temporarily unavailable. Please try again." },
+        { status: 503 },
+      );
     }
 
     // Verify the ID token using the custom service account
@@ -100,18 +79,20 @@ export async function POST(request: NextRequest) {
     response.cookies.set({
       name: "user-email",
       value: email || "",
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 86400 * 30, // 30 days (1 month)
+      maxAge: 86400 * 30, // 30 days
       path: "/",
     });
 
     response.cookies.set({
       name: "user-name",
       value: displayName || "",
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 86400 * 30, // 30 days (1 month)
+      maxAge: 86400 * 30, // 30 days
       path: "/",
     });
 

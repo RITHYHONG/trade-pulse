@@ -215,22 +215,6 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
   },
 
   initializeAuth: () => {
-    // Check if we have cached auth state
-    const cachedAuthState = localStorage.getItem("auth_state");
-    if (cachedAuthState) {
-      try {
-        const cached = JSON.parse(cachedAuthState);
-        const cacheAge = Date.now() - cached.timestamp;
-
-        // Use cache if less than 1 minute old
-        if (cacheAge < 60 * 1000 && cached.user) {
-          set({ user: cached.user, loading: false });
-        }
-      } catch (e) {
-        console.error("Error parsing cached auth state:", e);
-      }
-    }
-
     set({ loading: true });
 
     // Handle Google redirect result first
@@ -254,14 +238,6 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
           });
 
           const authUser = toAuthUser(user);
-          localStorage.setItem(
-            "auth_state",
-            JSON.stringify({
-              user: authUser,
-              timestamp: Date.now(),
-            }),
-          );
-
           set({ user: authUser, loading: false });
           return;
         }
@@ -270,16 +246,7 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
         const unsubscribe = onAuthStateChange(async (user) => {
           const authUser = toAuthUser(user);
 
-          // Cache the auth state
           if (authUser) {
-            localStorage.setItem(
-              "auth_state",
-              JSON.stringify({
-                user: authUser,
-                timestamp: Date.now(),
-              }),
-            );
-
             // Validate and refresh session cookies if needed
             try {
               const idToken = await user!.getIdToken();
@@ -302,9 +269,6 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
               initializeUserProfile(user!).catch(console.error);
             }, 2000);
           } else {
-            // Clear cache when signed out
-            localStorage.removeItem("auth_state");
-
             // Proactively clear cookies to prevent middleware redirect loops
             // only if we're not already on a public page or if we've recently been "logged in"
             fetch("/api/auth/clear-cookies", { method: "POST" }).catch(

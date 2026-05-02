@@ -26,23 +26,39 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     };
   }
 
+  const metaDescription = post.excerpt?.length > 160
+    ? post.excerpt.slice(0, 157) + '...'
+    : post.excerpt;
+
   return {
-    title: `${post.title} | Trader Pulse Blog`,
-    description: post.excerpt,
+    title: `${post.title} | Trade Pulse`,
+    description: metaDescription,
     keywords: post.tags?.join(', '),
+    authors: [{ name: post.author.name }],
+    category: post.category,
     openGraph: {
       title: post.title,
-      description: post.excerpt,
+      description: metaDescription,
       type: 'article',
-      images: post.featuredImage ? [{ url: post.featuredImage }] : [],
+      url: `/blog/${post.slug}`,
+      images: post.featuredImage
+        ? [{ url: post.featuredImage, width: 1200, height: 630, alt: post.title }]
+        : [],
       publishedTime: post.publishedAt,
-      authors: post.author.name,
+      modifiedTime: post.updatedAt || post.publishedAt,
+      authors: [post.author.name],
+      tags: post.tags,
+      section: post.category,
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
-      description: post.excerpt,
+      description: metaDescription,
       images: post.featuredImage ? [post.featuredImage] : [],
+      creator: '@tradepulseapp',
+    },
+    alternates: {
+      canonical: `/blog/${post.slug}`,
     },
   };
 }
@@ -83,8 +99,53 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
+  // Build JSON-LD structured data
+  const faqItems = post.content
+    ? [...post.content.matchAll(/<h3[^>]*>([^<]+)<\/h3>\s*<p>([^<]+(?:<[^/][^>]*>[^<]*<\/[^>]+>[^<]*)*)<\/p>/g)]
+        .slice(0, 6)
+        .map(m => ({ question: m[1].trim(), answer: m[2].replace(/<[^>]+>/g, '').trim() }))
+    : [];
+
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.excerpt,
+    image: post.featuredImage || post.coverImage,
+    datePublished: post.publishedAt,
+    dateModified: post.updatedAt || post.publishedAt,
+    author: { '@type': 'Person', name: post.author.name },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Trade Pulse',
+      logo: { '@type': 'ImageObject', url: 'https://tradepulse.app/logo.png' },
+    },
+    keywords: post.tags?.join(', '),
+    articleSection: post.category,
+  };
+
+  const faqJsonLd = faqItems.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map(({ question, answer }) => ({
+      '@type': 'Question',
+      name: question,
+      acceptedAnswer: { '@type': 'Answer', text: answer },
+    })),
+  } : null;
+
   return (
     <div className="min-h-screen text-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
       <BlogPostComponent
         post={post}
         relatedPosts={relatedPosts}

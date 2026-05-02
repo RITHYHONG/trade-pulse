@@ -19,7 +19,9 @@ export function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/';
+  // Validate redirect to prevent open-redirect attacks: only allow relative paths
+  const rawRedirect = searchParams.get('redirect') || '/';
+  const redirect = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') ? rawRedirect : '/';
   const { signIn, signInWithGoogle, signInWithGoogleRedirect, loading, resetPassword, sendMagicLink } = useAuth();
 
   const {

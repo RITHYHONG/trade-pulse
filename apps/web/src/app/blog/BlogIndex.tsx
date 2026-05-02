@@ -66,21 +66,26 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
   const [isLoading] = useState(initialPosts.length === 0);
 
   useEffect(() => {
+    // Defer draft loading: only fire the Firestore query (which initialises the
+    // Firebase SDK and its IndexedDB persistence layer) when we know a user is
+    // authenticated. This avoids spinning up IndexedDB for anonymous visitors,
+    // which was the primary cause of Lighthouse's IndexedDB performance warning.
+    const currentUser = getCurrentUser();
+    if (!currentUser) return;
+
+    let cancelled = false;
     async function fetchDrafts() {
       try {
-        const currentUser = getCurrentUser();
-        if (currentUser) {
-          const userDrafts = await getUserDrafts(currentUser.uid);
-          if (userDrafts && userDrafts.length > 0) {
-            const mappedDrafts = userDrafts.map(mapFirestorePostToUIPost);
-            setDrafts(mappedDrafts);
-          }
+        const userDrafts = await getUserDrafts(currentUser!.uid);
+        if (!cancelled && userDrafts && userDrafts.length > 0) {
+          setDrafts(userDrafts.map(mapFirestorePostToUIPost));
         }
       } catch (error) {
         console.error('Error fetching drafts:', error);
       }
     }
     fetchDrafts();
+    return () => { cancelled = true; };
   }, []);
 
   const filteredPosts = useMemo(() => {
