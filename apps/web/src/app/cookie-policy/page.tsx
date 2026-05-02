@@ -61,9 +61,9 @@ export default function CookiePolicyPage() {
                         <div className="flex flex-col lg:flex-row gap-8">
                               {/* Main Content Area (70%) */}
                               <main className="flex-1 lg:w-[70%]">
-                                    <div className="bg-[#1A1D28] rounded-lg border border-[#2D3246] p-6">
-                                          <h2 className="text-xl font-bold text-white mb-4">Cookie Policy</h2>
-                                          <p className="text-[#A0A0A0] leading-relaxed">
+                                    <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm transition-colors duration-200 dark:border-slate-800 dark:bg-slate-950">
+                                          <h2 className="text-xl font-bold text-slate-950 dark:text-white mb-4">Cookie Policy</h2>
+                                          <p className="text-slate-600 leading-relaxed dark:text-slate-400">
                                                 This page provides information about how Trade Pulse uses cookies to enhance your trading experience.
                                                 You can manage your cookie preferences using the controls in the sidebar.
                                           </p>
@@ -72,11 +72,11 @@ export default function CookiePolicyPage() {
 
                               <aside className="lg:w-[30%]">
                                     <div className="lg:sticky lg:top-8 space-y-6">
-                                          <div className="bg-[#1A1D28] rounded-lg border border-[#2D3246] p-6">
-                                                <h3 className="text-lg font-bold text-white mb-4">Consent Status</h3>
+                                          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm transition-colors duration-200 dark:border-slate-800 dark:bg-slate-950">
+                                                <h3 className="text-lg font-bold text-slate-950 dark:text-white mb-4">Consent Status</h3>
                                                 <div className="flex items-center gap-3 mb-4">
                                                       <div className={`w-4 h-4 rounded-full ${consentColorClass}`}></div>
-                                                      <span className="text-white font-semibold">{consentLevel.label}</span>
+                                                      <span className="text-slate-950 font-semibold dark:text-white">{consentLevel.label}</span>
                                                 </div>
                                           </div>
                                     </div>

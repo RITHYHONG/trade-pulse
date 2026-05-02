@@ -177,7 +177,7 @@ export default function PrivacyPolicyPage() {
 
                   {/* Main Content */}
                   <div className="mt-20">
-                        <div className="flex flex-col lg:flex-row gap-20">
+                        <div className="flex lg:flex-row gap-20">
                               {/* Sidebar Navigation */}
                               <aside className="lg:w-72 flex-shrink-0 lg:sticky lg:top-12 h-fit">
                                     <div className="space-y-12 no-print">
@@ -568,7 +568,7 @@ export default function PrivacyPolicyPage() {
                                                             Our privacy team is here to help walk you through any concerns or data requests.
                                                       </p>
                                                       <div className="flex flex-col sm:flex-row gap-6">
-                                                            <Button className="rounded-2xl px-10 py-8 bg-white text-primary font-bold text-xl hover:bg-primary/10 hover:scale-105 transition-all shadow-xl">
+                                                            <Button className="rounded-2xl px-10 py-8 bg-white font-bold text-xl hover:bg-primary/10 hover:scale-105 transition-all shadow-xl">
                                                                   Contact Support
                                                             </Button>
                                                             <div className="flex flex-col justify-center">
