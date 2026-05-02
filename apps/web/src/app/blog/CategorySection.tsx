@@ -5,6 +5,7 @@ import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { categoryToSlug } from '../../data/blogData';
 import { formatRelativeTime } from '@/lib/dateUtils';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -195,7 +196,7 @@ export function CategorySection({ category, posts, isLeft, isLoading }: Category
           </h2>
 
           <Link
-            href={`/blog?category=${encodeURIComponent(category)}`}
+            href={`/blog/category/${categoryToSlug(category)}`}
             className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors group"
           >
             <span className="text-sm font-medium">View more</span>

@@ -253,3 +253,15 @@ export const blogPosts: BlogPost[] = [
 ];
 
 export const categories = ['All Posts', 'Stocks', 'Forex', 'Crypto', 'Education', 'Tools', 'Analysis'];
+
+export const categorySlugMap = Object.fromEntries(
+  categories.map((category) => [category.toLowerCase().replace(/\s+/g, '-'), category]),
+) as Record<string, string>;
+
+export function categoryToSlug(category: string) {
+  return category.toLowerCase().replace(/\s+/g, '-');
+}
+
+export function slugToCategory(slug: string) {
+  return categorySlugMap[slug];
+}

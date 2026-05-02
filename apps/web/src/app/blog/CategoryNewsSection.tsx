@@ -5,6 +5,7 @@ import { BlogPost } from '../../types/blog';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { categoryToSlug } from '../../data/blogData';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Heart, Bell } from 'lucide-react';
@@ -291,7 +292,7 @@ export function CategoryNewsSection({ posts, isLoading, category = 'News' }: Cat
           </h2>
 
           <Link
-            href="/blog"
+            href={`/blog/category/${categoryToSlug(category)}`}
             className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-full text-sm font-medium transition-colors"
           >
             See more {category.toLowerCase()}
