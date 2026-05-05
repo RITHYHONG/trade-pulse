@@ -64,7 +64,7 @@ export const CentralBankDashboard = React.memo(({ events }: CentralBankDashboard
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
+          <div className="p-1.5 rounded-lg bg-primary/10">
             <Building2 className="w-4 h-4" />
           </div>
           <div>
@@ -72,7 +72,7 @@ export const CentralBankDashboard = React.memo(({ events }: CentralBankDashboard
             <p className="text-[0.7rem] text-muted-foreground font-medium uppercase tracking-wider">Policy Tracking</p>
           </div>
         </div>
-        <Badge variant="outline" className="h-5 text-[0.7rem] font-mono border-primary/20 text-primary bg-primary/5 px-1.5">
+        <Badge variant="outline" className="h-5 text-[0.7rem] font-mono border-primary/20 bg-primary/5 px-1.5">
           {events.length} NEXT
         </Badge>
       </div>

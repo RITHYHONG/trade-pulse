@@ -169,7 +169,7 @@ export const CorrelationMatrix = memo(({ correlations = [] }: { correlations?: C
       {/* Header - Compact for Sidebar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
+          <div className="p-1.5 rounded-lg bg-primary/10">
             <Network className="w-4 h-4" />
           </div>
           <div>

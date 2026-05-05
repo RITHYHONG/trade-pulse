@@ -100,7 +100,7 @@ export function Hero() {
                   <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-success/60" />
                 </div>
                 <div className="flex-1 text-center text-xs md:text-sm text-muted-foreground">
-                  Trader Pulse Dashboard
+                  Trade Pulse Dashboard
                 </div>
                 <Badge variant="outline" className="text-[0.7rem] md:text-xs bg-success/10 border-success/30 text-success">
                   <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-success mr-1.5 md:mr-2 animate-pulse" />

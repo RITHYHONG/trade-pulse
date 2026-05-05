@@ -92,7 +92,7 @@ export function NewsletterCTA() {
       setEmail('');
       
       showSuccess('Successfully Subscribed!', {
-        description: 'Welcome to Trader Pulse! Check your inbox for exclusive market insights.',
+        description: 'Welcome to Trade Pulse! Check your inbox for exclusive market insights.',
         duration: 5000,
       });
       
@@ -115,7 +115,7 @@ export function NewsletterCTA() {
               <CheckCircle2 className="w-10 h-10 text-green-500" />
             </div>
             <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-              Welcome to Trader Pulse!
+              Welcome to Trade Pulse!
             </h3>
             <p className="text-muted-foreground text-lg">
               You&apos;ll receive our next market insight directly in your inbox.

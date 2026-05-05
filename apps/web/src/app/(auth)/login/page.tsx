@@ -17,6 +17,6 @@ export default function LoginPage() {
 
 export const metadata: Metadata = generateMetadata({
   title: 'Login',
-  description: 'Sign in to access your Trader Pulse dashboard, watchlists, and personalized alerts.',
+  description: 'Sign in to access your Trade Pulse dashboard, watchlists, and personalized alerts.',
   path: '/login',
 });

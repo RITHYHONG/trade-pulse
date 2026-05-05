@@ -153,7 +153,7 @@ export function Footer() {
                 </Link>
               </div>
               <div>
-                <div className="font-bold text-xl">Trader Pulse</div>
+                <div className="font-bold text-xl">Trade Pulse</div>
                 <div className="text-sm text-muted-foreground">Pre-Market Intelligence</div>
               </div>
             </div>
@@ -202,7 +202,7 @@ export function Footer() {
         <div className="container mx-auto px-8 py-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div className="text-sm text-muted-foreground">
-              © 2025 Trader Pulse. All rights reserved.
+              © 2025 Trade Pulse. All rights reserved.
             </div>
 
             <div className="flex items-center gap-8 text-sm text-muted-foreground">
@@ -225,7 +225,7 @@ export function Footer() {
           <p className="text-xs text-muted-foreground text-center leading-relaxed">
             <strong>Risk Disclaimer:</strong> Trading involves substantial risk and may not be suitable for all investors.
             Past performance is not indicative of future results. All trading decisions should be made based on your own analysis and risk tolerance.
-            Trader Pulse is for informational purposes only and does not constitute investment advice.
+            Trade Pulse is for informational purposes only and does not constitute investment advice.
           </p>
         </div>
       </div>

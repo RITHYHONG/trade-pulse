@@ -8,6 +8,6 @@ export default function SignUpPage() {
 
 export const metadata: Metadata = generateMetadata({
   title: 'Sign Up',
-  description: 'Create a Trader Pulse account to get AI-powered pre-market summaries, alerts, and market insights.',
+  description: 'Create a Trade Pulse account to get AI-powered pre-market summaries, alerts, and market insights.',
   path: '/signup',
 });

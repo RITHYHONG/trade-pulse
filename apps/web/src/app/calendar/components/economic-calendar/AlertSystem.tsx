@@ -181,7 +181,7 @@ export function AlertSystem() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-lg bg-primary/10 text-primary relative group cursor-help">
+          <div className="p-1.5 rounded-lg bg-primary/10 relative group cursor-help">
             <Bell className="w-4 h-4 relative z-10" />
             {/* Optimized CSS Animation for Header Icon */}
             <div className="absolute inset-0 rounded-lg bg-primary/20 animate-ping opacity-30" style={{ animationDuration: '3s' }} />

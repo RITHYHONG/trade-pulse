@@ -22,7 +22,7 @@ import { AboutInteractiveVision } from './AboutInteractiveVision';
 // import Right from "../"
 
 export const metadata: Metadata = {
-  title: 'About Us | Trader Pulse',
+  title: 'About Us | Trade Pulse',
   description: 'We take pride in delivering exceptional market analysis results.',
 };
 
@@ -157,7 +157,7 @@ export default function AboutPage() {
                   <Trophy className="w-32 h-32 text-primary" />
                 </div>
                 <h3 className="text-xl font-bold mb-8 text-foreground flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary" /> Trader Pulse
+                  <CheckCircle2 className="w-5 h-5 text-primary" /> Trade Pulse
                 </h3>
                 <ul className="space-y-6">
                   {['Tailored Institutional Insights', 'Real-time Execution', 'AI-Driven Formatting', 'Transparent Pricing', '24/7 Expert Community'].map((item, i) => (

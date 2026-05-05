@@ -29,6 +29,6 @@ export default function MarketingHome() {
 export const metadata: Metadata = generateMetadata({
   title: 'Home',
   description:
-    'AI-powered pre-market intelligence and real-time trading insights. Start every trading day ahead with Trader Pulse.',
+    'AI-powered pre-market intelligence and real-time trading insights. Start every trading day ahead with Trade Pulse.',
   path: '/',
 });

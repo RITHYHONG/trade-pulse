@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = generateMetadata({
   title: 'Cookie Policy',
-  description: 'Trader Pulse Cookie Policy detailing how cookies and similar technologies are used on the site.',
+  description: 'Trade Pulse Cookie Policy detailing how cookies and similar technologies are used on the site.',
   path: '/cookies',
 });
 

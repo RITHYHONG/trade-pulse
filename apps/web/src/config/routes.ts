@@ -34,10 +34,10 @@ export const routes = {
 } as const;
 
 export const siteMetadata = {
-  title: 'Trader Pulse - Pre-Market Intelligence',
+  title: 'Trade Pulse - Pre-Market Intelligence',
   description: 'Stay ahead of the markets with AI summaries, actionable alerts, and real-time economic data.',
   keywords: 'trading, pre-market, market analysis, financial data, trading signals',
-  author: 'Trader Pulse',
+  author: 'Trade Pulse',
   siteUrl: 'https://traderpulse.com',
   image: '/images/og-image.png',
   twitterHandle: '@traderpulse',

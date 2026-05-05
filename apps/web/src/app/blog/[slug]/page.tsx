@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
   if (!post) {
     return {
-      title: 'Post Not Found | Trader Pulse',
+      title: 'Post Not Found | Trade Pulse',
     };
   }
 

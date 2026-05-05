@@ -118,7 +118,7 @@ export default function DisclaimerAcknowledgment() {
 
         <div className="text-center pb-12 mt-10">
           <p className="text-xs text-slate-400">
-            &copy; {new Date().getFullYear()} Trader Pulse. All rights reserved.
+            &copy; {new Date().getFullYear()} Trade Pulse. All rights reserved.
             <span className="mx-2">•</span>
             <button onClick={handlePrint} className="hover:text-blue-600 transition-colors">
               Print PDF

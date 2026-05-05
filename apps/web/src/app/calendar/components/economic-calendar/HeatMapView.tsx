@@ -438,7 +438,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
         </div>
 
         {/* Main Grid Container */}
-        <div ref={containerRef} className="bg-card/30 rounded-[3rem] border border-white/5 shadow-3xl backdrop-blur-2xl relative overflow-x-auto custom-scrollbar">
+        <div ref={containerRef} className="bg-card/30 border border-white/5 shadow-3xl backdrop-blur-2xl relative overflow-x-auto custom-scrollbar">
           <div ref={contentRef} className="p-10 min-w-[1400px]">
             {/* Grid Header */}
             <div className="flex mb-10 items-center justify-between border-b border-white/5 pb-6">
@@ -531,16 +531,16 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
         </div>
 
         {/* ... Impact Summaries section (kept as is, standard static rendering) ... */}
-        <div className="bg-card/30 rounded-[3rem] border border-white/5 shadow-3xl backdrop-blur-2xl relative overflow-x-auto custom-scrollbar">
+        <div className="bg-card/30 border border-white/5 shadow-3xl backdrop-blur-2xl relative overflow-x-auto custom-scrollbar">
           {/* Reduced code size here by not repeating static content in thought block - it will be in the file write */}
           {/* Copying previous Impact Summaries logic... */}
           <div className="md:col-span-1 p-10">
             <div className="flex flex-col h-full bg-card/60 border border-white/5 p-10 rounded-[3.5rem] backdrop-blur-3xl shadow-3xl">
               <div className="mb-10 flex items-center gap-5">
-                <div className="p-4 rounded-[1.5rem] bg-primary/10 text-primary shadow-inner">
+                <div className="p-4 rounded-[1.5rem] bg-primary/10 shadow-inner">
                   <Info className="w-6 h-6" />
                 </div>
-                <h4 className="text-lg font-black text-white">Density Legend</h4>
+                <h4 className="text-lg font-black">Density Legend</h4>
               </div>
               <div className="space-y-8">
                 {[
@@ -552,7 +552,7 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
                   <div key={i} className="flex gap-6 group/item">
                     <div className={cn("w-5 h-5 rounded-full mt-1 shrink-0 shadow-2xl transition-all group-hover/item:scale-150 group-hover/item:shadow-primary/50", item.color)} />
                     <div className="flex flex-col">
-                      <span className="text-md font-black text-white">{item.label}</span>
+                      <span className="text-md font-black">{item.label}</span>
                       <span className="text-[11px] text-muted-foreground font-semibold mt-1.5 uppercase tracking-widest">{item.desc}</span>
                     </div>
                   </div>

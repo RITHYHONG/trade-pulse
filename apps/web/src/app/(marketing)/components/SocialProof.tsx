@@ -8,7 +8,7 @@ const testimonials = [
     name: "Sarah Chen",
     role: "Day Trader",
     avatar: "https://images.unsplash.com/photo-1701463387028-3947648f1337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    content: "Trader Pulse helped me streamline my morning prep—now I spend under 20 minutes reviewing key opportunities before the open.",
+    content: "Trade Pulse helped me streamline my morning prep—now I spend under 20 minutes reviewing key opportunities before the open.",
     rating: 5,
   },
   {

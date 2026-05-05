@@ -20,7 +20,7 @@ import {
 export const metadata: Metadata = generateMetadata({
   title: 'Terms of Service',
   description:
-    'Trader Pulse Terms of Service. Review site rules, user responsibilities, and legal agreements for using Trader Pulse.',
+    'Trade Pulse Terms of Service. Review site rules, user responsibilities, and legal agreements for using Trade Pulse.',
   path: '/terms',
 });
 
@@ -81,7 +81,7 @@ export default function Page() {
         <div className="space-y-4">
           <TermSection number="01" title="Acceptance of Terms" icon={<UserCheck className="w-6 h-6" />}>
             <p>
-              These Terms of Service ("Terms") govern your access to and use of <strong>Trader Pulse</strong> ("Service"). By accessing or using the Service, you signify your agreement to be bound by these Terms. If you do not agree to these Terms, you may not access or use the Service.
+              These Terms of Service ("Terms") govern your access to and use of <strong>Trade Pulse</strong> ("Service"). By accessing or using the Service, you signify your agreement to be bound by these Terms. If you do not agree to these Terms, you may not access or use the Service.
             </p>
             <p>
               Your use of the Service is also subject to our <a href="/privacy">Privacy Policy</a>, which explains how we collect, use, and share your information.
@@ -90,10 +90,10 @@ export default function Page() {
 
           <TermSection number="02" title="Services & Platform" icon={<Globe className="w-6 h-6" />}>
             <p>
-              Trader Pulse provides market data, financial analysis tools, and educational content. We are constantly innovating to provide the best possible experience for our users.
+              Trade Pulse provides market data, financial analysis tools, and educational content. We are constantly innovating to provide the best possible experience for our users.
             </p>
             <p>
-              You acknowledge and agree that the form and nature of the Services which Trader Pulse provides may change from time to time without prior notice to you. We reserve the right to modify, suspend or discontinue the Service (or any part thereof) at any time.
+              You acknowledge and agree that the form and nature of the Services which Trade Pulse provides may change from time to time without prior notice to you. We reserve the right to modify, suspend or discontinue the Service (or any part thereof) at any time.
             </p>
           </TermSection>
 
@@ -135,10 +135,10 @@ export default function Page() {
 
           <TermSection number="05" title="Intellectual Property" icon={<FileText className="w-6 h-6" />}>
             <p>
-              The Service and its original content (excluding Content provided by users), features, and functionality are and will remain the exclusive property of Trader Pulse and its licensors. 
+              The Service and its original content (excluding Content provided by users), features, and functionality are and will remain the exclusive property of Trade Pulse and its licensors. 
             </p>
             <p>
-              Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of Trader Pulse.
+              Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of Trade Pulse.
             </p>
           </TermSection>
 
@@ -148,14 +148,14 @@ export default function Page() {
                 "The Service is provided on an 'AS IS' and 'AS AVAILABLE' basis."
               </p>
               <p className="text-sm text-amber-700/80 dark:text-amber-400/80 leading-relaxed mb-0">
-                Trader Pulse does not provide financial, investment, legal, or tax advice. All information provided through the Service is for informational purposes only and should not be relied upon for making any investment decisions.
+                Trade Pulse does not provide financial, investment, legal, or tax advice. All information provided through the Service is for informational purposes only and should not be relied upon for making any investment decisions.
               </p>
             </div>
           </TermSection>
 
           <TermSection number="07" title="Limitation of Liability" icon={<Shield className="w-6 h-6" />}>
             <p>
-              In no event shall Trader Pulse, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.
+              In no event shall Trade Pulse, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.
             </p>
           </TermSection>
 
@@ -193,7 +193,7 @@ export default function Page() {
 
         <div className="mt-24 pt-12 border-t border-slate-100 dark:border-slate-800 text-center">
           <p className="text-sm text-slate-400">
-            &copy; {new Date().getFullYear()} Trader Pulse. All rights reserved.
+            &copy; {new Date().getFullYear()} Trade Pulse. All rights reserved.
           </p>
         </div>
       </div>

@@ -76,7 +76,7 @@ const MarketIntelContent = React.memo(({ events, aiIntelligence, isAiLoading, co
           AI Market Pulse
         </h4>
         {aiIntelligence?.marketVerdict && (
-          <Badge variant="outline" className="h-5 bg-primary/10 text-primary border-primary/20 font-mono text-[0.65rem]">
+          <Badge variant="outline" className="h-5 bg-primary/10 border-primary/20 font-mono text-[0.65rem]">
             {aiIntelligence.marketVerdict}
           </Badge>
         )}
@@ -522,7 +522,7 @@ export default function App() {
                 onClick={() => setIntelPanelOpen(!intelPanelOpen)}
                 className={cn(
                   "h-8 px-3 text-[0.7rem] font-bold transition-all border border-transparent",
-                  intelPanelOpen ? "text-primary bg-primary/10 border-primary/20" : "text-muted-foreground hover:bg-muted"
+                  intelPanelOpen ? "bg-primary/10 border-primary/20" : "text-muted-foreground hover:bg-muted"
                 )}
               >
                 {intelPanelOpen ? <PanelRightClose className="w-4 h-4 mr-2" /> : <PanelRightOpen className="w-4 h-4 mr-2" />}
