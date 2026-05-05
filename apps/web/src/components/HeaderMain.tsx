@@ -167,9 +167,16 @@ export function HeaderMain() {
                     key={index}
                     href={item.href}
                     onClick={() => setActive(item.href)}
-                    className={`relative px-4 py-2 text-sm rounded-lg transition-colors ${isActive ? 'text-primary font-medium bg-primary-muted' : 'text-foreground hover:text-primary hover:bg-muted'}`}
+                    className={`relative px-4 py-2 text-sm transition-all duration-300 group ${
+                      isActive 
+                        ? 'text-foreground font-semibold' 
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
                   >
-                    {item.label}
+                    <span className="relative z-10">{item.label}</span>
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 w-full h-[2px] bg-primary rounded-full" />
+                    )}
                   </a>
                 );
               } else {
@@ -177,9 +184,16 @@ export function HeaderMain() {
                   <div key={index}>
                     <Link
                       href={item.href}
-                      className={`relative px-4 py-2 text-sm rounded-lg transition-colors inline-block ${isActive ? 'text-primary font-medium bg-primary-muted' : 'text-foreground hover:text-primary hover:bg-muted'}`}
+                      className={`relative px-4 py-2 text-sm transition-all duration-300 group ${
+                          isActive 
+                            ? 'text-foreground font-semibold' 
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
                     >
-                      {item.label}
+                      <span className="relative z-10">{item.label}</span>
+                      {isActive && (
+                        <span className="absolute bottom-0 left-0 w-full h-[2px] bg-primary rounded-full" />
+                      )}
                     </Link>
                   </div>
                 );
@@ -332,23 +346,29 @@ export function HeaderMain() {
                           setIsMenuOpen(false);
                           setActive(item.href);
                         }}
-                        className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold border-b-2 border-primary' : 'text-foreground hover:text-primary'}`}
+                        className={`flex items-center px-3 py-2 text-sm rounded-lg transition-all ${
+                          isActive 
+                            ? 'bg-primary/10 text-foreground font-medium border-l-4 border-primary' 
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                        }`}
                       >
                         {item.label}
                       </a>
                     );
                   } else {
                     return (
-                      <Link
-                        key={index}
-                        href={item.href}
-                        onClick={() => setIsMenuOpen(false)}
-                        className={`py-2 transition-colors ${isActive ? 'text-primary font-semibold border-b-2 border-primary' : 'text-foreground hover:text-primary'}`}
-                      >
-                        <Link href={item.href}>
+                        <Link
+                          key={index}
+                          href={item.href}
+                          onClick={() => setIsMenuOpen(false)}
+                          className={`flex items-center px-3 py-2 text-sm rounded-lg transition-all ${
+                            isActive 
+                              ? 'bg-primary/10 text-foreground font-medium border-l-4 border-primary' 
+                              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                          }`}
+                        >
                           {item.label}
                         </Link>
-                      </Link>
                     );
                   }
                 })}
