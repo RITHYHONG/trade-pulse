@@ -1,4 +1,5 @@
 import { ArrowUpRight, Bolt, AlertTriangle, Search, Sparkles, Check, X } from 'lucide-react';
+import Section from './Section';
 
 const problems = [
   { text: "Overwhelmed by market noise and conflicting signals", icon: <AlertTriangle className="w-3 h-3" /> },
@@ -16,7 +17,7 @@ const solutions = [
 
 export function ProblemSolution() {
   return (
-    <section className="py-32 relative overflow-hidden bg-gradient-to-b from-background via-background to-card/20">
+    <Section className="py-32 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute top-1/4 -left-24 w-96 h-96 bg-destructive/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
@@ -154,6 +155,6 @@ export function ProblemSolution() {
           </div>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

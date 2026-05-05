@@ -55,15 +55,7 @@ const ListView = dynamic(
 const EventIntelligencePanel = dynamic(
   () => import('./components/economic-calendar/EventIntelligencePanel').then(mod => ({ default: mod.EventIntelligencePanel })),
   {
-    ssr: false,
-    loading: () => (
-      <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center">
-        <div className="bg-card border border-border rounded-xl p-6 shadow-xl">
-          <Skeleton className="h-8 w-48 mb-4" />
-          <Skeleton className="h-64 w-96" />
-        </div>
-      </div>
-    )
+    ssr: false
   }
 );
 

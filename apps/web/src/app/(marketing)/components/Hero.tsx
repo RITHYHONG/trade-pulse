@@ -9,6 +9,7 @@ import {
   ScrollVelocityContainer,
   ScrollVelocityRow,
 } from '@/components/ui/scroll-based-velocity';
+import Section from './Section';
 
 const MarketSentimentWidget = dynamic(
   () => import('./MarketSentimentWidget').then((mod) => mod.MarketSentimentWidget),
@@ -25,7 +26,7 @@ const MarketSentimentWidget = dynamic(
 
 export function Hero() {
   return (
-    <section id="demo" className="scroll-mt-24 relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-card">
+    <Section id="demo" className="py-0 relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background gradient effect */}
       <div className="absolute inset-0 bg-gradient-radial from-primary/10 via-transparent to-transparent opacity-30" />
 
@@ -164,6 +165,6 @@ export function Hero() {
           </div>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

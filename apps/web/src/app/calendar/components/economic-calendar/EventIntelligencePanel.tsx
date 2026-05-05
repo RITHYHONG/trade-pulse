@@ -237,7 +237,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
         aria-describedby="event-description"
         className={cn(
           isSmallViewport ? "fixed inset-0 w-full h-full bg-card z-50 overflow-y-auto p-4" : "fixed right-0 top-0 h-full w-[600px] bg-card border-l border-border shadow-2xl z-50 overflow-y-auto",
-          !prefersReducedMotion && (isSmallViewport ? "animate-in fade-in duration-200" : "animate-in slide-in-from-right duration-300")
+          !prefersReducedMotion && (isSmallViewport ? "animate-in fade-in duration-200" : "animate-in slide-in-from-right duration-500 ease-out")
         )}
       >
         {/* Header Section */}
@@ -455,7 +455,7 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
               Watchlist
               <Activity className="w-3.5 h-3.5 ml-2 opacity-40 group-hover:opacity-100 group-hover:text-primary transition-all" aria-hidden="true" />
             </Button>
-            <Button className="w-full h-11 bg-primary hover:bg-primary/90 text-xs font-bold text-foreground" aria-label="Set intelligence alert for this event">
+            <Button className="w-full h-11 bg-primary hover:bg-primary/90 text-xs font-bold" aria-label="Set intelligence alert for this event">
               <Bell className="w-3.5 h-3.5 mr-2" aria-hidden="true" />
               Set Intelligence Alert
             </Button>

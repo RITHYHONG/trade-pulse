@@ -291,7 +291,7 @@ export function BlogPost({ post, relatedPosts }: BlogPostProps) {
               </div>
             </div>
 
-            <NewsletterCTAPlaceholder />
+            {/* <NewsletterCTAPlaceholder /> */}
 
             {defaultRelatedPosts.length > 0 && (
               <section className="pt-8">
@@ -362,20 +362,20 @@ function formatRelativeDate(dateString: string): string {
   }).format(new Date(dateString));
 }
 
-function NewsletterCTAPlaceholder() {
-  return (
-    <div className="rounded-2xl border border-border bg-card/50 p-8">
-      <div className="max-w-2xl space-y-3">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground">Newsletter</p>
-        <h4 className="text-2xl font-bold text-foreground">Get the next market update in your inbox</h4>
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          Subscribe for weekly market summaries, trade ideas, and breaking news.
-        </p>
-      </div>
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="h-12 flex-1 rounded-xl border border-border bg-background/70" />
-        <div className="h-12 w-full rounded-xl bg-primary sm:w-40" />
-      </div>
-    </div>
-  );
-}
+// function NewsletterCTAPlaceholder() {
+//   return (
+//     <div className="rounded-2xl border border-border bg-card/50 p-8">
+//       <div className="max-w-2xl space-y-3">
+//         <p className="text-sm font-semibold uppercase tracking-[0.3em] text-muted-foreground">Newsletter</p>
+//         <h4 className="text-2xl font-bold text-foreground">Get the next market update in your inbox</h4>
+//         <p className="text-sm leading-relaxed text-muted-foreground">
+//           Subscribe for weekly market summaries, trade ideas, and breaking news.
+//         </p>
+//       </div>
+//       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+//         <div className="h-12 flex-1 rounded-xl border border-border bg-background/70" />
+//         <div className="h-12 w-full rounded-xl bg-primary sm:w-40" />
+//       </div>
+//     </div>
+//   );
+// }

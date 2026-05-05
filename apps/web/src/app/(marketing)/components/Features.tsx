@@ -1,8 +1,9 @@
 "use client";
 
-import { ReactNode, useState, useEffect } from 'react';
-import { Cpu, Bolt, Target, Clock, ShieldCheck, Sparkles, ChartBar, Terminal, Activity, TrendingUp } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { ReactNode } from 'react';
+import Section from './Section';
+import { Cpu, Bolt, ShieldCheck, Sparkles, Terminal, Activity } from 'lucide-react';
+import { motion } from 'motion/react';
 
 const BentoCard = ({ 
   children, 
@@ -59,7 +60,7 @@ const BentoCard = ({
 
 export function Features() {
   return (
-    <section id="features" className="py-32 relative overflow-hidden bg-[#040405]">
+    <Section id="features" className="py-32">
       {/* Visual Mesh Background */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[20%] left-[10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full" />
@@ -252,7 +253,7 @@ export function Features() {
 
         </div>
       </div>
-    </section>
+    </Section>
   );
 }
 

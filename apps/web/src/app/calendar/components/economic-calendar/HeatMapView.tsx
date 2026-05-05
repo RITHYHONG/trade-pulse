@@ -400,12 +400,12 @@ export function HeatMapView({ events, onEventClick, isLoading = false }: HeatMap
         {/* Header & Stats */}
         <div className="flexlglg:flex-row lg:items-end justify-between gap-8 px-4">
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 ">
               <Zap className="w-3.5 h-3.5 fill-current" />
               <span className="text-[0.7rem] uppercase tracking-[0.2em] font-black">Market Intelligence Dashboard</span>
             </div>
             <div>
-              <h1 className="text-xl md:text-5xl font-black tracking-tighter text-white mb-4">
+              <h1 className="text-xl md:text-5xl font-black tracking-tighter mb-4">
                 Economic Density Map
               </h1>
             </div>

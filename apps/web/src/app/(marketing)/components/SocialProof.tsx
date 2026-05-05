@@ -1,4 +1,5 @@
 import { Star, Quote } from 'lucide-react';
+import Section from './Section';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
@@ -39,7 +40,7 @@ const logos = [
 
 export function SocialProof() {
   return (
-  <section id="testimonials" className="scroll-mt-24 py-24 bg-gradient-to-b from-background to-card/30">
+  <Section id="testimonials" className="py-24">
       <div className="container mx-auto px-8">
         {/* Stats Section */}
         <div 
@@ -133,6 +134,6 @@ export function SocialProof() {
           </div>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

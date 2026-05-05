@@ -21,7 +21,9 @@ import { submitContactForm, ContactSubmission } from "@/lib/contact-service";
 import { useFormErrorToasts, handleFormErrors } from "@/hooks/useFormErrorToasts";
 import { CheckCircle2, Mail, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
-import { Separator } from "@/components/ui/separator";
+import { FaTelegramPlane, FaPhoneAlt } from "react-icons/fa";
+import { BsFillTelephoneFill } from "react-icons/bs";
+
 
 // Simplified schema for the "Contact Us" form
 const contactFormSchema = z.object({
@@ -96,7 +98,7 @@ export default function ContactPage() {
           <ContactConcierge />
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
+        <div className="grid lg:grid-cols-1 gap-16 lg:gap-24 px-[20%]">
           {/* Left Column: Form */}
           <div className="space-y-12">
             <Form {...form}>
@@ -193,7 +195,7 @@ export default function ContactPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                    <Phone className="w-4 h-4 text-foreground" />
+                    <FaTelegramPlane className="w-4 h-4 text-foreground" />
                   </div>
                   <span className="text-sm text-muted-foreground">@Rithyhong</span>
                 </div>
@@ -202,7 +204,7 @@ export default function ContactPage() {
           </div>
 
           {/* Right Column: Info & Benefits */}
-          <div className="flex flex-col justify-between space-y-12">
+          {/* <div className="flex flex-col justify-between space-y-12">
 
             <div className="space-y-8">
               <h3 className="font-bold text-xl">With our services you can</h3>
@@ -243,7 +245,7 @@ export default function ContactPage() {
               </div>
             </div>
 
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Check, X, ArrowRight, Zap } from 'lucide-react';
+import Section from './Section';
 
 const plans = [
   {
@@ -69,7 +70,7 @@ const plans = [
 
 export function Pricing() {
   return (
-  <section id="pricing" className="scroll-mt-24 py-24 bg-gradient-to-b from-card/30 to-background relative overflow-hidden">
+  <Section id="pricing" className="py-24 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-success/5 opacity-50" />
       
@@ -222,6 +223,6 @@ export function Pricing() {
           </div>
         </div>
       </div>
-    </section>
+    </Section>
   );
 }

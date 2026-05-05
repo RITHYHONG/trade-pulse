@@ -41,7 +41,7 @@ export function ContactConcierge() {
 
       return (
             <div className="relative">
-                  <AnimatePresence>
+                  {/* <AnimatePresence>
                         {!isOpen ? (
                               <motion.div
                                     initial={{ opacity: 0, scale: 0.9 }}
@@ -146,7 +146,7 @@ export function ContactConcierge() {
                                     </div>
                               </motion.div>
                         )}
-                  </AnimatePresence>
+                  </AnimatePresence> */}
             </div>
       );
 }

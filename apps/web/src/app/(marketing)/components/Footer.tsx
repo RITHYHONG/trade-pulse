@@ -10,6 +10,10 @@ import LogoDark from '../../../../public/logo.svg';
 import LogoLight from '../../../../public/logo-black.svg';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import { FaXTwitter } from "react-icons/fa6";
+import { IoLogoInstagram } from "react-icons/io5";
+import { LuMail } from "react-icons/lu";
+
 
 const footerLinks = {
   Product: [
@@ -159,14 +163,14 @@ export function Footer() {
             </p>
 
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/10">
-                <Image src="https://upload.wikimedia.org/wikipedia/commons/5/53/X_logo_2023_original.svg" width={20} height={20} alt="X" className="filter invert" />
+              <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/10 w-10 h-10 p-0">
+                <FaXTwitter className="w-12 h-12" />
               </Button>
-              <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/10">
-                <Linkedin className="w-5 h-5" width={20} height={20} />
+              <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/10 w-10 h-10 p-0">
+                <IoLogoInstagram className="w-12 h-12" />
               </Button>
-              <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/10">
-                <Mail className="w-5 h-5" width={20} height={20} />
+              <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/10 w-10 h-10 p-0">
+                <LuMail className="w-12 h-12" />
               </Button>
             </div>
           </div>
