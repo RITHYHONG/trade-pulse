@@ -162,7 +162,7 @@ export function BlogIndex({ initialPosts = [], featuredPosts: initialFeatured = 
               Latest Intelligence
             </motion.div>
             <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6">
-              Market <span className="text-primary italic">News</span> Hub
+              Market <span className="text-[var(--primary)] italic">News</span> Hub
             </h1>
           </div>
 

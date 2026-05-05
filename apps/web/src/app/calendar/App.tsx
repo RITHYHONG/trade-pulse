@@ -72,11 +72,11 @@ const MarketIntelContent = React.memo(({ events, aiIntelligence, isAiLoading, co
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-1.5">
-          <BrainCircuit className="w-3.5 h-3.5 text-primary" />
+          <BrainCircuit className="w-3.5 h-3.5 text-[var(--primary)" />
           AI Market Pulse
         </h4>
         {aiIntelligence?.marketVerdict && (
-          <Badge variant="outline" className="h-5 bg-primary/10 border-primary/20 font-mono text-[0.65rem]">
+          <Badge variant="outline" className="h-5 text-[var(--primary) bg-primary/10 border-primary/20 font-mono text-[0.65rem]">
             {aiIntelligence.marketVerdict}
           </Badge>
         )}
@@ -437,11 +437,11 @@ export default function App() {
       <div className="flex-none border-b border-border/40 bg-background/80 backdrop-blur-md">
         <div className="px-4 md:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-primary/10 text-primary">
+            <div className="p-2 rounded-xl bg-primary/10 text-[var(--primary)]">
               <Activity className="w-5 h-5 animate-pulse" />
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-sm font-bold text-foreground leading-tight tracking-tight">Economic Calendar & <span className="text-primary">Market Intelligence Hub</span></h1>
+              <h1 className="text-sm font-bold text-foreground leading-tight tracking-tight">Economic Calendar & <span className="text-[var(--primary)]">Market Intelligence Hub</span></h1>
               <p className="text-[0.7rem] text-muted-foreground font-semibold uppercase tracking-widest opacity-60">TradePulse Intelligence</p>
             </div>
           </div>
