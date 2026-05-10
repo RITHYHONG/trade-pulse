@@ -157,6 +157,8 @@ export function EventIntelligencePanel({ event, onClose }: EventIntelligencePane
       }
     };
 
+    if (!event) return;
+
     if (closeButtonRef.current) {
       closeButtonRef.current.focus();
     }

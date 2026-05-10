@@ -10,7 +10,7 @@ interface CalendarLoadingStateProps {
 
 export function CalendarLoadingState({ isMobile, sidebarOpen, intelPanelOpen }: CalendarLoadingStateProps) {
   return (
-    <div className="h-screen flex flex-col bg-background selection:bg-primary/10 transition-colors duration-300">
+    <div className="min-h-[100dvh] flex flex-col bg-background selection:bg-primary/10 transition-colors duration-300">
       <div className="flex-none border-b border-border/40 bg-background/80 backdrop-blur-md">
         <div className="px-4 md:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
