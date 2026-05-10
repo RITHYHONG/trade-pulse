@@ -1,143 +1,20 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { FilterSidebar } from './components/economic-calendar/FilterSidebar';
-import { TimelineView } from './components/economic-calendar/TimelineView';
-import dynamic from 'next/dynamic';
-import { AlertSystem } from './components/economic-calendar/AlertSystem';
-import { CorrelationMatrix, Correlation } from './components/economic-calendar/CorrelationMatrix';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  ChevronLeft,
-  ChevronRight,
-  BarChart3,
-  Grid3x3,
-  List,
-  Filter,
-  Activity,
-  Bell,
-  Target,
-  Zap,
-  BrainCircuit,
-  PanelRightClose,
-  PanelRightOpen
-} from 'lucide-react';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger
-} from '@/components/ui/sheet';
+import { EventIntelligencePanel } from './components/economic-calendar/EventIntelligencePanel';
+import { CalendarHeader } from './components/CalendarHeader';
+import { CalendarMain } from './components/CalendarMain';
+import { CalendarSidebar } from './components/CalendarSidebar';
+import { CalendarIntelligencePanel } from './components/CalendarIntelligencePanel';
+import { CalendarMobileNav } from './components/CalendarMobileNav';
+import { CalendarLoadingState } from './components/CalendarLoadingState';
 import { mockEconomicEvents, mockCentralBankEvents } from './components/economic-calendar/mockData';
 import { FilterState, EconomicEvent, ViewMode, CentralBankEvent, AiIntelligence } from './components/economic-calendar/types';
-// EconomicCalendarService removed from client-side imports for security
-
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
-import { calendarApiResponseSchema } from '@/lib/validations';
-import { toast } from 'sonner';
+import { Correlation } from './components/economic-calendar/CorrelationMatrix';
 import { useCalendarState } from './hooks/use-calendar-state';
 import { useIsMobileBreakpoint } from '@/hooks/use-media-query';
-
-// Dynamically import heavy components with SSR disabled
-const HeatMapView = dynamic(
-  () => import('./components/economic-calendar/HeatMapView').then(mod => ({ default: mod.HeatMapView })),
-  { ssr: false, loading: () => <div className="p-6 h-full w-full"><Skeleton className="h-full w-full rounded-xl" /></div> }
-);
-
-const ListView = dynamic(
-  () => import('./components/economic-calendar/ListView').then(mod => ({ default: mod.ListView })),
-  { ssr: false, loading: () => <div className="p-6 h-full w-full"><Skeleton className="h-full w-full rounded-xl" /></div> }
-);
-const EventIntelligencePanel = dynamic(
-  () => import('./components/economic-calendar/EventIntelligencePanel').then(mod => ({ default: mod.EventIntelligencePanel })),
-  {
-    ssr: false
-  }
-);
-
-const CentralBankDashboard = dynamic(
-  () => import('./components/economic-calendar/CentralBankDashboard').then(mod => ({ default: mod.CentralBankDashboard })),
-  {
-    ssr: false,
-    loading: () => <Skeleton className="h-32 w-full rounded-lg" />
-  }
-);
-const MarketIntelContent = React.memo(({ events, aiIntelligence, isAiLoading, correlations }: { events: CentralBankEvent[], aiIntelligence: AiIntelligence | null, isAiLoading: boolean, correlations: Correlation[] }) => (
-  <div className="flex-1 overflow-y-auto p-4 space-y-8 scrollbar-hide">
-    {/* AI Verdict Section */}
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h4 className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-[0.2em] flex items-center gap-1.5">
-          <BrainCircuit className="w-3.5 h-3.5 text-[var(--primary)" />
-          AI Market Pulse
-        </h4>
-        {aiIntelligence?.marketVerdict && (
-          <Badge variant="outline" className="h-5 text-[var(--primary) bg-primary/10 border-primary/20 font-mono text-[0.65rem]">
-            {aiIntelligence.marketVerdict}
-          </Badge>
-        )}
-      </div>
-
-      <div className="p-4 rounded-xl bg-card/60 border border-primary/20 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:scale-110 transition-transform">
-          <BrainCircuit className="w-8 h-8" />
-        </div>
-        {isAiLoading ? (
-          <div className="space-y-2">
-            <Skeleton className="h-3 w-full" />
-            <Skeleton className="h-3 w-4/5" />
-            <Skeleton className="h-3 w-1/2" />
-          </div>
-        ) : (
-          <div className="space-y-3 relative z-10">
-            <p className="text-[0.75rem] font-medium text-foreground leading-relaxed italic">
-              &quot;{aiIntelligence?.overallSummary || 'Analyzing market events...'}&quot;
-            </p>
-            {aiIntelligence?.keyRisks && (
-              <div className="flex flex-wrap gap-1.5">
-                {aiIntelligence.keyRisks.map((risk: string, i: number) => (
-                  <Badge key={i} variant="secondary" className="h-4 text-[0.6rem] bg-background/50 border-border/20 font-bold uppercase">
-                    • {risk}
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h4 className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-[0.2em]">Central Bank Watch</h4>
-        <Target className="w-3.5 h-3.5 text-primary/50" />
-      </div>
-      <CentralBankDashboard events={events} />
-    </div>
-
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h4 className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-[0.2em]">Live Alerts</h4>
-        <Bell className="w-3.5 h-3.5 text-primary/50" />
-      </div>
-      <AlertSystem />
-    </div>
-
-    <div className="space-y-4 pb-8">
-      <div className="flex items-center justify-between">
-        <h4 className="text-[0.7rem] font-bold text-muted-foreground uppercase tracking-[0.2em]">Cross Correlations</h4>
-        <Activity className="w-3.5 h-3.5 text-primary/50" />
-      </div>
-      <CorrelationMatrix correlations={correlations} />
-    </div>
-  </div>
-));
-
-MarketIntelContent.displayName = 'MarketIntelContent';
+import { toast } from '@/lib/toast';
+import { calendarApiResponseSchema } from '@/lib/validations';
 
 export default function App() {
   const { filters, updateFilters, selectedEventId, updateSelectedEvent } = useCalendarState();
@@ -319,292 +196,62 @@ export default function App() {
 
   if (isEventsLoading) {
     return (
-      <div className="h-screen flex flex-col bg-background selection:bg-primary/10 transition-colors duration-300">
-        <div className="flex-none border-b border-border/40 bg-background/80 backdrop-blur-md">
-          <div className="px-4 md:px-6 h-16 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Skeleton className="w-9 h-9 rounded-xl" />
-              <div className="hidden sm:block">
-                <Skeleton className="h-4 w-32 mb-1.5" />
-                <Skeleton className="h-2.5 w-24" />
-              </div>
-            </div>
-            <div className="flex-1 max-w-md mx-auto hidden md:block">
-              <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-full border border-border/40 w-fit">
-                <Skeleton className="w-3.5 h-3.5 rounded-full" />
-                <Skeleton className="h-3 w-24" />
-                <Skeleton className="h-5 w-24 rounded-full" />
-              </div>
-            </div>
-            <div className="flex items-center justify-end gap-2">
-              <Skeleton className="hidden lg:block h-6 w-20 rounded" />
-            </div>
-          </div>
-        </div>
-
-        <main className="flex-1 flex overflow-hidden relative pb-16 md:pb-0">
-          {!isMobile && (
-            <aside
-              className={cn(
-                "flex-none border-r border-border/40 bg-background/50 backdrop-blur-sm transition-all duration-300 ease-in-out z-40 hidden md:block",
-                sidebarOpen ? "w-72" : "w-0"
-              )}
-            >
-              <div className="h-full relative flex flex-col bg-card/20 p-4 space-y-4">
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-[200px] w-full rounded-xl" />
-                <Skeleton className="h-[150px] w-full rounded-xl" />
-                <Skeleton className="h-[200px] w-full rounded-xl" />
-              </div>
-            </aside>
-          )}
-
-          <div className={cn("flex-1 flex flex-col min-w-0 bg-secondary/10 relative", isMobile && mobileTab !== 'calendar' && "hidden")}>
-            <div className="flex-none px-4 md:px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 no-scrollbar">
-                {!isMobile && (
-                  <Skeleton className="h-8 w-8 rounded-lg shrink-0" />
-                )}
-                <div className="h-9 bg-muted/40 p-1 flex gap-1 border border-border/20 rounded-xl shrink-0">
-                  <Skeleton className="h-7 w-[108px] rounded-md" />
-                  <Skeleton className="h-7 w-[105px] rounded-md" />
-                  <Skeleton className="h-7 w-[78px] rounded-md" />
-                </div>
-              </div>
-              <div className="hidden lg:flex items-end gap-2 mt-2 md:mt-0">
-                <Skeleton className="h-8 w-[133px] rounded-md" />
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-hidden px-4 md:px-6 pb-6">
-              <div className="h-full bg-background/20 rounded-2xl border border-border/40 overflow-hidden shadow-inner flex flex-col">
-                <div className="flex-1 p-6 space-y-6">
-                  {[1, 2, 3, 4, 5].map(i => (
-                    <div key={i} className="flex gap-4">
-                      <Skeleton className="w-16 h-4 mt-2" />
-                      <Skeleton className="flex-1 h-20 rounded-xl" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <aside
-            className={cn(
-              "flex-none border-l border-border/40 bg-background/30 transition-all duration-300 ease-in-out flex flex-col overflow-hidden",
-              (isMobile ? mobileTab === 'insights' : intelPanelOpen) ? (isMobile ? "fixed inset-x-0 inset-y-0 pb-16 z-40 bg-background" : "w-[320px] xl:w-[380px]") : "w-0"
-            )}
-          >
-            <div className="flex-none p-5 border-b border-border/40 bg-background/40 backdrop-blur-sm flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Skeleton className="w-4 h-4 rounded-full" />
-                <Skeleton className="h-4 w-32" />
-              </div>
-              {!isMobile && (
-                <Skeleton className="h-7 w-7 rounded-full" />
-              )}
-            </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-8">
-              <div className="space-y-4">
-                <div className="flex justify-between items-center"><Skeleton className="h-3 w-24" /><Skeleton className="h-4 w-16" /></div>
-                <Skeleton className="h-32 w-full rounded-xl" />
-              </div>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center"><Skeleton className="h-3 w-32" /><Skeleton className="h-3 w-3 rounded-full" /></div>
-                <Skeleton className="h-32 w-full rounded-lg" />
-              </div>
-            </div>
-          </aside>
-
-          {isMobile && (
-            <nav className="fixed bottom-0 left-0 right-0 h-16 bg-background/90 backdrop-blur-xl border-t border-border/50 flex items-center justify-around z-50">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="flex flex-col items-center justify-center w-full h-full">
-                  <Skeleton className="w-5 h-5 mb-1 rounded" />
-                  <Skeleton className="h-2 w-10 rounded" />
-                </div>
-              ))}
-            </nav>
-          )}
-        </main>
-      </div>
+      <CalendarLoadingState
+        isMobile={isMobile}
+        sidebarOpen={sidebarOpen}
+        intelPanelOpen={intelPanelOpen}
+      />
     );
   }
 
   return (
     <div id="main-content" className="h-screen flex flex-col bg-background selection:bg-primary/10 transition-colors duration-300">
-      <div className="flex-none border-b border-border/40 bg-background/80 backdrop-blur-md">
-        <div className="px-4 md:px-6 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-primary/10 text-[var(--primary)]">
-              <Activity className="w-5 h-5 animate-pulse" />
-            </div>
-            <div className="hidden sm:block">
-              <h1 className="text-sm font-bold text-foreground leading-tight tracking-tight">Economic Calendar & <span className="text-[var(--primary)]">Market Intelligence Hub</span></h1>
-              <p className="text-[0.7rem] text-muted-foreground font-semibold uppercase tracking-widest opacity-60">TradePulse Intelligence</p>
-            </div>
-          </div>
-
-          <div className="flex-1 max-w-md mx-auto hidden md:block">
-            <div className="flex items-center gap-2 bg-secondary/30 px-3 py-1.5 rounded-full border border-border/40">
-              <Zap className="w-3.5 h-3.5 text-amber-500" />
-              <span className="text-[11px] font-bold text-muted-foreground">CRITICAL EVENTS:</span>
-              <Badge variant="outline" className="h-5 bg-rose-500/10 text-rose-500 border-rose-500/20 px-2 font-sans text-[0.7rem]">
-                {highImpactCount} HIGH IMPACT
-              </Badge>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-end gap-2">
-            <nav aria-label="Breadcrumb" className="hidden xl:flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mr-4">
-              <a href="/" className="hover:text-primary transition-colors">Home</a>
-              <ChevronRight className="w-3 h-3" />
-              <span className="text-primary">Economic Calendar</span>
-            </nav>
-            <Badge variant="outline" className="hidden lg:flex font-sans text-[0.7rem] font-bold px-2.5 py-1 text-muted-foreground border-border/60 bg-secondary/20">
-              {filteredEvents.length} LOADED
-            </Badge>
-          </div>
-        </div>
-      </div>
+      <CalendarHeader
+        highImpactCount={highImpactCount}
+        totalEvents={filteredEvents.length}
+        isMobile={isMobile}
+      />
 
       <main className="flex-1 flex overflow-hidden relative pb-16 md:pb-0">
-        {!isMobile && (
-          <aside
-            className={cn(
-              "flex-none border-r border-border/40 bg-background/50 backdrop-blur-sm transition-all duration-300 ease-in-out z-40 hidden md:block",
-              sidebarOpen ? "w-72" : "w-0"
-            )}
-          >
-            <div className="h-full relative flex flex-col bg-card/20">
-              <FilterSidebar filters={filters} onFiltersChange={handleFiltersChange} events={events} />
-            </div>
-          </aside>
-        )}
+        <CalendarSidebar
+          sidebarOpen={sidebarOpen}
+          isMobile={isMobile}
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          events={events}
+          mobileTab={mobileTab}
+        />
 
-        <div className={cn("flex-1 flex flex-col min-w-0 bg-secondary/10 relative", isMobile && mobileTab !== 'calendar' && "hidden")}>
-          <div className="flex-none px-4 md:px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 no-scrollbar">
-              {!isMobile && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className="hover:bg-background h-8 w-8 rounded-lg border border-border/40 text-muted-foreground transition-all hover:text-primary shrink-0"
-                >
-                  {sidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                </Button>
-              )}
+        <CalendarMain
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          sidebarOpen={sidebarOpen}
+          onSidebarToggle={() => setSidebarOpen(prev => !prev)}
+          intelPanelOpen={intelPanelOpen}
+          onIntelPanelToggle={() => setIntelPanelOpen(prev => !prev)}
+          filteredEvents={filteredEvents}
+          onEventClick={handleEventClick}
+          isMobile={isMobile}
+          mobileTab={mobileTab}
+        />
 
-              <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)} className="w-auto shrink-0">
-                <TabsList className="h-9 bg-muted/40 p-1 gap-1 border border-border/20 rounded-xl">
-                  <TabsTrigger value="timeline" className="text-[11px] font-bold px-4 h-7 data-[state=active]:bg-primary/50 data-[state=active]:text-primary transition-all">
-                    <BarChart3 className="w-3.5 h-3.5 mr-2" />
-                    TIMELINE
-                  </TabsTrigger>
-                  <TabsTrigger value="heatmap" className="text-[11px] font-bold px-4 h-7 data-[state=active]:bg-background data-[state=active]:text-primary transition-all">
-                    <Grid3x3 className="w-3.5 h-3.5 mr-2" />
-                    HEATMAP
-                  </TabsTrigger>
-                  <TabsTrigger value="list" className="text-[11px] font-bold px-4 h-7 data-[state=active]:bg-background data-[state=active]:text-primary transition-all">
-                    <List className="w-3.5 h-3.5 mr-2" />
-                    LIST
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
-
-            <div className="hidden lg:flex items-end gap-2 mt-2 md:mt-0">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIntelPanelOpen(!intelPanelOpen)}
-                className={cn(
-                  "h-8 px-3 text-[0.7rem] font-bold transition-all border border-transparent",
-                  intelPanelOpen ? "bg-primary/10 border-primary/20" : "text-muted-foreground hover:bg-muted"
-                )}
-              >
-                {intelPanelOpen ? <PanelRightClose className="w-4 h-4 mr-2" /> : <PanelRightOpen className="w-4 h-4 mr-2" />}
-                INTELLIGENCE
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-hidden px-4 md:px-6 pb-6">
-            <div className="h-full bg-background/20 rounded-2xl border border-border/40 overflow-hidden shadow-inner flex flex-col">
-              <div className="flex-1 overflow-auto scrollbar-hide [will-change:transform]">
-                {viewMode === 'timeline' && <TimelineView events={filteredEvents} onEventClick={handleEventClick} />}
-                {viewMode === 'heatmap' && <HeatMapView events={filteredEvents} onEventClick={handleEventClick} />}
-                {viewMode === 'list' && <ListView events={filteredEvents} onEventClick={handleEventClick} />}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <aside
-          className={cn(
-            "flex-none border-l border-border/40 bg-background/30 transition-all duration-300 ease-in-out flex flex-col overflow-hidden",
-            (isMobile ? mobileTab === 'insights' : intelPanelOpen) ? (isMobile ? "fixed inset-x-0 inset-y-0 pb-16 z-40 bg-background" : "w-[320px] xl:w-[380px]") : "w-0"
-          )}
-        >
-          <div className="flex-none p-5 border-b border-border/40 bg-background/40 backdrop-blur-sm flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <BrainCircuit className="w-4 h-4 text-primary" />
-              <h3 className="font-bold text-xs tracking-widest uppercase">Market Intelligence</h3>
-            </div>
-            {!isMobile && (
-              <Button variant="ghost" size="icon" onClick={() => setIntelPanelOpen(false)} className="h-7 w-7 rounded-full">
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            )}
-          </div>
-          <MarketIntelContent
-            events={centralBankEvents}
-            aiIntelligence={aiIntelligence}
-            isAiLoading={isAiLoading}
-            correlations={correlations}
-          />
-        </aside>
-
-        {isMobile && mobileTab === 'filters' && (
-          <div className="flex-1 flex flex-col bg-background relative z-40 overflow-hidden pb-16">
-            <div className="flex items-center justify-between p-4 border-b border-border/40 bg-background/80 flex-none leading-none h-14">
-              <span className="text-xs font-bold tracking-widest uppercase items-center flex h-full">Global Filters</span>
-            </div>
-            <div className="flex-1 overflow-y-auto basis-full min-h-0 relative">
-              <FilterSidebar filters={filters} onFiltersChange={handleFiltersChange} events={events} />
-            </div>
-          </div>
-        )}
+        <CalendarIntelligencePanel
+          intelPanelOpen={intelPanelOpen}
+          onIntelPanelToggle={() => setIntelPanelOpen(prev => !prev)}
+          isMobile={isMobile}
+          mobileTab={mobileTab}
+          centralBankEvents={centralBankEvents}
+          aiIntelligence={aiIntelligence}
+          isAiLoading={isAiLoading}
+          correlations={correlations}
+        />
 
         {isMobile && (
-          <nav className="fixed bottom-0 left-0 right-0 h-16 bg-background/90 backdrop-blur-xl border-t border-border/50 flex items-center justify-around z-50">
-            <button
-              onClick={() => setMobileTab('calendar')}
-              className={cn("flex flex-col items-center justify-center w-full h-full", mobileTab === 'calendar' ? 'text-primary' : 'text-muted-foreground hover:text-foreground')}
-            >
-              <BarChart3 className="w-5 h-5 mb-1" />
-              <span className="text-[10px] font-bold">Calendar</span>
-            </button>
-            <button
-              onClick={() => setMobileTab('filters')}
-              className={cn("flex flex-col items-center justify-center w-full h-full", mobileTab === 'filters' ? 'text-primary' : 'text-muted-foreground hover:text-foreground')}
-            >
-              <Filter className="w-5 h-5 mb-1" />
-              <span className="text-[10px] font-bold">Filters</span>
-            </button>
-            <button
-              onClick={() => {
-                setMobileTab('insights');
-                setIntelPanelOpen(true);
-              }}
-              className={cn("flex flex-col items-center justify-center w-full h-full", mobileTab === 'insights' ? 'text-primary' : 'text-muted-foreground hover:text-foreground')}
-            >
-              <BrainCircuit className="w-5 h-5 mb-1" />
-              <span className="text-[10px] font-bold">Insights</span>
-            </button>
-          </nav>
+          <CalendarMobileNav
+            mobileTab={mobileTab}
+            onTabChange={setMobileTab}
+            onIntelPanelToggle={() => setIntelPanelOpen(true)}
+          />
         )}
 
         {selectedEvent && (
