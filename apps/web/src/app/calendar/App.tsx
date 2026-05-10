@@ -205,7 +205,7 @@ export default function App() {
   }
 
   return (
-    <div id="main-content" className="min-h-[100dvh] flex flex-col bg-background selection:bg-primary/10 transition-colors duration-300">
+    <div id="main-content" className="h-screen flex flex-col bg-background selection:bg-primary/10 transition-colors duration-300">
       <CalendarHeader
         highImpactCount={highImpactCount}
         totalEvents={filteredEvents.length}
