@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ClientLayout } from "@/components/client-layout";
 import { AppLayout } from "@/components/app-layout";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
+import { Analytics } from "@vercel/analytics/react";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -35,6 +36,7 @@ export default function RootLayout({
           <Toaster position="top-right" richColors />
           <ScrollToTop />
         </ClientLayout>
+        <Analytics />
 
       </body>
     </html>

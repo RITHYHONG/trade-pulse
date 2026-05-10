@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Building2, Calendar, User, TrendingUp, Clock, Target, ChefHat } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { timeFormatter, dayMonthFormatter } from '@/lib/formatters';
 
 interface CentralBankDashboardProps {
