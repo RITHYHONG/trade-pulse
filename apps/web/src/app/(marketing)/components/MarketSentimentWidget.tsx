@@ -13,17 +13,39 @@ interface SentimentData {
       brief: string;
 }
 
+const DEFAULT_SENTIMENTS: SentimentData[] = [
+  {
+    category: "Global Market",
+    score: 72,
+    label: "Bullish",
+    brief: "Premarket indicators show high-volume institutional buying demand."
+  },
+  {
+    category: "Tech Sector",
+    score: 68,
+    label: "Bullish",
+    brief: "AI semiconductor momentum continues to outpace index volatility."
+  },
+  {
+    category: "Crypto Sector",
+    score: 55,
+    label: "Neutral",
+    brief: "Bitcoin tests $67k resistance, altcoins remain range-bound."
+  }
+];
+
 export function MarketSentimentWidget() {
-      const [sentiments, setSentiments] = useState<SentimentData[]>([]);
-      const [isLoading, setIsLoading] = useState(true);
+      const [sentiments, setSentiments] = useState<SentimentData[]>(DEFAULT_SENTIMENTS);
+      const [isLoading, setIsLoading] = useState(false);
       const [currentIndex, setCurrentIndex] = useState(0);
 
       useEffect(() => {
             async function fetchSentiment() {
                   try {
                         const response = await fetch('/api/dashboard/sentiment');
+                        if (!response.ok) throw new Error("API Network issue");
                         const data = await response.json();
-                        if (data.sentiment) {
+                        if (data.sentiment && data.sentiment.length > 0) {
                               setSentiments(data.sentiment);
                         }
                   } catch (error) {
@@ -34,12 +56,15 @@ export function MarketSentimentWidget() {
             }
 
             fetchSentiment();
-            const interval = setInterval(fetchSentiment, 60000); // Refresh every minute
+            const interval = setInterval(fetchSentiment, 300000); // Refresh every 5 minutes to scale under landing page load
             return () => clearInterval(interval);
       }, []);
 
       useEffect(() => {
             if (sentiments.length > 0) {
+                  // Ensure index remains in bounds if sentiments array shrinks
+                  setCurrentIndex((prev) => (prev >= sentiments.length ? 0 : prev));
+
                   const interval = setInterval(() => {
                         setCurrentIndex((prev) => (prev + 1) % sentiments.length);
                   }, 5000); // Rotate every 5 seconds

@@ -1,10 +1,10 @@
-import { ArrowUpRight, Bolt, AlertTriangle, Search, Sparkles, Check, X } from 'lucide-react';
+import { ArrowUpRight, Bolt, AlertTriangle, Search, Sparkles, Check, X, Clock, TrendingDown } from 'lucide-react';
 import Section from './Section';
 
 const problems = [
   { text: "Overwhelmed by market noise and conflicting signals", icon: <AlertTriangle className="w-3 h-3" /> },
-  { text: "Missing key pre-market moves while sleeping", icon: <Search className="w-3 h-3" /> },
-  { text: "Spending hours on research with inconsistent results", icon: <ArrowUpRight className="w-3 h-3" /> },
+  { text: "Missing key pre-market moves while sleeping", icon: <Clock className="w-3 h-3" /> },
+  { text: "Spending hours on research with inconsistent results", icon: <TrendingDown className="w-3 h-3" /> },
   { text: "FOMO decisions based on incomplete information", icon: <Bolt className="w-3 h-3" /> }
 ];
 

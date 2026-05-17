@@ -38,6 +38,7 @@ import navItems from '@/config/navigation';
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSignOutDialogOpen, setIsSignOutDialogOpen] = useState(false);
   const [active, setActive] = useState<string>('#demo');
   const pathname = usePathname();
   const { user, signOut, loading } = useAuth();
@@ -73,11 +74,12 @@ export function Header() {
     avatarUrl: user?.photoURL ?? undefined,
   }), [user?.displayName, user?.email, user?.photoURL]);
 
-  const { authorProfile: headerProfile } = useAuthorProfile({
+  const { authorProfile: headerProfile, isLoading: isProfileLoading } = useAuthorProfile({
     authorId: user?.uid,
     fallbackAuthor
   });
 
+  // Load initial profile from localStorage on mount/user change
   useEffect(() => {
     if (!user) {
       setUserProfile(null);
@@ -92,8 +94,11 @@ export function Header() {
         console.error('Error parsing cached user profile:', error);
       }
     }
+  }, [user]);
 
-    if (!headerProfile) {
+  // Sync with Firestore profile once loaded to avoid clobbering with empty fallback details
+  useEffect(() => {
+    if (!user || !headerProfile || isProfileLoading) {
       return;
     }
 
@@ -108,11 +113,21 @@ export function Header() {
 
     setUserProfile(profile);
     localStorage.setItem(`userProfile_${user.uid}`, JSON.stringify(profile));
-  }, [headerProfile, user]);
+  }, [headerProfile, user, isProfileLoading]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.key === '/')) {
+      if (event.key === '/') {
+        const activeEl = document.activeElement;
+        if (
+          activeEl && (
+            activeEl.tagName === 'INPUT' ||
+            activeEl.tagName === 'TEXTAREA' ||
+            activeEl.isContentEditable
+          )
+        ) {
+          return;
+        }
         event.preventDefault();
         setIsSearchOpen(true);
       }
@@ -221,34 +236,13 @@ export function Header() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <DropdownMenuItem
-                          onSelect={(e) => e.preventDefault()}
-                          className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-red-600"
-                        >
-                          <LogOut className="w-4 h-4" />
-                          Sign out
-                        </DropdownMenuItem>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            You will be redirected to the login page and will need to sign in again to access your account.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => signOut()}
-                            className="bg-red-600 hover:bg-red-700"
-                          >
-                            Sign out
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <DropdownMenuItem
+                      onSelect={() => setIsSignOutDialogOpen(true)}
+                      className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-red-600"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign out
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -385,6 +379,27 @@ export function Header() {
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
       />
+
+      {/* Sign Out Confirmation Dialog */}
+      <AlertDialog open={isSignOutDialogOpen} onOpenChange={setIsSignOutDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You will be redirected to the login page and will need to sign in again to access your account.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => signOut()}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Sign out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.header>
   );
 }

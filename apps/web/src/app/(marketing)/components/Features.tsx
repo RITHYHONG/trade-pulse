@@ -132,7 +132,7 @@ export function Features() {
               {/* Circular Wave Visualization */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative w-48 h-48 flex items-center justify-center">
-                  <svg className="w-full h-full transform -rotate-90 absolute">
+                  <svg viewBox="0 0 192 192" className="w-full h-full transform -rotate-90 absolute">
                     <circle cx="96" cy="96" r="60" stroke="currentColor" strokeWidth="1" fill="transparent" className="text-white/[0.05]" />
                     <circle cx="96" cy="96" r="60" stroke="currentColor" strokeWidth="2" fill="transparent" strokeDasharray="377" strokeDashoffset="37" className="text-primary" />
                   </svg>

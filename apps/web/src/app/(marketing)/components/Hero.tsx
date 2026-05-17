@@ -1,9 +1,10 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Play } from 'lucide-react';
+import { ArrowRight, Play, X } from 'lucide-react';
 import Link from 'next/link';
 import {
   ScrollVelocityContainer,
@@ -25,6 +26,22 @@ const MarketSentimentWidget = dynamic(
 );
 
 export function Hero() {
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isDemoModalOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsDemoModalOpen(false);
+      }
+    };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isDemoModalOpen]);
   return (
     <Section id="demo" className="py-0 relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background gradient effect */}
@@ -60,11 +77,14 @@ export function Hero() {
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="px-6 md:px-8 w-full sm:w-auto border-border border-2 hover:bg-card dark:hover:text-amber-50">
-                <Link href="#demo">
-                  <Play className="mr-2 h-5 w-5" />
-                  Watch 90-Second Demo
-                </Link>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                onClick={() => setIsDemoModalOpen(true)}
+                className="px-6 md:px-8 w-full sm:w-auto border-border border-2 hover:bg-card dark:hover:text-amber-50 cursor-pointer"
+              >
+                <Play className="mr-2 h-5 w-5" />
+                Watch 90-Second Demo
               </Button>
             </div>
 
@@ -165,6 +185,30 @@ export function Hero() {
           </div>
         </div>
       </div>
+
+      {/* Futuristic Demo Video Modal */}
+      {isDemoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-xl p-4 sm:p-6 md:p-10 transition-all duration-300">
+          <div className="absolute inset-0 cursor-pointer" onClick={() => setIsDemoModalOpen(false)} />
+          <div className="relative bg-card/90 rounded-3xl p-1.5 border border-white/[0.08] w-full max-w-4xl aspect-video overflow-hidden shadow-2xl shadow-primary/20 z-10">
+            <Button 
+              size="icon"
+              variant="outline"
+              onClick={() => setIsDemoModalOpen(false)}
+              className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-slate-950/80 border border-white/10 flex items-center justify-center text-foreground hover:text-primary transition-colors cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+            <iframe
+              className="w-full h-full rounded-2xl border-0"
+              src="https://www.youtube.com/embed/ScMzIvxBSi4?autoplay=1"
+              title="Trade Pulse 90-Second Demo"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
     </Section>
   );
 }

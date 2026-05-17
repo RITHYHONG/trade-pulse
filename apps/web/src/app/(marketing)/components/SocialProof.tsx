@@ -7,21 +7,21 @@ const testimonials = [
   {
     name: "Sarah Chen",
     role: "Day Trader",
-    avatar: "https://images.unsplash.com/photo-1701463387028-3947648f1337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=150",
     content: "Trade Pulse helped me streamline my morning prep—now I spend under 20 minutes reviewing key opportunities before the open.",
     rating: 5,
   },
   {
     name: "Marcus Rodriguez",
     role: "Swing Trader",
-    avatar: "https://images.unsplash.com/photo-1701463387028-3947648f1337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=150",
     content: "The alerts and curated news help me identify high-probability setups faster. The tools are practical and easy to act on.",
     rating: 5,
   },
   {
     name: "Jennifer Park",
     role: "Crypto Trader",
-    avatar: "https://images.unsplash.com/photo-1701463387028-3947648f1337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=150",
     content: "The platform's risk-management signals are useful for volatile markets—I can react quickly and preserve capital.",
     rating: 5,
   }
@@ -51,7 +51,7 @@ export function SocialProof() {
               key={index}
               className="text-center font-bold"
             >
-              <div className="cus_h1 text-primary mb-2">{stat.value}</div>
+              <div className="text-4xl lg:text-5xl font-extrabold tracking-tight text-primary mb-2">{stat.value}</div>
               <div className="text-muted-foreground">{stat.label}</div>
             </div>
           ))}

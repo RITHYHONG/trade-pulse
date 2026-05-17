@@ -6,23 +6,28 @@ import Section from './Section';
 
 const plans = [
   {
-    name: "Start",
+    name: "Starter",
     price: "$15",
     period: "per month (billed yearly)",
-    description: "Ideal for individuals managing personal crypto finances.",
+    description: "Perfect for retail day traders standardizing their morning prep routine.",
     features: [
-      "Up to 5 wallets",
-      "Basic portfolio tracking",
-      "Transaction history overview",
-      "Support 24/7"
+      "Daily Pre-Market AI Briefings",
+      "Pre-Market Sector Rotation Scans",
+      "Up to 3 watchlist smart alerts",
+      "Standard volatility filters",
+      "Community support 24/7"
     ],
-    limitations: [],
-    cta: "Upgrade",
+    limitations: [
+      "Real-time options flow feeds",
+      "API key access for algorithmic trading",
+      "SLA-backed priority support"
+    ],
+    cta: "Start Free Trial",
     popular: false,
     ctaVariant: "outline" as const,
     trial: {
-      days: 7,
-      label: "free"
+      days: 14,
+      label: "free trial"
     }
   },
   {
@@ -30,39 +35,42 @@ const plans = [
     tag: "best choice",
     price: "$39",
     period: "per month (billed yearly)",
-    description: "Built for traders and small businesses scaling their web3 operations.",
+    description: "Built for active day and swing traders scaling their market edge.",
     features: [
-      "Everything in Start",
-      "Unlimited wallets",
-      "Advanced portfolio insights",
-      "Real-time tax reporting tools",
-      "Multi-chain support",
+      "Everything in Starter",
+      "Unlimited watchlists & smart alerts",
+      "Real-Time Institutional Options Flow Scans",
+      "AI Sentiment Correlation Engine Access",
+      "Multi-Asset support (Equities, Forex, Futures)",
       "Priority customer support 24/7"
     ],
-    limitations: [],
-    cta: "Manage",
+    limitations: [
+      "Custom webhook API integrations",
+      "Dedicated market analyst consultation"
+    ],
+    cta: "Start Free Trial",
     popular: true,
     ctaVariant: "default" as const,
     trial: {
-      days_remaining: 2,
-      label: "until expiration"
+      days: 14,
+      label: "free trial"
     }
   },
   {
     name: "Enterprise",
     price: "Custom",
     period: "",
-    description: "Perfect for web3 builders, companies and financial teams.",
+    description: "Perfect for proprietary trading firms, fund managers, and developers.",
     features: [
       "Everything in Growth",
-      "Dedicated account manager",
-      "API access for custom integrations",
-      "Multi-user permissions",
-      "SLA-backed 24/7 support",
-      "Compliance and audit reports"
+      "Dedicated account manager & analyst",
+      "Direct API access (JSON & Webhooks)",
+      "Institutional-grade SLA-backed support",
+      "Multi-seat team workspace permissions",
+      "Custom machine learning model fine-tuning"
     ],
     limitations: [],
-    cta: "Contact us",
+    cta: "Contact Us",
     popular: false,
     ctaVariant: "outline" as const
   }
@@ -199,7 +207,7 @@ export function Pricing() {
               Try Pro free for 14 days - no commitment, no risk.
             </p>
             <Button size="lg" className="px-12 py-6 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 group">
-              Start Your Free 7 Day Trial
+              Start Your Free 14 Day Trial
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>

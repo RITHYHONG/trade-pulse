@@ -54,15 +54,26 @@ export function Footer() {
 
   const handleComingSoon = (e: React.MouseEvent, label: string) => {
     const href = e.currentTarget.getAttribute('href');
-    if (href?.startsWith('#')) {
-      const targetId = href.substring(1);
+    if (!href) return;
+
+    const currentPathname = window.location.pathname;
+
+    // If we are on a different page (e.g. subpage like /blog or /pricing), 
+    // let Next.js handle navigation back to homepage anchors.
+    if (href.startsWith('/#') && currentPathname !== '/') {
+      return; 
+    }
+
+    // Handle home anchors or placeholders
+    const isAnchor = href.startsWith('#') || href.startsWith('/#');
+    if (isAnchor) {
+      const targetId = href.replace(/^\/?#/, '');
       const element = document.getElementById(targetId);
       if (!element) {
         e.preventDefault();
         toast.info(`${label} is coming soon! Stay tuned.`);
       }
-    } else if (href === '/careers' || href === '/press' || href === '/help' || href === '/status' || href === '/security') {
-      // Add more placeholder routes here if needed
+    } else if (['/careers', '/press', '/help', '/status', '/security'].includes(href)) {
       e.preventDefault();
       toast.info(`${label} is coming soon! Stay tuned.`);
     }
@@ -163,15 +174,31 @@ export function Footer() {
             </p>
 
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/10 w-10 h-10 p-0">
-                <FaXTwitter className="w-12 h-12" />
-              </Button>
-              <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/10 w-10 h-10 p-0">
-                <IoLogoInstagram className="w-12 h-12" />
-              </Button>
-              <Button variant="ghost" size="sm" className="hover:text-primary hover:bg-primary/10 w-10 h-10 p-0">
-                <LuMail className="w-12 h-12" />
-              </Button>
+              <Link
+                href="https://x.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center hover:text-primary hover:bg-primary/10 w-10 h-10 rounded-md transition-colors text-muted-foreground"
+                aria-label="X (formerly Twitter)"
+              >
+                <FaXTwitter className="w-5 h-5" />
+              </Link>
+              <Link
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center hover:text-primary hover:bg-primary/10 w-10 h-10 rounded-md transition-colors text-muted-foreground"
+                aria-label="Instagram"
+              >
+                <IoLogoInstagram className="w-5 h-5" />
+              </Link>
+              <Link
+                href="mailto:support@tradepulse.com"
+                className="flex items-center justify-center hover:text-primary hover:bg-primary/10 w-10 h-10 rounded-md transition-colors text-muted-foreground"
+                aria-label="Email"
+              >
+                <LuMail className="w-5 h-5" />
+              </Link>
             </div>
           </div>
 

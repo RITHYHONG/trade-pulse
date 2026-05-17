@@ -33,10 +33,10 @@ export default function AboutPage() {
         {/* Hero Section */}
         <section className="pt-32 pb-20 container mx-auto px-4 md:px-6 text-center">
           <div className="max-w-4xl mx-auto space-y-6 mb-24">
-            <div className="inline-flex items-center justify-center p-1 rounded-full bg-secondary mb-4">
+            {/* <div className="inline-flex items-center justify-center p-1 rounded-full bg-secondary mb-4">
               <span className="w-2 h-2 rounded-full bg-primary mx-2"></span>
               <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground pr-2">Who we are</span>
-            </div>
+            </div> */}
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
               We take pride in delivering <br />
               <span className="text-primary/90">Exceptional results</span>
